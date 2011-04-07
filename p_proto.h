@@ -73,6 +73,7 @@ int p_unescape_char( uchar* str, uchar** strfix );
 bitset p_ccl_to_map( PARSER* parser, uchar* ccl );
 uchar* p_map_to_ccl( PARSER* parser, bitset map );
 uchar* p_negate_ccl( PARSER* parser, uchar* ccl );
+BOOLEAN p_map_test_char( bitset map, uchar chr, BOOLEAN insensitive );
 SYMBOL* p_find_base_symbol( SYMBOL* sym );
 
 /* p_rewrite.c */
