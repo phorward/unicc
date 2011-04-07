@@ -24,10 +24,10 @@ of the Artistic License, version 2. Please see LICENSE for more information.
  * features.
  *
  * So please consider the following rules, to avoid incompatibilities:
- * 1. Don't use embedded productions - insert a new nonterminal for this
- * 2. Don't set precedence to productions
- * 3. Don't use long-string identifiers for symbols
- * 4. The #option-features are not supported
+ * 1. Don't use #pcb or something, #option-features are not supported
+ * 2. Don't use embedded productions - insert a new nonterminal for this
+ * 3. Don't set precedence to productions
+ * 4. Don't use long-string identifiers for symbols
  *
  * Some other rules may be inserted here in future versions.
  */
@@ -84,7 +84,9 @@ struct @@prefix_rhs_item
 #define MALLOC_STEP 255
 #endif
 
-#define UNICC_GETINPUT	getinput()
+#define UNICC_GETINPUT				getinput()
+#define UNICC_PARSE_ERROR( pcb )	p_parse_error( pcb )
+
 
 PARSER*	parser			= (PARSER*)NULL;
 
@@ -109,7 +111,7 @@ pregex_nfa	nfa_m;
  */
 
 /* DEBUG */
-int getinput( void )
+static int getinput( void )
 {
 	int ch;
 	
@@ -245,10 +247,20 @@ static void make_semantic_rhs( PROD* p )
 	}
 }
 
-static void set_option( HASHTAB* ht, uchar* key, uchar* val )
+static OPT* set_option( HASHTAB* ht, uchar* key, uchar* val, int line )
 {
 	HASHELEM*	he;
+	OPT*		opt;
 
+	if( !( opt = p_create_opt( ht, key, (uchar*)NULL ) ) )
+		OUT_OF_MEMORY;
+
+	opt->def = val;
+	opt->line = line;
+
+	return opt;
+
+	/*
 	if( ( he = hashtab_get( ht, key ) ) )
 	{
 		if( !( val = pstr_append_str(
@@ -259,7 +271,11 @@ static void set_option( HASHTAB* ht, uchar* key, uchar* val )
 	}
 	else if( !hashtab_insert( ht, key, val ) )
 		OUT_OF_MEMORY;
+	*/
 }
+
+
+static void p_parse_error();
 
 *];
 //End of Prologue --------------------------------------------------------------
@@ -317,9 +333,15 @@ segment				->	code
 					;
 
 unfixed_directive	->	'#' directive_parms
+					/*
+					| &error
+						[*
+							printf( "Incomplete directive\n" );
+						*]
+					*/
 					;
 
-@USERDEF<uchar*>	!'\0"\'/ \t\n\r!'+ 
+@USERDEF<uchar*>	!'\0"\'/ \t\n\r!;'+ 
 					[*
 						@@ = (uchar*)pmalloc( ( ( @< - @> ) + 1 )
 												* sizeof( uchar ) );
@@ -516,19 +538,19 @@ directive_parms		-> "whitespaces" 	symbol_list
 					| "epilogue"					code
 						[*	parser->p_footer = p_str_append(
 								parser->p_footer, strbuf, FALSE );	*]
-
 					| "pcb"							code
 						[*	parser->p_pcb = p_str_append(
 								parser->p_pcb, strbuf, FALSE );	*]
 
-					| "option"? @USERDEF:key userparam
+					| "option"? line_number @USERDEF:key userparam
 						[*
 							set_option( &( parser->options ),
-								@key, strbuf );
+								@key, strbuf, @line_number );
 
 							pfree( @key );
 							strbuf = (char*)NULL;
 						*]
+
 					;
 
 boolean_opt<BOOLEAN>->	boolean
@@ -697,11 +719,11 @@ definition			->	lhs:primary
 						*]
 					;
 
-sym_option			->	'#' "option"? @USERDEF:key userparam
+sym_option			->	'#' "option"? line_number @USERDEF:key userparam
 
 						[*
 							set_option( &( current_sym->options ), @key,
-											strbuf );
+											strbuf, @line_number );
 
 							strbuf = (uchar*)NULL;
 							pfree( @key );
@@ -721,13 +743,14 @@ productions<LIST*>	->	productions '|' production
 						[*	@@ = list_push( (LIST*)NULL, @1 ); *]
 					;
 					
-production<PROD*>	->	line_number rhs_opt:rhs code_opt prod_directives*
+production<PROD*>	->	line_number rhs_opt:rhs code_opt_dup:act
+							prod_directives*
 						[*
 							@rhs->line = @line_number;
 
-							if( @code_opt )
+							if( @act )
 							{
-								@rhs->code = p_strdup( @code_opt );
+								@rhs->code = @act;
 								@rhs->code_at = last_code_begin;
 							}
 
@@ -749,10 +772,10 @@ prod_directives<int>
 
 						[*	current_prod->prec = @terminal->prec; *]
 
-					|	'#' "option"? @USERDEF:key userparam
+					|	'#' "option"? line_number @USERDEF:key userparam
 
 						[* 	set_option( &( current_prod->options ),
-								@key, strbuf );
+								@key, strbuf, @line_number );
 
 							strbuf = (uchar*)NULL;
 							pfree( @key );
@@ -1198,6 +1221,14 @@ integer			->	integer '0-9'
 					*]
 				;
 
+code_opt_dup<uchar*>
+				->	code_opt
+					
+					[* 	@@ = p_strdup( @code_opt );
+						reset_strbuf();
+					*]
+				;
+
 code_opt<uchar*>->	code
 					[*	@@ = strbuf; *]
 				|	[*	reset_strbuf();
@@ -1270,6 +1301,34 @@ line_number		->	[* @@ = line; *]
 
 [*
 
+static void p_parse_error( @@prefix_pcb* pcb )
+{
+	int		i;
+	uchar**	vptr;
+	uchar**	valid;
+	uchar*	cur;
+	uchar*	bigstr;
+
+	if( !( vptr = valid =
+			(uchar**)p_malloc( ( @@prefix_act[ *( pcb->tos ) ][0] + 1 )
+						* sizeof( uchar* ) ) ) )
+		OUT_OF_MEMORY;
+
+	for( i = 1; i < @@prefix_act[ *( pcb->tos ) ][0] * 3; i += 3 )
+		*( vptr++ ) = @@prefix_symbol_names[ _act[ *( pcb->tos ) ][i] ];
+
+	*vptr = (uchar*)NULL;
+
+	if( pcb->sym == -1 )
+		cur = pcb->buf;
+	else
+		cur = @@prefix_symbol_names[ pcb->sym ];
+
+	p_error( parser, ERR_PARSE_ERROR,
+				ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
+					parser->filename, pcb->line, cur, valid );
+}
+
 int p_parse( PARSER* p, uchar* src )
 {
 	int err = -1;
@@ -1291,9 +1350,6 @@ int p_parse( PARSER* p, uchar* src )
 
 		src_ptr = src;
 
-		#if PDEBUG
-		printf( "<<< %s >>>\n", s );
-		#endif
 		err = @@prefix_parse( &pcb );
 
 		p_free( strbuf );
