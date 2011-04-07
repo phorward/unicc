@@ -42,7 +42,7 @@ Usage:	Performs the LALR(1) parse table construction algorithm
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-int p_same_kernel( LIST* kernel1, LIST* kernel2 )
+static int p_same_kernel( LIST* kernel1, LIST* kernel2 )
 {
 	int		ret			= FALSE;
 	LIST*	checklist	= (LIST*)NULL;
@@ -102,7 +102,7 @@ int p_same_kernel( LIST* kernel1, LIST* kernel2 )
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-STATE* p_get_undone( LIST* lalr_states )
+static STATE* p_get_undone( LIST* lalr_states )
 {
 	STATE*		st		= (STATE*)NULL;
 	LIST*		l		= (LIST*)NULL;
@@ -136,7 +136,7 @@ STATE* p_get_undone( LIST* lalr_states )
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-void p_item_closure( LIST* productions, ITEM* it, LIST** closure_set )
+static void p_item_closure( LIST* productions, ITEM* it, LIST** closure_set )
 {
 	LIST*		j		= (LIST*)NULL;
 	LIST*		k		= (LIST*)NULL;
@@ -259,7 +259,7 @@ void p_item_closure( LIST* productions, ITEM* it, LIST** closure_set )
 	03.03.2008	Jan Max Meyer	Added new SHIFT_REDUCE-transition to build
 								lesser states (up to 30% lesser states!)
 ----------------------------------------------------------------------------- */
-void p_lalr1_closure( PARSER* parser, STATE* st )
+static void p_lalr1_closure( PARSER* parser, STATE* st )
 {
 	LIST*		closure_start		= st->kernel;
 	LIST*		closure_set			= (LIST*)NULL;	
@@ -651,7 +651,7 @@ void p_lalr1_closure( PARSER* parser, STATE* st )
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-void p_reduce_item( PARSER* parser, STATE* st, ITEM* it )
+static void p_reduce_item( PARSER* parser, STATE* st, ITEM* it )
 {
 	LIST*		i		= (LIST*)NULL;
 	SYMBOL*		sym		= (SYMBOL*)NULL;
@@ -704,7 +704,7 @@ void p_reduce_item( PARSER* parser, STATE* st, ITEM* it )
 							|| it->prod->lhs->fixated )
 						continue;
 
-					if( resolved = ( it->prod->prec && sym->prec ) )
+					if( ( resolved = ( it->prod->prec && sym->prec ) ) )
 					{
 						if( sym->prec < it->prod->prec ||
 							( sym->prec == it->prod->prec
@@ -767,62 +767,17 @@ void p_reduce_item( PARSER* parser, STATE* st, ITEM* it )
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
-	15.04.2009	Jan Max Meyer	Default productions
 ----------------------------------------------------------------------------- */
-void p_perform_reductions( PARSER* parser, STATE* st )
+static void p_perform_reductions( PARSER* parser, STATE* st )
 {
 	LIST*	i;
-	LIST*	p;
-	PROD*	cur;
-	TABCOL*	act;
-	int		max		= 0,
-			count;
 	
+	/* First, perform the reductions */
 	for( i = st->kernel; i; i = i->next )
 		p_reduce_item( parser, st, i->pptr );
 
 	for( i = st->epsilon; i; i = i->next )
 		p_reduce_item( parser, st, i->pptr );
-		
-	/* Find the most common reduction and use this as default
-		(quick and dirty...) */
-	for( p = parser->productions; p; p = list_next( p ) )
-	{
-		cur = (PROD*)list_access( p );
-
-		for( i = st->actions, count = 0; i; i = list_next( i ) )
-		{
-			act = (TABCOL*)list_access( i );
-
-			if( act->action == REDUCE && act->index == cur->id )
-				count++;
-		}
-		
-		if( count > max )
-		{
-			max = count;
-			st->def_prod = cur;
-		}
-	}
-	
-	/* Remove all entries that already match the default production */
-	if( st->def_prod )
-	{
-		p = (LIST*)NULL;
-
-		for( i = st->actions, count = 0; i; i = list_next( i ) )
-		{
-			act = (TABCOL*)list_access( i );
-
-			if( act->action == REDUCE && act->index == st->def_prod->id )
-				p_free_tabcol( act );
-			else
-				p = list_push( p, act );
-		}
-		
-		list_free( st->actions );
-		st->actions = p;
-	}
 }
 
 
@@ -874,4 +829,86 @@ void p_generate_tables( PARSER* parser )
 
 }
 
+/* -FUNCTION--------------------------------------------------------------------
+	Function:		p_detect_default_productions()
+	
+	Author:			Jan Max Meyer
+	
+	Usage:			Performs a default production detection. This must be done
+					immediatelly before the code is generated, but behind all
+					the other stuff, e.g. state-based lexical analysis
+					generation.
+						
+	Parameters:		PARSER*		parser			Pointer to the parser information
+												structure.
+	
+	Returns:		void
+  
+	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	Date:		Author:			Note:
+----------------------------------------------------------------------------- */
+void p_detect_default_productions( PARSER* parser )
+{
+	STATE*	st;
+	PROD*	cur;
+	TABCOL*	act;
 
+	LIST*	st_list;
+	LIST*	p_list;
+	LIST*	a_list;
+	LIST*	n_list;
+
+	int		max,
+			count;
+	
+	for( st_list = parser->lalr_states; st_list;
+			st_list = list_next( st_list ) )
+	{
+		max = 0;
+		st = (STATE*)list_access( st_list );	
+
+		/* Find the most common reduction and use this as default
+			(quick and dirty...) */
+		for( p_list = parser->productions; p_list;
+				p_list = list_next( p_list ) )
+		{
+			cur = (PROD*)list_access( p_list );
+	
+			for( a_list = st->actions, count = 0; a_list;
+					a_list = list_next( a_list ) )
+			{
+				act = (TABCOL*)list_access( a_list );
+	
+				if( act->action == REDUCE && act->index == cur->id )
+					count++;
+			}
+			
+			if( count > max )
+			{
+				max = count;
+				st->def_prod = cur;
+			}
+		}
+		
+		/* Remove all entries that already match the default production */
+		if( st->def_prod )
+		{
+			n_list = (LIST*)NULL;
+	
+			for( a_list = st->actions; a_list;
+					a_list = list_next( a_list ) )
+			{
+				act = (TABCOL*)list_access( a_list );
+	
+				if( act->action == REDUCE &&
+						act->index == st->def_prod->id )
+					p_free_tabcol( act );
+				else
+					n_list = list_push( n_list, act );
+			}
+			
+			list_free( st->actions );
+			st->actions = n_list;
+		}
+	}
+}
