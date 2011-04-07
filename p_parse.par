@@ -10,13 +10,30 @@ Usage:	Grammar definition parser
 You may use, modify and distribute this software under the terms and conditions
 of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
+
 #!model			context-sensitive ;
+
+/*
+ * IMPORTANT NOTIFICATION ON THIS PARSER
+ * -------------------------------------
+ * This module underlies to a special coding convention: Because UniCC is boot-
+ * strapped from an older parser that is compiled using min_lalr1 (p_parse.syn),
+ * the use of some features is prohibited because they are only featured by the
+ * parser defined in this module. The old parser is not tended anymore with new
+ * features.
+ *
+ * So please consider the following rules, to avoid incompatibilities:
+ * 1. Don't use embedded productions - insert a new nonterminal for this
+ * 2. Don't set precedence to productions
+ *
+ * Some other rules may be inserted here in future versions.
+ */
 
 /*
  * Information directives
  */
 #parser			"UniCC Grammar Definition Language";
-#version		"1.2";
+#version		"1.2.1";
 #description	"Parser for UniCC parser definitions";
 #copyright		"Copyright (C) 2008, 2009 by Jan Max Meyer, Phorward Software Technologies";
 
@@ -135,7 +152,7 @@ static void set_nfa_to_symbols( SYMBOL* s, NFA* start, NFA* end )
 	s->keyword = TRUE;
 }
 
-void make_semantic_rhs( PROD* p )
+static void make_semantic_rhs( PROD* p )
 {
 	int		i;
 	LIST*	l		= (LIST*)NULL;
@@ -519,11 +536,13 @@ productions<LIST*>	->	productions '|' production				[*	@@ = list_push( @1, @3 );
 					| production								[*	@@ = list_push( (LIST*)NULL, @1 );	*]
 					;
 					
-production<PROD*>	->	rhs_opt line_number code_opt			[*
+production<PROD*>	->	rhs_opt line_number prec_opt code_opt	[*
 																	@1->code_at = @2;
-																	if( @3 )
+																	@1->prec = @3;
+
+																	if( @4 )
 																	{
-																		@1->code = p_strdup( @3 );
+																		@1->code = p_strdup( @4 );
 																		@1->code_at = last_code_begin;
 																	}
 
@@ -540,6 +559,11 @@ rhs_opt<PROD*>		->	rhs
 																*]
 					;
 					
+prec_opt<int>		-> "#precedence" terminal					[*	@@ = @2->prec;
+																*]
+					|											[*	@@ = 0;	/* No precedence! */
+																*]
+					;
 
 rhs<PROD*>			->	rhs symbol access_name					[*	p_append_to_production( @1, @2,
 																		( *strbuf == '\0' ? (uchar*)NULL :
@@ -917,12 +941,14 @@ line_number		->												[* @@ = line;					*]
 int p_parse( PARSER* p, uchar* src )
 {
 	int err = -1;
+	@@prefix_pcb pcb;
 
 	line = 1;
 	auto_regex = 0;
 	prec_cnt = 1;
 	directive_level = 0;
 	embedded_count = 0;
+	memset( &pcb, 0, sizeof( pcb ) );
 
 	if( p && src )
 	{
@@ -936,7 +962,7 @@ int p_parse( PARSER* p, uchar* src )
 		#if PDEBUG
 		printf( "<<< %s >>>\n", s );
 		#endif
-		err = @@prefix_parse( );
+		err = @@prefix_parse( &pcb );
 
 		p_free( strbuf );
 	}
