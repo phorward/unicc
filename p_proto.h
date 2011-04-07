@@ -23,7 +23,7 @@ void p_generate_tables( PARSER* parser );
 void p_detect_default_productions( PARSER* parser );
 
 /* p_error.c */
-void p_error( int err_id, int err_style, ... );
+void p_error( PARSER* parser, int err_id, int err_style, ... );
 
 /* p_mem.c */
 SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create );
@@ -46,8 +46,7 @@ void p_free_vtype( VTYPE* vt );
 
 /* p_integrity.c */
 void p_undef_or_unused( PARSER* parser );
-BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start );
-BOOLEAN p_keyword_anomalies( PARSER* parser );
+BOOLEAN p_regex_anomalies( PARSER* parser );
 BOOLEAN p_stupid_productions( PARSER* parser );
 
 /* p_string.c */
@@ -70,7 +69,6 @@ uchar* p_str_no_whitespace( uchar* str );
 /* p_util.c */
 uchar* p_derivation_name( uchar* name, uchar append_char );
 int p_unescape_char( uchar* str, uchar** strfix );
-BOOLEAN p_ccl_test_char( CCL ccl, pchar chr, BOOLEAN insensitive );
 SYMBOL* p_find_base_symbol( SYMBOL* sym );
 uchar* p_gen_c_identifier( uchar* str, BOOLEAN to_upper );
 
@@ -115,7 +113,7 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 			uchar* base );
 uchar* p_escape_for_target( GENERATOR* g, uchar* str, BOOLEAN clear );
 uchar* p_mkproduction_str( PROD* p );
-BOOLEAN p_load_generator( GENERATOR* g, uchar* genfile );
+BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, uchar* genfile );
 
 /* p_xml.c */
 void p_build_xml( PARSER* parser );
