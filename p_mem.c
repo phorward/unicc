@@ -188,7 +188,12 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 		}
 	}
 	else if( he )
+	{
 		sym = (SYMBOL*)( he->data );
+
+		if( type == SYM_CCL_TERMINAL )
+			p_free( name );
+	}
 
 	p_free( keyname );
 	RETURN( sym );
@@ -669,7 +674,7 @@ PARSER* p_create_parser( void )
 	hashtab_init( &( pptr->definitions ), BUCKET_COUNT, FALSE );
 
 	/* Setup defaults */
-	pptr->p_model = MODEL_CONTEXT_SENSITIVE;
+	pptr->p_mode = MODE_SENSITIVE;
 	pptr->p_universe = 255; /*TODO*/
 	pptr->optimize_states = TRUE;
 
@@ -716,6 +721,7 @@ void p_free_parser( PARSER* parser )
 	{
 		dfa = (pregex_dfa*)list_access( it );
 		pregex_dfa_free( dfa );
+		p_free( dfa );
 	}
 
 	list_free( parser->symbols );
@@ -740,6 +746,8 @@ void p_free_parser( PARSER* parser )
 	p_free( parser->source );
 
 	hashtab_free( &( parser->options ), (HASHTAB_CALLBACK)free );
+
+	xml_free( parser->err_xml );
 
 	p_free( parser );
 }
@@ -828,7 +836,8 @@ VTYPE* p_create_vtype( PARSER* p, uchar* name )
 			OUT_OF_MEMORY;
 
 		/*
-		printf( "Adding vtype >%s< >%s< and >%s<\n", name, vt->int_name, vt->real_def );
+		printf( "Adding vtype >%s< >%s< and >%s<\n",
+			name, vt->int_name, vt->real_def );
 		*/
 
 		p->vtypes = list_push( p->vtypes, (void*)vt );
@@ -844,7 +853,7 @@ VTYPE* p_create_vtype( PARSER* p, uchar* name )
 	
 	Usage:			Frees a VTYPE-structure.
 										
-	Parameters:		VTYPE*	vt						VTYPE-Structure to be deleted.
+	Parameters:		VTYPE*	vt					VTYPE-Structure to be deleted.
 	
 	Returns:		void
   
