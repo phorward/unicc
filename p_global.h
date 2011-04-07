@@ -86,7 +86,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define GEN_WILD_PREFIX			"@@"
 
 /* Phorward UniCC parser generator version number */
-#define PHORWARD_VERSION		"0.21"
+#define PHORWARD_VERSION		"0.21.2beta"
 #define PHORWARD_DEFAULT_LNG	"C"
 
 /* Path separator */
@@ -235,6 +235,8 @@ struct _state
 
 	LIST*		dfa;			/* DFA machine for keyword recognition
 									in this state */
+									
+	STATE*		derived_from;	/* Previous state */
 };
 
 /* Action/Goto table column */
@@ -244,8 +246,8 @@ struct _tabcol
 	short		action;			/* Action on this symbol */
 	int			index;			/* Action-index on this symbol */
 	
-	ITEM*		derived_from;	/* Pointer to item that derives
-									this table column */
+	ITEM*		derived_from;	/* List of items that caused the
+									derivation of this column */
 };
 
 /* Value stack type */
