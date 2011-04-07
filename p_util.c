@@ -116,6 +116,22 @@ uchar* p_derivation_name( uchar* name, uchar append_char )
 	len = strlen( ret );
 	ret[ len ] = append_char;
 	ret[ len + 1 ] = '\0';
+	
+	/* Some name styling - this is currently onle for one  case, the whitespace
+	symbol ... other cases should not appear... */
+	switch( append_char )
+	{
+		case P_OPTIONAL_CLOSURE:
+			if( ret[ len - 1 ] == P_POSITIVE_CLOSURE )
+			{
+				ret[ len - 1 ] = P_KLEENE_CLOSURE;
+				ret[ len ] = '\0';
+			}
+			break;
+			
+		default:
+			break;
+	}
 
 	return ret;
 }
