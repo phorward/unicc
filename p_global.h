@@ -310,6 +310,7 @@ struct _parser
 	BOOLEAN		show_states;
 	BOOLEAN		show_grammar;
 	BOOLEAN		show_productions;
+	BOOLEAN		show_symbols;
 	BOOLEAN		optimize_states;
 	BOOLEAN		all_warnings;
 
