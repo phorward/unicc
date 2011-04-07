@@ -845,7 +845,7 @@ int @@prefix_parse( char* src )
 			src += len;
 			
 			len = 0;
-			sym = -1;
+			sym = -1;			
 			
 			if( error_delay )
 				error_delay--;
@@ -895,8 +895,12 @@ int @@prefix_parse( char* src )
 		if( act & 1 && idx == @@goal-production )
 			break;
 	}
-	
-	printf( "%s: parse completed with %d errors\n", PARSERFILE, error_count );
+
+	#if UNICC_DEBUG
+	fprintf( @@prefix_dbg, "%s: parse completed with %d errors\n",
+		PARSERFILE, error_count );
+	#endif
+
 	return error_count;
 }
 
@@ -935,7 +939,7 @@ int main( int argc, char** argv )
 					first = 1;
 			}
 			else
-				sprintf( s + strlen( s ), "%s\n", l );
+				strcat( s, l );
 		}
 		while( 1 );
 		
