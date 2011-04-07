@@ -433,6 +433,44 @@ uchar* p_negate_ccl( PARSER* parser, uchar* ccl )
 }
 
 /* -FUNCTION--------------------------------------------------------------------
+	Function:		p_map_test_char()
+	
+	Author:			Jan Max Meyer
+	
+	Usage:			Performs a bitset_get(), but with case-insensitivity, if
+					desired.
+
+	Parameters:		bitset		map			Pointer to map to test on
+					uchar		chr			Character to be tested
+					BOOLEAN		insensitive	TRUE: Test case-insensitive
+											FALSE: Test case-sensitive
+					
+	Returns:		BOOLEAN		TRUE		Bit is set
+								FALSE		Bit is unset
+  
+	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	Date:		Author:			Note:
+----------------------------------------------------------------------------- */
+BOOLEAN p_map_test_char( bitset map, uchar chr, BOOLEAN insensitive )
+{
+	if( bitset_get( map, (int)chr ) )
+		return TRUE;
+		
+	if( insensitive )
+	{
+		if( chr >= 'A' && chr <= 'Z' )
+			chr += 32;
+		else if( chr >= 'a' && chr <= 'z' )
+			chr -= 32;
+			
+		if( bitset_get( map, (int)chr ) )
+			return TRUE;
+	}
+	
+	return FALSE;
+}
+
+/* -FUNCTION--------------------------------------------------------------------
 	Function:		p_find_base_symbol()
 	
 	Author:			Jan Max Meyer
