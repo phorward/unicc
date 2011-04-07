@@ -77,12 +77,11 @@ void p_copyright( FILE* stream )
 
 	fprintf( stream, "UniCC LALR(1) Parser Generator v%s [build %s %s]\n",
 			PHORWARD_VERSION, __DATE__, __TIME__ );
-	fprintf( stream, "Copyright (C) 2006-2008 by Phorward Software, Jan Max Meyer\n" );
-	fprintf( stream, "http://www.phorward-software.com ++ mail@phorward-software.com\n" );
+	fprintf( stream, "Copyright (C) 2006-2009 by Phorward Software, Jan Max Meyer\n" );
+	fprintf( stream, "http://www.phorward-software.com ++ contact@phorward-software.com\n" );
 
 	fprintf( stream, "!!!THIS IS A DEVELOPMENT VERSION: NOT FOR PUBLIC RELEASE!!!\n" );
 }
-
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_usage()
@@ -353,6 +352,11 @@ int main( int argc, char** argv )
 				else if( parser->p_model == MODEL_CONTEXT_FREE )
 					p_single_lexer( parser );
 
+				DONE()
+				
+				/* Default production detection */
+				PROGRESS( "Detecting default actions" )
+				p_detect_default_productions( parser );
 				DONE()
 
 				/* Code generator */
