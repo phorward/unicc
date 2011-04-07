@@ -136,7 +136,7 @@ void p_build_code( PARSER* parser )
 	VARS( "xml_file", "%s", xml_file );
 	
 	MSG( "Loading generator" );
-	if( !p_load_generator( gen, xml_file ) )
+	if( !p_load_generator( parser, gen, xml_file ) )
 		VOIDRET;
 
 	/* Now that we have the generator, do some code generation-related
@@ -274,7 +274,7 @@ void p_build_code( PARSER* parser )
 		goto_table = p_str_append( goto_table, goto_table_row, TRUE );
 
 		/* Only in context-sensitive model */
-		if( parser->p_model == MODEL_CONTEXT_SENSITIVE )
+		if( parser->p_mode == MODE_SENSITIVE )
 		{
 			/* dfa machine selection */
 			dfa_select = p_str_append( dfa_select,
@@ -798,7 +798,8 @@ void p_build_code( PARSER* parser )
 			GEN_WILD_PREFIX "actions", actions, FALSE,
 			GEN_WILD_PREFIX "scan_actions", scan_actions, FALSE,
 			GEN_WILD_PREFIX "top-value", top_value, FALSE,
-			GEN_WILD_PREFIX "model", p_int_to_str( parser->p_model ), TRUE,
+			GEN_WILD_PREFIX "model", p_int_to_str( parser->p_mode ), TRUE,
+			GEN_WILD_PREFIX "mode", p_int_to_str( parser->p_mode ), TRUE,
 			GEN_WILD_PREFIX "error",
 				( parser->error ? p_int_to_str( parser->error->id ) :
 							p_int_to_str( -1 ) ), TRUE,
@@ -838,7 +839,7 @@ void p_build_code( PARSER* parser )
 		{
 			if( !( stream = fopen( filename, "wt" ) ) )
 			{
-				p_error( ERR_OPEN_OUTPUT_FILE, ERRSTYLE_WARNING, filename );
+				p_error( parser, ERR_OPEN_OUTPUT_FILE, ERRSTYLE_WARNING, filename );
 				p_free( filename );
 				filename = (char*)NULL;
 			}
@@ -1085,7 +1086,7 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 				
 				if( !l )
 				{
-					p_error( ERR_UNDEFINED_SYMREF, ERRSTYLE_WARNING,
+					p_error( parser, ERR_UNDEFINED_SYMREF, ERRSTYLE_WARNING,
 						result[i].begin + 1 );
 					off = 0;
 					
@@ -1142,7 +1143,7 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 					}
 					else
 					{
-						p_error( ERR_NO_VALUE_TYPE, ERRSTYLE_FATAL,
+						p_error( parser, ERR_NO_VALUE_TYPE, ERRSTYLE_FATAL,
 								sym->name, p->id, result[i].len + 1,
 									result[i].begin );
 					
@@ -1166,7 +1167,7 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 			{
 				if( !def_code )
 				{
-					p_error( ERR_NO_VALUE_TYPE, ERRSTYLE_FATAL,
+					p_error( parser, ERR_NO_VALUE_TYPE, ERRSTYLE_FATAL,
 							p_find_base_symbol( sym )->name,
 								p->id, result[i].len + 1, result[i].begin );
 				}
@@ -1396,7 +1397,8 @@ uchar* p_mkproduction_str( PROD* p )
 					values mapped to the XML-structure, so no memory is
 					wasted.
 					
-	Parameters:		GENERATOR*		g				The target generator
+	Parameters:		PARSER*			parser			Parser information structure
+					GENERATOR*		g				The target generator
 					uchar*			genfile			Path to generator file
 	
 	Returns:		BOOLEAN			TRUE			on success
@@ -1405,7 +1407,7 @@ uchar* p_mkproduction_str( PROD* p )
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-BOOLEAN p_load_generator( GENERATOR* g, uchar* genfile )
+BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, uchar* genfile )
 {
 	XML_T	tmp;
 	uchar*	att_for;
@@ -1416,7 +1418,7 @@ BOOLEAN p_load_generator( GENERATOR* g, uchar* genfile )
 	if( xml_child( (source), (tagname) ) ) \
 		(target) = (uchar*)( xml_txt( xml_child( (source), (tagname) ) ) ); \
 	else \
-		p_error( ERR_TAG_NOT_FOUND, ERRSTYLE_WARNING, (tagname), genfile );
+		p_error( parser, ERR_TAG_NOT_FOUND, ERRSTYLE_WARNING, (tagname), genfile );
 
 #define GET_XML_TAB_1D( target, tagname ) \
 	if( ( tmp = xml_child( g->xml, (tagname) ) ) ) \
@@ -1425,7 +1427,7 @@ BOOLEAN p_load_generator( GENERATOR* g, uchar* genfile )
 		GET_XML_DEF( tmp, (target).col_sep, "col_sep" ) \
 	} \
 	else \
-		p_error( ERR_TAG_NOT_FOUND, ERRSTYLE_WARNING, (tagname), genfile );
+		p_error( parser, ERR_TAG_NOT_FOUND, ERRSTYLE_WARNING, (tagname), genfile );
 
 #define GET_XML_BOOLTAB_1D( target, tagname ) \
 	if( ( tmp = xml_child( g->xml, (tagname) ) ) ) \
@@ -1435,7 +1437,7 @@ BOOLEAN p_load_generator( GENERATOR* g, uchar* genfile )
 		GET_XML_DEF( tmp, (target).col_sep, "col_sep" ) \
 	} \
 	else \
-		p_error( ERR_TAG_NOT_FOUND, ERRSTYLE_WARNING, (tagname), genfile );
+		p_error( parser, ERR_TAG_NOT_FOUND, ERRSTYLE_WARNING, (tagname), genfile );
 
 #define GET_XML_TAB_2D( target, tagname ) \
 	if( ( tmp = xml_child( g->xml, (tagname) ) ) ) \
@@ -1447,17 +1449,17 @@ BOOLEAN p_load_generator( GENERATOR* g, uchar* genfile )
 		GET_XML_DEF( tmp, (target).col_sep, "col_sep" ) \
 	} \
 	else \
-		p_error( ERR_TAG_NOT_FOUND, ERRSTYLE_WARNING, (tagname), genfile ); 
+		p_error( parser, ERR_TAG_NOT_FOUND, ERRSTYLE_WARNING, (tagname), genfile ); 
 
 	if( !( g->xml = xml_parse_file( genfile ) ) )
 	{
-		p_error( ERR_NO_GENERATOR_FILE, ERRSTYLE_FATAL, genfile );
+		p_error( parser, ERR_NO_GENERATOR_FILE, ERRSTYLE_FATAL, genfile );
 		return FALSE;
 	}
 
 	if( *xml_error( g->xml ) )
 	{
-		p_error( ERR_XML_ERROR, ERRSTYLE_FATAL, genfile, xml_error( g->xml ) );
+		p_error( parser, ERR_XML_ERROR, ERRSTYLE_FATAL, genfile, xml_error( g->xml ) );
 		return FALSE;
 	}
 
@@ -1519,7 +1521,7 @@ BOOLEAN p_load_generator( GENERATOR* g, uchar* genfile )
 			{
 				if( !strcmp( g->for_sequences[ i ], att_for ) )
 				{
-					p_error( ERR_DUPLICATE_ESCAPE_SEQ, ERRSTYLE_WARNING,
+					p_error( parser, ERR_DUPLICATE_ESCAPE_SEQ, ERRSTYLE_WARNING,
 						att_for, genfile );
 					break;
 				}
@@ -1548,10 +1550,10 @@ BOOLEAN p_load_generator( GENERATOR* g, uchar* genfile )
 		else
 		{
 			if( !att_for )
-				p_error( ERR_XML_INCOMPLETE, ERRSTYLE_FATAL,
+				p_error( parser, ERR_XML_INCOMPLETE, ERRSTYLE_FATAL,
 					genfile, xml_name( tmp ), "for" );
 			if( !att_do )
-				p_error( ERR_XML_INCOMPLETE, ERRSTYLE_FATAL,
+				p_error( parser, ERR_XML_INCOMPLETE, ERRSTYLE_FATAL,
 					genfile, xml_name( tmp ), "do" );
 		}
 	}
