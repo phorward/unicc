@@ -47,11 +47,19 @@ extern	BOOLEAN		first_progress;
 ----------------------------------------------------------------------------- */
 void p_print_symbol( FILE* stream, SYMBOL* sym )
 {
+	uchar*		cclstr;
+	
 	if( !stream )
 		stream = stderr;
 
 	if( sym->type == SYM_CCL_TERMINAL )
-		fprintf( stream, "\'%s\'", sym->name );
+	{
+		/* ccl_print( stream, sym->ccl, 0 ); */
+		/* fprintf( stream, "\'%s\'", sym->name ); */
+		cclstr = ccl_to_str( sym->ccl, TRUE );
+		fprintf( stream, "'%s'", cclstr );
+		pfree( cclstr );
+	}
 	else if( sym->type == SYM_KW_TERMINAL )
 		fprintf( stream, "\"%s\"", sym->name );
 	else if( sym->type == SYM_REGEX_TERMINAL )
