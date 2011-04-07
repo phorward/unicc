@@ -192,8 +192,7 @@ void p_dump_symbols( FILE* stream, PARSER* parser )
 
 		s = i->pptr;
 		fprintf( stream, "%c%d: ",
-			( IS_TERMINAL( s ) ? 'T' : 'N' ),
-				s->id, s->name );
+			( IS_TERMINAL( s ) ? 'T' : 'N' ), s->id );
 				
 		p_print_symbol( stream, s );
 		
