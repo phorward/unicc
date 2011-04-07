@@ -320,7 +320,7 @@ LIST* p_symbol_to_nfa( PARSER* parser, LIST* nfa, SYMBOL* sym )
 
 	if( sym->type == SYM_KW_TERMINAL )
 		p_keyword_to_nfa( parser, &nfa, sym->name, sym->id );
-	else if( sym->type == SYM_REGEX_TERMINAL )
+	else if( sym->type == SYM_REGEX_TERMINAL && sym->nfa_def )
 	{
 		/* Copy the whole NFA - this does not work nice with the
 			regex lib if we do it using another way :( */
