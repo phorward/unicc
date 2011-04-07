@@ -430,8 +430,9 @@ static void p_xml_build_scan_action(
 			p_xml_raw_code( code_xml, raw );
 				
 			VARS( "ret", "%s", ret );
-			last = result[i].end;
 		}
+
+		last = result[i].end;
 		
 		VARS( "result[i].accept", "%d", result[i].accept );
 		switch( result[i].accept )
@@ -471,7 +472,7 @@ static void p_xml_build_scan_action(
 		}
 	}
 		
-	if( last && *last )				
+	if( last && *last )
 		p_xml_raw_code( code_xml, pstrdup( last ) );
 	
 	MSG( "Free result array" );
