@@ -31,17 +31,18 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 	
 	Author:			Jan Max Meyer
 	
-	Usage:			Rewrites the grammar. The revision is done to simulate tokens
-					which are separated by whitespaces.
+	Usage:			Rewrites the grammar. The revision is done to simulate
+					tokens which are separated by whitespaces.
 					
-	Parameters:		<type>		<identifier>		<description>
+	Parameters:		PARSER*		parser				Pointer to parser informa-
+													tion structure
 	
-	Returns:		<type>							<description>
+	Returns:		void
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
-	26.03.2008	Jan Max Meyer	Use keyname with special type prefix for hash table
-								access
+	26.03.2008	Jan Max Meyer	Use keyname with special type prefix for hash
+								table access
 ----------------------------------------------------------------------------- */
 void p_rewrite_grammar( PARSER* parser )
 {
