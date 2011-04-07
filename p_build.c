@@ -66,6 +66,7 @@ void p_build_code( FILE* stream, PARSER* parser )
 	uchar*		goto_table_row		= (uchar*)NULL;
 	uchar*		prod_rhs_count		= (uchar*)NULL;
 	uchar*		prod_lhs			= (uchar*)NULL;
+	uchar*		def_prod			= (uchar*)NULL;
 	uchar*		char_map			= (uchar*)NULL;
 	uchar*		whitespaces			= (uchar*)NULL;
 	uchar*		symbols				= (uchar*)NULL;
@@ -263,6 +264,17 @@ void p_build_code( FILE* stream, PARSER* parser )
 			if( l->next )
 				dfa_select = p_str_append( dfa_select, gen->dfa_select.col_sep, FALSE );
 		}
+		
+		/* Default production table */
+		def_prod = p_str_append( def_prod,
+				p_tpl_insert( gen->defprod.col,
+					GEN_WILD_PREFIX "state-number", p_int_to_str( st->state_id ), TRUE,
+					GEN_WILD_PREFIX "production-number", p_int_to_str(
+							( ( st->def_prod ) ? st->def_prod->id : -1 ) ), TRUE,
+						(uchar*)NULL ), TRUE );
+
+		if( l->next )
+			def_prod = p_str_append( def_prod, gen->defprod.col_sep, FALSE );
 	}
 
 	/* Production length and production left-hand side tables */
@@ -658,6 +670,7 @@ void p_build_code( FILE* stream, PARSER* parser )
 		GEN_WILD_PREFIX "goto-table", goto_table, TRUE,
 		GEN_WILD_PREFIX "production-lengths", prod_rhs_count, TRUE,
 		GEN_WILD_PREFIX "production-lhs", prod_lhs, TRUE,
+		GEN_WILD_PREFIX "default-productions", def_prod, TRUE,
 		GEN_WILD_PREFIX "character-map", char_map, TRUE,
 		GEN_WILD_PREFIX "character-universe", p_int_to_str( parser->p_universe ), TRUE,
 		GEN_WILD_PREFIX "whitespaces", whitespaces, TRUE,
@@ -1222,6 +1235,7 @@ BOOLEAN p_load_generator( GENERATOR* g, uchar* genfile )
 
 	GET_XML_TAB_1D( g->prodlen, "prodlen" )
 	GET_XML_TAB_1D( g->prodlhs, "prodlhs" )
+	GET_XML_TAB_1D( g->defprod, "defprod" )
 	GET_XML_TAB_1D( g->charmap, "charmap" )
 	GET_XML_TAB_1D( g->dfa_select, "dfa_select" )
 	GET_XML_TAB_1D( g->dfa_char, "dfa_char" )
