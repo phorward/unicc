@@ -14,14 +14,14 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #ifndef P_ERROR_H
 #define P_ERROR_H
 
-#define ERRSTYLE_NONE			0
-#define ERRSTYLE_FATAL			1
-#define ERRSTYLE_WARNING		2
-#define ERRSTYLE_FILEINFO		4
-#define ERRSTYLE_STATEINFO		8
-#define ERRSTYLE_LINEINFO		16
-#define ERRSTYLE_PRODUCTION		32
-#define ERRSTYLE_SYMBOL			64
+#define ERRSTYLE_NONE				0
+#define ERRSTYLE_FATAL				1
+#define ERRSTYLE_WARNING			2
+#define ERRSTYLE_FILEINFO			4
+#define ERRSTYLE_STATEINFO			8
+#define ERRSTYLE_LINEINFO			16
+#define ERRSTYLE_PRODUCTION			32
+#define ERRSTYLE_SYMBOL				64
 
 #define ERR_MEMORY_ERROR			0
 #define ERR_PARSE_ERROR				1
@@ -44,18 +44,19 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define ERR_ASSUMING_DEF_EOF		18
 #define ERR_CMD_LINE				19
 #define ERR_OPEN_OUTPUT_FILE		20
-#define ERR_NO_GENERATOR_FILE		21
-#define ERR_TAG_NOT_FOUND			22
-#define ERR_XML_ERROR				23
-#define ERR_XML_INCOMPLETE			24
-#define ERR_DUPLICATE_ESCAPE_SEQ	25
-#define ERR_CIRCULAR_DEFINITION		26
-#define ERR_EMPTY_RECURSION			27
-#define ERR_USELESS_RULE			28
-#define ERR_NO_EFFECT_IN_MODEL		29
-#define ERR_NONTERM_WS_NOT_ALLOWED	30
-#define ERR_INVALID_CHAR_UNIVERSE	31
-#define ERR_CHARCLASS_OVERLAP		32
+#define ERR_OPEN_INPUT_FILE			21
+#define ERR_NO_GENERATOR_FILE		22
+#define ERR_TAG_NOT_FOUND			23
+#define ERR_XML_ERROR				24
+#define ERR_XML_INCOMPLETE			25
+#define ERR_DUPLICATE_ESCAPE_SEQ	26
+#define ERR_CIRCULAR_DEFINITION		27
+#define ERR_EMPTY_RECURSION			28
+#define ERR_USELESS_RULE			29
+#define ERR_NO_EFFECT_IN_MODEL		30
+#define ERR_NONTERM_WS_NOT_ALLOWED	31
+#define ERR_INVALID_CHAR_UNIVERSE	32
+#define ERR_CHARCLASS_OVERLAP		33
 
 #define OUT_OF_MEMORY				do { p_error( ERR_MEMORY_ERROR, ERRSTYLE_FATAL, __FILE__, __LINE__ ); \
 										exit( EXIT_FAILURE ); } while( 0 )
