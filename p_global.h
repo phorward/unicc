@@ -73,7 +73,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define GEN_WILD_PREFIX			"@@"
 
 /* Phorward UniCC parser generator version number */
-#define UNICC_VERSION			"0.27.14dev"
+#define UNICC_VERSION			"0.27.15dev"
 
 /* Default target language */
 #define UNICC_DEFAULT_LNG		"C"
@@ -110,6 +110,7 @@ typedef struct _item 				ITEM;
 typedef struct _state 				STATE;
 typedef struct _tabcol 				TABCOL;
 typedef struct _vtype				VTYPE;
+typedef struct _option				OPT;
 typedef struct _parser				PARSER;
 typedef struct _generator			GENERATOR;
 typedef struct _generator_1d_tab	_1D_TABLE;
@@ -255,6 +256,14 @@ struct _vtype
 	uchar*		real_def;		/* Definition by user */
 };
 
+/* Parser option */
+struct _option
+{
+	int			line;			/* Line of option definition */
+	uchar*		opt;			/* Option name */
+	uchar*		def;			/* Option content */
+};
+
 /* Parser information structure */
 struct _parser
 {
@@ -378,10 +387,12 @@ struct _generator
 													sides */
 	_1D_TABLE		defprod;					/* Default production for
 													each state */
+#if 0
 	_1D_TABLE		charmap;					/* Character-class validation
 													map */
 	_1D_TABLE		charmap_sym;				/* Character-class to symbol
 													association map */
+#endif
 	_1D_TABLE		dfa_select;					/* DFA machine selection */
 	_2D_TABLE		dfa_idx;					/* DFA state index */
 	_1D_TABLE		dfa_char;					/* DFA transition characters */
