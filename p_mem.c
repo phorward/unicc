@@ -1,11 +1,15 @@
 /* -MODULE----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator 
 Copyright (C) 2006-2009 by Phorward Software Technologies, Jan Max Meyer
-http://www.phorward-software.com ++ mail@phorward-software.com
+http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_mem.c
 Author:	Jan Max Meyer
-Usage:	Data system maintenance and management functions
+Usage:	Memory maintenance and management functions for several datatypes used
+		in UniCC for symbol and state management.
+
+You may use, modify and distribute this software under the terms and conditions
+of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
 
 /*
