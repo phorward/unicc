@@ -26,7 +26,7 @@ void p_detect_default_productions( PARSER* parser );
 void p_error( int err_id, int err_style, ... );
 
 /* p_mem.c */
-SYMBOL* p_get_symbol( PARSER* p, uchar* name, int type, BOOLEAN create );
+SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create );
 void p_free_symbol( SYMBOL* sym );
 PROD* p_create_production( PARSER* p, SYMBOL* lhs );
 void p_append_to_production( PROD* p, SYMBOL* sym, uchar* name );
@@ -51,10 +51,6 @@ BOOLEAN p_keyword_anomalies( PARSER* parser );
 BOOLEAN p_stupid_productions( PARSER* parser );
 
 /* p_string.c */
-/*
-uchar* p_tpl_insert( uchar* tpl, ... );
-uchar* p_str_append( uchar* dest, uchar* src, BOOLEAN freesrc );
-*/
 #define p_tpl_insert pstr_render
 #define p_str_append pstr_append_str
 
@@ -68,8 +64,8 @@ uchar* p_strupr( uchar* str );
 uchar* p_unescape_str( uchar* str );
 uchar* p_str_no_whitespace( uchar* str );
 
-#define p_tolower( ch )		( ( ch >= 'A' && ch <= 'Z' ) ? ch + 32 : ch )
-#define p_toupper( ch )		( ( ch >= 'a' && ch <= 'z' ) ? ch - 32 : ch )
+#define p_tolower( ch )		ptolower( ch )
+#define p_toupper( ch )		ptoupper( ch )
 
 /* p_util.c */
 uchar* p_derivation_name( uchar* name, uchar append_char );
@@ -78,6 +74,7 @@ bitset p_ccl_to_map( PARSER* parser, uchar* ccl );
 uchar* p_map_to_ccl( PARSER* parser, bitset map );
 uchar* p_negate_ccl( PARSER* parser, uchar* ccl );
 BOOLEAN p_map_test_char( bitset map, uchar chr, BOOLEAN insensitive );
+BOOLEAN p_ccl_test_char( CCL ccl, pchar chr, BOOLEAN insensitive );
 SYMBOL* p_find_base_symbol( SYMBOL* sym );
 
 /* p_rewrite.c */
@@ -109,12 +106,11 @@ int p_parse( PARSER* p, uchar* src );
 /* p_keywords.c */
 void p_keywords_to_dfa( PARSER* parser );
 void p_single_lexer( PARSER* parser );
-void p_keyword_to_nfa( PARSER* parser, LIST** nfa, uchar* keyword, int accepting_id);
-LIST* p_find_equal_dfa( PARSER* parser, LIST* ndfa );
-LIST* p_symbol_to_nfa( PARSER* parser, LIST* nfa, SYMBOL* sym );
+pregex_dfa* p_find_equal_dfa( PARSER* parser, pregex_dfa* ndfa );
+void p_symbol_to_nfa( PARSER* parser, pregex_nfa* nfa, SYMBOL* sym );
 
 /* p_build.c */
-void p_build_code( FILE* stream, PARSER* parser );
+void p_build_code( PARSER* parser );
 uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p, uchar* base, BOOLEAN def_code );
 uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 			uchar* base );
