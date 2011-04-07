@@ -176,19 +176,23 @@ void p_rewrite_grammar( PARSER* parser )
 						/* Create unique symbol name */
 						do
 						{
-							deriv = p_str_append( deriv, P_REWRITTEN_TOKEN, FALSE );
-							nsym = p_get_symbol( parser, deriv, SYM_NON_TERMINAL, FALSE );
+							deriv = p_str_append( deriv,
+										P_REWRITTEN_TOKEN, FALSE );
+							nsym = p_get_symbol( parser, deriv,
+										SYM_NON_TERMINAL, FALSE );
 						}
 						while( nsym && nsym->derived_from != sym );
 						
 						/* If you already found a symbol, don't do anything! */
 						if( !nsym )
 						{
-							nsym = p_get_symbol( parser, deriv, SYM_NON_TERMINAL, TRUE );
+							nsym = p_get_symbol( parser, deriv,
+										SYM_NON_TERMINAL, TRUE );
 
 							p = p_create_production( parser, nsym );
 							p_append_to_production( p, sym, (uchar*)NULL );
-							p_append_to_production( p, ws_optlist, (uchar*)NULL );
+							p_append_to_production( p, ws_optlist,
+															(uchar*)NULL );
 							
 							/* p_dump_production( stdout, p, TRUE, FALSE ); */
 	
@@ -202,7 +206,8 @@ void p_rewrite_grammar( PARSER* parser )
 							nsym->derived_from = sym;
 						}
 						
-						/* Replace the rewritten symbol with the production's symbol! */						
+						/* Replace the rewritten symbol with the
+						  		production's symbol! */						
 						m->pptr = nsym;
 
 						p_free( deriv );
@@ -804,3 +809,139 @@ void p_setup_single_goal( PARSER* parser )
 
 	p_append_to_production( p, parser->end_of_input, (uchar*)NULL );
 }
+
+/* -FUNCTION--------------------------------------------------------------------
+	Function:		p_symbol_order()
+	
+	Author:			Jan Max Meyer
+	
+	Usage:			Re-orders all parser symbols after all parsing and revision
+					steps are done according to the following order:
+
+					- Keywords-Terminals
+					- Regex-Terminals
+					- Character-Class Terminals
+					- Nonterminals
+
+					After this, id's are re-assigned.
+					
+	Parameters:		PARSER*		parser			Pointer to the parser
+												information structure.
+	
+	Returns:		void
+  
+	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	Date:		Author:			Note:
+----------------------------------------------------------------------------- */
+void p_symbol_order( PARSER* parser )
+{
+	LIST*			new_order		= (LIST*)NULL;
+	LIST*			l;
+	LIST*			m;
+	SYMBOL*			sym;
+	pregex_nfa_st*	n_st;
+
+	int				sort_order[]	=	{
+											SYM_REGEX_TERMINAL,
+											SYM_CCL_TERMINAL,
+											SYM_ERROR_RESYNC,
+											SYM_NON_TERMINAL
+										};
+	int				i;
+	int				id				= 0;
+
+	/* Sort symbols according above sort order into a new list */
+	for( i = 0; i < sizeof( sort_order ) / sizeof( *sort_order ); i++ )
+	{
+			LISTFOR( parser->symbols, l )
+			{
+				sym = (SYMBOL*)list_access( l );
+
+				if( sym->type == sort_order[i] )
+				{
+					if( !( new_order = list_push( new_order, (void*)sym ) ) )
+						OUT_OF_MEMORY;
+
+					/* In case of an NFA-based token, the accepting-IDs
+						of the constructed machine need to be updated */
+					LISTFOR( sym->nfa.states, m )
+					{
+						n_st = (pregex_nfa_st*)list_access( m );
+
+						if( n_st->accept != REGEX_ACCEPT_NONE &&
+								n_st->accept == sym->id )
+							n_st->accept = id;
+					}
+
+					/* Re-assign new ID! */
+					sym->id = id++;
+				}
+			}
+	}
+
+	/* Replace the list */
+	list_free( parser->symbols );
+	parser->symbols = new_order;
+}
+
+/* -FUNCTION--------------------------------------------------------------------
+	Function:		p_charclass_to_nfa()
+	
+	Author:			Jan Max Meyer
+	
+	Usage:			Turns character-classes into NFAs, to be later integrated
+					into lexical analyzers. This step can only be done after
+					all grammar-related revisions are done, and no more
+					character classes are added.
+
+	Parameters:		PARSER*		parser			Pointer to the parser
+												information structure.
+	
+	Returns:		void
+  
+	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	Date:		Author:			Note:
+----------------------------------------------------------------------------- */
+void p_charsets_to_nfa( PARSER* parser )
+{
+	SYMBOL*			sym;
+	LIST*			l;
+
+	pregex_nfa_st*	begin;
+	pregex_nfa_st*	end;
+
+	PROC( "p_charsets_to_nfa" );
+	PARMS( "parser", "%p", parser );
+
+	LISTFOR( parser->symbols, l )
+	{
+		sym = (SYMBOL*)list_access( l );
+
+		if( sym->type == SYM_CCL_TERMINAL )
+		{
+			/*
+				Make a very tiny NFA with simply one transition
+			*/
+			if( !( begin = pregex_nfa_create_state( &( sym->nfa ),
+						(uchar*)NULL, REGEX_MOD_NONE ) ) )
+				OUT_OF_MEMORY;
+				
+			if( !( begin = begin->next = pregex_nfa_create_state( &( sym->nfa ),
+						(uchar*)NULL, REGEX_MOD_NONE ) ) )
+				OUT_OF_MEMORY;
+
+			if( !( begin->ccl = ccl_dup( sym->ccl ) ) )
+				OUT_OF_MEMORY;
+
+			if( !( begin->next = end = pregex_nfa_create_state( &( sym->nfa ),
+						(uchar*)NULL, REGEX_MOD_NONE ) ) )
+				OUT_OF_MEMORY;
+
+			end->accept = sym->id;
+			/* sym->type = SYM_REGEX_TERMINAL; */
+		}
+	}
+
+	VOIDRET;
+}
+
