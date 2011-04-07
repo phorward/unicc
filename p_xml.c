@@ -564,20 +564,46 @@ static void p_build_dfa( XML_T parent, pregex_dfa* dfa )
 	VOIDRET;
 }
 
+static void p_xml_print_options( HASHTAB* ht, XML_T append_to )
+{
+	LIST*		l;
+	HASHELEM*	he;
+	OPT*		opt;
+
+	XML_T		option;
+
+	/* Set parser options */
+	for( l = hashtab_list( ht ); l; l = list_next( l ) )
+	{
+		he = (HASHELEM*)list_access( l );
+		opt = (OPT*)hashelem_access( he );
+
+		if( !( option = xml_add_child( append_to, "option", 0 ) ) )
+			OUTOFMEM;
+
+		if( !xml_set_attr( option, "name", opt->opt ) )
+			OUTOFMEM;
+
+		if( !xml_set_int_attr( option, "line", opt->line ) )
+			OUTOFMEM;
+		
+		if( !( xml_set_txt( option, opt->def ) ) )
+			OUTOFMEM;
+	}
+}
+
+
 static void p_xml_print_symbols( PARSER* parser, XML_T par )
 {
 	LIST*			l;
-	LIST*			m;
 	SYMBOL*			sym;
 	uchar*			tmp;
-	HASHELEM*		he;
 	pregex_dfa		tmp_dfa;
 
 	XML_T			sym_tab;
 	XML_T			symbol;
 	XML_T			code;
 	XML_T			lex;
-	XML_T			option;
 
 	PROC( "p_xml_print_symbols" );
 	MSG( "Printing symbol table" );
@@ -678,19 +704,7 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 			xml_set_int_attr( symbol, "defined-at", sym->line );
 	
 		/* Set symbol options */
-		for( m = hashtab_list( &( sym->options ) ); m; m = list_next( m ) )
-		{
-			he = (HASHELEM*)list_access( m );
-
-			if( !( option = xml_add_child( symbol, "option", 0 ) ) )
-				OUTOFMEM;
-
-			if( !xml_set_attr( option, "name", hashelem_key( he ) ) )
-				OUTOFMEM;
-			
-			if( !( xml_set_txt( option, (uchar*)hashelem_access( he ) ) ) )
-				OUTOFMEM;
-		}
+		p_xml_print_options( &( sym->options ), symbol );
 	}
 
 	VOIDRET;
@@ -707,14 +721,12 @@ static void p_xml_print_productions( PARSER* parser, XML_T par )
 	uchar*			tmp;
 	int				i;
 	int				j;
-	HASHELEM*		he;
 
 	XML_T			prod_tab;
 	XML_T			prod;
 	XML_T			lhs;
 	XML_T			rhs;
 	XML_T			code;
-	XML_T			option;
 
 	PROC( "p_xml_print_productions" );
 	MSG( "Printing production table" );
@@ -781,19 +793,7 @@ static void p_xml_print_productions( PARSER* parser, XML_T par )
 		}
 
 		/* Set productions options */
-		for( m = hashtab_list( &( p->options ) ); m; m = list_next( m ) )
-		{
-			he = (HASHELEM*)list_access( m );
-
-			if( !( option = xml_add_child( prod, "option", 0 ) ) )
-				OUTOFMEM;
-
-			if( !xml_set_attr( option, "name", hashelem_key( he ) ) )
-				OUTOFMEM;
-			
-			if( !( xml_set_txt( option, (uchar*)hashelem_access( he ) ) ) )
-				OUTOFMEM;
-		}
+		p_xml_print_options( &( p->options ), prod );
 		
 		/* Code */		
 		is_default_code = FALSE;
@@ -1066,31 +1066,13 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 {
 	XML_T			par;
 
-	XML_T			state_tab;
-	XML_T			state;
-	XML_T			action;
-	XML_T			go_to;
-	
-	XML_T			lex_tab;
-	XML_T			lex;
-
 	XML_T			code;
 	XML_T			attrib;
-	XML_T			option;
 
-	uchar*			transtype;
-	
 	FILE* 			out					= (FILE*)NULL;
 	uchar*			outname;
 
-	LIST*			l;
-	LIST*			m;
-	pregex_dfa*		dfa;
-	STATE*			st;
-	TABCOL*			col;
-	int				i;
 	uchar*			xmlstr;
-	HASHELEM*		he;
 
 	PROC( "p_build_xml" );
 	PARMS( "root", "%p", root );
@@ -1156,20 +1138,8 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 	if( !xml_set_int_attr( par, "char-max", CCL_MAX - 1 ) )
 		OUTOFMEM;
 
-	/* Set parser options */
-	for( l = hashtab_list( &( parser->options ) ); l; l = list_next( l ) )
-	{
-		he = (HASHELEM*)list_access( l );
-
-		if( !( option = xml_add_child( par, "option", 0 ) ) )
-			OUTOFMEM;
-
-		if( !xml_set_attr( option, "name", hashelem_key( he ) ) )
-			OUTOFMEM;
-		
-		if( !( xml_set_txt( option, (uchar*)hashelem_access( he ) ) ) )
-			OUTOFMEM;
-	}
+	/* Print parser's options */
+	p_xml_print_options( &( parser->options ), par );
 
 	VARS( "finished", "%s", BOOLEAN_STR( finished ) );
 	if( finished )
