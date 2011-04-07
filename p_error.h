@@ -53,7 +53,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define ERR_CIRCULAR_DEFINITION		27
 #define ERR_EMPTY_RECURSION			28
 #define ERR_USELESS_RULE			29
-#define ERR_NO_EFFECT_IN_MODEL		30
+#define ERR_NO_EFFECT_IN_MODE		30
 #define ERR_NONTERM_WS_NOT_ALLOWED	31
 #define ERR_INVALID_CHAR_UNIVERSE	32
 #define ERR_CHARCLASS_OVERLAP		33
@@ -61,6 +61,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define ERR_NO_TARGET_LANG_SUPPLY	35
 #define ERR_DIRECTIVE_ALREADY_USED	36
 
-#define OUT_OF_MEMORY				do { p_error( ERR_MEMORY_ERROR, ERRSTYLE_FATAL, __FILE__, __LINE__ ); \
-										exit( EXIT_FAILURE ); } while( 0 )
+#define OUT_OF_MEMORY				p_error( (PARSER*)NULL, ERR_MEMORY_ERROR,\
+										ERRSTYLE_FATAL, __FILE__, __LINE__ ), \
+									exit( EXIT_FAILURE )
 #endif
