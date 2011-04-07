@@ -80,7 +80,7 @@ Usage:	Global declarations, structures and includes
 #define GEN_WILD_PREFIX			"@@"
 
 /* Phorward UniCC parser generator version number */
-#define PHORWARD_VERSION		"0.19"
+#define PHORWARD_VERSION		"0.20"
 #define PHORWARD_DEFAULT_LNG	"C"
 
 /* Phorward UniCC parser generator error protocols */
@@ -346,6 +346,7 @@ struct _generator
 	_2D_TABLE		gotab;						/* Goto table */
 	_1D_TABLE		prodlen;					/* Production lengths */
 	_1D_TABLE		prodlhs;					/* Production's left-hand sides */
+	_1D_TABLE		defprod;					/* Default production for each state */
 	_1D_TABLE		charmap;					/* Character-class validation map */
 	_1D_TABLE		dfa_select;					/* DFA machine selection */
 	_2D_TABLE		dfa_idx;					/* DFA state index */
