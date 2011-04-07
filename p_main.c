@@ -384,6 +384,7 @@ int main( int argc, char** argv )
 		else
 		{
 			FAIL()
+			error_count++;
 		}
 
 		p_free_parser( parser );
@@ -392,6 +393,7 @@ int main( int argc, char** argv )
 	{
 		FAIL()
 		p_usage( stderr, *argv );
+		error_count++;
 	}
 
 	return error_count;
