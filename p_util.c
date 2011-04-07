@@ -93,12 +93,14 @@ uchar* p_derivation_name( uchar* name, uchar append_char )
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
+	18.07.2009	Jan Max Meyer	Negative escaped characters
 ----------------------------------------------------------------------------- */
 int p_unescape_char( uchar* str, uchar** strfix )
 {
 	uchar*	ptr = str;
 	int		ch = 0;
 	short	cnt = 0;
+	BOOLEAN	neg = FALSE;
 
 	if( *ptr == '\\' )
 	{
@@ -168,16 +170,25 @@ int p_unescape_char( uchar* str, uchar** strfix )
 					ptr++;
 					cnt++;
 				}
-				printf( "ch = %d\n", ch );
+				/* printf( "ch = %d\n", ch ); */
 				break;
 
 			default:
+				if( *ptr == '-' )
+				{
+					neg = TRUE;
+					ptr++;
+				}
+					
 				while( *ptr >= '0' && *ptr <= '9' )
 				{
 					ch *= 10;
 					ch += ( *ptr - '0' );
 					ptr++;
 				}
+				
+				if( neg && ch )
+					ch *= -1;
 
 				/* if( *ptr != '\0' )
 					ptr++; */
