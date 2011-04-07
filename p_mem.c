@@ -278,8 +278,8 @@ void p_append_to_production( PROD* p, SYMBOL* sym, uchar* name )
 		if( !name )
 		{
 			if( !( sym->generated ) &&
-					sym->type == SYM_NON_TERMINAL
-						|| sym->type == SYM_REGEX_TERMINAL )
+					( sym->type == SYM_NON_TERMINAL
+						|| sym->type == SYM_REGEX_TERMINAL ) )
 			{
 				name = p_strdup( sym->name );
 			}
