@@ -1,15 +1,15 @@
-/* -MODULE----------------------------------------------------------------------
+/*-PARSER----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator 
-Copyright (C) 2006-2009 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2011 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
-File:	p_parse.par/p_parse.c
+File:	p_parse.par
 Author:	Jan Max Meyer
 Usage:	Grammar definition parser
 
 You may use, modify and distribute this software under the terms and conditions
 of the Artistic License, version 2. Please see LICENSE for more information.
------------------------------------------------------------------------------ */
+---------------------------------------------------------------------------- */
 
 #!model			context-sensitive ;
 
@@ -25,6 +25,8 @@ of the Artistic License, version 2. Please see LICENSE for more information.
  * So please consider the following rules, to avoid incompatibilities:
  * 1. Don't use embedded productions - insert a new nonterminal for this
  * 2. Don't set precedence to productions
+ * 3. Don't use long-string identifiers for symbols
+ * 4. The #option-Feature is not supported
  *
  * Some other rules may be inserted here in future versions.
  */
@@ -33,9 +35,20 @@ of the Artistic License, version 2. Please see LICENSE for more information.
  * Information directives
  */
 #parser			"UniCC Grammar Definition Language";
-#version		"1.3";
+#version		"1.4";
 #description	"Parser for UniCC parser definitions";
-#copyright		"Copyright (C) 2008-2010 by Jan Max Meyer, Phorward Software Technologies";
+#copyright		"Copyright (C) 2008-2011 by Jan Max Meyer, Phorward Software Technologies";
+
+/*
+ * Parser configuration
+ */
+#end of input		'\0';
+#language			"C";
+#whitespaces 		whitespace;
+#lexeme				terminal identifier modifier code ccl_string kw type;
+#lexeme separation	on;
+#default action			[* @@ = @1; *];
+#default epsilon action	[* @@ = 0; *];
 
 /*
  * Prologue
@@ -83,10 +96,12 @@ static int 		auto_regex		= 0; /* Nameless Regex counter */
 static int		last_code_begin;	 /* Last code begin */
 static int		embedded_count	= 0;
 static PROD*	current_prod	= (PROD*)NULL;
+static SYMBOL*	current_sym		= (SYMBOL*)NULL;
 
 extern int	error_count;
 
 uchar*		strbuf			= (uchar*)NULL;
+uchar*		regex			= (uchar*)NULL;
 pregex_nfa	nfa_m;
 
 /*
@@ -96,7 +111,23 @@ pregex_nfa	nfa_m;
 /* DEBUG */
 int getinput( void )
 {
-	int ch = *(src_ptr++);
+	int ch;
+	
+	/*
+		IMPORTANT:
+		We have to watch out for the zero-terminator;
+		The parser will in some cases continue fetching
+		new characters with UNICC_GETINPUT. If we read
+		over the zero terminator, the parser's behavior
+		will be undefined, so we may only increment it
+		if we're not there!
+
+		(Searching this BUG took at least 4 hours and
+		one broken laptop -.- *arghh*)
+	*/
+	if( ( ch = *(src_ptr) ) )
+		src_ptr++;
+
 #if UNICC_DEBUG
 	fprintf( stderr, "ch = %d (%c)\n", ch, (char)ch );
 #endif
@@ -107,7 +138,8 @@ int getinput( void )
 static void strbuf_append( uchar ch )
 {
 	int len;
-	len = strbuf ? (int)strlen( strbuf ) : 0;
+
+	len = pstrlen( strbuf );
 
 	if( !strbuf )
 		strbuf = (uchar*)p_malloc( ( MALLOC_STEP + 2 ) * sizeof( uchar ) );
@@ -167,8 +199,6 @@ static void set_nfa_to_symbols( SYMBOL* s,
 		
 	list_free( nfa_m.states );
 	memset( &nfa_m, 0, sizeof( pregex_nfa ) );
-	
-	s->keyword = TRUE;
 }
 
 static void make_semantic_rhs( PROD* p )
@@ -215,51 +245,59 @@ static void make_semantic_rhs( PROD* p )
 	}
 }
 
+static void set_option( HASHTAB* ht, uchar* key, uchar* val )
+{
+	HASHELEM*	he;
+
+	if( ( he = hashtab_get( ht, key ) ) )
+	{
+		if( !( val = pstr_append_str(
+				(uchar*)hashelem_access( he ), val, TRUE ) ) )
+			OUT_OF_MEMORY;
+
+		hashtab_update( ht, key, (void*)val );
+	}
+	else if( !hashtab_insert( ht, key, val ) )
+		OUT_OF_MEMORY;
+}
+
 *];
 //End of Prologue --------------------------------------------------------------
-
-/*
- * Parser configuration
- */
-
-#end of input		'\0';
-#language			"C";
-#whitespaces 		whitespace;
-#lexeme				terminal identifier modifier code ccl_string kw type;
-#lexeme separation	on;
-#default action			[* @@ = @1; *];
-#default epsilon action	[* @@ = 0; *];
-
 
 /*
  * Grammar
  */
 
-grammar_spec$		->	fixed_directives segments
+grammar_spec$		->	fixed_directive_def* segment*
 					;
 
-segments			->	segments segment
-					|
-					;
-
-fixed_directives	->	fixed_directives "#!" fixed_directive ';'
-					|
+fixed_directive_def	-> "#!" fixed_directive ';'
 					;
 
 fixed_directive		-> "model"				model_type
-					| "character universe"	integer				[*	int universe = atoi( strbuf );
 
-																	if( universe > 0 )
-																		parser->p_universe = universe;
-																	else
-																		p_error( ERR_INVALID_CHAR_UNIVERSE,
-																			ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
-																				parser->filename, line );
-																*]
+					//TODO:
+					| "character universe"	integer				
+					
+						[*	int universe = atoi( strbuf );
+
+							if( universe > 0 )
+								parser->p_universe = universe;
+							else
+								p_error( ERR_INVALID_CHAR_UNIVERSE,
+									ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
+										parser->filename, line );
+						*]
 					;
 
-model_type			->	"context-sensitive"						[*	parser->p_model = MODEL_CONTEXT_SENSITIVE;	*]
-					| "context-insensitive"						[*	parser->p_model = MODEL_CONTEXT_INSENSITIVE;*]
+model_type			->	"context-sensitive"
+						[*	parser->p_model = MODEL_CONTEXT_SENSITIVE;	*]
+					|	"sensitive"
+						[*	parser->p_model = MODEL_CONTEXT_SENSITIVE;	*]
+					| "context-insensitive"
+						[*	parser->p_model = MODEL_CONTEXT_INSENSITIVE;*]
+					| "insensitive"
+						[*	parser->p_model = MODEL_CONTEXT_INSENSITIVE;*]
 					;
 
 segment				->	code
@@ -270,604 +308,779 @@ segment				->	code
 unfixed_directive	->	'#' directive_parms
 					;
 
-directive_parms		-> "whitespaces" 	symbol_list				[*	LIST* l;
-																	SYMBOL* s;
+directive_parms		-> "whitespaces" 	symbol_list				
+						[*	LIST* l;
+							SYMBOL* s;
 
-																	for( l = @2; l; l = l->next )
-																	{
-																		s = l->pptr;
+							for( l = @2; l; l = l->next )
+							{
+								s = l->pptr;
 
-																		/* Do not allow nonterminal definitions here
-																			in conext-free model */
-																		if( s->type == SYM_NON_TERMINAL &&
-																			parser->p_model !=
-																				MODEL_CONTEXT_SENSITIVE )
-																		{
-																			p_error( ERR_NONTERM_WS_NOT_ALLOWED,
-																				ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
-																						parser->filename, line,
-																							s->name );
-																		}
-																		else
-																			s->whitespace = TRUE;
-																	}
+								/* Do not allow nonterminal definitions here
+									in conext-free model */
+								if( s->type == SYM_NON_TERMINAL &&
+									parser->p_model !=
+										MODEL_CONTEXT_SENSITIVE )
+								{
+									p_error( ERR_NONTERM_WS_NOT_ALLOWED,
+										ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
+												parser->filename, line,
+													s->name );
+								}
+								else
+									s->whitespace = TRUE;
+							}
 
-																	list_free( @2 );
-																*]
-					| "lexeme"			symbol_list				[*	LIST* l;
-																	SYMBOL* s;
+							list_free( @2 );
+						*]
+
+					| "lexeme"			symbol_list
+						[*	LIST* l;
+							SYMBOL* s;
 
 
-																	/* Ouput a warning, if this definition
-																		is effectless */
-																	if( parser->p_model != MODEL_CONTEXT_SENSITIVE )
-																	{
-																		p_error( ERR_NO_EFFECT_IN_MODEL,
-																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
-																				parser->filename, line, "lexeme" );
-																	}
-																	else
-																	{
-																		for( l = @2; l; l = l->next )
-																		{
-																			s = l->pptr;
-																			s->lexem = TRUE;
-																		}
-																	}
+							/* Ouput a warning, if this definition
+								is effectless */
+							if( parser->p_model != MODEL_CONTEXT_SENSITIVE )
+							{
+								p_error( ERR_NO_EFFECT_IN_MODEL,
+									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
+										parser->filename, line, "lexeme" );
+							}
+							else
+							{
+								for( l = @2; l; l = l->next )
+								{
+									s = l->pptr;
+									s->lexem = TRUE;
+								}
+							}
 
-																	list_free( @2 );
-																*]
-					| "fixate" 			symbol_list				[*	LIST* l;
-																	SYMBOL* s;
+							list_free( @2 );
+						*]
 
-																	/* Ouput a warning, if this definition
-																		is effectless */
-																	if( parser->p_model != MODEL_CONTEXT_SENSITIVE )
-																	{
-																		p_error( ERR_NO_EFFECT_IN_MODEL,
-																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
-																				parser->filename, line, "fixate" );
-																	}
-																	else
-																	{
-																		for( l = @2; l; l = l->next )
-																		{
-																			s = l->pptr;
-																			s->fixated = TRUE;
-																		}
-																	}
+					| "fixate" 			symbol_list	
+						[*	LIST* l;
+							SYMBOL* s;
 
-																	list_free( @2 );
+							/* Ouput a warning, if this definition
+								is effectless */
+							if( parser->p_model != MODEL_CONTEXT_SENSITIVE )
+							{
+								p_error( ERR_NO_EFFECT_IN_MODEL,
+									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
+										parser->filename, line, "fixate" );
+							}
+							else
+							{
+								for( l = @2; l; l = l->next )
+								{
+									s = l->pptr;
+									s->fixated = TRUE;
+								}
+							}
 
-																*]
-					| "left"			symbol_list				[*	set_assoc_and_prec( @2, ASSOC_LEFT ); 	*]
-					| "right"			symbol_list				[*	set_assoc_and_prec( @2, ASSOC_RIGHT ); 	*]
-					| "nonassoc"		symbol_list				[*	set_assoc_and_prec( @2, ASSOC_NOASSOC ); *]
-					| "parser"			string					[*	if( !( parser->p_name ) )
-																			parser->p_name = p_strdup( strbuf );	*]
-					| "description"		string					[*	if( !( parser->p_desc ) )
-																			parser->p_desc = p_strdup( strbuf );	*]
-					| "copyright"		string					[*	if( !( parser->p_copyright ) )
-																			parser->p_copyright = p_strdup( strbuf ); *]
-					| "version"			string					[*	if( !( parser->p_version ) )
-																		parser->p_version= p_strdup( strbuf );	*]
-					| "prefix"			string					[*	if( !( parser->p_prefix ) )
-																		parser->p_prefix = p_strdup( strbuf );	*]
-					| "language"		string					[*	if( !( parser->p_language ) )
-																			parser->p_language = p_strdup( strbuf ); *]
-					| "default action"	code					[*	if( !( parser->p_def_action ) )
-																			parser->p_def_action = p_strdup( strbuf );
-																*]
-					| "default epsilon action"		code		[*	if( !( parser->p_def_action_e ) )
-																			parser->p_def_action_e = p_strdup( strbuf ); *]
-					| "default value type" type					[*	if( !( parser->p_def_type ) )
-																		parser->p_def_type = p_create_vtype(
-																			parser, (uchar*)@type );
-																	
-																	p_free( @type );
-																*]
-					| "end of input"	terminal				[*	parser->end_of_input = @2;	*]
-					| "invalid keyword suffix"	ccl				[*	/* Ouput a warning, if this definition
-																		is effectless */
-																	if( parser->p_model != MODEL_CONTEXT_SENSITIVE )
-																	{
-																		p_error( ERR_NO_EFFECT_IN_MODEL,
-																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
-																				parser->filename, line,
-																					"invalid keyword suffix" );
-																	}
-																	else
-																	{
-																		parser->p_invalid_suf = ccl_create( strbuf );
-																		parser->p_neg_inv_suf = @2;
-																		if( @2 )
-																			ccl_negate( parser->p_invalid_suf );
-																	}
-																*]
-					| "lexeme separation" boolean				[*	/* Ouput a warning, if this definition
-																		is effectless */
-																	if( parser->p_model != MODEL_CONTEXT_SENSITIVE )
-																	{
-																		p_error( ERR_NO_EFFECT_IN_MODEL,
-																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
-																				parser->filename, line,
-																					"lexem separation" );
-																	}
-																	else
-																		parser->p_lexem_sep = !@2;
-																*]
-					| "case insensitive keywords"	boolean		[*	parser->p_cis_keywords = !@2;	*]
-					| "reserve keywords"			boolean		[*	parser->p_reserve_kw = !@2;		*]
-					| "prologue"					code		[*	parser->p_header = p_str_append(
-																			parser->p_header, strbuf, FALSE );	*]
-					| "epilogue"					code		[*	parser->p_footer = p_str_append(
-																			parser->p_footer, strbuf, FALSE );	*]
-					| "pcb"							code		[*	parser->p_pcb = p_str_append(
-																			parser->p_pcb, strbuf, FALSE );	*]
+							list_free( @2 );
+
+						*]
+
+					| "left"			symbol_list	
+						[*	set_assoc_and_prec( @2, ASSOC_LEFT ); 	*]
+
+
+					| "right"			symbol_list
+						[*	set_assoc_and_prec( @2, ASSOC_RIGHT ); 	*]
+
+
+					| "nonassoc"		symbol_list
+						[*	set_assoc_and_prec( @2, ASSOC_NOASSOC ); *]
+
+
+					| "parser"			string
+						[*	if( !( parser->p_name ) )
+								parser->p_name = p_strdup( strbuf );	*]
+
+
+					| "description"		string		
+						[*	if( !( parser->p_desc ) )
+								parser->p_desc = p_strdup( strbuf );	*]
+
+					| "copyright"		string
+						[*	if( !( parser->p_copyright ) )
+							parser->p_copyright = p_strdup( strbuf ); *]
+
+					| "version"			string					
+						[*	if( !( parser->p_version ) )
+								parser->p_version= p_strdup( strbuf );	*]
+
+					| "prefix"			string
+						[*	if( !( parser->p_prefix ) )
+								parser->p_prefix = p_strdup( strbuf );	*]
+
+					| "language"		string
+						[*	if( !( parser->p_language ) )
+								parser->p_language = p_strdup( strbuf ); *]
+
+					| "default action"	code
+						[*	if( !( parser->p_def_action ) )
+								parser->p_def_action = p_strdup( strbuf ); *]
+
+					| "default epsilon action"		code
+						[*	if( !( parser->p_def_action_e ) )
+								parser->p_def_action_e = p_strdup( strbuf ); *]
+
+					| "default value type" type					
+						[*	if( !( parser->p_def_type ) )
+								parser->p_def_type = p_create_vtype(
+									parser, (uchar*)@type );
+							p_free( @type );
+						*]
+
+					| "end of input"	terminal
+						[*	parser->end_of_input = @2;	*]
+
+					| "invalid keyword suffix"	ccl				
+						[*	/* Ouput a warning, if this definition
+								is effectless */
+							if( parser->p_model != MODEL_CONTEXT_SENSITIVE )
+							{
+								p_error( ERR_NO_EFFECT_IN_MODEL,
+									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
+										parser->filename, line,
+											"invalid keyword suffix" );
+							}
+							else
+							{
+								parser->p_invalid_suf = ccl_create( strbuf );
+								parser->p_neg_inv_suf = @2;
+								if( @2 )
+									ccl_negate( parser->p_invalid_suf );
+							}
+						*]
+
+					| "lexeme separation" boolean
+						[*	/* Ouput a warning, if this definition
+								is effectless */
+							if( parser->p_model != MODEL_CONTEXT_SENSITIVE )
+							{
+								p_error( ERR_NO_EFFECT_IN_MODEL,
+									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
+										parser->filename, line,
+											"lexem separation" );
+							}
+							else
+								parser->p_lexem_sep = !@2;
+						*]
+
+					| "case insensitive keywords"	boolean
+						[*	parser->p_cis_keywords = !@2;	*]
+
+					| "reserve keywords"			boolean
+						[*	parser->p_reserve_kw = !@2;		*]
+
+					| "prologue"					code
+						[*	parser->p_header = p_str_append(
+								parser->p_header, strbuf, FALSE );	*]
+
+					| "epilogue"					code
+						[*	parser->p_footer = p_str_append(
+								parser->p_footer, strbuf, FALSE );	*]
+
+					| "pcb"							code
+						[*	parser->p_pcb = p_str_append(
+								parser->p_pcb, strbuf, FALSE );	*]
+
+					| "option" identifier_cpy:key string
+						[*
+							set_option( &( parser->options ),
+								@key, strbuf );
+
+							strbuf = (char*)NULL;
+							pfree( @key );
+						*]
+
 					;
 
-boolean<BOOLEAN>	->	"on"									[*	@@ = FALSE; 	*]
-					| 	"off"									[*	@@ = TRUE; 		*]
-					|											[*	@@ = FALSE; 	*]
+boolean<BOOLEAN>	->	"on"			[*	@@ = FALSE; 	*]
+					| 	"off"			[*	@@ = TRUE; 		*]
+					|					[*	@@ = FALSE; 	*]
 					;
 
-symbol_list<LIST*>	->	symbol_list sym							[*	@@ = list_push( @1, (void*)@2 );			*]
-					| sym										[*	@@ = list_push( (LIST*)NULL, (void*)@1 );	*]
+symbol_list<LIST*>	->	symbol_list sym
+						[*	@@ = list_push( @1, (void*)@2 ); *]
+
+					| sym
+						[*	@@ = list_push( (LIST*)NULL, (void*)@1 ); *]
 					;
 
-lhs<SYMBOL*>		->	identifier								[*	@@ = p_get_symbol( parser,
-																			strbuf, SYM_NON_TERMINAL, TRUE );
-																	@@->defined = TRUE;
-																*]
+lhs<SYMBOL*>		->	identifier
+						[*	@@ = p_get_symbol( parser,
+									strbuf, SYM_NON_TERMINAL, TRUE );
+							@@->defined = TRUE;
+							@@->line = line;
+						*]
 					;
 					
-alt_lhs_list<LIST*>	-> alt_lhs_list lhs							[*	@@ = list_push( @1, (void*)@2 );
-																*]
+alt_lhs_list<LIST*>	-> alt_lhs_list lhs
 
-					| lhs										[*	@@ = list_push( (LIST*)NULL,
-																		(void*)@1 );
-																*]
+						[*	@@ = list_push( @1, (void*)@2 ); *]
+
+					| lhs
+
+						[*	@@ = list_push( (LIST*)NULL, (void*)@1 ); *]
 					;
 					
 alt_regex_sym<LIST*>
-					-> 	alt_regex_sym regex_sym					[*	@@ = list_push( @alt_regex_sym,
-																			(void*)@regex_sym );
-																			
-																	@regex_sym->derived_from =
-																		(SYMBOL*)list_access( @alt_regex_sym );
-																*]
-					| regex_sym									[*	@@ = list_push( (LIST*)NULL,
-																			(void*)@regex_sym );
-																*]
+					-> alt_regex_sym regex_sym
+
+						[*	@@ = list_push( @alt_regex_sym,
+									(void*)@regex_sym ); 
+							@regex_sym->derived_from =
+								(SYMBOL*)list_access( @alt_regex_sym );
+						*]
+
+					| regex_sym
+
+						[*	@@ = list_push( (LIST*)NULL,
+									(void*)@regex_sym );
+
+							current_sym = @regex_sym;
+						*]
 					;
 					
-regex_sym<SYMBOL*>	-> identifier								[*	@@ = p_get_symbol( parser,
-																			strbuf, SYM_REGEX_TERMINAL,
-																				TRUE );
-																				
-																	if( @@->defined )
-																	{
-																		p_error( ERR_DOUBLE_TERMINAL_DEF,
-																			ERRSTYLE_FATAL, @@->name );
-																	}
-																	@@->defined = TRUE;
-																*]
+regex_sym<SYMBOL*>	-> identifier
+						[*	@@ = p_get_symbol( parser,
+									strbuf, SYM_REGEX_TERMINAL, TRUE );
+
+										
+							if( @@->defined )
+							{
+								p_error( ERR_DOUBLE_TERMINAL_DEF,
+									ERRSTYLE_FATAL, @@->name );
+							}
+
+							@@->defined = TRUE;
+							@@->line = line;
+						*]
 					;
 
 definition			->	lhs:primary
-							goal_mark:is_goal
-								alt_lhs_list?:all type
-							"->" productions					[*
-																	LIST* 	l;
-																	PROD* 	p;
-																	SYMBOL*	lhs;
-																	VTYPE*	vt		= (VTYPE*)NULL;
-																	
-																	@all = list_push( @all, (void*)@primary );
+						goal_mark:is_goal
+						alt_lhs_list?:all type
+						"->" productions
+						
+						[*
+							LIST* 	l;
+							PROD* 	p;
+							SYMBOL*	lhs;
+							VTYPE*	vt		= (VTYPE*)NULL;
+							
+							@all = list_push( @all, (void*)@primary );
 
-																	/* Value type */
-																	if( @type )
-																	{
-																		vt = p_create_vtype( parser,
-																				(uchar*)@type );
+							/* Value type */
+							if( @type )
+							{
+								vt = p_create_vtype( parser,
+										(uchar*)@type );
 
-																		p_free( @type );
-																	}
+								p_free( @type );
+							}
 
-																	/* Connect left-hand sides */
-																	for( l = @all; l; l = list_next( l ) )
-																	{
-																		lhs = (SYMBOL*)list_access( l );
-																		lhs->productions = list_dup( @productions );
-																		lhs->vtype = vt;
-																	}
-																	
-																	/* Link productions with this left-hand sides */
-																	for( l = @productions; l; l = l->next )
-																	{
-																		p = (PROD*)list_access( l );
-																		
-																		p->lhs = @primary;
-																		p->all_lhs = list_dup( @all );
-																	}
+							/* Connect left-hand sides */
+							for( l = @all; l; l = list_next( l ) )
+							{
+								lhs = (SYMBOL*)list_access( l );
+								lhs->productions = list_dup( @productions );
+								lhs->vtype = vt;
+							}
+							
+							/* Link productions with this left-hand sides */
+							for( l = @productions; l; l = l->next )
+							{
+								p = (PROD*)list_access( l );
+								
+								p->lhs = @primary;
+								p->all_lhs = list_dup( @all );
+							}
 
-																	list_free( @productions );
-																	list_free( @all );
-																	
-																	/* Goal primary defined? */
-																	if( @is_goal )
-																	{
-																		if( parser->goal )
-																		{
-																			p_error( ERR_MULTIPLE_GOAL_DEF,
-																				ERRSTYLE_FATAL,
-																					parser->goal->name );
-																		}
-																		else
-																		{
-																			parser->goal = @primary;
-																			parser->goal->used = TRUE;
-																		}
-																	}
-																*]
-					| '@' alt_regex_sym type regex code_opt		[*	SYMBOL*	primary;
-																	SYMBOL* s;
-																	LIST* l;
-																	VTYPE*	vt;
-																	
-																	primary = (SYMBOL*)list_access(
-																				@alt_regex_sym );
+							list_free( @productions );
+							list_free( @all );
+							
+							/* Goal primary defined? */
+							if( @is_goal )
+							{
+								if( parser->goal )
+								{
+									p_error( ERR_MULTIPLE_GOAL_DEF,
+										ERRSTYLE_FATAL,
+											parser->goal->name );
+								}
+								else
+								{
+									parser->goal = @primary;
+									parser->goal->used = TRUE;
+								}
+							}
+						*]
 
-																	set_nfa_to_symbols( primary, @4.start, @4.end );
+					| '@' alt_regex_sym type regex sym_option* code_opt
+					
+						[*
+							SYMBOL*	primary;
+							SYMBOL* s;
+							LIST* l;
+							VTYPE*	vt;
+							
+							primary = (SYMBOL*)list_access( @alt_regex_sym );
+							set_nfa_to_symbols( primary, @4.start, @4.end );
 
-																	/* Attach code */
-																	if( @code_opt )
-																	{
-																		primary->code = strbuf;
-																		primary->code_at = last_code_begin;
-																		strbuf = (uchar*)NULL;
-																	}
+							/* Attach code */
+							if( @code_opt )
+							{
+								primary->code = strbuf;
+								primary->code_at = last_code_begin;
+								strbuf = (uchar*)NULL;
+							}
 
-																	/* Value type */
-																	if( @type )
-																	{
-																		vt = p_create_vtype( parser, @type );
+							/* Value type */
+							if( @type )
+							{
+								vt = p_create_vtype( parser, @type );
 
-																		for( l = @alt_regex_sym; l;
-																			l = list_next( l ) )
-																		{
-																			s = (SYMBOL*)list_access( l );
-																			s->vtype = vt;
-																		}
+								for( l = @alt_regex_sym; l;
+									l = list_next( l ) )
+								{
+									s = (SYMBOL*)list_access( l );
+									s->vtype = vt;
+								}
 
-																		p_free( @type );
-																	}
+								p_free( @type );
+							}
 
-																	/* re_dbg_print_nfa( s->nfa_def,
-																		parser->p_universe ); */
-																*]
+							/* re_dbg_print_nfa( s->nfa_def,
+								parser->p_universe ); */
+
+							current_sym = (SYMBOL*)NULL;
+						*]
 					;
 
-goal_mark<BOOLEAN>	-> '$'										[*	@@ = TRUE; *]
-					|											[*	@@ = FALSE; *]
+sym_option			->	'#' "option" identifier_cpy:key string
+
+						[*
+							set_option( &( current_sym->options ), @key,
+											strbuf );
+
+							strbuf = (uchar*)NULL;
+							pfree( @key );
+						*]
 					;
 
-productions<LIST*>	->	productions '|' production				[*	@@ = list_push( @1, @3 ); 			*]
-					| production								[*	@@ = list_push( (LIST*)NULL, @1 );	*]
+goal_mark<BOOLEAN>	-> '$'
+						[*	@@ = TRUE; *]
+
+					|	[*	@@ = FALSE; *]
+					;
+
+productions<LIST*>	->	productions '|' production
+						[*	@@ = list_push( @1, @3 ); *]
+
+					| production
+						[*	@@ = list_push( (LIST*)NULL, @1 ); *]
 					;
 					
-production<PROD*>	->	rhs_opt line_number prec_opt code_opt	[*
-																	@1->code_at = @2;
-																	@1->prec = @3;
+production<PROD*>	->	line_number rhs_opt:rhs prod_directives* code_opt
+						[*
+							@rhs->line = @line_number;
 
-																	if( @4 )
-																	{
-																		@1->code = p_strdup( @4 );
-																		@1->code_at = last_code_begin;
-																	}
+							if( @code_opt )
+							{
+								@rhs->code = p_strdup( @code_opt );
+								@rhs->code_at = last_code_begin;
+							}
 
-																	@@ = @1;
-																	
-																	current_prod = (PROD*)NULL;
-																*]
+							@@ = @rhs;
+							
+							current_prod = (PROD*)NULL;
+						*]
 					;
 
 rhs_opt<PROD*>		->	rhs
 
-					|											[*	@@ = p_create_production( parser,
-																		(SYMBOL*)NULL );
-																*]
+					|	[*	@@ = p_create_production( parser,
+								(SYMBOL*)NULL );
+						*]
 					;
 					
-prec_opt<int>		-> "#precedence" terminal					[*	@@ = @2->prec;
-																*]
-					|											[*	@@ = 0;	/* No precedence! */
-																*]
+prod_directives<int>
+					-> 	'#' "precedence" terminal
+
+						[*	current_prod->prec = @terminal->prec; *]
+
+					|	'#' "option" identifier_cpy:key string
+
+						[* 	set_option( &( current_prod->options ),
+								@key, strbuf );
+
+							strbuf = (uchar*)NULL;
+							pfree( @key );
+						*]
+					
 					;
 
-rhs<PROD*>			->	rhs symbol access_name					[*	p_append_to_production( @1, @2,
-																		( *strbuf == '\0' ? (uchar*)NULL :
-																			p_strdup( strbuf ) ) );
-																	@@ = @1;
-																*]
-					|	symbol access_name						[*	@@ = current_prod =
-																		p_create_production( parser,
-																			(SYMBOL*)NULL );
+rhs<PROD*>			->	rhs symbol access_name
 
-																	p_append_to_production( @@, @1,
-																		( *strbuf == '\0' ? (uchar*)NULL :
-																			p_strdup( strbuf ) ) );
-																*]
+						[*	p_append_to_production( @1, @2,
+								( *strbuf == '\0' ? (uchar*)NULL :
+											p_strdup( strbuf ) ) );
+									@@ = @1;
+								*]
+
+					|	symbol access_name
+					
+						[*	@@ = current_prod =
+								p_create_production( parser,
+									(SYMBOL*)NULL );
+
+							p_append_to_production( @@, @1,
+								( *strbuf == '\0' ? (uchar*)NULL :
+									p_strdup( strbuf ) ) );
+						*]
 					;
 
-symbol<SYMBOL*>		->	sym modifier							[*
-																	switch( @2 )
-																	{
-																		case '*':
-																			@@ = p_kleene_closure( parser, @1 );
-																			break;
-																		case '+':
-																			@@ = p_positive_closure( parser, @1 );
-																			break;
-																		case '?':
-																			@@ = p_optional_closure( parser, @1 );
-																			break;
-																		default:
-																			@@ = @1;
-																			break;
-																	}
-																*]
-					|	'#' "error"								[*	@@ = p_get_symbol( parser,
-																			P_ERROR_RESYNC, SYM_ERROR_RESYNC,
-																				TRUE );
-																	@@->used = TRUE;
-																	@@->defined = TRUE;
-																*]
+symbol<SYMBOL*>		->	sym modifier	
+
+						[*
+							switch( @2 )
+							{
+								case '*':
+									@@ = p_kleene_closure( parser, @1 );
+									break;
+								case '+':
+									@@ = p_positive_closure( parser, @1 );
+									break;
+								case '?':
+									@@ = p_optional_closure( parser, @1 );
+									break;
+								default:
+									@@ = @1;
+									break;
+							}
+						*]
+
+					|	"&error"
+
+						[*	@@ = p_get_symbol( parser,
+									P_ERROR_RESYNC, SYM_ERROR_RESYNC,
+										TRUE );
+							@@->used = TRUE;
+							@@->defined = TRUE;
+						*]
 					;
 
 sym<SYMBOL*>		-> terminal
 
-					| identifier								[*	@@ = p_get_symbol( parser,
-																			strbuf, SYM_NON_TERMINAL, TRUE );
-																	@@->used = TRUE;
-																*]
-					| '%' type line_number code		 			[*	uchar	temp_nonterm[ ONE_LINE + 1 ];
-																	PROD*	prod;
-																	
-																	sprintf( temp_nonterm, P_EMBEDDED,
-																			embedded_count++ );
-																	
-																	@@ = p_get_symbol( parser,
-																			temp_nonterm, SYM_NON_TERMINAL,
-																				TRUE );
-																	@@->defined = TRUE;
-																	@@->used = TRUE;
-																	@@->generated = TRUE;
+					| identifier
+					
+						[*	@@ = p_get_symbol( parser,
+									strbuf, SYM_NON_TERMINAL, TRUE );
+							@@->used = TRUE;
+						*]
 
-																	/* Value type */
-																	if( @2 )
-																	{
-																		VTYPE*	vt;
+					| '%' type line_number code
+					
+						[*	uchar	temp_nonterm[ ONE_LINE + 1 ];
+							PROD*	prod;
+							
+							sprintf( temp_nonterm, P_EMBEDDED,
+									embedded_count++ );
+							
+							@@ = p_get_symbol( parser,
+									temp_nonterm, SYM_NON_TERMINAL,
+										TRUE );
+							@@->defined = TRUE;
+							@@->used = TRUE;
+							@@->generated = TRUE;
 
-																		vt = p_create_vtype( parser,
-																				(uchar*)@2 );
-																		@@->vtype = vt;
+							/* Value type */
+							if( @2 )
+							{
+								VTYPE*	vt;
 
-																		p_free( @2 );
-																	}
-																				
-																	prod = p_create_production( parser, @@ );
-																	prod->code = p_strdup( strbuf );
-																	prod->code_at = @3;
-																	
-																	make_semantic_rhs( prod );
-																*]
+								vt = p_create_vtype( parser,
+										(uchar*)@2 );
+								@@->vtype = vt;
+
+								p_free( @2 );
+							}
+										
+							prod = p_create_production( parser, @@ );
+							prod->code = p_strdup( strbuf );
+							prod->code_at = @3;
+							
+							make_semantic_rhs( prod );
+						*]
+
 					| '%' type stack_cur_prod
-							'(' productions ')'					[*
-																	uchar	temp_nonterm[ ONE_LINE + 1 ];
-																	PROD*	prod;
-																	LIST*	l;
-																	
-																	sprintf( temp_nonterm, P_EMBEDDED,
-																			embedded_count++ );
-																	
-																	@@ = p_get_symbol( parser,
-																			temp_nonterm, SYM_NON_TERMINAL,
-																				TRUE );
-																	@@->defined = TRUE;
-																	@@->used = TRUE;
-																	@@->generated = TRUE;
+							'(' productions ')'	
+							
+						[*
+							uchar	temp_nonterm[ ONE_LINE + 1 ];
+							PROD*	prod;
+							LIST*	l;
+							
+							sprintf( temp_nonterm, P_EMBEDDED,
+									embedded_count++ );
+							
+							@@ = p_get_symbol( parser,
+									temp_nonterm, SYM_NON_TERMINAL,
+										TRUE );
+							@@->defined = TRUE;
+							@@->used = TRUE;
+							@@->generated = TRUE;
 
-																	/* Value type */
-																	if( @2 )
-																	{
-																		VTYPE*	vt;
+							/* Value type */
+							if( @2 )
+							{
+								VTYPE*	vt;
 
-																		vt = p_create_vtype( parser,
-																				(uchar*)@2 );
-																		@@->vtype = vt;
+								vt = p_create_vtype( parser,
+										(uchar*)@2 );
+								@@->vtype = vt;
 
-																		p_free( @2 );
-																	}
-																	
-																	/* Associate the productions */
-																	@@->productions = @5;
-																	current_prod = @3;
+								p_free( @2 );
+							}
+							
+							/* Associate the productions */
+							@@->productions = @5;
+							current_prod = @3;
 
-																	/* Link productions with this left-hand side */
-																	for( l = @5; l; l = list_next( l ) )
-																	{
-																		prod = (PROD*)list_access( l );
-																		prod->lhs = @@ ;
-																		
-																		make_semantic_rhs( prod );
-																	}
-																*]
+							/* Link productions with this left-hand side */
+							for( l = @5; l; l = list_next( l ) )
+							{
+								prod = (PROD*)list_access( l );
+								prod->lhs = @@ ;
+								prod->all_lhs = list_push(
+									(LIST*)NULL, @@ );
+								
+								make_semantic_rhs( prod );
+							}
+						*]
 					;
 					
 stack_cur_prod<PROD*>
-					->											[*
-																	@@ = current_prod;
-																	current_prod = (PROD*)NULL;
-																*]
+					->	[* 	@@ = current_prod;
+							current_prod = (PROD*)NULL;
+						*]
 					;
 
-terminal<SYMBOL*>	->	ccl										[*	CCL		ccl;
+terminal<SYMBOL*>	->	ccl				
 
-																	ccl = ccl_create( strbuf );
-																	if( @1 )
-																		ccl_negate( ccl );
+						[*	CCL		ccl;
 
-																	@@ = p_get_symbol( parser,
-																			(void*)ccl,
-																				SYM_CCL_TERMINAL, TRUE );
-																			
-																	@@->defined = TRUE;
-																	@@->used = TRUE;
-																*]
-					| kw										[*	@@ = p_get_symbol( parser,
-																			strbuf, SYM_KW_TERMINAL, TRUE );
+							ccl = ccl_create( strbuf );
+							if( @1 )
+								ccl_negate( ccl );
 
-																	@@->used = TRUE;
-																	@@->defined = TRUE;
-																	@@->keyword = TRUE;
-																	
-																	if( pregex_nfa_from_string(
-																		&( @@->nfa ), strbuf,
-																			REGEX_MOD_NONE, @@->id )
-																				!= ERR_OK )
-																		OUT_OF_MEMORY;																	
-																	
-																*]
-					| integer									[*	@@ = p_get_symbol( parser,
-																			strbuf, SYM_EXTERN_TERMINAL, TRUE );
+							@@ = p_get_symbol( parser,
+									(void*)ccl,
+										SYM_CCL_TERMINAL, TRUE );
+									
+							@@->defined = TRUE;
+							@@->used = TRUE;
+						*]
 
-																	@@->defined = TRUE;
-																	@@->used = TRUE;
-																*]
-					| '@' identifier							[*	@@ = p_get_symbol( parser,
-																			strbuf, SYM_REGEX_TERMINAL, TRUE );
+					| kw
+					
+						[*	@@ = p_get_symbol( parser,
+									strbuf, SYM_REGEX_TERMINAL, TRUE );
 
-																	/* @@->defined = TRUE; 
-																		DO NOT SET DEFINED! */
-																	@@->used = TRUE;
-																*]
+							@@->used = TRUE;
+							@@->defined = TRUE;
+							@@->keyword = TRUE;
+							
+							if( pregex_nfa_from_string(
+								&( @@->nfa ), strbuf,
+									REGEX_MOD_NONE, @@->id )
+										!= ERR_OK )
+									OUT_OF_MEMORY;
+							
+						*]
+
+					| '@' identifier
+					
+						[*	@@ = p_get_symbol( parser,
+									strbuf, SYM_REGEX_TERMINAL, TRUE );
+
+							/* @@->defined = TRUE; 
+							DO NOT SET DEFINED! */
+							@@->used = TRUE;
+						*]
 					;
 
-modifier<int>		->	'*'										[*	@@ = (int)'*';	*]
-					| 	'+'										[*	@@ = (int)'+'; 	*]
-					|	'?'										[*	@@ = (int)'?';	*]
-					|											[*	@@ = 0; 		*]
+modifier<int>		->	'*'
+						[*	@@ = (int)'*';	*]
+
+					| 	'+'
+						[*	@@ = (int)'+'; 	*]
+
+					|	'?'
+						[*	@@ = (int)'?';	*]
+
+					|
+						[*	@@ = 0; 		*]
+
 					;
 
 access_name			->	':' identifier
-					|											[*	reset_strbuf(); *]
+					|	':'	string_single
+					|	[*	reset_strbuf(); *]
 					;
 
 /* Regular Expression parser and NFA generator */
-regex<struct @@prefix_nfa>			->	re_alt
+regex<struct @@prefix_nfa>
+
+					->	re_alt
+
 					;
 
-re_alt<struct @@prefix_nfa>			->	re_alt '|' re_expr		[*	@@.start = pregex_nfa_create_state
-																			( &nfa_m, (uchar*)NULL,
-																				REGEX_MOD_NONE );
-																	@@.end = pregex_nfa_create_state
-																			( &nfa_m, (uchar*)NULL,
-																				REGEX_MOD_NONE );
+re_alt<struct @@prefix_nfa>
 
-																	@@.start->next = @1.start;
-																	@@.start->next2 = @3.start;
+					->	re_alt '|' re_expr	
 
-																	@1.end->next = @@.end;
-																	@3.end->next = @@.end;
-																*]
+						[*	@@.start = pregex_nfa_create_state
+									( &nfa_m, (uchar*)NULL,
+										REGEX_MOD_NONE );
+							@@.end = pregex_nfa_create_state
+									( &nfa_m, (uchar*)NULL,
+										REGEX_MOD_NONE );
+
+							@@.start->next = @1.start;
+							@@.start->next2 = @3.start;
+
+							@1.end->next = @@.end;
+							@3.end->next = @@.end;
+						*]
+
 					| re_expr
+
 					;
 
-re_expr<struct @@prefix_nfa>		->	re_expr re_modifier		[*	@@.start = @1.start;
-																	@@.end = @2.end;
-																	@1.end->next = @2.start;
-																*]
+re_expr<struct @@prefix_nfa>
+
+					->	re_expr re_modifier
+
+						[*	@@.start = @1.start;
+							@@.end = @2.end;
+							@1.end->next = @2.start;
+						*]
+
 					| re_modifier
+
 					;
 
-re_modifier<struct @@prefix_nfa>	->	re_factor '*'			[*	@@.start = pregex_nfa_create_state
-																			( &nfa_m, (uchar*)NULL,
-																				REGEX_MOD_NONE );
-																	@@.end = pregex_nfa_create_state
-																			( &nfa_m, (uchar*)NULL,
-																				REGEX_MOD_NONE );
+re_modifier<struct @@prefix_nfa>	
+					->	re_factor '*'
+					
+						[*	@@.start = pregex_nfa_create_state(
+								&nfa_m, (uchar*)NULL, REGEX_MOD_NONE );
+							@@.end = pregex_nfa_create_state(
+								&nfa_m, (uchar*)NULL, REGEX_MOD_NONE );
 
-																	@@.start->next = @1.start;
-																	@@.start->next2 = @@.end;
-																	@@.end->next2 = @@.start;
+							@@.start->next = @1.start;
+							@@.start->next2 = @@.end;
+							@@.end->next2 = @@.start;
 
-																	@1.end->next = @@.end;
-																*]
-					| re_factor '+'								[*	@@.start = @1.start;
-																	@@.end = @1.end;
-																	@@.end->next2 = @@.start;
-																*]
-					| re_factor '?'								[*	@@.start = pregex_nfa_create_state
-																			( &nfa_m, (uchar*)NULL,
-																				REGEX_MOD_NONE );
+							@1.end->next = @@.end;
+						*]
 
-																	@@.start->next = @1.start;
-																	@@.start->next2 = @1.end;
-																	@@.end = @1.end;
-																*]
+					| re_factor '+'	
+
+						[*	@@.start = @1.start;
+							@@.end = @1.end;
+							@@.end->next2 = @@.start;
+						*]
+
+					| re_factor '?'
+					
+						[*	@@.start = pregex_nfa_create_state(
+								&nfa_m, (uchar*)NULL, REGEX_MOD_NONE );
+
+							@@.start->next = @1.start;
+							@@.start->next2 = @1.end;
+							@@.end = @1.end;
+						*]
+
 					| re_factor
 				;
 
-re_factor<struct @@prefix_nfa>		->	ccl						[*	@@.start = pregex_nfa_create_state(
-																			&nfa_m, strbuf, REGEX_MOD_NONE );
-																	@@.end = @@.start->next
-																		= pregex_nfa_create_state(
-																			&nfa_m, (uchar*)NULL, REGEX_MOD_NONE );
+re_factor<struct @@prefix_nfa>		
+				->	ccl
+				
+					[*	@@.start = pregex_nfa_create_state(
+									&nfa_m, strbuf, REGEX_MOD_NONE );
+							@@.end = @@.start->next
+								= pregex_nfa_create_state(
+									&nfa_m, (uchar*)NULL, REGEX_MOD_NONE );
 
-																	if( @1 )
-																		ccl_negate( @@.start->ccl );
-																*]
-				| kw											[*	uchar*	ch;
-																	pregex_nfa_st*	st;
-																	
-																	if( *strbuf )
-																	{
-																		@@.end = @@.start =
-																			pregex_nfa_create_state(
-																				&nfa_m, (uchar*)NULL, REGEX_MOD_NONE );
+							if( @1 )
+								ccl_negate( @@.start->ccl );
+					*]
 
-																		for( ch = strbuf; *ch; ch += u8_seqlen( ch ) )
-																		{
-																			@@.end->ccl =
-																				ccl_addrange( (CCL)NULL,
-																					u8_char( ch ), u8_char( ch ) );
+				| kw
+				
+					[*		uchar*	ch;
+							
+							if( *strbuf )
+							{
+								@@.end = @@.start =
+									pregex_nfa_create_state(
+										&nfa_m, (uchar*)NULL, REGEX_MOD_NONE );
 
-																			@@.end = @@.end->next =
-																			pregex_nfa_create_state(
-																				&nfa_m, (uchar*)NULL, REGEX_MOD_NONE );
-																		}
-																	}
-																*]
-				| '.'											[*	@@.start = pregex_nfa_create_state(
-																		&( nfa_m ), (uchar*)NULL, REGEX_MOD_NONE );
-																	@@.start->ccl = ccl_addrange( (CCL)NULL,
-																						CCL_MIN, CCL_MAX - 1 );	
-																	
-																	@@.end = @@.start->next =
-																		pregex_nfa_create_state(
-																			&( nfa_m ), (uchar*)NULL, REGEX_MOD_NONE );
-																*]
-				| '(' regex ')'									[*	@@.start = @2.start;
-																	@@.end = @2.end;
-																*]
+								for( ch = strbuf; *ch; ch += u8_seqlen( ch ) )
+								{
+									@@.end->ccl =
+										ccl_addrange( (CCL)NULL,
+											u8_char( ch ), u8_char( ch ) );
+
+									@@.end = @@.end->next =
+									pregex_nfa_create_state(
+										&nfa_m, (uchar*)NULL, REGEX_MOD_NONE );
+								}
+							}
+					*]
+
+				| '.'
+					
+					[*	@@.start = pregex_nfa_create_state(
+							&( nfa_m ), (uchar*)NULL, REGEX_MOD_NONE );
+						@@.start->ccl = ccl_addrange( (CCL)NULL,
+							CCL_MIN, CCL_MAX - 1 );	
+
+						@@.end = @@.start->next = pregex_nfa_create_state(
+							&( nfa_m ), (uchar*)NULL, REGEX_MOD_NONE );
+					*]
+
+				| '(' regex ')'
+
+					[*	@@.start = @2.start;
+						@@.end = @2.end;
+					*]
 				;
 
 /* General parsing objects */
-string			->	ccl_string | kw;
+string			->	string_single+
+				;
 
-ccl<BOOLEAN>	->	ccl_string									[*	@@ = FALSE; *]
-				| '!' ccl_string								[*	@@ = TRUE; *]
+string_single	-> ccl_string | kw
+				;
+
+ccl<BOOLEAN>	->	ccl_string
+
+					[*	@@ = FALSE; *]
+
+				| '!' ccl_string
+
+					[*	@@ = TRUE; *]
 				;
 
 
@@ -875,100 +1088,146 @@ ccl<BOOLEAN>	->	ccl_string									[*	@@ = FALSE; *]
 ccl_string		->	'\'' ccl_str '\'';
 
 ccl_str			->	ccl_str ccl_char
-				|												[*	reset_strbuf(); *]
+				|
+					[*	reset_strbuf(); *]
 				;
 
-ccl_char		->	!'\\\''										[* strbuf_append( @1 ); *]
-				| '\\' !'\0'									[* strbuf_append( (uchar)'\\' );
-																   strbuf_append( @2 ); 	  *]
+ccl_char		->	!'\\\''	
+					[*	strbuf_append( @1 ); *]
+
+				| '\\' !'\0'					
+					[* 	strbuf_append( (uchar)'\\' );
+						strbuf_append( @2 ); 	  *]
 				;
 
 kw				->	'\"' kw_str '\"'
 				;
 
-kw_str			->	kw_str kw_char								[* 	strbuf_append( @2 ); *]
-				|												[*	reset_strbuf(); *]
+kw_str			->	kw_str kw_char
+					[* 	strbuf_append( @2 ); *]
+				|	[*	reset_strbuf(); *]
 				;
 				
-kw_char			->	!'\\"'										[* strbuf_append( @1 ); *]
-				| '\\' !'\0'									[* strbuf_append( (uchar)'\\' );
-																   strbuf_append( @2 ); 	  *]
+kw_char			->	!'\\"'
+					[* 	strbuf_append( @1 ); *]
+
+				| '\\' !'\0'
+					[* 	strbuf_append( (uchar)'\\' );
+						strbuf_append( @2 ); 
+					*]
 				;
 
-type<uchar*>	->	'<' type_str '>'							[*	@@ = p_strdup( strbuf );		*]
-				|												[*	@@ = (uchar*)NULL; 				*]
+type<uchar*>	->	'<' type_str '>'
+					[*	@@ = p_strdup( strbuf ); *]
+				|	[*	@@ = (uchar*)NULL; *]
 				;
 
-type_str		->	type_str !'>'								[* 	strbuf_append( @2 );		 	*]
-				|												[* 	reset_strbuf(); 				*]
+type_str		->	type_str !'>'
+					[* 	strbuf_append( @2 ); *]
+				|	[* 	reset_strbuf(); *]
+				;
+
+identifier_cpy<uchar*>
+				->	identifier
+					[*
+						@@ = pstrdup( strbuf );
+						reset_strbuf();
+					*]
 				;
 
 identifier		->	identifier_start identifier_follow
 				;
 
 identifier_start
-				->	'A-Za-z_'									[* 	reset_strbuf();
-																	strbuf_append( @1 );
-																*]
+				->	'A-Za-z_'
+					[* 	reset_strbuf();
+						strbuf_append( @1 );
+					*]
 				;
 
 identifier_follow
-				-> identifier_follow 'A-Za-z0-9_'				[*	strbuf_append( @2 ); 		*]
+				-> identifier_follow 'A-Za-z0-9_'
+					[*	strbuf_append( @2 );  *]
 				|
 				;
 				
 /* ------------------------------------- TODO: ...until here --- */
 
-integer			->	integer '0-9'								[*	strbuf_append( @2 ); 		*]
-				| '0-9'											[* 	reset_strbuf();
-																	strbuf_append( @1 );
-																*]
+integer			->	integer '0-9'
+					[*	strbuf_append( @2 ); *]
+
+				| '0-9'
+					[* 	reset_strbuf();
+						strbuf_append( @1 );
+					*]
 				;
 
-code_opt<uchar*>->	code										[*	@@ = strbuf;				*]
-				|												[*	reset_strbuf();
-																	@@ = (uchar*)NULL;			*]
+code_opt<uchar*>->	code
+					[*	@@ = strbuf; *]
+				|	[*	reset_strbuf();
+						@@ = (uchar*)NULL; *]
 				;
 
-code			->	code_begin inner_code_opt "*]"
+code			->	code_begin inner_code_opt "*]"				
+					[*
+						if( !parser->p_language )
+						{
+							p_error(
+								ERR_NO_TARGET_LANG_SUPPLY,
+									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
+										parser->filename, last_code_begin );
+								
+							reset_strbuf();
+						}
+					*]
 				;
 				
-code_begin		->	"[*"										[* last_code_begin = line;		*]
+code_begin		->	"[*"
+
+					[* last_code_begin = line; *]
 				;
 
 inner_code_opt	->	inner_code
-				|												[*	reset_strbuf(); *]
+				|	[*	reset_strbuf(); *]
 				;
 
-inner_code		->	inner_code anychar							[*	strbuf_append( @2 );		*]
-				|	anychar										[*	reset_strbuf();
-																	strbuf_append( @1 );
-																*]
+inner_code		->	inner_code anychar
+					[*	strbuf_append( @2 );		*]
+
+				|	anychar
+					[*	reset_strbuf();
+						strbuf_append( @1 );
+					*]
 				;
 
 whitespace		-> ' '
 				| '\t'
 				| "/*" comment? "*/"
-				| "//" scomment? '\n'							[* line++;	*]
+				| "//" scomment? '\n'
+
+					[* line++;	*]
+
 				| '\r'
-				| '\n'											[* line++; 	*]
+				| '\n'
+					[* line++; 	*]
 				;
 
 comment			->	comment anychar
 				|	anychar
 				;
 				
-anychar			->	!'\0'										[*	if( @1 == '\n' )
-																		line++;
-																	@@ = @1;
-																*]
+anychar			->	!'\0'										
+					[*	if( @1 == '\n' )
+							line++;
+						@@ = @1;
+					*]
 				;
 
 scomment		->	scomment !'\n'
 				| !'\n'
 				;
 
-line_number		->												[* @@ = line;					*]
+line_number		->	[* @@ = line; *]
 				;
 
 #epilogue
