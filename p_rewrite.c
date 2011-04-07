@@ -276,9 +276,6 @@ void p_unique_charsets( PARSER* parser )
 	SYMBOL*		rsym;
 	PROD*		p;
 	CCL			inter;
-	CCL			tinter;
-	CCL			base;
-	CCL			tmp;
 	CCL			diff;
 	int			old_prod_cnt;
 	uchar*		tmpstr;
