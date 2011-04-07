@@ -1,6 +1,6 @@
 /* -HEADER----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2010 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2011 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_global.h
@@ -73,7 +73,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define GEN_WILD_PREFIX			"@@"
 
 /* Phorward UniCC parser generator version number */
-#define PHORWARD_VERSION		"0.27.6dev"
+#define PHORWARD_VERSION		"0.27.9dev"
 
 /* Default target language */
 #define PHORWARD_DEFAULT_LNG	"C"
