@@ -22,24 +22,14 @@ of the Artistic License, version 2. Please see LICENSE for more information.
  * Includes
  */
 
-/* Standard Library */
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
-#include <unistd.h>
+/* Standard Includes */
+#include <pbasis.h>
+#include <pregex.h>
+#include <pstring.h>
+#include <xml.h>
 
-/* Phorward C Library */
-#include <uchar.h>
 #undef uchar
 #define uchar char
-#include <boolean.h>
-#include <dmem.h>
-#include <bitset.h>
-#include <llist.h>
-#include <re.h>
-#include <hashtab.h>
-#include <xml.h>
 
 /* Internal includes */
 #include "p_defs.h"
@@ -86,7 +76,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define GEN_WILD_PREFIX			"@@"
 
 /* Phorward UniCC parser generator version number */
-#define PHORWARD_VERSION		"0.21.2beta"
+#define PHORWARD_VERSION		"0.22.5"
 #define PHORWARD_DEFAULT_LNG	"C"
 
 /* Path separator */
@@ -101,12 +91,12 @@ of the Artistic License, version 2. Please see LICENSE for more information.
  */
 
 /* Memory handling */
-#define p_malloc( size )			MALLOC( size )
-#define p_realloc( ptr, size )		REALLOC( ptr, size )
-#define p_free( ptr )				FREE( ptr )
-#define p_strdup( ptr )				STRDUP( ptr )
-#define p_strlen( ptr )				( ptr ? strlen( ptr ) : 0 )
-#define p_strzero( ptr )			( ptr ? ( *ptr ? 1 : 0 ) : 0 )
+#define p_malloc( size )			pmalloc( size )
+#define p_realloc( ptr, size )		prealloc( ptr, size )
+#define p_free( ptr )				pfree( ptr )
+#define p_strdup( ptr )				pstrdup( ptr )
+#define p_strlen( ptr )				pstrlen( ptr )
+#define p_strzero( ptr )			pstrzero( ptr )
 
 /*
  * Type definitions
@@ -183,7 +173,8 @@ struct _prod
 {
 	int			id;				/* Production ID */
 
-	SYMBOL*		lhs;			/* Left-hand side symbol */
+	SYMBOL*		lhs;			/* Primary left-hand side symbol */
+	LIST*		all_lhs;		/* All possible left-hand sides */
 	
 	LIST*		rhs;			/* Right-hand side symbols */
 	
@@ -301,6 +292,9 @@ struct _parser
 
 	uchar*		p_header;		/* Header/Prologue program code of the parser */
 	uchar*		p_footer;		/* Footer/Epilogue embedded program code of the parser */
+	uchar*		p_pcb;			/* Parser control block: Individual code segment */
+	
+	VTYPE*		p_def_type;		/* Default value type */
 
 	uchar*		source;			/* Parser definition source */
 
