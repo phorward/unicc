@@ -74,6 +74,7 @@ MISCDEP		=	$(TEMPLATE_C) \
 
 #-------------------------------------------------------------------------------
 
+#all: $(PROG_BOOT1)
 all: $(PROGRAM)
 	@echo
 	@echo --- Compilation succeeded! ---
