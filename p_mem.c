@@ -1,6 +1,6 @@
 /* -MODULE----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator 
-Copyright (C) 2006-2009 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2010 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_mem.c
@@ -40,7 +40,11 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 					non-terminal symbol.
 					
 	Parameters:		PARSER*		p					Parser information structure
-					uchar*		name				Symbol name
+					void*		dfn					Symbol definition; in case
+													of a charclass terminal,
+													this is a pointer to the ccl,
+													else an identifying name.
+
 					int			type				Symbol type
 					int			atts				Symbol attributes
 					BOOLEAN		create				Create symbol if it does not exist!
@@ -53,13 +57,37 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 	26.03.2008	Jan Max Meyer	Distinguish between the different symbol types
 								even in the hash-table, parameters added for
 								error symbol
+	11.11.2009	Jan Max Meyer	Changed name-parameter to dfn, to allow direct
+								charclass-assignments to p_get_symbol() instead
+								of a name that defines the charclass. Also,
+								added trace macros.
 ----------------------------------------------------------------------------- */
-SYMBOL* p_get_symbol( PARSER* p, uchar* name, int type, BOOLEAN create )
+SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 {
 	uchar		keych;
 	uchar*		keyname;
+	uchar*		name		= (uchar*)dfn;
 	SYMBOL*		sym			= (SYMBOL*)NULL;
 	HASHELEM*	he;
+
+	PROC( "p_get_symbol" );
+	PARMS( "p", "%p", p );
+	PARMS( "dfn", "%p", dfn );
+	PARMS( "type", "%d", type );
+	PARMS( "create", "%d", create );
+
+	/* In case of a CCL-terminal, generate the name from the CCL */
+	if( type == SYM_CCL_TERMINAL )
+	{
+		MSG( "SYM_CCL_TERMINAL detected - converting character class" );
+		if( !( name = ccl_to_str( (CCL)dfn, TRUE ) ) )
+		{
+			OUT_OF_MEMORY;
+			RETURN( (SYMBOL*)NULL );
+		}
+
+		VARS( "name", "%s", name );
+	}
 
 	/*
 		To distinguish between the different types,
@@ -69,47 +97,56 @@ SYMBOL* p_get_symbol( PARSER* p, uchar* name, int type, BOOLEAN create )
 	switch( type )
 	{
 		case SYM_CCL_TERMINAL:
+			MSG( "type is SYM_CCL_TERMINAL" );
 			keych = '#';
 			break;
 
 		case SYM_KW_TERMINAL:
+			MSG( "type is SYM_KW_TERMINAL" );
 			keych = '$';
 			break;
 
 		case SYM_REGEX_TERMINAL:
+			MSG( "type is SYM_REGEX_TERMINAL" );
 			keych = '@';
 			break;
 
 		case SYM_EXTERN_TERMINAL:
+			MSG( "type is SYM_EXTERN_TERMINAL" );
 			keych = '*';
 			break;
 
 		case SYM_NON_TERMINAL:
+			MSG( "type is SYM_NON_TERMINAL" );
 			keych = '!';
 			break;
 
 		case SYM_ERROR_RESYNC:
+			MSG( "type is SYM_ERROR_RESYNC" );
 			keych = '~';
 			break;
 
 		default:
-			return (SYMBOL*)NULL;
+			MSG( "type is something else?" );
+			RETURN( (SYMBOL*)NULL );
 	}
 
-	keyname = (uchar*)p_malloc( ( strlen( name ) + 1 + 1 ) * sizeof( uchar ) );
-	if( !keyname )
+	if( !( keyname = (uchar*)p_malloc(
+			( pstrlen( name ) + 1 + 1 )
+				* sizeof( uchar ) ) ) )
 	{
 		OUT_OF_MEMORY;
 		return (SYMBOL*)NULL;
 	}
 
 	sprintf( keyname, "%c%s", keych, name );
+	VARS( "keyname", "%s", keyname );
 
-	if( !( he = hashtab_get( p->definitions, keyname ) ) && create )
-	{	
-		sym = (SYMBOL*)p_malloc( sizeof( SYMBOL ) );
+	if( !( he = hashtab_get( &( p->definitions ), keyname ) ) && create )
+	{
+		MSG( "Hash table not found - going to create entry" );
 
-		if( sym )
+		if( ( sym = (SYMBOL*)p_malloc( sizeof( SYMBOL ) ) ) )
 		{
 			memset( sym, 0, sizeof( SYMBOL ) );
 
@@ -123,18 +160,24 @@ SYMBOL* p_get_symbol( PARSER* p, uchar* name, int type, BOOLEAN create )
 			if( IS_TERMINAL( sym ) )
 				sym->first = list_push( sym->first, sym );
 			
-			sym->name = strdup( name );
-			if( !( sym->name ) )
+			/* Identifying name */
+			if( type == SYM_CCL_TERMINAL )
+			{
+				sym->name = name;
+				sym->ccl = (CCL)dfn;
+			}
+			else if( !( sym->name = pstrdup( name ) ) )
 			{
 				OUT_OF_MEMORY;
-				return (SYMBOL*)NULL;
+				RETURN( (SYMBOL*)NULL );
 			}
 
 			/* Insert pointer into hash-table */
-			if( !( hashtab_insert( p->definitions, keyname, (void*)sym ) ) )
+			if( !( hashtab_insert( &( p->definitions ),
+					keyname, (void*)sym ) ) )
 			{
 				OUT_OF_MEMORY;
-				return (SYMBOL*)NULL;
+				RETURN( (SYMBOL*)NULL );
 			}
 			
 			/* Insert pointer into symbol list */
@@ -148,13 +191,16 @@ SYMBOL* p_get_symbol( PARSER* p, uchar* name, int type, BOOLEAN create )
 			}
 		}
 		else
+		{
 			OUT_OF_MEMORY;
+			RETURN( (SYMBOL*)NULL );
+		}
 	}
 	else if( he )
 		sym = (SYMBOL*)( he->data );
 
 	p_free( keyname );
-	return sym;
+	RETURN( sym );
 }
 
 /* -FUNCTION--------------------------------------------------------------------
@@ -170,16 +216,17 @@ SYMBOL* p_get_symbol( PARSER* p, uchar* name, int type, BOOLEAN create )
 
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
+	11.11.2009	Jan Max Meyer	Free charclass
+	16.11.2009	Jan Max Meyer	Free NFA from new regex lib :)
 ----------------------------------------------------------------------------- */
 void p_free_symbol( SYMBOL* sym )
 {
 	p_free( sym->name );
+	p_free( sym->ccl );
 	list_free( sym->first );
 	list_free( sym->productions );
-	p_free( sym->char_map );
 
-	if( sym->nfa_def )
-		re_free_nfa_table( sym->nfa_def );
+	pregex_nfa_free( &( sym->nfa ) );
 
 	p_free( sym );
 }
@@ -209,7 +256,7 @@ PROD* p_create_production( PARSER* p, SYMBOL* lhs )
 	PROD*		prod		= (PROD*)NULL;
 	
 	if( p )
-	{	
+	{
 		prod = (PROD*)p_malloc( sizeof( PROD ) );
 		if( prod )
 		{
@@ -616,12 +663,7 @@ PARSER* p_create_parser( void )
 	/* eos = p_get_symbol( pptr, SYM_TERMINAL, END_OF_STRING_SYMBOL ); */
 
 	/* Initialize the hash table for fast symbol access */
-	pptr->definitions = hashtab_create( BUCKET_COUNT, FALSE );
-	if( !( pptr->definitions ) )
-	{
-		OUT_OF_MEMORY;
-		p_free( pptr );
-	}
+	hashtab_init( &( pptr->definitions ), BUCKET_COUNT, FALSE );
 
 	/* Setup defaults */
 	pptr->p_model = MODEL_CONTEXT_SENSITIVE;
@@ -648,9 +690,9 @@ PARSER* p_create_parser( void )
 void p_free_parser( PARSER* parser )
 {
 	LIST*		it			= (LIST*)NULL;
-	LIST*		dfa_list;
+	pregex_dfa*	dfa;
 
-	hashtab_free( parser->definitions, (void*)NULL );
+	hashtab_free( &( parser->definitions ), (void*)NULL );
 
 	for( it = parser->symbols; it; it = it->next )
 		p_free_symbol( it->pptr );
@@ -666,8 +708,8 @@ void p_free_parser( PARSER* parser )
 
 	for( it = parser->kw; it; it = it->next )
 	{
-		dfa_list = (LIST*)( it->pptr );
-		re_free_dfa( &dfa_list );
+		dfa = (pregex_dfa*)list_access( it );
+		pregex_dfa_free( dfa );
 	}
 
 	list_free( parser->symbols );
@@ -675,9 +717,6 @@ void p_free_parser( PARSER* parser )
 	list_free( parser->lalr_states );
 	list_free( parser->vtypes );
 	list_free( parser->kw );
-
-	if( parser->nfa_m )
-		re_free_nfa_table( parser->nfa_m );
 
 	p_free( parser->p_name );
 	p_free( parser->p_desc );
