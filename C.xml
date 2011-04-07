@@ -174,8 +174,8 @@ Some general things you have to know:
 													Can be used in both of the following tags.
 	-->
 	
-	<scan_action_start>&#x09;&#x09;case @@symbol-number:&#x09;&#x09;{&#x0A;&#x09;&#x09;&#x09;</scan_action_start>
-	<scan_action_end>&#x0A;&#x09;&#x09;}&#x09;&#x09;break;&#x0A;&#x0A;</scan_action_end>
+			<scan_action_start>&#x09;&#x09;&#x09;&#x09;case @@symbol-number:&#x0A;&#x09;&#x09;&#x09;&#x09;{&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;</scan_action_start>
+			<scan_action_end>&#x0A;&#x09;&#x09;&#x09;&#x09;}&#x09;&#x09;&#x09;&#x09;break;&#x0A;&#x0A;</scan_action_end>
 
 	<!--
 	The content of the tags <scan_action_begin_offset> and <scan_action_end_offset> are
@@ -185,8 +185,8 @@ Some general things you have to know:
 	
 	Placeholders:		none
 	-->
-	<scan_action_begin_offset>start</scan_action_begin_offset>
-	<scan_action_end_offset>end</scan_action_end_offset>
+	<scan_action_begin_offset>src</scan_action_begin_offset>
+	<scan_action_end_offset>(src + len)</scan_action_end_offset>
 
 	<!--
 	When @@ is used in regex-terminal semantic code blocks, a variable that receives
@@ -381,6 +381,10 @@ Some general things you have to know:
 	fprintf( stderr, "syntax error\n" )
 #endif
 
+#ifndef UNICC_CLEAR_TOKEN
+#define UNICC_CLEAR_TOKEN()		sym = -1
+#endif
+
 #define PARSERFILE "@@prefix" "debug"
 
 @@value-type-definition
@@ -508,10 +512,8 @@ static int @@prefix_get_go_tab( int state, int sym, int* act, int* idx )
 }
 
 #if @@number-of-dfa-machines
-static int @@prefix_get_keyword( char* src, int* len, int top, @@prefix_vtype* ret )
+static int @@prefix_get_keyword( char* src, int* len, int top )
 {
-	char*	start = src;
-	char*	end = start;
 	int 	dfa_st	= 0;
 	int		chr;
 	int		sym		= -1;
@@ -543,23 +545,15 @@ static int @@prefix_get_keyword( char* src, int* len, int top, @@prefix_vtype* r
 		}
 	}
 	while( dfa_st &gt; -1 );
-	
-	
+
 	if( sym &gt; -1 &amp;&amp; @@prefix_kw_invalid_suffixes[ *( src + *len ) ] )
 		return -1;
-	
-	end += *len;
-	switch( sym )
-	{
-@@scan_actions
-	}
-	
+
 	return sym;
 }
 #endif
 
-static int @@prefix_get_sym( char** src, int* sym,
-	int* len, int tos, @@prefix_vtype* next )
+static int @@prefix_get_sym( char** src, int* sym, int* len, int tos )
 {
 #if !@@model
 	*sym = -1;
@@ -568,8 +562,6 @@ static int @@prefix_get_sym( char** src, int* sym,
 #else
 	if( *sym == -1 )
 	{
-		memset( next, 0, sizeof( @@prefix_vtype ) );
-
 		do
 		{
 			*src += *len;
@@ -577,9 +569,9 @@ static int @@prefix_get_sym( char** src, int* sym,
 #if @@number-of-dfa-machines
 #if !@@model
 			if( @@prefix_dfa_select[ tos ] &gt; -1 )
-				*sym = @@prefix_get_keyword( *src, len, tos, next );
+				*sym = @@prefix_get_keyword( *src, len, tos );
 #else
-			*sym = @@prefix_get_keyword( *src, len, 0, next );
+			*sym = @@prefix_get_keyword( *src, len, 0 );
 #endif
 
 			if( *sym == -1 )
@@ -645,7 +637,7 @@ int @@prefix_parse( char* src )
 
 	while( 1 )
 	{
-		@@prefix_get_sym( &src, &sym, &len, *tos, &next );
+		@@prefix_get_sym( &src, &sym, &len, *tos );
 
 		if( !@@prefix_get_act_tab( *tos, sym, &act, &idx ) )
 		{
@@ -759,7 +751,14 @@ int @@prefix_parse( char* src )
 							PARSERFILE, sym, @@prefix_symbol_names[ sym ] );
 #endif
 					if( @@prefix_get_act_tab( *tos, sym, &act, &idx ) )
-						break;
+					{
+#if UNICC_DEBUG
+						fprintf( @@prefix_dbg, "%s: error recovery: "
+							"%d %d\n", PARSERFILE, act, idx );
+#endif
+						if( act & 2 )
+							break;
+					}
 
 #if UNICC_DEBUG
 					fprintf( @@prefix_dbg, "%s: error recovery: "
@@ -770,11 +769,17 @@ int @@prefix_parse( char* src )
 					
 					len = 0;
 					sym = -1;
-					while( !@@prefix_get_sym( &src, &sym, &len, *tos, &next ) )
+					while( !@@prefix_get_sym( &src, &sym, &len, *tos ) )
 					{
 						sym = -1;
 						src++; /* Skip one character */
 					}
+					
+					#if UNICC_DEBUG
+					fprintf( @@prefix_dbg, "%s: error recovery: "
+						"new token %d (%s)\n", PARSERFILE, sym, 
+							@@prefix_symbol_names[ sym ] );
+					#endif
 				}
 				
 			}
@@ -828,6 +833,16 @@ int @@prefix_parse( char* src )
 			fprintf( @@prefix_dbg, "%s: &gt;&gt; shifting terminal %d (%s)\n",
 				PARSERFILE, sym, @@prefix_symbol_names[ sym ] );
 #endif
+
+			/* Execute scanner actions, if existing */
+			switch( sym )
+			{
+				@@scan_actions
+
+				default:
+					break;
+			}
+
 			tos++;
 			vtos++;
 
@@ -840,12 +855,12 @@ int @@prefix_parse( char* src )
 				memcpy( vtos, &amp;next, sizeof( @@prefix_vtype ) );
 				memset( &amp;next, 0, sizeof( @@prefix_vtype ) );
 			}
-			
+
 			UNICC_SRC_MOVE( src, len );
 			src += len;
 			
 			len = 0;
-			sym = -1;			
+			sym = -1;
 			
 			if( error_delay )
 				error_delay--;
@@ -947,7 +962,7 @@ int main( int argc, char** argv )
 		
 		if( !( *s ) )
 			break;
-			
+
 		/* printf( "Compiling source\n&gt;%s&lt;\n\n~~~\n", s ) ; */
 		@@prefix_parse( s );
 
