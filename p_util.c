@@ -28,68 +28,6 @@ of the Artistic License, version 2. Please see LICENSE for more information.
  */
 
 /* -FUNCTION--------------------------------------------------------------------
-	Function:		p_mapfile()
-	
-	Author:			Jan Max Meyer
-	
-	Usage:			Maps a file into the memory.
-
-	Parameters:		uchar*	filename		Name of the file to be mapped to the
-											memory.
-					
-	Returns:		uchar*					The content of the mapped source file.
-											Must be freed manually.
-  
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
-uchar* p_mapfile( uchar* filename )
-{
-	FILE*	file	= (FILE*)NULL;
-	long	size	= 0;
-	long	pos		= 0;
-	uchar*	src		= (uchar*)NULL;
-	uchar	ch;
-
-	file = fopen( filename, "rb" );
-	if( file == (FILE*)NULL )
-		return (uchar*)NULL;
-	
-	fseek( file, 0L, SEEK_END );
-	size = ftell( file );
-	if( size == 0 )
-		return (uchar*)NULL;
-
-	src = (uchar*)p_malloc( (size+1+1) * sizeof( uchar ) );
-	if( !src )
-	{
-		OUT_OF_MEMORY;
-		return (uchar*)NULL;
-	}
-	
-	fseek( file, 0L, SEEK_SET );
-	while( TRUE )
-	{
-		ch = (uchar)fgetc( file );
-		if( !feof( file ) )
-		{
-			src[ pos ] = ch;
-			pos++;
-		}
-		else
-		{
-			break;
-		}
-	}
-	src[ pos ] = '\0';
-	
-	fclose( file );
-
-	return src;
-}
-
-
-/* -FUNCTION--------------------------------------------------------------------
 	Function:		p_derivation_name()
 	
 	Author:			Jan Max Meyer
