@@ -373,11 +373,6 @@ definition:		lhs goal_mark type "->" productions				{
 																	{
 																		s->code = strbuf;
 																		strbuf = (uchar*)NULL;
-																		
-																		if( parser->p_model == MODEL_CONTEXT_SENSITIVE )
-																			p_error( ERR_MULTIPLE_SEMANTIC_CALL,
-																				ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
-																					 parser->filename, line );
 																	}
 																	
 																	/* Value type */
