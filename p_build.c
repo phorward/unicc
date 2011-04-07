@@ -1,6 +1,6 @@
 /* -MODULE----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator 
-Copyright (C) 2006-2009 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2010 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_build.c
@@ -42,10 +42,6 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 					constructs code segments, which are finally pasted into
 					the parser template (which is defined within the
 					<driver>-tag of the generator file).
-
-					Maybe the success of UniCC is even this feature, maybe not.
-					I think, that most programming languages - ignoring
-					Brainfuck - can be implemented with this concept!
 					
 	Parameters:		FILE*		stream				Stream, where the output
 													file is written to.
@@ -56,89 +52,100 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-void p_build_code( FILE* stream, PARSER* parser )
+void p_build_code( PARSER* parser )
 {
-	GENERATOR	generator;
-	GENERATOR*	gen					= (GENERATOR*)NULL;
-	uchar		xml_file			[ BUFSIZ + 1 ];
-	uchar*		tpldir;
-	uchar*		complete			= (uchar*)NULL;
-	uchar*		all					= (uchar*)NULL;
-	uchar*		action_table		= (uchar*)NULL;
-	uchar*		action_table_row	= (uchar*)NULL;
-	uchar*		goto_table			= (uchar*)NULL;
-	uchar*		goto_table_row		= (uchar*)NULL;
-	uchar*		prod_rhs_count		= (uchar*)NULL;
-	uchar*		prod_lhs			= (uchar*)NULL;
-	uchar*		def_prod			= (uchar*)NULL;
-	uchar*		char_map			= (uchar*)NULL;
-	uchar*		whitespaces			= (uchar*)NULL;
-	uchar*		symbols				= (uchar*)NULL;
-	uchar*		productions			= (uchar*)NULL;
-	uchar*		dfa_select			= (uchar*)NULL;
-	uchar*		dfa_idx				= (uchar*)NULL;
-	uchar*		dfa_idx_row			= (uchar*)NULL;
-	uchar*		dfa_char			= (uchar*)NULL;
-	uchar*		dfa_trans			= (uchar*)NULL;
-	uchar*		dfa_accept			= (uchar*)NULL;
-	uchar*		dfa_accept_row		= (uchar*)NULL;
-	uchar*		kw_invalid_suffix	= (uchar*)NULL;
-	uchar*		type_def			= (uchar*)NULL;
-	uchar*		actions				= (uchar*)NULL;
-	uchar*		scan_actions		= (uchar*)NULL;
-	uchar*		top_value			= (uchar*)NULL;
-	uchar*		act					= (uchar*)NULL;
+	GENERATOR		generator;
+	GENERATOR*		gen					= (GENERATOR*)NULL;
+	XML_T			file;
+	FILE*			stream;
+	
+	uchar			xml_file			[ BUFSIZ + 1 ];
+	uchar*			tpldir;
+	uchar*			complete			= (uchar*)NULL;
+	uchar*			all					= (uchar*)NULL;
+	uchar*			action_table		= (uchar*)NULL;
+	uchar*			action_table_row	= (uchar*)NULL;
+	uchar*			goto_table			= (uchar*)NULL;
+	uchar*			goto_table_row		= (uchar*)NULL;
+	uchar*			prod_rhs_count		= (uchar*)NULL;
+	uchar*			prod_lhs			= (uchar*)NULL;
+	uchar*			def_prod			= (uchar*)NULL;
+	uchar*			char_map			= (uchar*)NULL;
+	uchar*			char_map_sym		= (uchar*)NULL;
+	uchar*			whitespaces			= (uchar*)NULL;
+	uchar*			symbols				= (uchar*)NULL;
+	uchar*			productions			= (uchar*)NULL;
+	uchar*			dfa_select			= (uchar*)NULL;
+	uchar*			dfa_idx				= (uchar*)NULL;
+	uchar*			dfa_idx_row			= (uchar*)NULL;
+	uchar*			dfa_char			= (uchar*)NULL;
+	uchar*			dfa_trans			= (uchar*)NULL;
+	uchar*			dfa_accept			= (uchar*)NULL;
+	uchar*			dfa_accept_row		= (uchar*)NULL;
+	uchar*			kw_invalid_suffix	= (uchar*)NULL;
+	uchar*			type_def			= (uchar*)NULL;
+	uchar*			actions				= (uchar*)NULL;
+	uchar*			scan_actions		= (uchar*)NULL;
+	uchar*			top_value			= (uchar*)NULL;
+	uchar*			act					= (uchar*)NULL;
+	uchar*			filename;
 
-	int*		chr_sym;
+	int				max_action			= 0;
+	int				max_goto			= 0;
+	int				max_dfa_idx			= 0;
+	int				max_dfa_accept		= 0;
+	int				kw_count			= 0;
+	int				max_symbol_name		= 0;
+	int				column;
+	int				charmap_count		= 0;
+	int				row;
+	LIST*			l;
+	LIST*			m;
+	LIST*			n;
+	pregex_dfa*		dfa;
+	pregex_dfa_st*	dfa_st;
+	pregex_dfa_ent*	dfa_ent;
+	SYMBOL*			sym;
+	STATE*			st;
+	TABCOL*			col;
+	PROD*			p;
+	PROD*			goalprod;
+	VTYPE*			vt;
+	CCL				c;
+	int				i;
+	BOOLEAN			is_default_code;
 
-	int			max_action			= 0;
-	int			max_goto			= 0;
-	int			max_dfa_idx			= 0;
-	int			max_dfa_accept		= 0;
-	int			kw_count			= 0;
-	int			max_symbol_name		= 0;
-	int			column;
-	int			row;
-	bitset		ccl;
-	LIST*		l;
-	LIST*		m;
-	LIST*		dfa;
-	DFA*		dfa_elem;
-	SYMBOL*		sym;
-	STATE*		st;
-	TABCOL*		col;
-	PROD*		p;
-	PROD*		goalprod;
-	VTYPE*		vt;
-	int			i;
-	BOOLEAN		is_default_code;
-
-	if( !stream )
-		stream = stdout;
+	PROC( "p_build_code" );
+	PARMS( "parser", "%p", parser );
 
 	gen = &generator;
 	memset( gen, 0, sizeof( GENERATOR ) );
 
 	sprintf( xml_file, "%s.xml", parser->p_language );
+	VARS( "xml_file", "%s", xml_file );
 
-	if( 
-#ifndef _WIN32
-	access( xml_file, F_OK ) &&
-#else
-	_access( xml_file, 0 ) &&
-#endif
-		( tpldir = getenv( "UNICC_TPLDIR" ) ) )
+	if( !pfileexists( xml_file ) && ( tpldir = getenv( "UNICC_TPLDIR" ) ) )
 	{
-		sprintf( xml_file, "%s%s%s.xml",
-			tpldir, ( ( tpldir[ p_strlen( tpldir ) ] == *PATHSEP ) ?
-				"" : PATHSEP ), parser->p_language );
+		MSG( "File not found, trying to get it from UNICC_TPLDIR" );
+
+		sprintf( xml_file, "%s%c%s.xml",
+			tpldir, 
+				( ( tpldir[ pstrlen( tpldir ) ] == PPATHSEP )
+					? '\0' : PPATHSEP ), parser->p_language );
+
+		VARS( "xml_file", "%s", xml_file );
 	}
 	
+	VARS( "xml_file", "%s", xml_file );
+	
+	MSG( "Loading generator" );
 	if( !p_load_generator( gen, xml_file ) )
-		return;
+		VOIDRET;
 
 	/* Now that we have the generator, do some code generation-related
 		integrity preparatories on the grammar */
+	
+	MSG( "Performing code generation-related integrity preparatories" );
 	for( l = parser->symbols; l; l = l->next )
 	{
 		sym = (SYMBOL*)( l->pptr );
@@ -161,22 +168,21 @@ void p_build_code( FILE* stream, PARSER* parser )
 		top_value = p_tpl_insert( gen->action_single,
 			GEN_WILD_PREFIX "offset", p_int_to_str( 0 ), TRUE,
 				(uchar*)NULL );
-	else
-	{
-		vt = p_find_vtype( parser, gen->vstack_term_type );
-		if( vt )
+	else if( ( vt = p_find_vtype( parser, gen->vstack_term_type ) ) )
 			top_value = p_tpl_insert( gen->action_union,
 				GEN_WILD_PREFIX "offset", p_int_to_str( 0 ), TRUE,
-					GEN_WILD_PREFIX "attribute", p_tpl_insert( gen->vstack_union_att,
-						GEN_WILD_PREFIX "value-type-id", p_int_to_str( vt->id ), TRUE,
-							(uchar*)NULL ), TRUE,
-								(uchar*)NULL );
-		else
-			/* ERROR */
-			;
-	}
+					GEN_WILD_PREFIX "attribute",
+						p_tpl_insert( gen->vstack_union_att,
+							GEN_WILD_PREFIX "value-type-id",
+									p_int_to_str( vt->id ), TRUE,
+										(uchar*)NULL ), TRUE,
+											(uchar*)NULL );
+	else
+		/* ERROR */
+		;
 
 	/* Build action, goto and dfa_select tables */
+	MSG( "Action, Goto and DFA selection table" );
 	for( l = parser->lalr_states, i = 0; l; l = l->next, i++ )
 	{
 		st = (STATE*)(l->pptr);
@@ -192,17 +198,19 @@ void p_build_code( FILE* stream, PARSER* parser )
 		if( max_action < list_count( st->actions ) )
 			max_action = list_count( st->actions );
 
-		for( m = st->actions, column = 0, kw_count = 0; m; m = m->next, column++ )
+		for( m = st->actions, column = 0, kw_count = 0;
+				m; m = m->next, column++ )
 		{
 			col = (TABCOL*)(m->pptr);
 
 			action_table_row = p_str_append( action_table_row,
 				p_tpl_insert( gen->acttab.col,
-					GEN_WILD_PREFIX "symbol", p_int_to_str( col->symbol->id ), TRUE,
-						GEN_WILD_PREFIX "action", p_int_to_str( col->action ), TRUE,
-							GEN_WILD_PREFIX "index", p_int_to_str( col->index ), TRUE,
-								GEN_WILD_PREFIX "column", p_int_to_str( column ), TRUE,
-									(uchar*)NULL ), TRUE );
+					GEN_WILD_PREFIX "symbol",
+							p_int_to_str( col->symbol->id ), TRUE,
+					GEN_WILD_PREFIX "action", p_int_to_str( col->action ), TRUE,
+					GEN_WILD_PREFIX "index", p_int_to_str( col->index ), TRUE,
+					GEN_WILD_PREFIX "column", p_int_to_str( column ), TRUE,
+						(uchar*)NULL ), TRUE );
 
 			if( col->symbol->keyword )
 				kw_count++;
@@ -241,21 +249,17 @@ void p_build_code( FILE* stream, PARSER* parser )
 		{
 			col = (TABCOL*)(m->pptr);
 
-			/*
 			goto_table_row = p_str_append( goto_table_row,
 				p_tpl_insert( gen->gotab.col,
-					GEN_WILD_PREFIX "symbol", p_int_to_str( col->symbol->id ), TRUE,
-						GEN_WILD_PREFIX "index", p_int_to_str( col->index ), TRUE,
-							GEN_WILD_PREFIX "column", p_int_to_str( column ), TRUE,
-								(uchar*)NULL ), TRUE );
-			*/
-			goto_table_row = p_str_append( goto_table_row,
-				p_tpl_insert( gen->gotab.col,
-					GEN_WILD_PREFIX "symbol", p_int_to_str( col->symbol->id ), TRUE,
-						GEN_WILD_PREFIX "action", p_int_to_str( col->action ), TRUE,
-							GEN_WILD_PREFIX "index", p_int_to_str( col->index ), TRUE,
-								GEN_WILD_PREFIX "column", p_int_to_str( column ), TRUE,
-									(uchar*)NULL ), TRUE );
+					GEN_WILD_PREFIX "symbol",
+						p_int_to_str( col->symbol->id ), TRUE,
+					GEN_WILD_PREFIX "action",
+						p_int_to_str( col->action ), TRUE,
+					GEN_WILD_PREFIX "index",
+						p_int_to_str( col->index ), TRUE,
+					GEN_WILD_PREFIX "column",
+						p_int_to_str( column ), TRUE,
+					(uchar*)NULL ), TRUE );
 
 			if( m->next )
 				goto_table_row = p_str_append( goto_table_row,
@@ -264,9 +268,11 @@ void p_build_code( FILE* stream, PARSER* parser )
 
 		goto_table_row = p_str_append( goto_table_row,
 				p_tpl_insert( gen->gotab.row_end,
-					GEN_WILD_PREFIX "number-of-columns", p_int_to_str( list_count( st->actions ) ), TRUE,
-						GEN_WILD_PREFIX "state-number", p_int_to_str( st->state_id ), TRUE,
-							(uchar*)NULL ), TRUE );
+					GEN_WILD_PREFIX "number-of-columns",
+						p_int_to_str( list_count( st->actions ) ), TRUE,
+					GEN_WILD_PREFIX "state-number",
+						p_int_to_str( st->state_id ), TRUE,
+					(uchar*)NULL ), TRUE );
 
 		if( l->next )
 			goto_table_row = p_str_append( goto_table_row,
@@ -285,130 +291,183 @@ void p_build_code( FILE* stream, PARSER* parser )
 							(char*)NULL ), TRUE );
 
 			if( l->next )
-				dfa_select = p_str_append( dfa_select, gen->dfa_select.col_sep, FALSE );
+				dfa_select = p_str_append( dfa_select,
+								gen->dfa_select.col_sep, FALSE );
 		}
 		
 		/* Default production table */
 		def_prod = p_str_append( def_prod,
 				p_tpl_insert( gen->defprod.col,
-					GEN_WILD_PREFIX "state-number", p_int_to_str( st->state_id ), TRUE,
-					GEN_WILD_PREFIX "production-number", p_int_to_str(
-							( ( st->def_prod ) ? st->def_prod->id : -1 ) ), TRUE,
-						(uchar*)NULL ), TRUE );
+					GEN_WILD_PREFIX "state-number",
+						p_int_to_str( st->state_id ), TRUE,
+					GEN_WILD_PREFIX "production-number",
+						p_int_to_str(
+							( ( st->def_prod ) ? st->def_prod->id : -1 ) ),
+								TRUE, (uchar*)NULL ), TRUE );
 
 		if( l->next )
 			def_prod = p_str_append( def_prod, gen->defprod.col_sep, FALSE );
 	}
 
 	/* Production length and production left-hand side tables */
+	MSG( "Tables for production length and left-hand side association" );
 	for( l = parser->productions, row = 0; l; l = l->next, row++ )
 	{
 		p = (PROD*)l->pptr;
 
 		prod_rhs_count = p_str_append( prod_rhs_count,
-			p_tpl_insert( gen->prodlen.col,
-				GEN_WILD_PREFIX "length-of-rhs", p_int_to_str( list_count( p->rhs ) ), TRUE,
-					GEN_WILD_PREFIX "production-number", p_int_to_str( row ), TRUE,
-						(uchar*)NULL ), TRUE );
+							p_tpl_insert( gen->prodlen.col,
+								GEN_WILD_PREFIX "length-of-rhs",
+									p_int_to_str( list_count( p->rhs ) ), TRUE,
+								GEN_WILD_PREFIX "production-number",
+									p_int_to_str( row ), TRUE,
+								(uchar*)NULL ), TRUE );
 
 		prod_lhs = p_str_append( prod_lhs,
-			p_tpl_insert( gen->prodlhs.col,
-				GEN_WILD_PREFIX "lhs", p_int_to_str( p->lhs->id ), TRUE,
-					GEN_WILD_PREFIX "production-number", p_int_to_str( row ), TRUE,
-						(uchar*)NULL ), TRUE );
+							p_tpl_insert( gen->prodlhs.col,
+								GEN_WILD_PREFIX "lhs",
+									p_int_to_str( p->lhs->id ), TRUE,
+								GEN_WILD_PREFIX "production-number",
+									p_int_to_str( row ), TRUE,
+								(uchar*)NULL ), TRUE );
 
 		if( l->next )
 		{
-			prod_rhs_count = p_str_append( prod_rhs_count, gen->prodlen.col_sep, FALSE );
-			prod_lhs = p_str_append( prod_lhs, gen->prodlhs.col_sep, FALSE );
+			prod_rhs_count = p_str_append( prod_rhs_count,
+									gen->prodlen.col_sep, FALSE );
+			prod_lhs = p_str_append( prod_lhs,
+									gen->prodlhs.col_sep, FALSE );
 		}
 	}
 
-	/* Lexical symbol recognition machine table composition */
-	for( l = parser->kw, row = 0, column = 0; l; l = l->next, row++ )
+	/* Lexical recognition machine table composition */
+	MSG( "Lexical recognition machine" );
+	for( l = parser->kw, row = 0, column = 0; l; l = list_next( l ), row++ )
 	{
-		dfa = (LIST*)(l->pptr);
+		dfa = (pregex_dfa*)list_access( l );
 
+		/* Row start */
 		dfa_idx_row = p_tpl_insert( gen->dfa_idx.row_start,
-				GEN_WILD_PREFIX "number-of-columns", p_int_to_str( list_count( dfa ) ), TRUE,
-					GEN_WILD_PREFIX "state-number", p_int_to_str( row ), TRUE,
-						(uchar*)NULL );
+				GEN_WILD_PREFIX "number-of-columns",
+					p_int_to_str( list_count( dfa->states ) ), TRUE,
+				GEN_WILD_PREFIX "row",
+					p_int_to_str( row ), TRUE,
+				(uchar*)NULL );
 
 		dfa_accept_row = p_tpl_insert( gen->dfa_accept.row_start,
-				GEN_WILD_PREFIX "number-of-columns", p_int_to_str( list_count( dfa ) ), TRUE,
-					GEN_WILD_PREFIX "state-number", p_int_to_str( row ), TRUE,
-						(uchar*)NULL );
+				GEN_WILD_PREFIX "number-of-columns",
+					p_int_to_str( list_count( dfa->states ) ), TRUE,
+				GEN_WILD_PREFIX "row",
+					p_int_to_str( row ), TRUE,
+				(uchar*)NULL );
 
-		if( max_dfa_idx < list_count( dfa ) )
-			max_dfa_accept = max_dfa_idx = list_count( dfa );
+		if( max_dfa_idx < list_count( dfa->states ) )
+			max_dfa_accept = max_dfa_idx = list_count( dfa->states );
 
-		for( m = dfa; m; m = m->next )
+		/* Building row entries */
+		LISTFOR( dfa->states, m )
 		{
-			dfa_elem = (DFA*)(m->pptr);
+			dfa_st = (pregex_dfa_st*)list_access( m );
+			VARS( "dfa_st", "%p", dfa_st );
 
 			if( dfa_char && dfa_trans )
 			{
-				dfa_char = p_str_append( dfa_char, gen->dfa_char.col_sep, FALSE );
-				dfa_trans = p_str_append( dfa_trans, gen->dfa_trans.col_sep, FALSE );
-			}
-
-			if( m != dfa )
-			{
-				dfa_idx_row = p_str_append( dfa_idx_row,
-					gen->dfa_idx.col_sep, FALSE );
-				dfa_accept_row = p_str_append( dfa_accept_row,
-					gen->dfa_accept.col_sep, FALSE );
+				dfa_char = p_str_append( dfa_char,
+						gen->dfa_char.col_sep, FALSE );
+				dfa_trans = p_str_append( dfa_trans,
+						gen->dfa_trans.col_sep, FALSE );
 			}
 
 			dfa_idx_row = p_str_append( dfa_idx_row,
 				p_tpl_insert( gen->dfa_idx.col,
-					GEN_WILD_PREFIX "index", p_int_to_str( column ), TRUE,
-						(uchar*)NULL ), TRUE );
+					GEN_WILD_PREFIX "index",
+						p_int_to_str( column ), TRUE,
+					(uchar*)NULL ), TRUE );
+
 			dfa_accept_row = p_str_append( dfa_accept_row,
 				p_tpl_insert( gen->dfa_accept.col,
-					GEN_WILD_PREFIX "accept", p_int_to_str( dfa_elem->accept ), TRUE,
-						(uchar*)NULL ), TRUE );
+					GEN_WILD_PREFIX "accept",
+						p_int_to_str( dfa_st->accept ), TRUE,
+					(uchar*)NULL ), TRUE );
 
-			for( i = 0; i < parser->p_universe; i++ )
+			/* Iterate trough all transitions */
+			MSG( "Iterating to transitions of DFA" );
+			LISTFOR( dfa_st->trans, n )
 			{
-				if( dfa_elem->line[ i ] > -1 )
-				{					
-					dfa_char = p_str_append( dfa_char, p_tpl_insert(
-						gen->dfa_char.col, GEN_WILD_PREFIX "code", p_int_to_str( i ),
-							TRUE, (uchar*)NULL ), TRUE );
-					dfa_trans = p_str_append( dfa_trans, p_tpl_insert(
-						gen->dfa_trans.col, GEN_WILD_PREFIX "goto", p_int_to_str( dfa_elem->line[i] ),
-							TRUE, (uchar*)NULL ), TRUE );
+				dfa_ent = (pregex_dfa_ent*)list_access( n );
 
+				for( c = dfa_ent->ccl; c && c->begin != CCL_MAX; c++ )
+				{
+					dfa_char = p_str_append( dfa_char,
+								p_tpl_insert( gen->dfa_char.col,
+								GEN_WILD_PREFIX "from",
+									p_int_to_str( c->begin ), TRUE,
+								GEN_WILD_PREFIX "to",
+									p_int_to_str( c->end ), TRUE,
+								GEN_WILD_PREFIX "goto",
+									p_int_to_str( dfa_st->accept ), TRUE,
+								(uchar*)NULL ), TRUE );
+
+					dfa_trans = p_str_append( dfa_trans,
+								p_tpl_insert( gen->dfa_trans.col,
+									GEN_WILD_PREFIX "goto",
+									p_int_to_str( dfa_ent->go_to ), TRUE,
+								(uchar*)NULL ), TRUE );
+
+
+					dfa_char = p_str_append( dfa_char,
+									gen->dfa_char.col_sep, FALSE );
+					dfa_trans = p_str_append( dfa_trans,
+									gen->dfa_trans.col_sep, FALSE );
+									
 					column++;
-
-					dfa_char = p_str_append( dfa_char, gen->dfa_char.col_sep, FALSE );
-					dfa_trans = p_str_append( dfa_trans, gen->dfa_trans.col_sep, FALSE );
 				}
 			}
 
-			dfa_char = p_str_append( dfa_char, p_tpl_insert(
-				gen->dfa_char.col, GEN_WILD_PREFIX "code", p_int_to_str( -1 ),
-					TRUE, (uchar*)NULL ), TRUE );
-			dfa_trans = p_str_append( dfa_trans, p_tpl_insert(
-				gen->dfa_trans.col, GEN_WILD_PREFIX "goto", p_int_to_str( -1 ),
+			/* DFA transition end marker */
+			dfa_char = p_str_append( dfa_char,
+					p_tpl_insert( gen->dfa_char.col,
+						GEN_WILD_PREFIX "from",
+							p_int_to_str( -1 ), TRUE,
+						GEN_WILD_PREFIX "to",
+							p_int_to_str( -1 ), TRUE,
+						(uchar*)NULL ), TRUE );
+
+			/* DFA transition */
+			dfa_trans = p_str_append( dfa_trans,
+					p_tpl_insert( gen->dfa_trans.col,
+						GEN_WILD_PREFIX "goto",
+							p_int_to_str( -1 ),
 					TRUE, (uchar*)NULL ), TRUE );
 
 			column++;
+
+			if( list_next( m ) )
+			{
+				dfa_idx_row = p_str_append( dfa_idx_row,
+						gen->dfa_idx.col_sep, FALSE );
+				dfa_accept_row = p_str_append( dfa_accept_row,
+						gen->dfa_accept.col_sep, FALSE );
+			}
 		}
 
+		/* Row end */
 		dfa_idx_row = p_str_append( dfa_idx_row,
 				p_tpl_insert( gen->dfa_idx.row_end,
-					GEN_WILD_PREFIX "number-of-columns", p_int_to_str( list_count( dfa ) ), TRUE,
-						GEN_WILD_PREFIX "state-number", p_int_to_str( row ), TRUE,
-							(uchar*)NULL ), TRUE );
+					GEN_WILD_PREFIX "number-of-columns",
+						p_int_to_str( list_count( dfa->states ) ), TRUE,
+					GEN_WILD_PREFIX "row",
+						p_int_to_str( row ), TRUE,
+					(uchar*)NULL ), TRUE );
+
 		dfa_accept_row = p_str_append( dfa_accept_row,
 				p_tpl_insert( gen->dfa_accept.row_end,
-					GEN_WILD_PREFIX "number-of-columns", p_int_to_str( list_count( dfa ) ), TRUE,
-						GEN_WILD_PREFIX "state-number", p_int_to_str( row ), TRUE,
-							(uchar*)NULL ), TRUE );
+					GEN_WILD_PREFIX "number-of-columns",
+						p_int_to_str( list_count( dfa->states ) ), TRUE,
+					GEN_WILD_PREFIX "row", p_int_to_str( row ), TRUE,
+					(uchar*)NULL ), TRUE );
 
-		if( l->next )
+		if( list_next( l ) )
 		{
 			dfa_idx_row = p_str_append( dfa_idx_row,
 				gen->dfa_idx.row_sep, FALSE );
@@ -419,78 +478,77 @@ void p_build_code( FILE* stream, PARSER* parser )
 		dfa_idx = p_str_append( dfa_idx, dfa_idx_row, TRUE );
 		dfa_accept = p_str_append( dfa_accept, dfa_accept_row, TRUE );
 	}
-
+	
+	MSG( "Construct map of invalid characters (keyword recognition)" );
+	
 	/* Map of invalid keyword suffix characters */
-
-		/* This character map is reused ... */
-	if( !( chr_sym = (int*)p_malloc( ( parser->p_universe + 1 ) * sizeof( int ) ) ) )
-		OUT_OF_MEMORY;
-
-	for( i = 0; i < parser->p_universe + 1; i++ )
-		chr_sym[i] = 0;
-
-	if( parser->p_invalid_suf )
+	for( c = parser->p_invalid_suf; c && c->begin != CCL_MAX; c++ )
 	{
-		ccl = p_ccl_to_map( parser, parser->p_invalid_suf );
+		VARS( "c->begin", "%d", c->begin );
+		VARS( "c->end", "%d", c->end );
 		
-		for( i = 0; i < parser->p_universe + 1; i++ )
-			if( bitset_get( ccl, i ) )
-				chr_sym[i] = 1;
-
-		p_free( ccl );
+		if( kw_invalid_suffix )
+			kw_invalid_suffix = p_str_append(
+				kw_invalid_suffix, gen->kw_invalid_suffix.col_sep,
+					FALSE );
+		
+		kw_invalid_suffix = p_str_append( kw_invalid_suffix,
+			p_tpl_insert( gen->kw_invalid_suffix.col,
+				GEN_WILD_PREFIX "from",
+					p_int_to_str( c->begin ), TRUE,
+				GEN_WILD_PREFIX "to",
+					p_int_to_str( c->end ), TRUE,
+				(uchar*)NULL ), TRUE );
 	}
 
-	for( i = 0; i < parser->p_universe; i++ )
+	MSG( "Construct character map" );
+
+	/* Character map */
+	LISTFOR( parser->symbols, l )
 	{
-		if( chr_sym[i] )
-			kw_invalid_suffix = p_str_append( kw_invalid_suffix,
-				gen->kw_invalid_suffix.col_true, FALSE );
-		else
-			kw_invalid_suffix = p_str_append( kw_invalid_suffix,
-				gen->kw_invalid_suffix.col_false, FALSE );
-
-		if( i+1 < parser->p_universe )
-			kw_invalid_suffix = p_str_append( kw_invalid_suffix,
-				gen->kw_invalid_suffix.col_sep, FALSE );
-	}
-
-	/* Character map (charsets ARE unique!) */
-	for( i = 0; i < parser->p_universe + 1; i++ )
-		chr_sym[i] = -1;
-
-	for( l = parser->symbols; l; l = l->next )
-	{
-		sym = (SYMBOL*)l->pptr;
+		sym = (SYMBOL*)list_access( l );
 
 		if( IS_TERMINAL( sym ) && !( sym->keyword ) )
 		{
-			ccl = p_ccl_to_map( parser, sym->name );
-			
-			for( i = 0; i < parser->p_universe + 1; i++ )
-				if( bitset_get( ccl, i ) )
-					chr_sym[i] = sym->id;
+			for( c = sym->ccl; c && c->begin != CCL_MAX; c++ )
+			{
+				if( char_map )
+				{
+					char_map = p_str_append(
+						char_map, gen->charmap.col_sep, FALSE );
+					char_map_sym = p_str_append(
+						char_map_sym, gen->charmap_sym.col_sep, FALSE );
+				}
 
-			p_free( ccl );
+				char_map = p_str_append( char_map,
+					p_tpl_insert( gen->charmap.col,
+						GEN_WILD_PREFIX "from",
+							p_int_to_str( c->begin ), TRUE,
+						GEN_WILD_PREFIX "to",
+							p_int_to_str( c->end ), TRUE,
+						GEN_WILD_PREFIX "symbol",
+							p_int_to_str( sym->id ), TRUE,
+						(uchar*)NULL ), TRUE );
+						
+				char_map_sym = p_str_append( char_map_sym,
+					p_tpl_insert( gen->charmap_sym.col,
+						GEN_WILD_PREFIX "from",
+							p_int_to_str( c->begin ), TRUE,
+						GEN_WILD_PREFIX "to",
+							p_int_to_str( c->end ), TRUE,
+						GEN_WILD_PREFIX "symbol",
+							p_int_to_str( sym->id ), TRUE,
+						(uchar*)NULL ), TRUE );
+			}
+			
+			charmap_count += ccl_size( sym->ccl );
 		}
 	}
 
-	for( i = 0; i < parser->p_universe; i++ )
-	{
-		char_map = p_str_append( char_map, p_tpl_insert( gen->charmap.col,
-			GEN_WILD_PREFIX "code", p_int_to_str( i ), TRUE,
-				GEN_WILD_PREFIX "symbol", p_int_to_str( chr_sym[i] ), TRUE, (uchar*)NULL ),
-					TRUE ); 
-
-		if( i+1 < parser->p_universe )
-			char_map = p_str_append( char_map, gen->charmap.col_sep, FALSE );
-	}
-
-	p_free( chr_sym ); /* Now it can be freed... */
-
 	/* Whitespace identification table and symbol-name-table */
-	for( l = parser->symbols; l; l = l->next ) /* Okidoki, now do the generation */
+	LISTFOR( parser->symbols, l ) /* Okidoki, now do the generation */
 	{
-		sym = (SYMBOL*)l->pptr;
+		sym = (SYMBOL*)list_access( l );
 
 		/* printf( "sym->name = >%s< at %d\n", sym->name, sym->id ); */
 		if( sym->whitespace )
@@ -501,7 +559,8 @@ void p_build_code( FILE* stream, PARSER* parser )
 				gen->whitespace.col_false, FALSE );
 
 		symbols = p_str_append( symbols, p_tpl_insert( gen->symbols.col,
-				GEN_WILD_PREFIX "symbol-name", p_escape_for_target( gen, sym->name, FALSE ), TRUE,
+				GEN_WILD_PREFIX "symbol-name",
+						p_escape_for_target( gen, sym->name, FALSE ), TRUE,
 					GEN_WILD_PREFIX "symbol", p_int_to_str( sym->id ), TRUE,
 						GEN_WILD_PREFIX "type", p_int_to_str( sym->type ), TRUE,
 							(char*)NULL ), TRUE );
@@ -540,11 +599,14 @@ void p_build_code( FILE* stream, PARSER* parser )
 			type_def = p_str_append( type_def,
 				p_tpl_insert( gen->vstack_union_def,
 					GEN_WILD_PREFIX "value-type", vt->real_def, FALSE,
-						GEN_WILD_PREFIX "attribute", p_tpl_insert( gen->vstack_union_att,
-									GEN_WILD_PREFIX "value-type-id", p_int_to_str( vt->id ), TRUE,
-										(uchar*)NULL ), TRUE,
-							GEN_WILD_PREFIX "value-type-id", p_int_to_str( vt->id ), TRUE,
-								(uchar*)NULL ), TRUE );
+						GEN_WILD_PREFIX "attribute",
+								p_tpl_insert( gen->vstack_union_att,
+									GEN_WILD_PREFIX "value-type-id",
+											p_int_to_str( vt->id ), TRUE,
+												(uchar*)NULL ), TRUE,
+						GEN_WILD_PREFIX "value-type-id",
+							p_int_to_str( vt->id ), TRUE,
+						(uchar*)NULL ), TRUE );
 		}
 
 		type_def = p_str_append( type_def,
@@ -566,7 +628,7 @@ void p_build_code( FILE* stream, PARSER* parser )
 		/* Select the semantic code to be processed! */
 		act = (uchar*)NULL;
 
-		if( 1 ) /* !( p->lhs->keyword )  */
+		if( TRUE ) /* !( p->lhs->keyword )  */
 		{
 			is_default_code = FALSE;
 
@@ -627,12 +689,13 @@ void p_build_code( FILE* stream, PARSER* parser )
 	for( l = parser->symbols, row = 0; l; l = l->next, row++ )
 	{
 		sym = (SYMBOL*)( l->pptr );
-		if( sym->type != SYM_REGEX_TERMINAL && !sym->nfa_def )
+		if( sym->type != SYM_REGEX_TERMINAL )
 			continue;
 
-		scan_actions = p_str_append( scan_actions, p_tpl_insert( gen->scan_action_start,
-			GEN_WILD_PREFIX "symbol-number", p_int_to_str( sym->id ), TRUE,
-				(uchar*)NULL ), TRUE );
+		scan_actions = p_str_append( scan_actions,
+			p_tpl_insert(gen->scan_action_start,
+				GEN_WILD_PREFIX "symbol-number", p_int_to_str( sym->id ), TRUE,
+					(uchar*)NULL ), TRUE );
 
 		/* Select the semantic code to be processed! */
 		act = (uchar*)NULL;
@@ -646,102 +709,188 @@ void p_build_code( FILE* stream, PARSER* parser )
 			scan_actions = p_str_append( scan_actions, act, TRUE );
 		}
 
-		scan_actions = p_str_append( scan_actions, p_tpl_insert( gen->scan_action_end, 
+		scan_actions = p_str_append( scan_actions,
+			p_tpl_insert( gen->scan_action_end, 
 			GEN_WILD_PREFIX "symbol-number", p_int_to_str( sym->id ), TRUE,
-				(uchar*)NULL ), TRUE );
+					(uchar*)NULL ), TRUE );
 	}
 
 	/* Get the goal production */
 	goalprod = (PROD*)( parser->goal->productions->pptr );
-
-	/* Assembling all together - Warning, this is ONE single function call! */
-	all = p_tpl_insert( gen->driver,
 	
-		/* Lengths of names and Prologue/Epilogue codes */
-		GEN_WILD_PREFIX "name" LEN_EXT,
-			p_long_to_str( (long)p_strlen( parser->p_name ) ), TRUE,
-		GEN_WILD_PREFIX "copyright" LEN_EXT,
-			p_long_to_str( (long)p_strlen( parser->p_copyright ) ), TRUE,
-		GEN_WILD_PREFIX "version" LEN_EXT,
-			p_long_to_str( (long)p_strlen( parser->p_version ) ), TRUE,
-		GEN_WILD_PREFIX "description" LEN_EXT,
-			p_long_to_str( (long)p_strlen( parser->p_desc ) ), TRUE,
-		GEN_WILD_PREFIX "prologue" LEN_EXT,
-			p_long_to_str( (long)p_strlen( parser->p_header ) ), TRUE,
-		GEN_WILD_PREFIX "epilogue" LEN_EXT,
-			p_long_to_str( (long)p_strlen( parser->p_footer ) ), TRUE,
-		GEN_WILD_PREFIX "pcb" LEN_EXT,
-			p_long_to_str( (long)p_strlen( parser->p_pcb ) ), TRUE,
-
-		/* Names and Prologue/Epilogue codes */
-		GEN_WILD_PREFIX "name", parser->p_name, FALSE,
-		GEN_WILD_PREFIX "copyright", parser->p_copyright, FALSE,
-		GEN_WILD_PREFIX "version", parser->p_version, FALSE,
-		GEN_WILD_PREFIX "description", parser->p_desc, FALSE,
-		GEN_WILD_PREFIX "prologue", parser->p_header, FALSE,
-		GEN_WILD_PREFIX "epilogue", parser->p_footer, FALSE,
-		GEN_WILD_PREFIX "pcb", parser->p_pcb, FALSE,
-
-		/* Limits and sizes, parse tables */
-		GEN_WILD_PREFIX "number-of-symbols", p_int_to_str( list_count( parser->symbols ) ), TRUE,
-		GEN_WILD_PREFIX "number-of-states", p_int_to_str( list_count( parser->lalr_states ) ), TRUE,
-		GEN_WILD_PREFIX "number-of-productions", p_int_to_str( list_count( parser->productions ) ), TRUE,
-		GEN_WILD_PREFIX "number-of-dfa-machines", p_int_to_str( list_count( parser->kw ) ), TRUE, 
-		GEN_WILD_PREFIX "deepest-action-row", p_int_to_str( max_action ), TRUE,
-		GEN_WILD_PREFIX "deepest-goto-row", p_int_to_str( max_goto ), TRUE,
-		GEN_WILD_PREFIX "deepest-dfa-index-row", p_int_to_str( max_dfa_idx ), TRUE,
-		GEN_WILD_PREFIX "deepest-dfa-accept-row", p_int_to_str( max_dfa_accept ), TRUE,
-		GEN_WILD_PREFIX "size-of-dfa-characters", p_int_to_str( column ), TRUE, 
-		GEN_WILD_PREFIX "action-table", action_table, TRUE,
-		GEN_WILD_PREFIX "goto-table", goto_table, TRUE,
-		GEN_WILD_PREFIX "production-lengths", prod_rhs_count, TRUE,
-		GEN_WILD_PREFIX "production-lhs", prod_lhs, TRUE,
-		GEN_WILD_PREFIX "default-productions", def_prod, TRUE,
-		GEN_WILD_PREFIX "character-map", char_map, TRUE,
-		GEN_WILD_PREFIX "character-universe", p_int_to_str( parser->p_universe ), TRUE,
-		GEN_WILD_PREFIX "whitespaces", whitespaces, TRUE,
-		GEN_WILD_PREFIX "symbols", symbols, TRUE,
-		GEN_WILD_PREFIX "productions", productions, TRUE,
-		GEN_WILD_PREFIX "max-symbol-name-length", p_int_to_str( max_symbol_name ), TRUE,
-		GEN_WILD_PREFIX "dfa-select", dfa_select, TRUE,
-		GEN_WILD_PREFIX "dfa-index", dfa_idx, TRUE,
-		GEN_WILD_PREFIX "dfa-char", dfa_char, TRUE,
-		GEN_WILD_PREFIX "dfa-trans", dfa_trans, TRUE,
-		GEN_WILD_PREFIX "dfa-accept", dfa_accept, TRUE,
-		GEN_WILD_PREFIX "keyword-invalid-suffixes", kw_invalid_suffix, TRUE,
-		GEN_WILD_PREFIX "value-type-definition", type_def, TRUE,
-		GEN_WILD_PREFIX "actions", actions, TRUE,
-		GEN_WILD_PREFIX "scan_actions", scan_actions, TRUE,
-		GEN_WILD_PREFIX "top-value", top_value, TRUE,
-		GEN_WILD_PREFIX "model", p_int_to_str( parser->p_model ), TRUE,
-		GEN_WILD_PREFIX "error", ( parser->error ? p_int_to_str( parser->error->id ) :
-									p_int_to_str( -1 ) ), TRUE,
-		GEN_WILD_PREFIX "eof", ( parser->end_of_input ? 
-									p_int_to_str( parser->end_of_input->id ) :
-										p_int_to_str( -1 ) ), TRUE,
-		GEN_WILD_PREFIX "goal-production", p_int_to_str( goalprod->id ), TRUE,
-		GEN_WILD_PREFIX "goal", p_int_to_str( parser->goal->id ), TRUE,
-
-		(uchar*)NULL
-	);
-
-	complete = p_tpl_insert( all,
+	for( file = xml_child( gen->xml, "file" );
+			file; file = xml_next( file ) )
+	{
+		if( ( filename = (uchar*)xml_attr( file, "filename" ) ) )
+			filename = p_tpl_insert( filename,
+				GEN_WILD_PREFIX "basename", parser->p_basename, FALSE,
 				GEN_WILD_PREFIX "prefix", parser->p_prefix, FALSE,
-				GEN_WILD_PREFIX "filename" LEN_EXT,
-					p_long_to_str( (long)p_strlen( parser->filename ) ), TRUE,
-				GEN_WILD_PREFIX "filename", parser->filename, FALSE,
-				(uchar*)NULL );
+					(char*)NULL );
+		
+		/* Assembling all together - Warning, this is
+			ONE single function call! */
 
-	p_free( all );
+		all = p_tpl_insert( xml_txt( file ),
+		
+			/* Lengths of names and Prologue/Epilogue codes */
+			GEN_WILD_PREFIX "name" LEN_EXT,
+				p_long_to_str( (long)p_strlen( parser->p_name ) ), TRUE,
+			GEN_WILD_PREFIX "copyright" LEN_EXT,
+				p_long_to_str( (long)p_strlen( parser->p_copyright ) ), TRUE,
+			GEN_WILD_PREFIX "version" LEN_EXT,
+				p_long_to_str( (long)p_strlen( parser->p_version ) ), TRUE,
+			GEN_WILD_PREFIX "description" LEN_EXT,
+				p_long_to_str( (long)p_strlen( parser->p_desc ) ), TRUE,
+			GEN_WILD_PREFIX "prologue" LEN_EXT,
+				p_long_to_str( (long)p_strlen( parser->p_header ) ), TRUE,
+			GEN_WILD_PREFIX "epilogue" LEN_EXT,
+				p_long_to_str( (long)p_strlen( parser->p_footer ) ), TRUE,
+			GEN_WILD_PREFIX "pcb" LEN_EXT,
+				p_long_to_str( (long)p_strlen( parser->p_pcb ) ), TRUE,
+	
+			/* Names and Prologue/Epilogue codes */
+			GEN_WILD_PREFIX "name", parser->p_name, FALSE,
+			GEN_WILD_PREFIX "copyright", parser->p_copyright, FALSE,
+			GEN_WILD_PREFIX "version", parser->p_version, FALSE,
+			GEN_WILD_PREFIX "description", parser->p_desc, FALSE,
+			GEN_WILD_PREFIX "prologue", parser->p_header, FALSE,
+			GEN_WILD_PREFIX "epilogue", parser->p_footer, FALSE,
+			GEN_WILD_PREFIX "pcb", parser->p_pcb, FALSE,
+	
+			/* Limits and sizes, parse tables */
+			GEN_WILD_PREFIX "number-of-symbols",
+				p_int_to_str( list_count( parser->symbols ) ), TRUE,
+			GEN_WILD_PREFIX "number-of-states",
+				p_int_to_str( list_count( parser->lalr_states ) ), TRUE,
+			GEN_WILD_PREFIX "number-of-productions",
+				p_int_to_str( list_count( parser->productions ) ), TRUE,
+			GEN_WILD_PREFIX "number-of-dfa-machines",
+				p_int_to_str( list_count( parser->kw ) ), TRUE, 
+			GEN_WILD_PREFIX "deepest-action-row",
+				p_int_to_str( max_action ), TRUE,
+			GEN_WILD_PREFIX "deepest-goto-row",
+				p_int_to_str( max_goto ), TRUE,
+			GEN_WILD_PREFIX "deepest-dfa-index-row",
+				p_int_to_str( max_dfa_idx ), TRUE,
+			GEN_WILD_PREFIX "deepest-dfa-accept-row",
+				p_int_to_str( max_dfa_accept ), TRUE,
+			GEN_WILD_PREFIX "size-of-dfa-characters",
+				p_int_to_str( column ), TRUE, 
+			GEN_WILD_PREFIX "number-of-keyword-invalid-suffixes",
+				p_int_to_str( ccl_size( parser->p_invalid_suf ) ), TRUE,
+			GEN_WILD_PREFIX "number-of-character-map",
+				p_int_to_str( charmap_count ), TRUE,
+			GEN_WILD_PREFIX "action-table", action_table, FALSE,
+			GEN_WILD_PREFIX "goto-table", goto_table, FALSE,
+			GEN_WILD_PREFIX "production-lengths", prod_rhs_count, FALSE,
+			GEN_WILD_PREFIX "production-lhs", prod_lhs, FALSE,
+			GEN_WILD_PREFIX "default-productions", def_prod, FALSE,
+			GEN_WILD_PREFIX "character-map-symbols", char_map_sym, FALSE,
+			GEN_WILD_PREFIX "character-map", char_map, FALSE,
+			GEN_WILD_PREFIX "character-universe",
+				p_int_to_str( parser->p_universe ), TRUE,
+			GEN_WILD_PREFIX "whitespaces", whitespaces, FALSE,
+			GEN_WILD_PREFIX "symbols", symbols, FALSE,
+			GEN_WILD_PREFIX "productions", productions, FALSE,
+			GEN_WILD_PREFIX "max-symbol-name-length",
+				p_int_to_str( max_symbol_name ), TRUE,
+			GEN_WILD_PREFIX "dfa-select", dfa_select, FALSE,
+			GEN_WILD_PREFIX "dfa-index", dfa_idx, FALSE,
+			GEN_WILD_PREFIX "dfa-char", dfa_char, FALSE,
+			GEN_WILD_PREFIX "dfa-trans", dfa_trans, FALSE,
+			GEN_WILD_PREFIX "dfa-accept", dfa_accept, FALSE,
+			GEN_WILD_PREFIX "keyword-invalid-suffixes",
+				kw_invalid_suffix, FALSE,
+			GEN_WILD_PREFIX "value-type-definition", type_def, FALSE,
+			GEN_WILD_PREFIX "actions", actions, FALSE,
+			GEN_WILD_PREFIX "scan_actions", scan_actions, FALSE,
+			GEN_WILD_PREFIX "top-value", top_value, FALSE,
+			GEN_WILD_PREFIX "model", p_int_to_str( parser->p_model ), TRUE,
+			GEN_WILD_PREFIX "error",
+				( parser->error ? p_int_to_str( parser->error->id ) :
+							p_int_to_str( -1 ) ), TRUE,
+			GEN_WILD_PREFIX "eof",
+				( parser->end_of_input ? 
+					p_int_to_str( parser->end_of_input->id ) :
+						p_int_to_str( -1 ) ), TRUE,
+			GEN_WILD_PREFIX "goal-production",
+				p_int_to_str( goalprod->id ), TRUE,
+			GEN_WILD_PREFIX "goal",
+				p_int_to_str( parser->goal->id ), TRUE,
+	
+			(uchar*)NULL
+		);
+		
+		/* Now replace all prefixes */
+		complete = p_tpl_insert( all,
+					GEN_WILD_PREFIX "prefix",
+						parser->p_prefix, FALSE,
+					GEN_WILD_PREFIX "basename",
+						parser->p_basename, FALSE,
+					GEN_WILD_PREFIX "filename" LEN_EXT,
+						p_long_to_str(
+							(long)p_strlen( parser->filename ) ), TRUE,
+					GEN_WILD_PREFIX "filename", parser->filename, FALSE,
 
-	fprintf( stream, "%s", complete );
+					(uchar*)NULL );
 
-	p_free( complete );
+		p_free( all );
+		
+		/* Open output file */
+		if( filename )
+		{
+			if( !( stream = fopen( filename, "wt" ) ) )
+			{
+				p_error( ERR_OPEN_OUTPUT_FILE, ERRSTYLE_WARNING, filename );
+				p_free( filename );
+				filename = (char*)NULL;
+			}
+		}
+		
+		/* No 'else' here! */
+		if( !filename )
+			stream = stdout;
+
+		fprintf( stream, "%s", complete );
+		p_free( complete );
+		
+		if( filename )
+		{
+			fclose( stream );
+			p_free( filename );
+		}
+	}
+	
+	MSG( "Freeing used memory" );
+
+	/* Freeing generated content */
+	p_free( action_table );
+	p_free( goto_table );
+	p_free( prod_rhs_count );
+	p_free( prod_lhs );
+	p_free( def_prod );
+	p_free( char_map );
+	p_free( char_map_sym );
+	p_free( whitespaces );
+	p_free( symbols );
+	p_free( productions );
+	p_free( dfa_select );
+	p_free( dfa_idx );
+	p_free( dfa_char );
+	p_free( dfa_trans );
+	p_free( dfa_accept );
+	p_free( kw_invalid_suffix );
+	p_free( type_def );
+	p_free( actions );
+	p_free( scan_actions );
+	p_free( top_value );
 
 	/* Freeing the generator's structure */
 	p_free( gen->for_sequences );
 	p_free( gen->do_sequences );
 	xml_free( gen->xml );
+
+	VOIDRET;
 }
 
 /* -FUNCTION--------------------------------------------------------------------
@@ -779,7 +928,8 @@ uchar* p_escape_for_target( GENERATOR* g, uchar* str, BOOLEAN clear )
 
 	for( i = 0; i < g->sequences_count; i++ )
 	{
-		if( !( tmp = p_tpl_insert( ret, g->for_sequences[ i ], g->do_sequences[ i ], FALSE, (uchar*)NULL ) ) )
+		if( !( tmp = p_tpl_insert( ret, g->for_sequences[ i ],
+				g->do_sequences[ i ], FALSE, (uchar*)NULL ) ) )
 			OUT_OF_MEMORY;
 
 		p_free( ret );
@@ -816,126 +966,148 @@ uchar* p_escape_for_target( GENERATOR* g, uchar* str, BOOLEAN clear )
 uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 			uchar* base, BOOLEAN def_code )
 {
-	LIST*		rhs			= p->rhs;
-	LIST*		rhs_idents	= p->rhs_idents;
-	LIST*		l;
-	LIST*		m;
-	LIST*		nfa			= (LIST*)NULL;
-	SYMBOL*		sym;
-	uchar*		ptr			= base;
-	uchar*		ret			= (uchar*)NULL;
-	uchar*		tmp;
-	uchar*		chk;
-	uchar*		att;
-	int			off;
-	int			len;
-	int			match;
-	BOOLEAN		on_error	= FALSE;
+	pregex			replacer;
+	pregex_result*	result;
+	int				result_cnt;
+	int				i;
+	int				off;
+	uchar*			last;
+	uchar*			ret		= (uchar*)NULL;
+	uchar*			chk;
+	uchar*			tmp;
+	uchar*			att;
+	LIST*			l;
+	LIST*			m;
+	LIST*			rhs			= p->rhs;
+	LIST*			rhs_idents	= p->rhs_idents;
+	BOOLEAN			on_error	= FALSE;
+	SYMBOL*			sym;
+	
+	PROC( "p_build_action" );
+	PARMS( "parser", "%p", parser );
+	PARMS( "g", "%p", g );
+	PARMS( "p", "%p", p );
+	PARMS( "base", "%s", base );
+	PARMS( "def_code", "%s", BOOLEAN_STR( def_code ) );
+	
+	/* Prepare regular expression engine */
+	pregex_comp_init( &replacer, REGEX_MOD_GLOBAL );
+	
+	if( pregex_comp_compile( &replacer, "@[A-Za-z_][A-Za-z0-9_]*", 0 )
+			!= ERR_OK )
+		RETURN( (uchar*)NULL );
 
-	if( re_build_nfa( &nfa, "@[A-Za-z_][A-Za-z0-9_]*", 0 ) != RE_ERR_NONE )
-		return (uchar*)NULL;
+	if( pregex_comp_compile( &replacer, "@[0-9]+", 1 )
+			!= ERR_OK )
+		RETURN( (uchar*)NULL );
 
-	if( re_build_nfa( &nfa, "@[0-9]+", 1 ) != RE_ERR_NONE )
-		return (uchar*)NULL;
-
-	if( re_build_nfa( &nfa, "@@", 2 ) != RE_ERR_NONE )
-		return (uchar*)NULL;
+	if( pregex_comp_compile( &replacer, "@@", 2 )
+			!= ERR_OK )
+		RETURN( (uchar*)NULL );
 		
+	/* Run regular expression */
+	if( ( result_cnt = pregex_comp_match( &replacer, base, &result ) ) < 0 )
+	{
+		MSG( "Error occured" );
+		VARS( "result_cnt", "%d", result_cnt );
+		RETURN( (uchar*)NULL );
+	}
+	else if( !result_cnt )
+	{
+		MSG( "Nothing to do at all" );
+		RETURN( pstrdup( base ) );
+	}
+	
+	VARS( "result_cnt", "%d", result_cnt );
+	
+	/* Free the regular expression facilities - we have everything we 
+		need from here! */
+	pregex_comp_free( &replacer );
+	
+	VARS( "p->sem_rhs", "%p", p->sem_rhs  );
+	/* Ok, perform replacement operations */
 	if( p->sem_rhs )
 	{
+		MSG( "Replacing semantic right-hand side" );
 		rhs = p->sem_rhs;
 		rhs_idents = p->sem_rhs_idents;
 	}
-
-	/* re_dbg_print_nfa( nfa, 255 ); */
-
-	while( *ptr && !on_error )
+	
+	MSG( "Iterating trough result array" );	
+	for( i = 0, last = base; i < result_cnt && !on_error; i++ )
 	{
+		VARS( "i", "%d", i );
 		off = 0;
-		/* The brainstorming within software was propably powered by GUINNESS Draught!! */
-		while( ptr[ off ] && ( match = re_execute_nfa( nfa, ptr + off, &len ) ) < 0 )
-			off++;
 
-		if( off )
+		if( last < result[i].begin )
 		{
-			tmp = p_malloc( ( off + 1 ) * sizeof( uchar ) );
-			if( !tmp )
-			{
-				OUT_OF_MEMORY;
-				return (uchar*)NULL;
-			}
+			if( !( ret = pstr_append_nchar(
+					ret, last, result[i].begin - last ) ) )
+				OUTOFMEM;
+				
+			VARS( "ret", "%s", ret );
 
-			strncpy( tmp, ptr, off * sizeof( uchar ) );
-			tmp[ off ] = '\0';
-
-			ret = p_str_append( ret, tmp, TRUE );
-
-			ptr += off;
+			last = result[i].end;
 		}
-
-		len--;
-		tmp = (uchar*)NULL;
-
-		switch( match )
+		
+		VARS( "result[i].accept", "%d", result[i].accept );
+		switch( result[i].accept )
 		{
 			case 0:
-				tmp = (uchar*)p_malloc( ( len + 1 ) * sizeof( uchar ) );
-				if( !tmp )
+				MSG( "Identifier" );				
+				for( l = rhs_idents, m = rhs, off = 1; l && m;
+						l = list_next( l ), m = list_next( m ), off++ )
 				{
-					OUT_OF_MEMORY;
-					return (uchar*)NULL;
-				}
+					chk = (uchar*)list_access( l );
+					VARS( "chk", "%s", chk ? chk : "(NULL)" );
 
-				strncpy( tmp, ptr+1, len * sizeof( char ) );
-				tmp[ len ] = '\0';
-
-				for( l = rhs_idents, m = rhs, off = 1;
-						l && m; l = l->next, m = m->next, off++ )
-				{
-					chk = (uchar*)( l->pptr );
-					if( chk && !strcmp( chk, tmp ) )
+					if( chk && !pstrncmp( chk, result[i].begin + 1,
+									pstrlen( chk ) * sizeof( uchar ) ) )
+					{
 						break;
+					}
 				}
 				
-				p_free( tmp );
+				if( !l )
+					off = 0;
+				
+				VARS( "off", "%d", off );
 				break;
 
 			case 1:
-				tmp = (uchar*)p_malloc( ( len + 1 ) * sizeof( uchar ) );
-				if( !tmp )
-				{
-					OUT_OF_MEMORY;
-					return (uchar*)NULL;
-				}
-
-				strncpy( tmp, ptr+1, len * sizeof( char ) );
-				tmp[ len ] = '\0';
-
-				off = atoi( tmp );
-				p_free( tmp );
-
+				MSG( "Offset" );
+				off = patoi( result[i].begin + 1 );
 				break;
 
 			case 2:
-				if( p->lhs->vtype && list_count( parser->vtypes ) > 1 )				
-					tmp = p_tpl_insert( g->action_lhs_union,
-						GEN_WILD_PREFIX "attribute", p_tpl_insert( g->vstack_union_att,
-							GEN_WILD_PREFIX "value-type-id", p_int_to_str( p->lhs->vtype->id ), TRUE,
-								(uchar*)NULL ), TRUE, (uchar*)NULL );
+				MSG( "Left-hand side" );
+				if( p->lhs->vtype && list_count( parser->vtypes ) > 1 )
+					ret = pstr_append_str( ret,
+							p_tpl_insert( g->action_lhs_union,
+								GEN_WILD_PREFIX "attribute",
+									p_tpl_insert( g->vstack_union_att,
+										GEN_WILD_PREFIX "value-type-id",
+											p_int_to_str( p->lhs->vtype->id ),
+												TRUE,
+										(uchar*)NULL ), TRUE,
+								(uchar*)NULL ), TRUE );
 				else
-					tmp = p_strdup( g->action_lhs_single );
-
-				off = -1;
+					ret = pstr_append_str( ret, g->action_lhs_single, FALSE );					
+					
+				VARS( "ret", "%s", ret );
 				break;
-
+				
 			default:
-				len = -1;
-				off = -1;
+				MSG( "Uncaught regular expression match!" );
 				break;
 		}
-
-		if( off > 0 && off <= list_count( rhs ) )
+		
+		VARS( "off", "%d", off );
+		if( off > 0 )
 		{
+			tmp = (uchar*)NULL;
+
+			MSG( "Handing offset" );
 			sym = (SYMBOL*)list_getptr( rhs, off - 1 );
 
 			if( !( sym->type == SYM_KW_TERMINAL ) )
@@ -944,56 +1116,67 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 				{
 					if( sym->vtype )
 					{
-						/* fprintf( stderr, "At >%s< using %s\n", sym->name, sym->vtype->int_name ); */
 						att  = p_tpl_insert( g->vstack_union_att,
-							GEN_WILD_PREFIX "value-type-id", p_int_to_str( sym->vtype->id ),
-								TRUE, (uchar*)NULL );
+							GEN_WILD_PREFIX "value-type-id",
+								p_int_to_str( sym->vtype->id ), TRUE,
+							(uchar*)NULL );
 					}
 					else
 					{
 						p_error( ERR_NO_VALUE_TYPE, ERRSTYLE_FATAL,
-								sym->name, p->id, len+1, ptr );
+								sym->name, p->id, result[i].len + 1,
+									result[i].begin );
 					
 						att = (uchar*)NULL;
 						on_error = TRUE;
 					}
 
 					tmp = p_tpl_insert( g->action_union,
-						GEN_WILD_PREFIX "offset", p_int_to_str( list_count( rhs ) - off ), TRUE,
-							GEN_WILD_PREFIX "attribute", att, TRUE, (uchar*)NULL );
+						GEN_WILD_PREFIX "offset",
+							p_int_to_str( list_count( rhs ) - off ), TRUE,
+						GEN_WILD_PREFIX "attribute", att, TRUE,
+						(uchar*)NULL );
 				}
 				else
 					tmp = p_tpl_insert( g->action_single,
-						GEN_WILD_PREFIX "offset", p_int_to_str( list_count( rhs ) - off ), TRUE,
-							(uchar*)NULL );
+						GEN_WILD_PREFIX "offset",
+							p_int_to_str( list_count( rhs ) - off ), TRUE,
+						(uchar*)NULL );
 			}
 			else
 			{
 				if( !def_code )
 				{
 					p_error( ERR_NO_VALUE_TYPE, ERRSTYLE_FATAL,
-							p_find_base_symbol( sym )->name, p->id, len+1, ptr );
+							p_find_base_symbol( sym )->name,
+								p->id, result[i].len + 1, result[i].begin );
 				}
 
 				on_error = TRUE;
 			}
+			
+			if( tmp )
+				ret = pstr_append_str( ret, tmp, TRUE );
 		}
-
-		if( tmp )
-			ret = p_str_append( ret, tmp, TRUE );
-
-		ptr += ( len + 1 );
 	}
-
-	re_free_nfa_table( nfa );
-
+		
+	if( last && *last )
+		ret = pstr_append_str( ret, last, FALSE );
+	
+	MSG( "Free result array" );
+	pfree( result );
+		
+	VARS( "ret", "%s", ret );
+	VARS( "on_error", "%s", BOOLEAN_STR( on_error ) );
+		
 	if( on_error && ret )
 	{
+		MSG( "Okay, on error, everything will be deleted!" );
 		p_free( ret );
 		ret = (uchar*)NULL;
 	}
 
-	return ret;
+	RETURN( ret );
 }
 
 /* -FUNCTION--------------------------------------------------------------------
@@ -1013,86 +1196,117 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 			uchar* base )
 {
-	LIST*		nfa			= (LIST*)NULL;
-	uchar*		ptr			= base;
-	uchar*		ret			= (uchar*)NULL;
-	uchar*		tmp;
-	int			off;
-	int			len;
-	int			match;
-	BOOLEAN		on_error	= FALSE;
+	pregex			replacer;
+	pregex_result*	result;
+	int				result_cnt;
+	uchar*			ret			= (uchar*)NULL;
+	uchar*			last;
+	int				i;
+	BOOLEAN			on_error	= FALSE;
+	
+	PROC( "p_build_scan_action" );
+	PARMS( "parser", "%p", parser );
+	PARMS( "g", "%p", g );
+	PARMS( "s", "%p", s );
+	PARMS( "base", "%s", base );
+	
+	/* Prepare regular expression engine */
+	pregex_comp_init( &replacer, REGEX_MOD_GLOBAL | REGEX_MOD_NO_ANCHORS );
+	
+	if( pregex_comp_compile( &replacer, "@>", 0 )
+			!= ERR_OK )
+		RETURN( (uchar*)NULL );
 
-	if( re_build_nfa( &nfa, "@>", 0 ) != RE_ERR_NONE )
-		return (uchar*)NULL;
+	if( pregex_comp_compile( &replacer, "@<", 1 )
+			!= ERR_OK )
+		RETURN( (uchar*)NULL );
 
-	if( re_build_nfa( &nfa, "@<", 1 ) != RE_ERR_NONE )
-		return (uchar*)NULL;
-
-	if( re_build_nfa( &nfa, "@@", 2 ) != RE_ERR_NONE )
-		return (uchar*)NULL;
-
-	while( *ptr && !on_error )
+	if( pregex_comp_compile( &replacer, "@@", 2 )
+			!= ERR_OK )
+		RETURN( (uchar*)NULL );
+		
+	/* Run regular expression */
+	if( ( result_cnt = pregex_comp_match( &replacer, base, &result ) ) < 0 )
 	{
-		off = 0;
+		MSG( "Error occured" );
+		VARS( "result_cnt", "%d", result_cnt );
+		RETURN( (uchar*)NULL );
+	}
+	else if( !result_cnt )
+	{
+		MSG( "Nothing to do at all" );
+		RETURN( pstrdup( base ) );
+	}
+	
+	VARS( "result_cnt", "%d", result_cnt );
+	
+	/* Free the regular expression facilities - we have everything we 
+		need from here! */
+	pregex_comp_free( &replacer );
+	
+	MSG( "Iterating trough result array" );	
+	for( i = 0, last = base; i < result_cnt && !on_error; i++ )
+	{
+		VARS( "i", "%d", i );
 
-		while( ptr[ off ] && ( match = re_execute_nfa( nfa, ptr + off, &len ) ) < 0 )
-			off++;
-
-		if( off )
+		if( last < result[i].begin )
 		{
-			tmp = p_malloc( ( off + 1 ) * sizeof( uchar ) );
-			if( !tmp )
-			{
-				OUT_OF_MEMORY;
-				return (uchar*)NULL;
-			}
-
-			strncpy( tmp, ptr, off * sizeof( uchar ) );
-			tmp[ off ] = '\0';
-
-			ret = p_str_append( ret, tmp, TRUE );
-
-			ptr += off;
+			if( !( ret = pstr_append_nchar(
+					ret, last, result[i].begin - last ) ) )
+				OUTOFMEM;
+				
+			VARS( "ret", "%s", ret );
+			last = result[i].end;
 		}
-
-		len--;
-		tmp = (uchar*)NULL;
-
-		switch( match )
+		
+		VARS( "result[i].accept", "%d", result[i].accept );
+		switch( result[i].accept )
 		{
 			case 0:
-				tmp = p_strdup( g->scan_action_begin_offset );
+				MSG( "@>" );
+				ret = pstr_append_str( ret,
+					g->scan_action_begin_offset, FALSE );
 				break;
 
 			case 1:
-				tmp = p_strdup( g->scan_action_end_offset );
+				MSG( "@<" );
+				ret = pstr_append_str( ret,
+					g->scan_action_end_offset, FALSE );
+
 				break;
 
 			case 2:
+				MSG( "@@" );
 				if( s->vtype && list_count( parser->vtypes ) > 1 )
-					tmp = p_tpl_insert( g->scan_action_ret_union,
-						GEN_WILD_PREFIX "attribute", p_tpl_insert( g->vstack_union_att,
-							GEN_WILD_PREFIX "value-type-id", p_int_to_str( s->vtype->id ), TRUE,
-								(uchar*)NULL ), TRUE, (uchar*)NULL );
+					ret = pstr_append_str( ret,
+							p_tpl_insert( g->scan_action_ret_union,
+								GEN_WILD_PREFIX "attribute",
+									p_tpl_insert( g->vstack_union_att,
+										GEN_WILD_PREFIX "value-type-id",
+											p_int_to_str( s->vtype->id ), TRUE,
+										(uchar*)NULL ), TRUE,
+								(uchar*)NULL ), TRUE );
 				else
-					tmp = p_strdup( g->scan_action_ret_single );
-
+					ret = pstr_append_str( ret,
+							g->scan_action_ret_single, FALSE );
 				break;
-
+				
 			default:
-				len = -1;				
+				MSG( "Uncaught regular expression match!" );
 				break;
 		}
-
-		if( tmp )
-			ret = p_str_append( ret, tmp, TRUE );
-
-		ptr += ( len + 1 );
+		
+		VARS( "ret", "%s", ret );
 	}
-
-	re_free_nfa_table( nfa );
-
-	return ret;
+		
+	if( last && *last )
+		ret = pstr_append_str( ret, last, FALSE );
+	
+	MSG( "Free result array" );
+	pfree( result );
+		
+	VARS( "ret", "%s", ret );
+	RETURN( ret );
 }
 
 /* -FUNCTION--------------------------------------------------------------------
@@ -1230,7 +1444,7 @@ BOOLEAN p_load_generator( GENERATOR* g, uchar* genfile )
 		return FALSE;
 	}
 
-	GET_XML_DEF( g->xml, g->driver, "driver" );
+	/* GET_XML_DEF( g->xml, g->driver, "driver" ); */
 	GET_XML_DEF( g->xml, g->vstack_def_type, "vstack_def_type" );
 	GET_XML_DEF( g->xml, g->vstack_term_type, "vstack_term_type" );
 
@@ -1258,10 +1472,11 @@ BOOLEAN p_load_generator( GENERATOR* g, uchar* genfile )
 	GET_XML_TAB_1D( g->prodlhs, "prodlhs" )
 	GET_XML_TAB_1D( g->defprod, "defprod" )
 	GET_XML_TAB_1D( g->charmap, "charmap" )
+	GET_XML_TAB_1D( g->charmap_sym, "charmap_sym" )
 	GET_XML_TAB_1D( g->dfa_select, "dfa_select" )
 	GET_XML_TAB_1D( g->dfa_char, "dfa_char" )
 	GET_XML_TAB_1D( g->dfa_trans, "dfa_trans" )
-	GET_XML_BOOLTAB_1D( g->kw_invalid_suffix, "kw_invalid_suffix" )
+	GET_XML_TAB_1D( g->kw_invalid_suffix, "kw_invalid_suffix" )
 	GET_XML_BOOLTAB_1D( g->whitespace, "whitespace" )
 
 	GET_XML_TAB_2D( g->acttab, "acttab" )
