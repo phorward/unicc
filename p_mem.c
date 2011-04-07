@@ -589,7 +589,6 @@ TABCOL* p_find_tabcol( LIST* row, SYMBOL* sym )
 PARSER* p_create_parser( void )
 {
 	PARSER*		pptr	= (PARSER*)NULL;
-	SYMBOL*		eos		= (SYMBOL*)NULL;
 
 	pptr = p_malloc( sizeof( PARSER ) );
 	if( !pptr )
