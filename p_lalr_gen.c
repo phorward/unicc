@@ -240,6 +240,36 @@ static void p_item_closure( LIST* productions, ITEM* it, LIST** closure_set )
 	}
 }
 
+/* -FUNCTION--------------------------------------------------------------------
+	Function:		p_drop_item_list()
+	
+	Author:			Jan Max Meyer
+	
+	Usage:			Drops and frees a list of items.
+					
+	Parameters:		LIST*		list				The item list
+	
+	Returns:		LIST*(NULL)						always
+  
+	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	Date:		Author:			Note:
+----------------------------------------------------------------------------- */
+static LIST* p_drop_item_list( LIST* list )
+{
+	LIST*		l;
+	ITEM*		it;
+	
+	for( l = list; l; l = list_next( l ) )
+	{
+		it = (ITEM*)list_access( l );
+		
+		p_free_item( it );
+	}
+	
+	list_free( list );
+
+	return (LIST*)NULL;
+}
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_lalr1_closure()
@@ -509,14 +539,16 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 				if( IS_TERMINAL( sym_before_move ) )
 				{
 					st->actions = list_push( st->actions, p_create_tabcol( 
-						sym_before_move, SHIFT_REDUCE, it->prod->id ) );
+						sym_before_move, SHIFT_REDUCE, it->prod->id, (ITEM*)NULL ) );
 				}
 				else
 				{
 					st->gotos = list_push( st->gotos, p_create_tabcol( 
-						sym_before_move, SHIFT_REDUCE, it->prod->id ) );
+						sym_before_move, SHIFT_REDUCE, it->prod->id, (ITEM*)NULL ) );
 				}
 			}
+			
+			p_drop_item_list( (LIST*)( i->pptr ) );
 		}
 		else
 		{
@@ -535,6 +567,7 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 			{
 				nstate = p_create_state( parser );
 				nstate->kernel = i->pptr;
+				nstate->derived_from = st;
 				
 #if ON_ALGORITHM_DEBUG
 				fprintf( stderr, "\n===> Creating new State %d...\n", nstate->state_id );
@@ -576,7 +609,7 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 					list_free( ((ITEM*)(k->pptr))->lookahead );
 					free( k->pptr );
 				}
-							
+
 				/* Had new lookaheads been added? */
 				if( cnt > prev_cnt )
 					nstate->done = 0;
@@ -586,7 +619,8 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 				p_dump_item_set( (FILE*)NULL, "Kernel:", nstate->kernel );
 #endif
 				
-				list_free( i->pptr );
+				/* p_drop_item_list( (LIST*)( i->pptr ) ); */
+				list_free( (LIST*)( i->pptr ) );
 			}
 
 			/* Performing some table creation */
@@ -595,12 +629,12 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 				if( IS_TERMINAL( sym_before_move ) )
 				{
 					st->actions = list_push( st->actions, p_create_tabcol( 
-						sym_before_move, SHIFT, nstate->state_id ) );
+						sym_before_move, SHIFT, nstate->state_id, (ITEM*)NULL ) );					
 				}
 				else
 				{
 					st->gotos = list_push( st->gotos, p_create_tabcol( 
-						sym_before_move, SHIFT, nstate->state_id ) );
+						sym_before_move, SHIFT, nstate->state_id, (ITEM*)NULL ) );
 				}
 			}
 		}
@@ -668,7 +702,7 @@ static void p_reduce_item( PARSER* parser, STATE* st, ITEM* it )
 			if( ( act = p_find_tabcol( st->actions, sym ) ) == (TABCOL*)NULL )
 			{
 				st->actions = list_push( st->actions,
-					p_create_tabcol( sym, REDUCE, it->prod->id ) );
+					p_create_tabcol( sym, REDUCE, it->prod->id, it ) );
 			}
 			else
 			{
@@ -690,6 +724,7 @@ static void p_reduce_item( PARSER* parser, STATE* st, ITEM* it )
 						{
 							act->index = it->prod->id;
 							act->symbol = sym;
+							act->derived_from = it;
 						}
 					}
 				}
@@ -708,7 +743,8 @@ static void p_reduce_item( PARSER* parser, STATE* st, ITEM* it )
 						{
 							act->action = REDUCE;
 							act->index = it->prod->id;
-							act->symbol = sym;
+							act->symbol = sym;							
+							act->derived_from = it;
 						}
 						else if( sym->prec == it->prod->prec
 							&& sym->assoc == ASSOC_NOASSOC )
