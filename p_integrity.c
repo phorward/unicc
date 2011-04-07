@@ -111,7 +111,9 @@ BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 	stack[ tos ] = start;
 	sym = *(str++);
 	
+	/*
 	fprintf( stderr, "STATE %d\n", start );
+	*/
 	do
 	{
 		act = 0;
@@ -138,9 +140,10 @@ BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 					break;
 			}
 		}
-
+		/*
 		fprintf( stderr, "state = %d, sym = >%c< act = %d idx = %d\n",
 			st->state_id, sym, act, idx );
+		*/
 
 		/* Error */
 		if( act == 0 )
@@ -163,11 +166,15 @@ BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 
 			rprod = (PROD*)list_getptr( parser->productions, idx );
 			
+			/*
 			fprintf( stderr, "tos = %d, reducing production %d, %d\n", tos, idx, list_count( rprod->rhs ) );
+			*/
 			tos -= list_count( rprod->rhs );
 			tos++;
 			
+			/*
 			fprintf( stderr, "tos = %d\n", tos );
+			*/
 
 			st = list_getptr( parser->lalr_states, stack[ tos - 1 ] );
 			for( l = st->gotos; l; l = l->next )
@@ -259,7 +266,7 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 		for( m = st->actions, cnt = 0; m; m = m->next )
 		{
 			col = (TABCOL*)m->pptr;
-			if( col->action & REDUCE )
+			if( col->action == REDUCE )
 				cnt++;
 		}
 
@@ -268,7 +275,7 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 			col = (TABCOL*)m->pptr;
 
 			/* Keyword to be reduced? */
-			if( col->symbol->keyword && col->action & REDUCE )
+			if( col->symbol->type == SYM_KW_TERMINAL && col->action == REDUCE )
 			{
 				/*
 					p_try_to_parse() can either be called here; But to be
@@ -282,7 +289,8 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 					ccol = (TABCOL*)n->pptr;
 
 					/* Character class to be shifted? */
-					if( !( ccol->symbol->keyword ) && ccol->action & SHIFT )
+					if( ccol->symbol->type == SYM_CCL_TERMINAL
+							&& ccol->action & SHIFT )
 					{
 						test = p_ccl_to_map( parser, ccol->symbol->name );
 
@@ -296,8 +304,8 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 						*/
 						if( bitset_get( test, *( col->symbol->name ) ) )
 						{
-							if( p_try_to_parse( parser, col->symbol->name, st->state_id )
-									&& cnt > 1 )
+							if( p_try_to_parse( parser, col->symbol->name,
+									st->state_id ) && cnt > 1 )
 							{
 									p_error( ERR_KEYWORD_ANOMALY,
 										ERRSTYLE_WARNING | ERRSTYLE_STATEINFO,
