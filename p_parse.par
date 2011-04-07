@@ -350,6 +350,7 @@ directive_parms		-> "whitespaces" 	symbol_list				[*	LIST* l;
 																		parser->p_lexem_sep = !@2;
 																*]
 					| "case insensitive keywords"	boolean		[*	parser->p_cis_keywords = !@2;	*]
+					| "reserve keywords"			boolean		[*	parser->p_reserve_kw = !@2;		*]
 					| "prologue"					code		[*	parser->p_header = p_str_append(
 																			parser->p_header, strbuf, FALSE );	*]
 					| "epilogue"					code		[*	parser->p_footer = p_str_append(
