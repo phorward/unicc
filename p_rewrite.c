@@ -630,7 +630,7 @@ void p_inherit_fixiations( PARSER* parser )
 	{
 		sym = l->pptr;
 
-		if( sym->lexem && sym->type == SYM_NON_TERMINAL )
+		if( sym->fixated && sym->type == SYM_NON_TERMINAL )
 		{
 			done = list_push( done, sym );
 			stack = list_push( stack, sym );
