@@ -60,6 +60,7 @@ SYMBOL* p_positive_closure( PARSER* parser, SYMBOL* base )
 			s->used = TRUE;
 			s->defined = TRUE;
 			s->vtype = base->vtype;
+			s->derived_from = base;
 
 			p = p_create_production( parser, s );
 			p_append_to_production( p, s, (uchar*)NULL );
@@ -121,6 +122,7 @@ SYMBOL* p_kleene_closure( PARSER* parser, SYMBOL* base )
 			s->used = TRUE;
 			s->defined = TRUE;
 			s->vtype = base->vtype;
+			s->derived_from = base;
 
 			p = p_create_production( parser, s );
 			/*p_append_to_production( p, s, (uchar*)NULL );
@@ -169,6 +171,7 @@ SYMBOL* p_optional_closure( PARSER* parser, SYMBOL* base )
 			s->used = TRUE;
 			s->defined = TRUE;
 			s->vtype = base->vtype;
+			s->derived_from = base;
 
 			p = p_create_production( parser, s );
 			p_append_to_production( p, base, (uchar*)NULL );
