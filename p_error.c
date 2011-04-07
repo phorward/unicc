@@ -44,6 +44,7 @@ uchar* error_txt[128] =
 	"No end of input token defined, assuming \"%s\"",
 	"Parameter missing behind \"%s\"",
 	"Unable to open output file \"%s\"",
+	"Unable to open input file \"%s\"",
 	"Generator definition file \"%s\" was not found!",
 	"Can't find tag <%s> in %s",
 	"XML-format errors %s:\n\t%s",
