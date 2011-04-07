@@ -84,6 +84,8 @@ void p_fix_precedences( PARSER* parser );
 void p_inherit_fixiations( PARSER* parser );
 void p_inherit_vtypes( PARSER* parser );
 void p_setup_single_goal( PARSER* parser );
+void p_symbol_order( PARSER* parser );
+void p_charsets_to_nfa( PARSER* parser );
 
 /* p_virtual.c */
 SYMBOL* p_positive_closure( PARSER* parser, SYMBOL* base );
@@ -117,5 +119,8 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 uchar* p_escape_for_target( GENERATOR* g, uchar* str, BOOLEAN clear );
 uchar* p_mkproduction_str( PROD* p );
 BOOLEAN p_load_generator( GENERATOR* g, uchar* genfile );
+
+/* p_xml.c */
+void p_build_xml( PARSER* parser );
 
 #endif
