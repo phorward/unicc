@@ -1,6 +1,6 @@
 {/* -MODULE----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator 
-Copyright (C) 2006-2009 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2010 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_parse.syn/p_parse.c
@@ -16,9 +16,11 @@ of the Artistic License, version 2. Please see LICENSE for more information.
  * -------------------------------------
  * This parser is only used for bootstrapping UniCC, and is not be tended any-
  * more with new features. Instead, implement new language-oriented features
- * into the final UniCC parser, p_parse.par.
+ * into the final UniCC parser, p_parse.par. This grammar uses the min_lalr1
+ * experimental and testing purpose parser generator to build a first running
+ * parser for UniCC. min_lalr1 served as UniCC prototype in the past! :)
  *
- * Only bugfixing is allowed here!
+ * So please note: Only bugfixing and/or revision is allowed here!
  */
 
 
@@ -43,8 +45,8 @@ union _stack_val
 	
 	struct
 	{
-		NFA*	start;
-		NFA*	end;
+		pregex_nfa_st*	start;
+		pregex_nfa_st*	end;
 	} nfa;
 };
 
@@ -71,8 +73,8 @@ BOOLEAN	footer_code	= FALSE; /* Flag for footer code recognition */
 
 extern int	error_count;
 
-uchar*	strbuf	= (uchar*)NULL;
-LIST*	nfa_m	= (LIST*)NULL;
+uchar*		strbuf	= (uchar*)NULL;
+pregex_nfa	nfa_x;
 
 
 /*
@@ -88,7 +90,8 @@ static void strbuf_append( uchar ch )
 	if( !strbuf )
 		strbuf = (uchar*)p_malloc( ( MALLOC_STEP + 2 ) * sizeof( uchar ) );
 	else if( len % MALLOC_STEP == 0 )
-		strbuf = (uchar*)p_realloc( (uchar*)strbuf, ( len + MALLOC_STEP + 2 ) * sizeof( uchar ) );
+		strbuf = (uchar*)p_realloc( (uchar*)strbuf, ( len + MALLOC_STEP + 2 )
+			* sizeof( uchar ) );
 
 	strbuf[len] = ch;
 	strbuf[len+1] = '\0';
@@ -104,7 +107,8 @@ static void strbuf_prefix( uchar ch )
 	if( !strbuf )
 		strbuf = (uchar*)p_malloc( ( MALLOC_STEP + 2 ) * sizeof( uchar ) );
 	else if( len % MALLOC_STEP == 0 )
-		strbuf = (uchar*)p_realloc( (uchar*)strbuf, ( len + MALLOC_STEP + 2 ) * sizeof( uchar ) );
+		strbuf = (uchar*)p_realloc( (uchar*)strbuf, ( len + MALLOC_STEP + 2 )
+			* sizeof( uchar ) );
 
 	tmp = p_strdup( strbuf );
 	sprintf( strbuf, "%c%s%c", ch, tmp, '\0' );
@@ -139,16 +143,23 @@ static void set_assoc_and_prec( LIST* symbols, int assoc )
 	prec_cnt++;
 }
 
-static void set_nfa_to_symbols( SYMBOL* s, NFA* start, NFA* end )
+static void set_nfa_to_symbol( SYMBOL* s,
+	pregex_nfa_st* start, pregex_nfa_st* end )
 {
-	NFA*	nstart;
+	pregex_nfa_st*	nstart;
 	
-	nstart = re_create_nfa( &( s->nfa_def ) );
+	if( !( nstart = pregex_nfa_create_state(
+			&( s->nfa ), (uchar*)NULL, REGEX_MOD_NONE ) ) )
+		OUT_OF_MEMORY;
+
 	nstart->next = start;
 	end->accept = s->id;
 	
-	s->nfa_def = list_union( s->nfa_def, nfa_m );
-	nfa_m = list_free( nfa_m );
+	if( !( s->nfa.states = list_union( s->nfa.states, nfa_x.states ) ) )
+		OUT_OF_MEMORY;
+		
+	list_free( nfa_x.states );
+	memset( &nfa_x, 0, sizeof( pregex_nfa ) );
 	
 	s->keyword = TRUE;
 }
@@ -311,8 +322,10 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 																	}
 																	else
 																	{
-																		parser->p_invalid_suf = p_strdup( strbuf );
+																		parser->p_invalid_suf = ccl_create( strbuf );
 																		parser->p_neg_inv_suf = #2.negative;
+																		if( #2.negative )
+																			ccl_negate( parser->p_invalid_suf );
 																	}
 																}
 				| "case insensitive keywords"	boolean			{	parser->p_cis_keywords = !(#2.negative);	}
@@ -377,7 +390,7 @@ definition:		lhs goal_mark type "->" productions				{
 																	
 																	p_free( #2.str );
 																	
-																	set_nfa_to_symbols( s, #4.nfa.start, #4.nfa.end );
+																	set_nfa_to_symbol( s, #4.nfa.start, #4.nfa.end );
 																	
 																	/* Attach code */
 																	if( strbuf && *strbuf )
@@ -477,29 +490,38 @@ sym:			terminal										{	##.ptr = #1.ptr; 	}
 				;
 				
 terminal:		ccl												{ 	SYMBOL* s;
-																	char* name = strbuf;
+																	CCL 	ccl;
+																	
+																	ccl = ccl_create( strbuf );
 
 																	if( #1.negative )
-																		name = p_negate_ccl( parser, name );
-
+																		ccl_negate( ccl );
+																		
+																		
 																	s = p_get_symbol( parser, 
-																			name, SYM_CCL_TERMINAL, TRUE );
+																			(void*)ccl,
+																				SYM_CCL_TERMINAL, TRUE );
 
 																	s->used = TRUE;
 																	s->defined = TRUE;
 																	##.ptr = s;
-																	
-																	if( #1.negative )
-																		p_free( name );
 																}
 				| kw											{ 	SYMBOL* s;
+																	
+																	
 																	s = p_get_symbol( parser,
 																			strbuf, SYM_KW_TERMINAL, TRUE );
 
 																	s->used = TRUE;
 																	s->defined = TRUE;
-
 																	s->keyword = TRUE;
+																	
+																	if( pregex_nfa_from_string(
+																		&( s->nfa ), strbuf,
+																			REGEX_MOD_NONE, s->id )
+																				!= ERR_OK )
+																		OUT_OF_MEMORY;
+																	
 																	##.ptr = s;
 																}
 				| integer										{	SYMBOL* s;
@@ -521,7 +543,8 @@ terminal:		ccl												{ 	SYMBOL* s;
 																}
 				/*
 				| '~'											{	##.ptr = p_get_symbol( parser,
-																			"", SYM_ERROR, TRUE );												}
+																			"", SYM_ERROR, TRUE );
+																}
 				*/
 				;
 
@@ -539,8 +562,11 @@ access_name:	':' identifier
 regex:			re_alt
 				;
 
-re_alt:			re_alt '|' re_expr								{	##.nfa.start = re_create_nfa( &nfa_m );
-																	##.nfa.end = re_create_nfa( &nfa_m );
+re_alt:			re_alt '|' re_expr								{	
+																	##.nfa.start = pregex_nfa_create_state
+																			( &nfa_x, (uchar*)NULL, REGEX_MOD_NONE );
+																	##.nfa.end = pregex_nfa_create_state
+																			( &nfa_x, (uchar*)NULL, REGEX_MOD_NONE );
 																	
 																	##.nfa.start->next = #1.nfa.start;
 																	##.nfa.start->next2 = #3.nfa.start;
@@ -558,8 +584,10 @@ re_expr:		re_expr re_modifier								{	##.nfa.start = #1.nfa.start;
 				| re_modifier
 				;
 				
-re_modifier:	re_factor '*'									{	##.nfa.start = re_create_nfa( &nfa_m );
-																	##.nfa.end = re_create_nfa( &nfa_m );
+re_modifier:	re_factor '*'									{	##.nfa.start = pregex_nfa_create_state
+																			( &nfa_x, (uchar*)NULL, REGEX_MOD_NONE );
+																	##.nfa.end = pregex_nfa_create_state
+																			( &nfa_x, (uchar*)NULL, REGEX_MOD_NONE );
 																	
 																	##.nfa.start->next = #1.nfa.start;
 																	##.nfa.start->next2 = ##.nfa.end;
@@ -571,7 +599,8 @@ re_modifier:	re_factor '*'									{	##.nfa.start = re_create_nfa( &nfa_m );
 																	##.nfa.end = #1.nfa.end;
 																	##.nfa.end->next2 = ##.nfa.start;
 																}
-				| re_factor '?'									{	##.nfa.start = re_create_nfa( &nfa_m );
+				| re_factor '?'									{	##.nfa.start = pregex_nfa_create_state
+																			( &nfa_x, (uchar*)NULL, REGEX_MOD_NONE );
 																		
 																	##.nfa.start->next = #1.nfa.start;
 																	##.nfa.start->next2 = #1.nfa.end;
@@ -580,55 +609,47 @@ re_modifier:	re_factor '*'									{	##.nfa.start = re_create_nfa( &nfa_m );
 				| re_factor
 				;
 
-re_factor:		ccl												{	uchar*	tmp;
-																	##.nfa.start = re_create_nfa( &nfa_m );
+re_factor:		ccl												{
+																	##.nfa.start = pregex_nfa_create_state(
+																			&nfa_x, strbuf, REGEX_MOD_NONE );
 																	##.nfa.end = ##.nfa.start->next
-																		= re_create_nfa( &nfa_m );
-																		
-																	##.nfa.start->edge = CCL;
+																		= pregex_nfa_create_state(
+																			&nfa_x, (uchar*)NULL, REGEX_MOD_NONE );
+
 																	if( #1.negative )
-																	{
-																		tmp = p_negate_ccl( parser, strbuf );
-																		
-																		##.nfa.start->cclass = 
-																			p_ccl_to_map( parser, tmp );
-																			
-																		p_free( tmp );
-																	}
-																	else
-																		##.nfa.start->cclass =
-																			p_ccl_to_map( parser, strbuf );
+																		ccl_negate( ##.nfa.start->ccl );
 																}
 				| kw											{	uchar*	ch;
+																	pregex_nfa_st*	st;
 																	
 																	if( *strbuf )
 																	{
-																		##.nfa.end = ##.nfa.start = re_create_nfa(
-																			&nfa_m );
-																		
-																		for( ch = strbuf; *ch; ch++ )
+																		##.nfa.end = ##.nfa.start =
+																			pregex_nfa_create_state(
+																				&nfa_x, (uchar*)NULL, REGEX_MOD_NONE );
+
+																		for( ch = strbuf; *ch; ch += u8_seqlen( ch ) )
 																		{
-																			##.nfa.end->edge = *ch;
-																			
+																			##.nfa.end->ccl =
+																				ccl_addrange( (CCL)NULL,
+																					u8_char( pstr ),
+																						u8_char( pstr ) );
+
 																			##.nfa.end = ##.nfa.end->next
-																				= re_create_nfa( &nfa_m );
+																				= pregex_nfa_create_state(
+																					&nfa_x, (uchar*)NULL, REGEX_MOD_NONE );
 																		}
 																	}
 																}
-				| '.'											{	int i;
-
-																	##.nfa.start = re_create_nfa(
-																		&( nfa_m ) );
-																	##.nfa.end = ##.nfa.start->next
-																		= re_create_nfa(
-																			&( nfa_m ) );
-																		
-																	##.nfa.start->edge = CCL;
-																	##.nfa.start->cclass =
-																		bitset_create( parser->p_universe );
+				| '.'											{	##.nfa.start = pregex_nfa_create_state(
+																		&( nfa_x ), (uchar*)NULL, REGEX_MOD_NONE );
+																	##.nfa.start->ccl =
+																				ccl_addrange( (CCL)NULL,
+																					CCL_MIN, CCL_MAX - 1 );	
 																	
-																	for( i = 0; i < parser->p_universe; i++ )
-																		bitset_set( ##.nfa.start->cclass, i, 1 );
+																	##.nfa.end = ##.nfa.start->next
+																		= pregex_nfa_create_state(
+																			&( nfa_x ), (uchar*)NULL, REGEX_MOD_NONE );
 																}
 				| '(' regex ')'									{	##.nfa.start = #2.nfa.start;
 																	##.nfa.end = #2.nfa.end;
