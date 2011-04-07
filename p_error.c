@@ -59,7 +59,8 @@ uchar* error_txt[128] =
 	"Invalid value for character universe",
 	"Character-class overlap in context-insensitive model with \'%s\'",
 	"Action references to undefined right-hand side symbol '%s'",
-	"Semantic code will be ignored: No target language specified."
+	"Semantic code will be ignored: No target language specified.",
+	"Multiple use of directive '#%s' ignored; It has already been defined."
 };
 
 int					error_count		= 0;
