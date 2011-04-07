@@ -174,7 +174,7 @@ fixed_directive: "model"				model_type
 				;
 
 model_type:		"context-sensitive"								{	parser->p_model = MODEL_CONTEXT_SENSITIVE;	}
-				| "context-free"								{	parser->p_model = MODEL_CONTEXT_FREE;		}
+				| "context-insensitive"							{	parser->p_model = MODEL_CONTEXT_INSENSITIVE;}
 				;
 
 segment:		code
