@@ -61,6 +61,7 @@ void p_build_code( FILE* stream, PARSER* parser )
 	GENERATOR	generator;
 	GENERATOR*	gen					= (GENERATOR*)NULL;
 	uchar		xml_file			[ BUFSIZ + 1 ];
+	uchar*		tpldir;
 	uchar*		complete			= (uchar*)NULL;
 	uchar*		all					= (uchar*)NULL;
 	uchar*		action_table		= (uchar*)NULL;
@@ -74,7 +75,6 @@ void p_build_code( FILE* stream, PARSER* parser )
 	uchar*		whitespaces			= (uchar*)NULL;
 	uchar*		symbols				= (uchar*)NULL;
 	uchar*		productions			= (uchar*)NULL;
-	uchar*		production			= (uchar*)NULL;
 	uchar*		dfa_select			= (uchar*)NULL;
 	uchar*		dfa_idx				= (uchar*)NULL;
 	uchar*		dfa_idx_row			= (uchar*)NULL;
@@ -88,7 +88,6 @@ void p_build_code( FILE* stream, PARSER* parser )
 	uchar*		scan_actions		= (uchar*)NULL;
 	uchar*		top_value			= (uchar*)NULL;
 	uchar*		act					= (uchar*)NULL;
-	uchar*		rhs_item			= (uchar*)NULL;
 
 	int*		chr_sym;
 
@@ -96,9 +95,7 @@ void p_build_code( FILE* stream, PARSER* parser )
 	int			max_goto			= 0;
 	int			max_dfa_idx			= 0;
 	int			max_dfa_accept		= 0;
-	int			kw_start			= 0;
 	int			kw_count			= 0;
-	int			whitespaces_count	= 0;
 	int			max_symbol_name		= 0;
 	int			column;
 	int			row;
@@ -123,6 +120,14 @@ void p_build_code( FILE* stream, PARSER* parser )
 	memset( gen, 0, sizeof( GENERATOR ) );
 
 	sprintf( xml_file, "%s.xml", parser->p_language );
+	if( access( xml_file, F_OK ) &&
+		( tpldir = getenv( "UNICC_TPLDIR" ) ) )
+	{
+		sprintf( xml_file, "%s%s%s.xml",
+			tpldir, ( ( tpldir[ p_strlen( tpldir ) ] == *PATHSEP ) ?
+				"" : PATHSEP ), parser->p_language );
+	}
+	
 	if( !p_load_generator( gen, xml_file ) )
 		return;
 
@@ -169,8 +174,10 @@ void p_build_code( FILE* stream, PARSER* parser )
 		
 		/* Action table */
 		action_table_row = p_tpl_insert( gen->acttab.row_start,
-				GEN_WILD_PREFIX "number-of-columns", p_int_to_str( list_count( st->actions ) ), TRUE,
-					GEN_WILD_PREFIX "state-number", p_int_to_str( st->state_id ), TRUE,
+				GEN_WILD_PREFIX "number-of-columns",
+					p_int_to_str( list_count( st->actions ) ), TRUE,
+				GEN_WILD_PREFIX "state-number",
+					p_int_to_str( st->state_id ), TRUE,
 						(uchar*)NULL );
 
 		if( max_action < list_count( st->actions ) )
@@ -198,8 +205,10 @@ void p_build_code( FILE* stream, PARSER* parser )
 
 		action_table_row = p_str_append( action_table_row,
 				p_tpl_insert( gen->acttab.row_end,
-					GEN_WILD_PREFIX "number-of-columns", p_int_to_str( list_count( st->actions ) ), TRUE,
-						GEN_WILD_PREFIX "state-number", p_int_to_str( st->state_id ), TRUE,
+					GEN_WILD_PREFIX "number-of-columns",
+						p_int_to_str( list_count( st->actions ) ), TRUE,
+					GEN_WILD_PREFIX "state-number",
+						p_int_to_str( st->state_id ), TRUE,
 							(uchar*)NULL ), TRUE );
 
 		if( l->next )
@@ -210,8 +219,10 @@ void p_build_code( FILE* stream, PARSER* parser )
 
 		/* Goto table */
 		goto_table_row = p_tpl_insert( gen->gotab.row_start,
-				GEN_WILD_PREFIX "number-of-columns", p_int_to_str( list_count( st->gotos ) ), TRUE,
-					GEN_WILD_PREFIX "state-number", p_int_to_str( st->state_id ), TRUE,
+				GEN_WILD_PREFIX "number-of-columns",
+					p_int_to_str( list_count( st->gotos ) ), TRUE,
+				GEN_WILD_PREFIX "state-number",
+					p_int_to_str( st->state_id ), TRUE,
 						(uchar*)NULL );
 
 		if( max_goto < list_count( st->gotos ) )
@@ -795,7 +806,6 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 {
 	LIST*		rhs			= p->rhs;
 	LIST*		rhs_idents	= p->rhs_idents;
-	BOOLEAN		cont		= TRUE;
 	LIST*		l;
 	LIST*		m;
 	LIST*		nfa			= (LIST*)NULL;
@@ -805,7 +815,6 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 	uchar*		tmp;
 	uchar*		chk;
 	uchar*		att;
-	uchar*		last		= (uchar*)NULL;
 	int			off;
 	int			len;
 	int			match;
@@ -992,12 +1001,10 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 			uchar* base )
 {
-	BOOLEAN		cont		= TRUE;
 	LIST*		nfa			= (LIST*)NULL;
 	uchar*		ptr			= base;
 	uchar*		ret			= (uchar*)NULL;
 	uchar*		tmp;
-	uchar*		last		= (uchar*)NULL;
 	int			off;
 	int			len;
 	int			match;
@@ -1197,8 +1204,7 @@ BOOLEAN p_load_generator( GENERATOR* g, uchar* genfile )
 		GET_XML_DEF( tmp, (target).col_sep, "col_sep" ) \
 	} \
 	else \
-		p_error( ERR_TAG_NOT_FOUND, ERRSTYLE_WARNING, (tagname), genfile );
-
+		p_error( ERR_TAG_NOT_FOUND, ERRSTYLE_WARNING, (tagname), genfile ); 
 
 	if( !( g->xml = xml_parse_file( genfile ) ) )
 	{
