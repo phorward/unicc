@@ -438,6 +438,34 @@ BOOLEAN p_map_test_char( bitset map, uchar chr, BOOLEAN insensitive )
 }
 
 /* -FUNCTION--------------------------------------------------------------------
+	Function:		p_ccl_test_char()
+	
+	Author:			Jan Max Meyer
+	
+	Usage:			Performs a character test on a character class, and acts
+					as wrapper for the foundation library functions ccl_test()
+					and ccl_instest().
+
+	Parameters:		CCL			ccl			Character class to be tested.
+					pchar		chr			Character to be tested
+					BOOLEAN		insensitive	TRUE: Test case-insensitive
+											FALSE: Test case-sensitive
+					
+	Returns:		BOOLEAN					TRUE: Character is hold in class,
+											FALSE: Character not hold in class
+  
+	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	Date:		Author:			Note:
+----------------------------------------------------------------------------- */
+BOOLEAN p_ccl_test_char( CCL ccl, pchar chr, BOOLEAN insensitive )
+{
+	if( insensitive )
+		return ccl_instest( ccl, chr );
+	
+	return ccl_test( ccl, chr );
+}
+
+/* -FUNCTION--------------------------------------------------------------------
 	Function:		p_find_base_symbol()
 	
 	Author:			Jan Max Meyer
