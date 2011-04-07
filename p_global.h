@@ -13,7 +13,10 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 
 #ifndef P_GLOBAL_H
 #define P_GLOBAL_H
+
+#ifdef _WIN32
 #pragma warning( disable: 4996 )
+#endif
 
 /*
  * Includes
@@ -24,6 +27,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include <unistd.h>
 
 /* Phorward C Library */
 #include <uchar.h>
@@ -50,13 +54,12 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define SYM_CCL_TERMINAL		1
 #define SYM_KW_TERMINAL			2
 #define SYM_REGEX_TERMINAL		3
-#define SYM_EXTERN_TERMINAL		4
+#define SYM_EXTERN_TERMINAL		4	/* TODO */
 #define SYM_ERROR_RESYNC		5
 
-
 /* Parser generation models */
-#define MODEL_CONTEXT_SENSITIVE	0	/* Character-based parsing (default) */
-#define MODEL_CONTEXT_FREE		1	/* Scanner-based parsing */
+#define MODEL_CONTEXT_SENSITIVE		0	/* Create context-sensitive parser (default) */
+#define MODEL_CONTEXT_INSENSITIVE	1	/* Create context-insentivie parser */
 
 /* Macro to verify terminals */
 #define IS_TERMINAL( s ) \
@@ -69,9 +72,9 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define ASSOC_NOASSOC			3
 
 /* Parser actions */
-#define REDUCE					1 /* 0 1 */
-#define SHIFT					2 /* 1 0 */
-#define SHIFT_REDUCE			3 /* 1 1 */
+#define REDUCE					1 /* Reduce 0 1 */
+#define SHIFT					2 /* Shift 1 0 */
+#define SHIFT_REDUCE			3 /* Shift-Reduce 1 1 */
 
 /* Number of hash-table buckets */
 #define BUCKET_COUNT			64
@@ -83,15 +86,18 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define GEN_WILD_PREFIX			"@@"
 
 /* Phorward UniCC parser generator version number */
-#define PHORWARD_VERSION		"0.20"
+#define PHORWARD_VERSION		"0.21"
 #define PHORWARD_DEFAULT_LNG	"C"
 
-/* Phorward UniCC parser generator error protocols */
-#define ERR_PROT_CONSOLE		0
-#define ERR_PROT_XML			1
+/* Path separator */
+#ifdef _WIN32
+#define PATHSEP					"\\"
+#else
+#define PATHSEP					"/"
+#endif
 
 /*
- * Macros
+ * Macsros
  */
 
 /* Memory handling */
@@ -237,6 +243,9 @@ struct _tabcol
 	SYMBOL*		symbol;			/* Symbol */
 	short		action;			/* Action on this symbol */
 	int			index;			/* Action-index on this symbol */
+	
+	ITEM*		derived_from;	/* Pointer to item that derives
+									this table column */
 };
 
 /* Value stack type */
