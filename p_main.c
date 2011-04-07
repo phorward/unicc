@@ -446,7 +446,7 @@ int main( int argc, char** argv )
 				else
 				{
 					PROGRESS( "Generating parser definition file" )
-					p_build_xml( parser );
+					p_build_xml( parser, TRUE );
 					DONE()
 				}
 			}
@@ -467,6 +467,9 @@ int main( int argc, char** argv )
 		{
 			FAIL()
 			error_count++;
+
+			if( parser->gen_xml )
+				p_build_xml( parser, FALSE );
 		}
 
 		p_free_parser( parser );
