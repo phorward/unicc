@@ -267,7 +267,7 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 				
 				if( !l )
 				{
-					p_error( ERR_UNDEFINED_SYMREF, ERRSTYLE_WARNING,
+					p_error( parser, ERR_UNDEFINED_SYMREF, ERRSTYLE_WARNING,
 						result[i].begin + 1 );
 					off = 0;
 					
@@ -327,7 +327,7 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 			{
 				if( !def_code )
 				{
-					p_error( ERR_NO_VALUE_TYPE, ERRSTYLE_FATAL,
+					p_error( parser, ERR_NO_VALUE_TYPE, ERRSTYLE_FATAL,
 							p_find_base_symbol( sym )->name,
 								p->id, result[i].len + 1, result[i].begin );
 				}
@@ -584,6 +584,8 @@ void p_build_xml( PARSER* parser )
 	XML_T			attrib;
 	XML_T			option;
 
+	XML_T			errors;
+
 	uchar*			transtype;
 	
 	FILE* 			out					= (FILE*)NULL;
@@ -628,9 +630,12 @@ void p_build_xml( PARSER* parser )
 	if( !( par = xml_new( "parser" ) ) )
 		OUTOFMEM;
 
+	/* UniCC version */
+	xml_set_attr( par, "unicc-version", UNICC_VERSION );
+
 	/* Parser model */
-	xml_set_attr( par, "model", pmod[ parser->p_model ] );
-		
+	xml_set_attr( par, "mode", pmod[ parser->p_mode ] );
+
 	/* Set general parser attributes */
 	if( parser->p_name &&
 			!( xml_set_attr( par, "name", parser->p_name ) ) )
@@ -1080,14 +1085,16 @@ void p_build_xml( PARSER* parser )
 		OUTOFMEM;
 		
 	xml_set_txt( code, parser->source );
+
+	/* Write error messages */
+	if( parser->err_xml )
+		xml_move( xml_child( parser->err_xml, "messages" ), par, 0 );
 	
 	/* Write to output file */
-	if( outname = pasprintf( "%s.xml", parser->p_basename ) )
+	if( ( outname = pasprintf( "%s.xml", parser->p_basename ) ) )
 	{
 		if( !( out = fopen( outname, "wb" ) ) )
-		{
-			p_error( ERR_OPEN_OUTPUT_FILE, ERRSTYLE_WARNING, outname );
-		}
+			p_error( parser, ERR_OPEN_OUTPUT_FILE, ERRSTYLE_WARNING, outname );
 	}
 	
 	if( !out )
