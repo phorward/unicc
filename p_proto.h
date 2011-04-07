@@ -38,6 +38,8 @@ void p_free_state( STATE* st );
 TABCOL* p_create_tabcol( SYMBOL* sym, short action, int index, ITEM* item );
 void p_free_tabcol( TABCOL* act );
 TABCOL* p_find_tabcol( LIST* row, SYMBOL* sym );
+OPT* p_create_opt( HASHTAB* ht, uchar* opt, uchar* def );
+void p_free_opt( OPT* option );
 PARSER* p_create_parser( void );
 void p_free_parser( PARSER* parser );
 VTYPE* p_find_vtype( PARSER* p, uchar* name );
