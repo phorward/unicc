@@ -108,12 +108,18 @@ BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 
 	error = list_count( parser->productions ) * -1;
 	
+	if( ( st = list_getptr( parser->lalr_states, start ) ) )	
+		stack[ tos++ ] = st->derived_from->state_id;
+	else
+		stack[ tos++ ] = start;
+	
 	stack[ tos ] = start;
 	sym = *(str++);
 	
 	/*
 	fprintf( stderr, "STATE %d\n", start );
 	*/
+	
 	do
 	{
 		act = 0;
@@ -151,31 +157,25 @@ BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 		/* Shift */		
 		if( act & SHIFT )
 		{
-			tos++;
-			stack[ tos ] = idx;
-
+			stack[ ++tos ] = idx;
 			sym = *(str++);
 		}
 
 		/* Reduce */
 		while( act & REDUCE )
 		{
-			if( tos == 0 )
-				return FALSE;
-
 			rprod = (PROD*)list_getptr( parser->productions, idx );
-			
+
 			/*
 			fprintf( stderr, "tos = %d, reducing production %d, %d\n", tos, idx, list_count( rprod->rhs ) );
+			p_dump_production( stderr, rprod, FALSE, FALSE );
 			*/
+
 			tos -= list_count( rprod->rhs );
 			tos++;
 			
-			/*
-			fprintf( stderr, "tos = %d\n", tos );
-			*/
-
 			st = list_getptr( parser->lalr_states, stack[ tos - 1 ] );
+
 			for( l = st->gotos; l; l = l->next )
 			{
 				col = (TABCOL*)l->pptr;
@@ -243,19 +243,27 @@ BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 BOOLEAN p_keyword_anomalies( PARSER* parser )
 {
 	STATE*		st;
+	STATE*		prev;
 	LIST*		l;
 	LIST*		m;
 	LIST*		n;
+	LIST*		o;
+	LIST*		q;
+	PROD*		p;
+	SYMBOL*		lhs;
+	SYMBOL*		sym;
 	TABCOL*		col;
 	TABCOL*		ccol;
+	ITEM*		it;
 	bitset		test;
 	int			cnt;
+	BOOLEAN		found;
 
 	/*
-		For every keyword, try to find a character class beginning with the same
-		character as the keyword. Then, try to recognize the keyword beginning from
-		the state that forms the keyword, by running the parser on its existing
-		tables.
+		For every keyword, try to find a character class beginning with the
+		same character as the keyword. Then, try to recognize the keyword
+		beginning from the state that forms the keyword, by running the
+		parser on its existing tables.
 	*/
 	for( l = parser->lalr_states; l; l = l->next )
 	{
@@ -274,8 +282,18 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 			col = (TABCOL*)m->pptr;
 
 			/* Keyword to be reduced? */
-			if( col->symbol->type == SYM_KW_TERMINAL && col->action == REDUCE )
+			if( col->symbol->type == SYM_KW_TERMINAL
+				&& col->action == REDUCE )
 			{
+				/*
+					Table columns not derived from the kernel set
+					of the state are ignored
+				*/
+				if( col->derived_from
+					&& list_find( st->epsilon,
+							col->derived_from ) >= 0 )
+					continue;
+
 				/*
 					p_try_to_parse() can either be called here; But to be
 					sure, we have a try if there are shifts on the same
@@ -291,6 +309,8 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 					if( ccol->symbol->type == SYM_CCL_TERMINAL
 							&& ccol->action & SHIFT )
 					{
+						/* Make a character map from the symbol's name,
+							maybe we get a match! */
 						test = p_ccl_to_map( parser, ccol->symbol->name );
 
 						/*
@@ -306,10 +326,83 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 						{
 							if( p_try_to_parse( parser, col->symbol->name,
 									st->state_id ) && cnt > 1 )
-							{
+							{							
+								/*
+									At this point, we have a candidate for a
+									keyword abiguity anomaly.. now we check
+									out all positions where the left-hand side
+									of the reduced production appears in...
+									of there is no keyword to shift in the
+									FIRST-sets of following symbols, report
+									this anomaly!
+								*/								
+								p = (PROD*)list_getptr(
+										parser->productions, col->index );
+								lhs = p->lhs;
+								
+								/* Go trough all productions */
+								for( o = parser->productions, found = FALSE;
+										o && !found; o = list_next( o ) )
+								{
+									p = (PROD*)list_access( o );
+									for( q = p->rhs; q && !found;
+										q = list_next( q ) )
+									{
+										sym = (SYMBOL*)list_access( q );
+										if( sym == lhs && list_next( q ) )
+										{
+											do
+											{
+												q = list_next( q );
+												if( !( sym = (SYMBOL*)list_access( q ) ) )
+													break;
+												/*
+												fprintf( stderr, "sym = " );
+												p_print_symbol( stderr, sym );
+												fprintf( stderr, " %d %d\n",
+													list_find( sym->first,
+														col->symbol ), sym->nullable );
+												*/
+												if( list_find( sym->first,
+														col->symbol ) == -1 
+													&& !sym->nullable )
+												{
+													p_error( ERR_KEYWORD_ANOMALY,
+														ERRSTYLE_WARNING | ERRSTYLE_STATEINFO,
+															st, ccol->symbol->name,
+																col->symbol->name );
+													
+													found = TRUE;
+													break;
+												}												
+											}
+											while( sym && sym->nullable );
+										}
+									}									
+								}
+								
+								
+								
+#if 0
+								/*
+									Just a test...
+								*/
+								for( o = st->kernel; o; o = list_next( o ) )
+								{
+									it = (ITEM*)list_access( o );
+									if( it->next_symbol &&
+										it->next_symbol->nullable )
+										break;
+								}
+								
+								if( !o )
+								{
+									
 									p_error( ERR_KEYWORD_ANOMALY,
 										ERRSTYLE_WARNING | ERRSTYLE_STATEINFO,
 											st, ccol->symbol->name, col->symbol->name );
+								}
+#endif
 							}
 						}
 
