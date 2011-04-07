@@ -1512,8 +1512,10 @@ BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, uchar* genfile )
 	GET_XML_TAB_1D( g->prodlen, "prodlen" )
 	GET_XML_TAB_1D( g->prodlhs, "prodlhs" )
 	GET_XML_TAB_1D( g->defprod, "defprod" )
+	/*
 	GET_XML_TAB_1D( g->charmap, "charmap" )
 	GET_XML_TAB_1D( g->charmap_sym, "charmap_sym" )
+	*/
 	GET_XML_TAB_1D( g->dfa_select, "dfa_select" )
 	GET_XML_TAB_1D( g->dfa_char, "dfa_char" )
 	GET_XML_TAB_1D( g->dfa_trans, "dfa_trans" )
