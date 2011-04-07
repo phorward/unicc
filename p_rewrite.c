@@ -358,7 +358,7 @@ void p_unique_charsets( PARSER* parser )
 				for( i = 0; i < parser->p_universe; i++ )
 					if( bitset_get( charmap, i ) && cmap[i] == sym->id )
 					{
-						if( parser->p_model == MODEL_CONTEXT_FREE )
+						if( parser->p_model == MODEL_CONTEXT_INSENSITIVE )
 						{
 							char	tmp[ 10 + 1 ];
 
