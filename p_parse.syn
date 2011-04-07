@@ -181,7 +181,8 @@ fixed_directives:	fixed_directives "#!" fixed_directive ';'
 				|
 				;
 				
-fixed_directive: "model"				model_type
+fixed_directive: "mode"					mode_type
+				| "model"				mode_type
 				| "language"			string					{	if( parser->p_language )
 																		pfree( parser->p_language );
 																	parser->p_language = p_strdup( strbuf );
@@ -191,14 +192,16 @@ fixed_directive: "model"				model_type
 																	if( universe > 0 )
 																		parser->p_universe = universe;
 																	else
-																		p_error( ERR_INVALID_CHAR_UNIVERSE,
+																		p_error( parser, ERR_INVALID_CHAR_UNIVERSE,
 																			ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
 																				parser->filename, line );
 																}
 				;
 
-model_type:		"context-sensitive"								{	parser->p_model = MODEL_CONTEXT_SENSITIVE;	}
-				| "context-insensitive"							{	parser->p_model = MODEL_CONTEXT_INSENSITIVE;}
+mode_type:		"context-sensitive"								{	parser->p_mode = MODE_SENSITIVE;	}
+				| "context-insensitive"							{	parser->p_mode = MODE_INSENSITIVE;}
+				| "sensitive"									{	parser->p_mode = MODE_SENSITIVE;	}
+				| "insensitive"									{	parser->p_mode = MODE_INSENSITIVE;}
 				;
 
 segment:		code
@@ -215,12 +218,12 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 																		s = l->pptr;
 
 																		/* Do not allow nonterminal definitions here
-																			in conext-free model */
+																			in conext-free mode */
 																		if( s->type == SYM_NON_TERMINAL &&
-																			parser->p_model !=
-																				MODEL_CONTEXT_SENSITIVE )
+																			parser->p_mode !=
+																				MODE_SENSITIVE )
 																		{
-																			p_error( ERR_NONTERM_WS_NOT_ALLOWED,
+																			p_error( parser, ERR_NONTERM_WS_NOT_ALLOWED,
 																				ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
 																						parser->filename, line,
 																							s->name );
@@ -233,9 +236,9 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 																}
 				| "lexeme separation" boolean					{	/* Ouput a warning, if this definition
 																		is effectless */
-																	if( parser->p_model != MODEL_CONTEXT_SENSITIVE )
+																	if( parser->p_mode != MODE_SENSITIVE )
 																	{
-																		p_error( ERR_NO_EFFECT_IN_MODEL,
+																		p_error( parser, ERR_NO_EFFECT_IN_MODE,
 																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 																				parser->filename, line,
 																					"lexem separation" );
@@ -248,9 +251,9 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 																																		
 																	/* Ouput a warning, if this definition
 																		is effectless */
-																	if( parser->p_model != MODEL_CONTEXT_SENSITIVE )
+																	if( parser->p_mode != MODE_SENSITIVE )
 																	{
-																		p_error( ERR_NO_EFFECT_IN_MODEL,
+																		p_error( parser, ERR_NO_EFFECT_IN_MODE,
 																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 																				parser->filename, line, "lexeme" );
 																	}
@@ -271,9 +274,9 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 																	
 																	/* Ouput a warning, if this definition
 																		is effectless */
-																	if( parser->p_model != MODEL_CONTEXT_SENSITIVE )
+																	if( parser->p_mode != MODE_SENSITIVE )
 																	{
-																		p_error( ERR_NO_EFFECT_IN_MODEL,
+																		p_error( parser, ERR_NO_EFFECT_IN_MODE,
 																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 																				parser->filename, line, "fixate" );
 																	}
@@ -312,9 +315,9 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 				| "end of input"	terminal					{	parser->end_of_input = #2.ptr;				}
 				| "invalid keyword suffix"	ccl					{	/* Ouput a warning, if this definition
 																		is effectless */
-																	if( parser->p_model != MODEL_CONTEXT_SENSITIVE )
+																	if( parser->p_mode != MODE_SENSITIVE )
 																	{
-																		p_error( ERR_NO_EFFECT_IN_MODEL,
+																		p_error( parser, ERR_NO_EFFECT_IN_MODE,
 																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 																				parser->filename, line,
 																					"invalid keyword suffix" );
@@ -353,7 +356,7 @@ definition:		lhs goal_mark type "->" productions				{
 																	{
 																		if( parser->goal )
 																		{
-																			p_error( ERR_MULTIPLE_GOAL_DEF,
+																			p_error( parser, ERR_MULTIPLE_GOAL_DEF,
 																				ERRSTYLE_FATAL,
 																					parser->goal->name );
 																		}
@@ -727,7 +730,7 @@ code_opt:	code
 code:		"[*" inner_code "*]"								{
 																	if( !parser->p_language )
 																	{
-																		p_error( 
+																		p_error( parser, 
 																			ERR_NO_TARGET_LANG_SUPPLY,
 																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 																			parser->filename, line );
