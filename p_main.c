@@ -1,11 +1,11 @@
 /* -MODULE----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator 
-Copyright (C) 2006-2009 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2011 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_main.c (created on 28.01.2007)
 Author:	Jan Max Meyer
-Usage:	Phorward program entry / main function
+Usage:	UniCC program entry / main function
 
 You may use, modify and distribute this software under the terms and conditions
 of the Artistic License, version 2. Please see LICENSE for more information.
@@ -29,8 +29,8 @@ extern uchar* progname;
 
 uchar* pmod[] = 
 {
-	"context-sensitive",
-	"context-insensitive"
+	"sensitive",
+	"insensitive"
 };
 
 /*
@@ -38,21 +38,54 @@ uchar* pmod[] =
  */
 
 /*
- * Macros (Main only)
+ * Verbose Macros (Main only)
  */
-#define PROGRESS( txt )		if( parser->verbose ) { fprintf( stderr, "%s...", (txt ) ), first_progress = TRUE; } else first_progress = FALSE ;
-#define DONE()				if( parser->verbose ) { if( first_progress ) fprintf( stderr, "Done\n" ); }\
-							first_progress = FALSE;
-#define FAIL()				if( parser->verbose ) { if( first_progress ) fprintf( stderr, "Failed\n" ); else fprintf( stderr, "\n" ); }\
-							first_progress = FALSE;
-#define SUCCESS()			if( parser->verbose ) { if( first_progress ) fprintf( stderr, "Succeeded\n" ); else fprintf( stderr, "\n" ); }\
-							first_progress = FALSE;
-#define SKIPPED( why )		if( parser->verbose ) { if( first_progress ) fprintf( stderr, "Skipped: %s\n", why ); else fprintf( stderr, "\n" ); }\
-							first_progress = FALSE;
+#define PROGRESS( txt )		if( parser->verbose ) \
+							{ \
+								fprintf( stderr, "%s...", (txt ) ); \
+								first_progress = TRUE; \
+							} \
+							else \
+								first_progress = FALSE;
+#define DONE()				p_status( parser, "Done\n", (uchar*)NULL );
+#define FAIL()				p_status( parser, "Failed\n", (uchar*)NULL );
+#define SUCCESS()			p_status( parser, "Succeeded\n", (uchar*)NULL );
+#define SKIPPED( why )		p_status( parser, "Skipped: %s\n", why );
 
 /*
  * Functions
  */
+
+/* -FUNCTION--------------------------------------------------------------------
+	Function:		p_status()
+	
+	Author:			Jan Max Meyer
+	
+	Usage:			Internal function to print verbose status messages.
+					
+	Parameters:		PARSER* 		parser			Parser info struct
+					uchar*			status			Status info/Format string
+					uchar*			reason			One parameter to be inserted
+													by the fprintf( status ... )
+													have fun!
+
+	Returns:		void
+  
+	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	Date:		Author:			Note:
+----------------------------------------------------------------------------- */
+static void p_status( PARSER* parser, uchar* status, uchar* reason )
+{
+	if( !parser->verbose )
+		return;
+		
+	if( first_progress )
+		fprintf( stderr, status, reason );
+	else
+		fprintf( stderr, "\n" );
+	
+	first_progress = FALSE;
+}
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_copyright()
@@ -79,14 +112,15 @@ void p_copyright( FILE* stream )
 
 	fprintf( stream, "UniCC LALR(1) Parser Generator v%s [build %s %s]\n",
 			PHORWARD_VERSION, __DATE__, __TIME__ );
-	fprintf( stream, "Copyright (C) 2006-2009 by Phorward Software Technologies, Jan Max Meyer\n" );
+	fprintf( stream, "Copyright (C) 2006-2011 by "
+						"Phorward Software Technologies, Jan Max Meyer\n" );
 	fprintf( stream, "http://www.phorward-software.com ++ "
-						"contact<at>phorward-software<dot>com\n\n" );
+						"contact<at>phorward<dash>software<dot>com\n\n" );
 						
 	fprintf( stream, "You may use, modify and distribute this software under "
 				"the terms and\n" );
 	fprintf( stream, "conditions of the Artistic License, version 2.\n"
-				"Please see LICENSE for more information.\n\n" );
+				"Please see LICENSE for more information.\n" );
 	
 }
 
@@ -114,18 +148,19 @@ void p_usage( FILE* stream, uchar* progname )
 		stream = stdout;
 
 	fprintf( stream, "usage: %s [options] filename\n\n"
-		"\t-all --all-warnings  Show all warnings\n"
-		"\t-gr  --grammar       Dump final grammar to stderr\n"
-		"\t-h   --help          Print this help\n"
-		"\t-V   --version       Print version and copyright\n"
-		"\t-no  --no-opt        No state optimization (causes more states)\n"
-		"\t-o   --output <file> Write parser to <file>\n"				
-		"\t-pr  --productions   Dump final productions to stderr\n"		
-		"\t-s   --stats         Print statistics message\n"
-		"\t-st  --states        Dump LALR(1) states to stderr\n"
-		"\t-sym --symbols       Dump symbols to stderr\n"
-		"\t-v   --verbose       Print progress messages\n"
-		"\t-w   --warnings      Print warnings\n",
+		"\t-all --all-warnings    Show all warnings\n"
+		"\t-gr  --grammar         Dump final grammar to stderr\n"
+		"\t-h   --help            Print this help\n"
+		"\t-V   --version         Print version and copyright\n"
+		"\t-no  --no-opt          No state optimization (causes more states)\n"
+		"\t-b   --basename <name> Use basename <name> for output\n"
+		"\t-pr  --productions     Dump final productions to stderr\n"		
+		"\t-s   --stats           Print statistics message\n"
+		"\t-st  --states          Dump LALR(1) states to stderr\n"
+		"\t-sym --symbols         Dump symbols to stderr\n"
+		"\t-v   --verbose         Print progress messages\n"
+		"\t-w   --warnings        Print warnings\n"
+		"\t-x   --xml             Build XML output [under development]\n",
 
 		progname );
 }
@@ -166,7 +201,8 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 			if( *opt == '-' )
 				opt++;
 			
-			if( !strcmp( opt, "output" ) || !strcmp( opt, "o" ) )
+			if( !strcmp( opt, "output" ) || !strcmp( opt, "o" ) 
+				|| !strcmp( opt, "basename" ) || !strcmp( opt, "b" ) )
 			{
 				if( ++i < argc && !( *output ) )
 					*output = argv[i];
@@ -201,6 +237,8 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 				p_usage( stderr, *argv );
 				exit( EXIT_SUCCESS );
 			}
+			else if( !strcmp( opt, "xml" ) || !strcmp( opt, "x" ) )
+				parser->gen_xml = TRUE;
 		}
 		else if( !( *filename ) )
 			*filename = argv[i];
@@ -228,22 +266,27 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 int main( int argc, char** argv )
 {
 	uchar*	filename	= (uchar*)NULL;
-	uchar*	output		= (uchar*)NULL;
-	FILE*	out			= (FILE*)NULL;
+	uchar*	base_name	= (uchar*)NULL;
 	PARSER*	parser;
 	BOOLEAN	recursions	= FALSE;
 	BOOLEAN	def_lang	= FALSE;
 
 	parser = p_create_parser();
 
-	if( p_get_command_line( argc, argv, &filename, &output, parser ) )
+#ifdef UNICC_BOOTSTRAP
+	/* On bootstrap build, print a warning message */
+	printf( "*** WARNING: YOU'RE RUNNING A BOOTSTRAP BUILD OF UNICC!\n" );
+	printf( "*** Some features may not work as you would expect.\n\n" );
+#endif
+
+	if( p_get_command_line( argc, argv, &filename, &base_name, parser ) )
 	{
 		parser->filename = filename;
 		switch( map_file( &parser->source, filename ) )
 		{
 			case 1:
 				p_error( ERR_OPEN_INPUT_FILE,
-					ERRSTYLE_FATAL, output );
+					ERRSTYLE_FATAL, filename );
 				return error_count;
 				
 			case ERR_OK:
@@ -253,18 +296,15 @@ int main( int argc, char** argv )
 				break;
 		}
 
-		/* Hack for the parser for comments on the end of line ;) */
-		if( parser->source )
-			parser->source = p_str_append( parser->source, "\n", FALSE );
-
-		if( output && !( out = fopen( output, "wt" ) ) )
+		/* Basename */
+		if( !base_name )
 		{
-			p_error( ERR_OPEN_OUTPUT_FILE, ERRSTYLE_FATAL, output );
-			return error_count;
+			parser->p_basename = pbasename( filename );
+			if( ( base_name = strrchr( parser->p_basename, '.' ) ) )
+				*base_name = '\0';
 		}
-
-		if( !out )
-			out = stdout;
+		else
+			parser->p_basename = base_name;
 
 		PROGRESS( "Parsing source grammar" )
 		/* Parse grammar structure */
@@ -292,6 +332,8 @@ int main( int argc, char** argv )
 					p_rewrite_grammar( parser );
 
 				p_unique_charsets( parser );
+				p_symbol_order( parser );
+				p_charsets_to_nfa( parser );
 				
 				if( parser->p_model == MODEL_CONTEXT_SENSITIVE )
 					p_inherit_fixiations( parser );
@@ -380,17 +422,23 @@ int main( int argc, char** argv )
 					def_lang = TRUE;
 				}
 
-				if( parser->verbose )
-					fprintf( stderr, "Code generation target: %s%s\n", parser->p_language,
-					( def_lang ? " (default)" : "" ) );
+				if( !parser->gen_xml )
+				{
+					if( parser->verbose )
+						fprintf( stderr, "Code generation target: %s%s\n",
+							parser->p_language,
+								( def_lang ? " (default)" : "" ) );
 
-
-				PROGRESS( "Invoking code generator" )
-				p_build_code( out, parser );
-				DONE()
-
-				if( output )
-					fclose( out );
+					PROGRESS( "Invoking code generator" )
+					p_build_code( parser );
+					DONE()
+				}
+				else
+				{
+					PROGRESS( "Generating parser definition" )
+					p_build_xml( parser );
+					DONE()
+				}
 			}
 			else
 			{
@@ -399,7 +447,8 @@ int main( int argc, char** argv )
 			}
 		
 			if( parser->stats )
-				fprintf( stderr, "\n%s produced %d states (%d error%s, %d warning%s)\n",
+				fprintf( stderr, "\n%s produced %d states "
+							"(%d error%s, %d warning%s)\n",
 					filename, list_count( parser->lalr_states ),
 						error_count, ( error_count == 1 ) ? "" : "s",
 							warning_count, ( warning_count == 1 ) ? "" : "s" );			
