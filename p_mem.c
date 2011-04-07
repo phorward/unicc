@@ -307,14 +307,22 @@ void p_append_to_production( PROD* p, SYMBOL* sym, uchar* name )
 void p_free_production( PROD* prod )
 {
 	LIST*	li		= (LIST*)NULL;
-
+	
+	/* Real right-hand sides */
 	for( li = prod->rhs_idents; li; li = li->next )
 		p_free( li->pptr );
 
 	list_free( prod->rhs_idents );
 	list_free( prod->rhs );
-	p_free( prod->code );
+	
+	/* Semantic right-hand sides */
+	for( li = prod->sem_rhs_idents; li; li = li->next )
+		p_free( li->pptr );
 
+	list_free( prod->sem_rhs );
+	list_free( prod->sem_rhs_idents );
+
+	p_free( prod->code );
 	p_free( prod );
 }
 
@@ -487,6 +495,10 @@ void p_free_state( STATE* st )
 														state, at REDUCE and
 														SHIFT_REDUCE the index of
 														the rule to be reduced.
+					ITEM*		item					The item, which caused
+														the tab entry. This is
+														only required for
+														reductions.
 	
 	Returns:		TABCOL*								Pointer to the new
 														action item. On error,
@@ -495,7 +507,7 @@ void p_free_state( STATE* st )
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */	
-TABCOL* p_create_tabcol( SYMBOL* sym, short action, int idx )
+TABCOL* p_create_tabcol( SYMBOL* sym, short action, int idx, ITEM* item )
 {
 	TABCOL*		act		= (TABCOL*)NULL;
 	
@@ -507,6 +519,7 @@ TABCOL* p_create_tabcol( SYMBOL* sym, short action, int idx )
 		act->symbol = sym;
 		act->action = action;
 		act->index = idx;
+		act->derived_from = item;
 	}
 	else
 		OUT_OF_MEMORY;
