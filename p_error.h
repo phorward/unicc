@@ -56,7 +56,6 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define ERR_NONTERM_WS_NOT_ALLOWED	30
 #define ERR_INVALID_CHAR_UNIVERSE	31
 #define ERR_CHARCLASS_OVERLAP		32
-#define ERR_MULTIPLE_SEMANTIC_CALL	33
 
 #define OUT_OF_MEMORY				do { p_error( ERR_MEMORY_ERROR, ERRSTYLE_FATAL, __FILE__, __LINE__ ); \
 										exit( EXIT_FAILURE ); } while( 0 )
