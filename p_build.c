@@ -713,6 +713,10 @@ void p_build_code( PARSER* parser )
 		if( ( filename = (uchar*)xml_attr( file, "filename" ) ) )
 			filename = p_tpl_insert( filename,
 				GEN_WILD_PREFIX "basename", parser->p_basename, FALSE,
+				GEN_WILD_PREFIX "Cbasename", p_gen_c_identifier(
+							parser->p_basename, FALSE ), TRUE,
+				GEN_WILD_PREFIX "CBASENAME", p_gen_c_identifier(
+							parser->p_basename, TRUE ), TRUE,
 				GEN_WILD_PREFIX "prefix", parser->p_prefix, FALSE,
 					(char*)NULL );
 		
@@ -816,6 +820,10 @@ void p_build_code( PARSER* parser )
 						parser->p_prefix, FALSE,
 					GEN_WILD_PREFIX "basename",
 						parser->p_basename, FALSE,
+					GEN_WILD_PREFIX "Cbasename", p_gen_c_identifier(
+						parser->p_basename, FALSE ), TRUE,
+					GEN_WILD_PREFIX "CBASENAME", p_gen_c_identifier(
+						parser->p_basename, TRUE ), TRUE,
 					GEN_WILD_PREFIX "filename" LEN_EXT,
 						p_long_to_str(
 							(long)p_strlen( parser->filename ) ), TRUE,
@@ -1267,8 +1275,9 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 				OUTOFMEM;
 				
 			VARS( "ret", "%s", ret );
-			last = result[i].end;
 		}
+
+		last = result[i].end;
 		
 		VARS( "result[i].accept", "%d", result[i].accept );
 		switch( result[i].accept )
