@@ -675,6 +675,13 @@ int @@prefix_parse( char* src )
 							"error is reported before its recover!" ) );
 #endif
 
+
+			if( !error_delay )
+			{
+				UNICC_PARSE_ERROR( src, sym, *tos );
+				error_count++;
+			}
+
 #if @@error &lt; 0
 #if UNICC_DEBUG
 			fprintf( @@prefix_dbg,
@@ -696,13 +703,14 @@ int @@prefix_parse( char* src )
 			while( tos &gt;= stack )
 			{
 #if UNICC_DEBUG
-				fprintf( @@prefix_dbg, "%s: error recovery: trying to shift error resync token...\n",
+				fprintf( @@prefix_dbg, "%s: error recovery: trying "
+						"to shift error resync token...\n",
 							PARSERFILE );
 #if UNICC_STACKDEBUG
 				@@prefix_dbg_stack( @@prefix_dbg, stack, tos, vstack, vtos );
 #endif
 #endif
-				while( @@prefix_get_act_tab( *tos, @@error, &act, &idx ) )
+				if( @@prefix_get_act_tab( *tos, @@error, &act, &idx ) )
 				{
 					/* Shift */
 					if( act & 2 )
@@ -711,25 +719,22 @@ int @@prefix_parse( char* src )
 						vtos++;
 						
 						*tos = idx;
+#if UNICC_DEBUG
+						fprintf( @@prefix_dbg, "%s: error recovery: succeeded!\n",
+									PARSERFILE );
+#endif						
 						break;
-					}
-					
-					/* Reduce */
-					while( act & 1 )
-					{
-						tos -= @@prefix_prod_lengths[ idx ];
-						vtos -= @@prefix_prod_lengths[ idx ];
-										
-						@@prefix_get_go_tab( *tos, @@prefix_prod_lhs[ idx ], &act, &idx );
-					
-						*(++tos) = ( act & 1 ) ? 0 : idx;
-						++vtos;
 					}
 				}
 				
 				if( *tos == idx )
 					break;
 
+#if UNICC_DEBUG
+				fprintf( @@prefix_dbg, "%s: error recovery: failed!\n",
+							PARSERFILE );
+#endif
+					
 				tos--;
 				vtos--;
 			}
@@ -742,6 +747,9 @@ int @@prefix_parse( char* src )
 #if UNICC_STACKDEBUG
 				@@prefix_dbg_stack( @@prefix_dbg, stack, tos, vstack, vtos );
 #endif
+				fprintf( @@prefix_dbg, "%s: error recovery: resync begins with "
+					"token %d (%s)\n",
+						PARSERFILE, sym, @@prefix_symbol_names[ sym ] );
 #endif
 				while( sym != @@eof )
 				{
@@ -768,12 +776,18 @@ int @@prefix_parse( char* src )
 						src++; /* Skip one character */
 					}
 				}
+				
 			}
-			
-			if( !error_delay )
+						
+			/* If this is the end-of-file, then stop parsing! */
+			if( sym == @@eof )
 			{
-				UNICC_PARSE_ERROR( src, sym, *tos );
-				error_count++;
+#if UNICC_DEBUG
+				fprintf( @@prefix_dbg, "%s: error recovery: end-of-file "
+					"token found, there is nothing to recover anymore!\n",
+						PARSERFILE );
+#endif
+				break;
 			}
 			
 			/* If there is no transition possible here, than exit */
