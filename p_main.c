@@ -85,8 +85,8 @@ void p_copyright( FILE* stream )
 						
 	fprintf( stream, "You may use, modify and distribute this software under "
 				"the terms and\n" );
-	fprintf( stream, "conditions of the Artistic License, version 2. Please "
-				"see LICENSE for more\ninformation.\n\n" );
+	fprintf( stream, "conditions of the Artistic License, version 2.\n"
+				"Please see LICENSE for more information.\n\n" );
 	
 }
 
@@ -117,7 +117,7 @@ void p_usage( FILE* stream, uchar* progname )
 		"\t-all --all-warnings  Show all warnings\n"
 		"\t-gr  --grammar       Dump final grammar to stderr\n"
 		"\t-h   --help          Print this help\n"
-		"\t-i   --version       Print version and copyright\n"
+		"\t-V   --version       Print version and copyright\n"
 		"\t-no  --no-opt        No state optimization (causes more states)\n"
 		"\t-o   --output <file> Write parser to <file>\n"				
 		"\t-pr  --productions   Dump final productions to stderr\n"		
@@ -191,7 +191,7 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 				parser->optimize_states = FALSE;
 			else if( !strcmp( opt, "all-warnings" ) || !strcmp( opt, "all" ) )
 				parser->all_warnings = TRUE;
-			else if( !strcmp( opt, "version" ) || !strcmp( opt, "i" ) )
+			else if( !strcmp( opt, "version" ) || !strcmp( opt, "V" ) )
 			{
 				p_copyright( stderr );
 				exit( EXIT_SUCCESS );
@@ -239,7 +239,19 @@ int main( int argc, char** argv )
 	if( p_get_command_line( argc, argv, &filename, &output, parser ) )
 	{
 		parser->filename = filename;
-		parser->source = p_mapfile( filename );
+		switch( map_file( &parser->source, filename ) )
+		{
+			case 1:
+				p_error( ERR_OPEN_INPUT_FILE,
+					ERRSTYLE_FATAL, output );
+				return error_count;
+				
+			case ERR_OK:
+				break;
+				
+			default:
+				break;
+		}
 
 		/* Hack for the parser for comments on the end of line ;) */
 		if( parser->source )
