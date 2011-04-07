@@ -188,7 +188,9 @@ void make_semantic_rhs( PROD* p )
 #language			"C";
 #whitespaces 		whitespace;
 #lexeme				terminal identifier modifier code ccl_string kw type;
+#lexeme separation	on;
 #default action		[* @@ = @1; *];
+
 
 /*
  * Grammar
@@ -335,7 +337,7 @@ directive_parms		-> "whitespaces" 	symbol_list				[*	LIST* l;
 																		parser->p_neg_inv_suf = @2;
 																	}
 																*]
-					| "lexem separation" boolean				[*	/* Ouput a warning, if this definition
+					| "lexeme separation" boolean				[*	/* Ouput a warning, if this definition
 																		is effectless */
 																	if( parser->p_model != MODEL_CONTEXT_SENSITIVE )
 																	{
@@ -547,8 +549,6 @@ sym<SYMBOL*>		-> terminal
 																	prod->code_at = @3;
 																	
 																	make_semantic_rhs( prod );
-																	
-																	@@->productions = list_push( (LIST*)NULL, prod );
 																*]
 					| '%' type stack_cur_prod
 							'(' productions ')'					[*
