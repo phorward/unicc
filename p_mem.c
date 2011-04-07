@@ -148,7 +148,8 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 			sym->nullable = FALSE;
 
 			/* Initialize options table */
-			hashtab_init( &( sym->options ), BUCKET_COUNT, HASHTAB_MOD_LIST );
+			hashtab_init( &( sym->options ), BUCKET_COUNT,
+				HASHTAB_MOD_LIST | HASHTAB_MOD_EXTKEYS );
 
 			/* Terminal symbols have always theirself in the FIRST-set... */
 			if( IS_TERMINAL( sym ) )
@@ -224,7 +225,7 @@ void p_free_symbol( SYMBOL* sym )
 
 	pregex_nfa_free( &( sym->nfa ) );
 
-	hashtab_free( &( sym->options ), (HASHTAB_CALLBACK)free );
+	hashtab_free( &( sym->options ), (HASHTAB_CALLBACK)p_free_opt );
 
 	p_free( sym );
 }
@@ -270,7 +271,8 @@ PROD* p_create_production( PARSER* p, SYMBOL* lhs )
 			}
 
 			/* Initialize options table */
-			hashtab_init( &( prod->options ), BUCKET_COUNT, HASHTAB_MOD_LIST );
+			hashtab_init( &( prod->options ), BUCKET_COUNT,
+				HASHTAB_MOD_LIST | HASHTAB_MOD_EXTKEYS );
 
 			/* Set up production attributes */
 			if( lhs )
@@ -380,7 +382,7 @@ void p_free_production( PROD* prod )
 
 	p_free( prod->code );
 
-	hashtab_free( &( prod->options ), (HASHTAB_CALLBACK)free );
+	hashtab_free( &( prod->options ), (HASHTAB_CALLBACK)p_free_opt );
 
 	p_free( prod );
 }
@@ -643,6 +645,84 @@ TABCOL* p_find_tabcol( LIST* row, SYMBOL* sym )
 }
 
 /* -FUNCTION--------------------------------------------------------------------
+	Function:		p_create_opt()
+	
+	Author:			Jan Max Meyer
+	
+	Usage:			Creates an option data structure and optionally inserts it
+					into a hash-table. 
+					
+	Parameters:		HASHTAB*	ht				Hash-table (optional). If this
+												is (HASHTAB*)NULL, only a
+												pointer to the new option
+												structure will be returned.
+					uchar*		opt				Identifiying option name
+					uchar*		def				Option definition; Can be
+												left (uchar*)NULL.
+	
+	Returns:		OPT*						Pointer to the newly created
+												OPT-structure, (OPT*)NULL
+												in error case.
+
+	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	Date:		Author:			Note:
+----------------------------------------------------------------------------- */
+OPT* p_create_opt( HASHTAB* ht, uchar* opt, uchar* def )
+{
+	OPT*		option;
+
+	if( !( option = (OPT*)p_malloc( sizeof( OPT ) ) ) )
+	{
+		OUT_OF_MEMORY;
+		return (OPT*)NULL;
+	}
+
+	memset( option, 0, sizeof( OPT ) );
+
+	if( !( option->opt = p_strdup( opt ) ) )
+	{
+		p_free( option );
+
+		OUT_OF_MEMORY;
+		return (OPT*)NULL;
+	}
+
+	option->def = p_strdup( def );
+
+	if( ht && !hashtab_insert( ht, option->opt, (void*)option ) )
+	{
+		p_free_opt( option );
+
+		OUT_OF_MEMORY;
+		return (OPT*)NULL;
+	}
+
+	return option;
+}
+
+/* -FUNCTION--------------------------------------------------------------------
+	Function:		p_free_opt()
+	
+	Author:			Jan Max Meyer
+	
+	Usage:			Frees an option's memory content.
+					
+	Parameters:		OPT*	option 				Pointer to option to be freed.
+	
+	Returns:		void
+
+	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	Date:		Author:			Note:
+----------------------------------------------------------------------------- */
+void p_free_opt( OPT* option )
+{
+	p_free( option->opt );
+	p_free( option->def );
+
+	p_free( option );
+}
+
+/* -FUNCTION--------------------------------------------------------------------
 	Function:		p_create_parser()
 	
 	Author:			Jan Max Meyer
@@ -651,9 +731,9 @@ TABCOL* p_find_tabcol( LIST* row, SYMBOL* sym )
 					
 	Parameters:		void
 	
-	Returns:		PARSER*							Pointer to the newly created
-													PARSER-structure, (PARSER*)NULL
-													in error case.
+	Returns:		PARSER*						Pointer to the newly created
+												PARSER-structure, (PARSER*)NULL
+												in error case.
 
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
@@ -679,7 +759,8 @@ PARSER* p_create_parser( void )
 	pptr->optimize_states = TRUE;
 
 	/* Initialize options table */
-	hashtab_init( &( pptr->options ), BUCKET_COUNT, HASHTAB_MOD_LIST );
+	hashtab_init( &( pptr->options ), BUCKET_COUNT,
+		HASHTAB_MOD_LIST | HASHTAB_MOD_EXTKEYS );
 
 	return pptr;
 }
@@ -745,7 +826,7 @@ void p_free_parser( PARSER* parser )
 	
 	p_free( parser->source );
 
-	hashtab_free( &( parser->options ), (HASHTAB_CALLBACK)free );
+	hashtab_free( &( parser->options ), (HASHTAB_CALLBACK)p_free_opt );
 
 	xml_free( parser->err_xml );
 
