@@ -324,15 +324,19 @@ int main( int argc, char** argv )
 				DONE()
 
 				/* Keyword anomaly recognition */
-				PROGRESS( "Performing keyword ambiguity detection" )
-				if( !recursions )
+				PROGRESS( "Performing keyword anomaly detection" )
+				if( recursions )
 				{
-					p_keyword_anomalies( parser );
-					DONE()
+					SKIPPED( "Recursions detected" );
+				}
+				else if( parser->p_reserve_kw )
+				{
+					SKIPPED( "Keywords are reserved" );
 				}
 				else
 				{
-					SKIPPED( "Recursions detected" );
+					p_keyword_anomalies( parser );
+					DONE()
 				}
 
 				/* Lexical analyzer generator */
