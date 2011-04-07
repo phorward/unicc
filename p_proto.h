@@ -16,13 +16,8 @@ void p_first( LIST* symbols );
 int p_rhs_first( LIST** first, LIST* rhs );
 
 /* p_lalr_gen.c */
-int p_same_kernel( LIST* kernel1, LIST* kernel2 );
-STATE* p_get_undone( LIST* states );
-void p_item_closure( LIST* productions, ITEM* it, LIST** closure_set );
-void p_lalr1_closure( PARSER* parser, STATE* st );
-void p_reduce_item( PARSER* parser, STATE* st, ITEM* it );
-void p_perform_reductions( PARSER* parser, STATE* st );
 void p_generate_tables( PARSER* parser );
+void p_detect_default_productions( PARSER* parser );
 
 /* p_error.c */
 void p_error( int err_id, int err_style, ... );
