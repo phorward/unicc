@@ -707,12 +707,20 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
+	02.03.2011	Jan Max Meyer	In case of non-associative symbols, write a
+								special error action into the parse table. The
+								parser template also had to be changed for this.
+								Due the default-production feature, the old way
+								on removing the table entry did not work
+								anymore.
 ----------------------------------------------------------------------------- */
 static void p_reduce_item( PARSER* parser, STATE* st, ITEM* it )
 {
 	LIST*		i		= (LIST*)NULL;
+	LIST*		j		= (LIST*)NULL;
 	SYMBOL*		sym		= (SYMBOL*)NULL;
 	TABCOL*		act		= (TABCOL*)NULL;
+	LIST*		newact;
 	int			resolved;
 	
 	if( it->next_symbol == (SYMBOL*)NULL )
@@ -731,11 +739,6 @@ static void p_reduce_item( PARSER* parser, STATE* st, ITEM* it )
 			}
 			else
 			{
-				/*
-				if( it->prod->lhs->whitespace )
-					continue;
-				*/
-
 				if( act->action == REDUCE )
 				{
 					if( ( ( !( parser->all_warnings ) && 
@@ -753,6 +756,13 @@ static void p_reduce_item( PARSER* parser, STATE* st, ITEM* it )
 							act->symbol = sym;
 							act->derived_from = it;
 						}
+					}
+
+					if( sym->assoc == ASSOC_NOASSOC )
+					{
+						st->actions = list_remove( st->actions,
+										(void*)act );
+						p_free_tabcol( act );
 					}
 				}
 				else if( act->action & SHIFT )
@@ -779,14 +789,9 @@ static void p_reduce_item( PARSER* parser, STATE* st, ITEM* it )
 						else if( sym->prec == it->prod->prec
 							&& sym->assoc == ASSOC_NOASSOC )
 						{
-							p_error( parser, ERR_NOASSOC,
-								ERRSTYLE_WARNING | ERRSTYLE_STATEINFO
-									| ERRSTYLE_SYMBOL,
-										st, sym );
-
-							st->actions = list_remove( st->actions,
-											(void*)act );
-							p_free_tabcol( act );
+							/* 02.03.2011 JMM: Let parser run into an error! */	
+							act->action = ERROR;
+							act->index = 0;
 						}
 					}
 					
