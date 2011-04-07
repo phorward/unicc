@@ -337,18 +337,25 @@ int main( int argc, char** argv )
 
 				/* Keyword anomaly recognition */
 				PROGRESS( "Performing keyword anomaly detection" )
-				if( recursions )
+				if( parser->p_model == MODEL_CONTEXT_SENSITIVE )
 				{
-					SKIPPED( "Recursions detected" );
-				}
-				else if( parser->p_reserve_kw )
-				{
-					SKIPPED( "Keywords are reserved" );
+					if( recursions )
+					{
+						SKIPPED( "Recursions detected" );
+					}
+					else if( parser->p_reserve_kw )
+					{
+						SKIPPED( "Keywords are reserved" );
+					}
+					else
+					{
+						p_keyword_anomalies( parser );
+						DONE()
+					}
 				}
 				else
 				{
-					p_keyword_anomalies( parser );
-					DONE()
+					SKIPPED( "Not required" );
 				}
 
 				/* Lexical analyzer generator */
