@@ -49,8 +49,9 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 					int			atts				Symbol attributes
 					BOOLEAN		create				Create symbol if it does not exist!
 	
-	Returns:		SYMBOL*							Pointer to the SYMBOL structure
-													representing the symbol.
+	Returns:		SYMBOL*							Pointer to the SYMBOL
+													structure representing the
+													symbol.
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
@@ -101,19 +102,9 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 			keych = '#';
 			break;
 
-		case SYM_KW_TERMINAL:
-			MSG( "type is SYM_KW_TERMINAL" );
-			keych = '$';
-			break;
-
 		case SYM_REGEX_TERMINAL:
 			MSG( "type is SYM_REGEX_TERMINAL" );
 			keych = '@';
-			break;
-
-		case SYM_EXTERN_TERMINAL:
-			MSG( "type is SYM_EXTERN_TERMINAL" );
-			keych = '*';
 			break;
 
 		case SYM_NON_TERMINAL:
@@ -156,6 +147,9 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 			sym->line = -1;
 			sym->nullable = FALSE;
 
+			/* Initialize options table */
+			hashtab_init( &( sym->options ), BUCKET_COUNT, HASHTAB_MOD_LIST );
+
 			/* Terminal symbols have always theirself in the FIRST-set... */
 			if( IS_TERMINAL( sym ) )
 				sym->first = list_push( sym->first, sym );
@@ -185,10 +179,7 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 
 			/* This is the error symbol */
 			if( type == SYM_ERROR_RESYNC )
-			{
 				p->error = sym;
-				sym->keyword = TRUE;
-			}
 		}
 		else
 		{
@@ -228,6 +219,8 @@ void p_free_symbol( SYMBOL* sym )
 
 	pregex_nfa_free( &( sym->nfa ) );
 
+	hashtab_free( &( sym->options ), (HASHTAB_CALLBACK)free );
+
 	p_free( sym );
 }
 
@@ -257,29 +250,32 @@ PROD* p_create_production( PARSER* p, SYMBOL* lhs )
 	
 	if( p )
 	{
-		prod = (PROD*)p_malloc( sizeof( PROD ) );
-		if( prod )
+		if( ( prod = (PROD*)p_malloc( sizeof( PROD ) ) ) )
 		{
 			memset( prod, 0, sizeof( PROD ) );
 
-			/* Set up production attributes */
-			prod->lhs = lhs;
 			prod->id = list_count( p->productions );
 			
 			/* Insert into production table */
-			p->productions = list_push( p->productions, prod );
-			
-			if( !( p->productions ) )
+			if( !( p->productions = list_push( p->productions, prod ) ) )
 			{
 				OUT_OF_MEMORY;
 				p_free( prod );
 				return (PROD*)NULL;
 			}
-			
-			/* Add to left-hand side non-terminal */
+
+			/* Initialize options table */
+			hashtab_init( &( prod->options ), BUCKET_COUNT, HASHTAB_MOD_LIST );
+
+			/* Set up production attributes */
 			if( lhs )
 			{
+				prod->lhs = lhs;
+				prod->all_lhs = list_push( prod->all_lhs, (void*)lhs );
+				
 				lhs->productions = list_push( lhs->productions, prod );
+				
+				/* Add to left-hand side non-terminal */
 				if( !( lhs->productions ) )
 				{
 					OUT_OF_MEMORY;
@@ -313,26 +309,34 @@ PROD* p_create_production( PARSER* p, SYMBOL* lhs )
 
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
+	11.07.2010	Jan Max Meyer	Use name of derived symbol in case of
+								virtual productions.
 ----------------------------------------------------------------------------- */
 void p_append_to_production( PROD* p, SYMBOL* sym, uchar* name )
 {
 	if( p && sym )
 	{
-		p->rhs = list_push( p->rhs, sym );
+		if( !( p->rhs = list_push( p->rhs, sym ) ) )
+			OUT_OF_MEMORY;
 		
 		/* If no name is given, then use the symbol's name, if it's a
 			nonterminal or a regex-terminal. */
 		if( !name )
 		{
+			while( sym->derived_from )
+				sym = sym->derived_from;
+				
 			if( !( sym->generated ) &&
 					( sym->type == SYM_NON_TERMINAL
 						|| sym->type == SYM_REGEX_TERMINAL ) )
 			{
-				name = p_strdup( sym->name );
+				if( !( name = p_strdup( sym->name ) ) )
+					OUT_OF_MEMORY;
 			}
 		}
 
-		p->rhs_idents = list_push( p->rhs_idents, name );
+		if( !( p->rhs_idents = list_push( p->rhs_idents, name ) ) )
+			OUT_OF_MEMORY;
 	}
 }
 
@@ -370,6 +374,9 @@ void p_free_production( PROD* prod )
 	list_free( prod->sem_rhs_idents );
 
 	p_free( prod->code );
+
+	hashtab_free( &( prod->options ), (HASHTAB_CALLBACK)free );
+
 	p_free( prod );
 }
 
@@ -650,8 +657,7 @@ PARSER* p_create_parser( void )
 {
 	PARSER*		pptr	= (PARSER*)NULL;
 
-	pptr = p_malloc( sizeof( PARSER ) );
-	if( !pptr )
+	if( !( pptr = p_malloc( sizeof( PARSER ) ) ) )
 	{
 		OUT_OF_MEMORY;
 		return (PARSER*)NULL;
@@ -659,16 +665,16 @@ PARSER* p_create_parser( void )
 
 	memset( pptr, 0, sizeof( PARSER ) );
 
-	/* Creating the goal symbol */
-	/* eos = p_get_symbol( pptr, SYM_TERMINAL, END_OF_STRING_SYMBOL ); */
-
 	/* Initialize the hash table for fast symbol access */
 	hashtab_init( &( pptr->definitions ), BUCKET_COUNT, FALSE );
 
 	/* Setup defaults */
 	pptr->p_model = MODEL_CONTEXT_SENSITIVE;
-	pptr->p_universe = 255;
+	pptr->p_universe = 255; /*TODO*/
 	pptr->optimize_states = TRUE;
+
+	/* Initialize options table */
+	hashtab_init( &( pptr->options ), BUCKET_COUNT, HASHTAB_MOD_LIST );
 
 	return pptr;
 }
@@ -732,6 +738,8 @@ void p_free_parser( PARSER* parser )
 	p_free( parser->p_invalid_suf );
 	
 	p_free( parser->source );
+
+	hashtab_free( &( parser->options ), (HASHTAB_CALLBACK)free );
 
 	p_free( parser );
 }
