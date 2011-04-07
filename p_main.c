@@ -83,10 +83,10 @@ void p_copyright( FILE* stream )
 	fprintf( stream, "http://www.phorward-software.com ++ "
 						"contact<at>phorward-software<dot>com\n\n" );
 						
-	fprintf( stream, "You may use, modify and distribute this software under the "
-						"terms and conditions\n" );
-	fprintf( stream, "of the Artistic License, version 2. Please see LICENSE for "
-						"more information.\n\n" );
+	fprintf( stream, "You may use, modify and distribute this software under "
+				"the terms and\n" );
+	fprintf( stream, "conditions of the Artistic License, version 2. Please "
+				"see LICENSE for more\ninformation.\n\n" );
 	
 }
 
@@ -123,6 +123,7 @@ void p_usage( FILE* stream, uchar* progname )
 		"\t-pr  --productions   Dump final productions to stderr\n"		
 		"\t-s   --stats         Print statistics message\n"
 		"\t-st  --states        Dump LALR(1) states to stderr\n"
+		"\t-sym --symbols       Dump symbols to stderr\n"
 		"\t-v   --verbose       Print progress messages\n"
 		"\t-w   --warnings      Print warnings\n",
 
@@ -182,6 +183,8 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 				parser->show_grammar = TRUE;
 			else if( !strcmp( opt, "states" ) || !strcmp( opt, "st" ) )
 				parser->show_states = TRUE;
+			else if( !strcmp( opt, "symbols" ) || !strcmp( opt, "sym" ) )
+				parser->show_symbols = TRUE;
 			else if( !strcmp( opt, "productions" ) || !strcmp( opt, "pr" ) )
 				parser->show_productions = TRUE;
 			else if( !strcmp( opt, "no-opt" ) || !strcmp( opt, "no" ) )
@@ -294,6 +297,9 @@ int main( int argc, char** argv )
 
 				if( parser->show_grammar )
 					p_dump_grammar( stderr, parser );
+				
+				if( parser->show_symbols )
+					p_dump_symbols( stderr, parser );
 
 				if( parser->show_productions )
 					p_dump_productions( stderr, parser );
