@@ -1,0 +1,120 @@
+/* -HEADER----------------------------------------------------------------------
+UniCC LALR(1) Parser Generator
+Copyright (C) 2006-2009 by Phorward Software Technologies, Jan Max Meyer
+http://www.phorward-software.com ++ mail@phorward-software.com
+
+File:	p_proto.h (created on 30.01.2007)
+Author:	Jan Max Meyer
+Usage:	Prototype declarations
+----------------------------------------------------------------------------- */
+
+#ifndef P_PROTO_H
+#define P_PROTO_H
+
+/* p_first.c */
+void p_first( LIST* symbols );
+int p_rhs_first( LIST** first, LIST* rhs );
+
+/* p_lalr_gen.c */
+int p_same_kernel( LIST* kernel1, LIST* kernel2 );
+STATE* p_get_undone( LIST* states );
+void p_item_closure( LIST* productions, ITEM* it, LIST** closure_set );
+void p_lalr1_closure( PARSER* parser, STATE* st );
+void p_reduce_item( PARSER* parser, STATE* st, ITEM* it );
+void p_perform_reductions( PARSER* parser, STATE* st );
+void p_generate_tables( PARSER* parser );
+
+/* p_error.c */
+void p_error( int err_id, int err_style, ... );
+
+/* p_mem.c */
+SYMBOL* p_get_symbol( PARSER* p, uchar* name, int type, BOOLEAN create );
+void p_free_symbol( SYMBOL* sym );
+PROD* p_create_production( PARSER* p, SYMBOL* lhs );
+void p_append_to_production( PROD* p, SYMBOL* sym, uchar* name );
+void p_free_production( PROD* prod );
+ITEM* p_create_item( STATE* st, PROD* p, LIST* lookahead );
+void p_free_item( ITEM* it );
+STATE* p_create_state( PARSER* p );
+void p_free_state( STATE* st );
+TABCOL* p_create_tabcol( SYMBOL* sym, short action, int index );
+void p_free_tabcol( TABCOL* act );
+TABCOL* p_find_tabcol( LIST* row, SYMBOL* sym );
+PARSER* p_create_parser( void );
+void p_free_parser( PARSER* parser );
+VTYPE* p_find_vtype( PARSER* p, uchar* name );
+VTYPE* p_create_vtype( PARSER* p, uchar* name );
+void p_free_vtype( VTYPE* vt );
+
+/* p_integrity.c */
+void p_undef_or_unused( PARSER* parser );
+BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start );
+BOOLEAN p_keyword_anomalies( PARSER* parser );
+BOOLEAN p_stupid_productions( PARSER* parser );
+
+/* p_string.c */
+uchar* p_tpl_insert( uchar* tpl, ... );
+uchar* p_str_append( uchar* dest, uchar* src, BOOLEAN freesrc );
+uchar* p_int_to_str( int val );
+uchar* p_chr_to_str( int val );
+uchar* p_long_to_str( long val );
+uchar* p_str_to_str( uchar* val );
+uchar* p_str_to_xml( uchar* str );
+int p_strcmp( uchar* str1, uchar* str2, int insensitive );
+uchar* p_strupr( uchar* str );
+uchar* p_unescape_str( uchar* str );
+uchar* p_str_no_whitespace( uchar* str );
+
+#define p_tolower( ch )		( ( ch >= 'A' && ch <= 'Z' ) ? ch + 32 : ch )
+#define p_toupper( ch )		( ( ch >= 'a' && ch <= 'z' ) ? ch - 32 : ch )
+
+/* p_util.c */
+uchar* p_mapfile( uchar* filename );
+uchar* p_derivation_name( uchar* name, uchar append_char );
+int p_unescape_char( uchar* str, uchar** strfix );
+bitset p_ccl_to_map( PARSER* parser, uchar* ccl );
+uchar* p_map_to_ccl( PARSER* parser, bitset map );
+uchar* p_negate_ccl( PARSER* parser, uchar* ccl );
+SYMBOL* p_find_base_symbol( SYMBOL* sym );
+
+/* p_rewrite.c */
+void p_rewrite_grammar( PARSER* parser );
+void p_unique_charsets( PARSER* parser );
+void p_fix_precedences( PARSER* parser );
+void p_inherit_fixiations( PARSER* parser );
+void p_setup_single_goal( PARSER* parser );
+
+/* p_virtual.c */
+SYMBOL* p_positive_closure( PARSER* parser, SYMBOL* base );
+SYMBOL* p_kleene_closure( PARSER* parser, SYMBOL* base );
+SYMBOL* p_optional_closure( PARSER* parser, SYMBOL* base );
+
+/* p_debug.c */
+void p_print_symbol( FILE* stream, SYMBOL* sym );
+void p_dump_grammar( FILE* stream, PARSER* parser );
+void p_dump_item_set( FILE* stream, uchar* title, LIST* list );
+void p_dump_map( FILE* stream, bitset map, int map_size );
+void p_dump_lalr_states( FILE* stream, PARSER* parser );
+void p_dump_productions( FILE* stream, PARSER* parser );
+void p_dump_production( FILE* stream, PROD* prod, BOOLEAN with_lhs, BOOLEAN semantics );
+
+/* p_parse.c / p_parse.syn */
+int p_parse( PARSER* p, uchar* src );
+
+/* p_keywords.c */
+void p_keywords_to_dfa( PARSER* parser );
+void p_single_lexer( PARSER* parser );
+void p_keyword_to_nfa( PARSER* parser, LIST** nfa, uchar* keyword, int accepting_id);
+LIST* p_find_equal_dfa( PARSER* parser, LIST* ndfa );
+LIST* p_symbol_to_nfa( PARSER* parser, LIST* nfa, SYMBOL* sym );
+
+/* p_build.c */
+void p_build_code( FILE* stream, PARSER* parser );
+uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p, uchar* base, BOOLEAN def_code );
+uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
+			uchar* base );
+uchar* p_escape_for_target( GENERATOR* g, uchar* str, BOOLEAN clear );
+uchar* p_mkproduction_str( PROD* p );
+BOOLEAN p_load_generator( GENERATOR* g, uchar* genfile );
+
+#endif
