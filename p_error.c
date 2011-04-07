@@ -57,8 +57,6 @@ uchar* error_txt[128] =
 	"Nonterminal whitespace \"%s\" is not allowed in context-free model",
 	"Invalid character universe",
 	"Character-class overlap in context-free model with \"%s\"",
-	"Semantic code of regex-terminals can possibly be executed multiple times in\n"
-		"    context-sensitive model. Watch for dynamic memory and time-consuming code."
 };
 
 int					error_protocol	= -1;
