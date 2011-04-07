@@ -33,9 +33,9 @@ of the Artistic License, version 2. Please see LICENSE for more information.
  * Information directives
  */
 #parser			"UniCC Grammar Definition Language";
-#version		"1.2.1";
+#version		"1.3";
 #description	"Parser for UniCC parser definitions";
-#copyright		"Copyright (C) 2008, 2009 by Jan Max Meyer, Phorward Software Technologies";
+#copyright		"Copyright (C) 2008-2010 by Jan Max Meyer, Phorward Software Technologies";
 
 /*
  * Prologue
@@ -57,8 +57,8 @@ of the Artistic License, version 2. Please see LICENSE for more information.
  
 struct @@prefix_nfa
 {
-	NFA*	start;
-	NFA*	end;
+	pregex_nfa_st*	start;
+	pregex_nfa_st*	end;
 };
 
 struct @@prefix_rhs_item
@@ -71,7 +71,7 @@ struct @@prefix_rhs_item
 #define MALLOC_STEP 255
 #endif
 
-#define UNICC_GETINPUT	*(src_ptr++)
+#define UNICC_GETINPUT	getinput()
 
 PARSER*	parser			= (PARSER*)NULL;
 
@@ -86,12 +86,22 @@ static PROD*	current_prod	= (PROD*)NULL;
 
 extern int	error_count;
 
-uchar*	strbuf			= (uchar*)NULL;
-LIST*	nfa_m			= (LIST*)NULL;
+uchar*		strbuf			= (uchar*)NULL;
+pregex_nfa	nfa_m;
 
 /*
  * Functions
  */
+
+/* DEBUG */
+int getinput( void )
+{
+	int ch = *(src_ptr++);
+#if UNICC_DEBUG
+	fprintf( stderr, "ch = %d (%c)\n", ch, (char)ch );
+#endif
+	return ch;
+}
 
 /* Append character to current string */
 static void strbuf_append( uchar ch )
@@ -102,7 +112,8 @@ static void strbuf_append( uchar ch )
 	if( !strbuf )
 		strbuf = (uchar*)p_malloc( ( MALLOC_STEP + 2 ) * sizeof( uchar ) );
 	else if( len % MALLOC_STEP == 0 )
-		strbuf = (uchar*)p_realloc( (uchar*)strbuf, ( len + MALLOC_STEP + 2 ) * sizeof( uchar ) );
+		strbuf = (uchar*)p_realloc( (uchar*)strbuf, ( len + MALLOC_STEP + 2 )
+			* sizeof( uchar ) );
 
 	strbuf[len] = ch;
 	strbuf[len+1] = '\0';
@@ -138,17 +149,25 @@ static void set_assoc_and_prec( LIST* symbols, int assoc )
 	prec_cnt++;
 }
 
-static void set_nfa_to_symbols( SYMBOL* s, NFA* start, NFA* end )
-{
-	NFA*	nstart;
 
-	nstart = re_create_nfa( &( s->nfa_def ) );
+static void set_nfa_to_symbols( SYMBOL* s,
+	pregex_nfa_st* start, pregex_nfa_st* end )
+{
+	pregex_nfa_st*	nstart;
+	
+	if( !( nstart = pregex_nfa_create_state(
+			&( s->nfa ), (uchar*)NULL, REGEX_MOD_NONE ) ) )
+		OUT_OF_MEMORY;
+
 	nstart->next = start;
 	end->accept = s->id;
-
-	s->nfa_def = list_union( s->nfa_def, nfa_m );
-	nfa_m = list_free( nfa_m );
-
+	
+	if( !( s->nfa.states = list_union( s->nfa.states, nfa_m.states ) ) )
+		OUT_OF_MEMORY;
+		
+	list_free( nfa_m.states );
+	memset( &nfa_m, 0, sizeof( pregex_nfa ) );
+	
 	s->keyword = TRUE;
 }
 
@@ -195,7 +214,6 @@ static void make_semantic_rhs( PROD* p )
 		}
 	}
 }
-
 
 *];
 //End of Prologue --------------------------------------------------------------
@@ -360,8 +378,10 @@ directive_parms		-> "whitespaces" 	symbol_list				[*	LIST* l;
 																	}
 																	else
 																	{
-																		parser->p_invalid_suf = p_strdup( strbuf );
+																		parser->p_invalid_suf = ccl_create( strbuf );
 																		parser->p_neg_inv_suf = @2;
+																		if( @2 )
+																			ccl_negate( parser->p_invalid_suf );
 																	}
 																*]
 					| "lexeme separation" boolean				[*	/* Ouput a warning, if this definition
@@ -692,26 +712,32 @@ stack_cur_prod<PROD*>
 																*]
 					;
 
-terminal<SYMBOL*>	->	ccl										[*	char* name = strbuf;
+terminal<SYMBOL*>	->	ccl										[*	CCL		ccl;
 
+																	ccl = ccl_create( strbuf );
 																	if( @1 )
-																		name = p_negate_ccl( parser, name );
+																		ccl_negate( ccl );
 
 																	@@ = p_get_symbol( parser,
-																			name, SYM_CCL_TERMINAL, TRUE );
+																			(void*)ccl,
+																				SYM_CCL_TERMINAL, TRUE );
 																			
 																	@@->defined = TRUE;
 																	@@->used = TRUE;
-
-																	if( @1 )
-																		p_free( name );
 																*]
 					| kw										[*	@@ = p_get_symbol( parser,
 																			strbuf, SYM_KW_TERMINAL, TRUE );
-																	@@->keyword = TRUE;
 
-																	@@->defined = TRUE;
 																	@@->used = TRUE;
+																	@@->defined = TRUE;
+																	@@->keyword = TRUE;
+																	
+																	if( pregex_nfa_from_string(
+																		&( @@->nfa ), strbuf,
+																			REGEX_MOD_NONE, @@->id )
+																				!= ERR_OK )
+																		OUT_OF_MEMORY;																	
+																	
 																*]
 					| integer									[*	@@ = p_get_symbol( parser,
 																			strbuf, SYM_EXTERN_TERMINAL, TRUE );
@@ -742,8 +768,12 @@ access_name			->	':' identifier
 regex<struct @@prefix_nfa>			->	re_alt
 					;
 
-re_alt<struct @@prefix_nfa>			->	re_alt '|' re_expr		[*	@@.start = re_create_nfa( &nfa_m );
-																	@@.end = re_create_nfa( &nfa_m );
+re_alt<struct @@prefix_nfa>			->	re_alt '|' re_expr		[*	@@.start = pregex_nfa_create_state
+																			( &nfa_m, (uchar*)NULL,
+																				REGEX_MOD_NONE );
+																	@@.end = pregex_nfa_create_state
+																			( &nfa_m, (uchar*)NULL,
+																				REGEX_MOD_NONE );
 
 																	@@.start->next = @1.start;
 																	@@.start->next2 = @3.start;
@@ -761,8 +791,12 @@ re_expr<struct @@prefix_nfa>		->	re_expr re_modifier		[*	@@.start = @1.start;
 					| re_modifier
 					;
 
-re_modifier<struct @@prefix_nfa>	->	re_factor '*'			[*	@@.start = re_create_nfa( &nfa_m );
-																	@@.end = re_create_nfa( &nfa_m );
+re_modifier<struct @@prefix_nfa>	->	re_factor '*'			[*	@@.start = pregex_nfa_create_state
+																			( &nfa_m, (uchar*)NULL,
+																				REGEX_MOD_NONE );
+																	@@.end = pregex_nfa_create_state
+																			( &nfa_m, (uchar*)NULL,
+																				REGEX_MOD_NONE );
 
 																	@@.start->next = @1.start;
 																	@@.start->next2 = @@.end;
@@ -774,7 +808,9 @@ re_modifier<struct @@prefix_nfa>	->	re_factor '*'			[*	@@.start = re_create_nfa(
 																	@@.end = @1.end;
 																	@@.end->next2 = @@.start;
 																*]
-					| re_factor '?'								[*	@@.start = re_create_nfa( &nfa_m );
+					| re_factor '?'								[*	@@.start = pregex_nfa_create_state
+																			( &nfa_m, (uchar*)NULL,
+																				REGEX_MOD_NONE );
 
 																	@@.start->next = @1.start;
 																	@@.start->next2 = @1.end;
@@ -783,53 +819,44 @@ re_modifier<struct @@prefix_nfa>	->	re_factor '*'			[*	@@.start = re_create_nfa(
 					| re_factor
 				;
 
-re_factor<struct @@prefix_nfa>		->	ccl						[*	uchar*	tmp;
-																	@@.start = re_create_nfa( &nfa_m );
-																	@@.end = @@.start->next = re_create_nfa( &nfa_m );
+re_factor<struct @@prefix_nfa>		->	ccl						[*	@@.start = pregex_nfa_create_state(
+																			&nfa_m, strbuf, REGEX_MOD_NONE );
+																	@@.end = @@.start->next
+																		= pregex_nfa_create_state(
+																			&nfa_m, (uchar*)NULL, REGEX_MOD_NONE );
 
-																	@@.start->edge = CCL;
 																	if( @1 )
-																	{
-																		tmp = p_negate_ccl( parser, strbuf );
-
-																		@@.start->cclass =
-																			p_ccl_to_map( parser, tmp );
-
-																		p_free( tmp );
-																	}
-																	else
-																		@@.start->cclass =
-																			p_ccl_to_map( parser, strbuf );
+																		ccl_negate( @@.start->ccl );
 																*]
 				| kw											[*	uchar*	ch;
-
+																	pregex_nfa_st*	st;
+																	
 																	if( *strbuf )
 																	{
-																		@@.end = @@.start = re_create_nfa(
-																			&nfa_m );
+																		@@.end = @@.start =
+																			pregex_nfa_create_state(
+																				&nfa_m, (uchar*)NULL, REGEX_MOD_NONE );
 
-																		for( ch = strbuf; *ch; ch++ )
+																		for( ch = strbuf; *ch; ch += u8_seqlen( ch ) )
 																		{
-																			@@.end->edge = *ch;
-																			@@.end = @@.end->next
-																				= re_create_nfa( &nfa_m );
+																			@@.end->ccl =
+																				ccl_addrange( (CCL)NULL,
+																					u8_char( ch ), u8_char( ch ) );
+
+																			@@.end = @@.end->next =
+																			pregex_nfa_create_state(
+																				&nfa_m, (uchar*)NULL, REGEX_MOD_NONE );
 																		}
 																	}
 																*]
-				| '.'											[*	int i;
-
-																	@@.start = re_create_nfa(
-																		&( nfa_m ) );
-																	@@.end = @@.start->next
-																		= re_create_nfa(
-																			&( nfa_m ) );
-
-																	@@.start->edge = CCL;
-																	@@.start->cclass =
-																		bitset_create( parser->p_universe );
-
-																	for( i = 0; i < parser->p_universe; i++ )
-																		bitset_set( @@.start->cclass, i, 1 );
+				| '.'											[*	@@.start = pregex_nfa_create_state(
+																		&( nfa_m ), (uchar*)NULL, REGEX_MOD_NONE );
+																	@@.start->ccl = ccl_addrange( (CCL)NULL,
+																						CCL_MIN, CCL_MAX - 1 );	
+																	
+																	@@.end = @@.start->next =
+																		pregex_nfa_create_state(
+																			&( nfa_m ), (uchar*)NULL, REGEX_MOD_NONE );
 																*]
 				| '(' regex ')'									[*	@@.start = @2.start;
 																	@@.end = @2.end;
