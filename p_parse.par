@@ -61,7 +61,6 @@ static int		prec_cnt		= 1; /* Precedence level */
 static int		line			= 1; /* Line within source file */
 static int 		auto_regex		= 0; /* Nameless Regex counter */
 static int		last_code_begin;	 /* Last code begin */
-static BOOLEAN	footer_code		= FALSE; /* Flag for footer code recognition */
 static int		embedded_count	= 0;
 static PROD*	current_prod	= (PROD*)NULL;
 
@@ -90,21 +89,6 @@ static void strbuf_append( uchar ch )
 	strbuf[len+2] = '\0';
 }
 
-static void strbuf_prefix( uchar ch )
-{
-	int len;
-	uchar* tmp;
-	len = strbuf ? (int)strlen( strbuf ) : 0;
-
-	if( !strbuf )
-		strbuf = (uchar*)p_malloc( ( MALLOC_STEP + 2 ) * sizeof( uchar ) );
-	else if( len % MALLOC_STEP == 0 )
-		strbuf = (uchar*)p_realloc( (uchar*)strbuf, ( len + MALLOC_STEP + 2 ) * sizeof( uchar ) );
-
-	tmp = p_strdup( strbuf );
-	sprintf( strbuf, "%c%s%c", ch, tmp, '\0' );
-	p_free( tmp );
-}
 
 /* Create a new string */
 static void reset_strbuf( void )
@@ -234,7 +218,7 @@ fixed_directive		-> "model"				model_type
 					;
 
 model_type			->	"context-sensitive"						[*	parser->p_model = MODEL_CONTEXT_SENSITIVE;	*]
-					| "context-free"							[*	parser->p_model = MODEL_CONTEXT_FREE;		*]
+					| "context-insensitve"						[*	parser->p_model = MODEL_CONTEXT_INSENSITIVE;*]
 					;
 
 segment				->	code
