@@ -1,6 +1,6 @@
 {/* -MODULE----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator 
-Copyright (C) 2006-2010 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2011 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_parse.syn/p_parse.c
@@ -182,6 +182,10 @@ fixed_directives:	fixed_directives "#!" fixed_directive ';'
 				;
 				
 fixed_directive: "model"				model_type
+				| "language"			string					{	if( parser->p_language )
+																		pfree( parser->p_language );
+																	parser->p_language = p_strdup( strbuf );
+																}
 				| "character universe"	integer					{	int universe = atoi( strbuf );
 				
 																	if( universe > 0 )
@@ -299,9 +303,6 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 																		parser->p_version= p_strdup( strbuf );	}
 				| "prefix"			string						{	if( !( parser->p_prefix ) )
 																		parser->p_prefix = p_strdup( strbuf );	}
-				| "language"		string						{	if( !( parser->p_language ) )
-																			parser->p_language = p_strdup( strbuf );
-																}
 				| "default action"	code						{	if( !( parser->p_def_action ) )
 																			parser->p_def_action = p_strdup( strbuf );
 																}
