@@ -1,12 +1,11 @@
-
 <?xml version="1.0" standalone="yes"?>
 <!--
 UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2009 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2010 by Phorward Software Technologies, Jan Max Meyer
 http://www.phorward-software.com ++ mail<AT>phorward<DASH>software<DOT>com
 
 File:		C.xml
-Version:	1.6.3
+Version:	1.7
 Author:		Jan Max Meyer
 Usage:		Target language template for the C programming language
 
@@ -23,7 +22,7 @@ Some general things you have to know:
 
 -->
 
-<generator name="C">
+<generator name="C" version="1.7">
 	<!--
 	***********************************************************************************************
 	Escape sequences
@@ -285,15 +284,19 @@ Some general things you have to know:
 													production number begins at 0.
 	-->
 	<charmap>
-		<col>@@symbol</col>
+		<col>@@from, @@to</col>
 		<col_sep>, </col_sep>
 	</charmap>
+	<charmap_sym>
+		<col>@@symbol</col>
+		<col_sep>, </col_sep>
+	</charmap_sym>
 	<dfa_select>
 		<col>@@machine</col>
 		<col_sep>, </col_sep>
 	</dfa_select>
 	<dfa_char>
-		<col>@@code</col>
+		<col>@@from, @@to</col>
 		<col_sep>, </col_sep>
 	</dfa_char>
 	<dfa_trans>
@@ -318,7 +321,7 @@ Some general things you have to know:
 		<row_start>&#x09;{ </row_start>
 		<row_end> }</row_end>
 		<row_sep>,&#x0A;</row_sep>
-		<col>@@index</col>
+		<col>@@index * 2</col>
 		<col_sep>, </col_sep>
 	</dfa_idx>
 	<dfa_accept>
@@ -329,8 +332,7 @@ Some general things you have to know:
 		<col_sep>, </col_sep>
 	</dfa_accept>
 	<kw_invalid_suffix>
-		<col_true>1</col_true>
-		<col_false>0</col_false>
+		<col>@@from, @@to</col>
 		<col_sep>, </col_sep>
 	</kw_invalid_suffix>
 	<whitespace>
@@ -346,7 +348,7 @@ Some general things you have to know:
 		<col>"@@production"</col>
 		<col_sep>,&#x0A;</col_sep>
 	</productions>
-	<code_localization>#line @@line "@@filename"
+	<code_localization>//#line @@line "@@filename"
 </code_localization>
 	<file filename="@@basename.c">/*
  * Parser:		@@name
@@ -354,7 +356,7 @@ Some general things you have to know:
  * Copyright:	@@copyright
  * Description:	@@description
  *
- * UniCC Parser Template for C - Version 1.6
+ * UniCC Parser Template for C - Version 1.7
  * Copyright (C) by Phorward Software Technologies, Jan Max Meyer
  */
 
@@ -420,6 +422,9 @@ UNICC_STATIC char @@prefix_getchar( void )
 }
 */
 
+/*
+#define UNICC_GETINPUT			@@prefix_getchar()
+*/
 #define UNICC_GETINPUT			getchar()
 #endif
 
@@ -477,7 +482,7 @@ UNICC_STATIC int @@prefix_dfa_idx[ @@number-of-dfa-machines ][ @@deepest-dfa-ind
 };
 
 /* DFA transition chars */
-UNICC_STATIC int @@prefix_dfa_chars[ @@size-of-dfa-characters ] =
+UNICC_STATIC int @@prefix_dfa_chars[ @@size-of-dfa-characters * 2 ] =
 {
 	@@dfa-char
 };
@@ -495,16 +500,25 @@ UNICC_STATIC int @@prefix_dfa_accept[ @@number-of-dfa-machines ][ @@deepest-dfa-
 };
 
 /* Invalid characters behind keywords */
-UNICC_STATIC int @@prefix_kw_invalid_suffixes[ @@character-universe ] =
+#if @@number-of-keyword-invalid-suffixes
+UNICC_STATIC int @@prefix_kw_invalid_suffixes[ @@number-of-keyword-invalid-suffixes * 2 ] =
 {
-@@keyword-invalid-suffixes
+	@@keyword-invalid-suffixes
 };
 #endif
 
-/* Single Character Lookahead */
-UNICC_STATIC int @@prefix_char_map[ @@character-universe ] =
+#endif
+
+/* Single Character Recognition */
+UNICC_STATIC int @@prefix_char_map[ @@number-of-character-map * 2 ] =
 {
 	@@character-map
+};
+
+/* Single Character Match */
+UNICC_STATIC int @@prefix_char_map_sym[ @@number-of-character-map ] =
+{
+	@@character-map-symbols
 };
 
 #if @@number-of-symbols
@@ -662,18 +676,30 @@ UNICC_STATIC void @@prefix_get_keyword( @@prefix_pcb* pcb )
 	char	next;
 
 	next = @@prefix_get_input( pcb, len );
+	
+/*
+fprintf( stderr, "next=%d\n", next );
+*/
 
 	do
 	{
 		chr = @@prefix_dfa_idx[ mach ][ dfa_st ];
+		
+/* fprintf( stderr, "chr=%d\n", chr ); */
 
 		dfa_st = -1;
 		while( @@prefix_dfa_chars[ chr ] &gt; -1 )
 		{
-			if( @@prefix_dfa_chars[ chr ] == next )
+/*
+fprintf( stderr, "next=%d @@prefix_dfa_chars[ chr ] = %d, @@prefix_dfa_chars[ chr+1 ] = %d\n", next, @@prefix_dfa_chars[ chr ], @@prefix_dfa_chars[ chr + 1 ]);
+*/
+			if( next &gt;= @@prefix_dfa_chars[ chr ] &&
+				next &lt;= @@prefix_dfa_chars[ chr+1 ] )
 			{
-				dfa_st = *( @@prefix_dfa_trans + chr );
-
+				dfa_st = *( @@prefix_dfa_trans + ( chr / 2 ) );
+/*
+fprintf( stderr, "dfa_st=%d\n", dfa_st );
+*/
 				if( @@prefix_dfa_accept[ mach ][ dfa_st ] &gt; -1 )
 					pcb->sym = @@prefix_dfa_accept[ mach ][ dfa_st ];
 
@@ -681,16 +707,18 @@ UNICC_STATIC void @@prefix_get_keyword( @@prefix_pcb* pcb )
 				break;
 			}
 
-			chr++;
+			chr += 2;
 		}
 	}
 	while( dfa_st &gt; -1 );
 	
 	if( pcb->sym &gt; -1 )
 	{
+#if @@number-of-keyword-invalid-suffixes
 		if( @@prefix_kw_invalid_suffixes[ next ] )
 			pcb->sym = -1;
 		else
+#endif
 			pcb->len = len;
 	}
 }
@@ -718,7 +746,18 @@ UNICC_STATIC int @@prefix_get_sym( @@prefix_pcb* pcb )
 #endif /* !@@model */
 			if( pcb->sym == -1 )
 #endif /* @@number-of-dfa-machines */
-				pcb->sym = @@prefix_char_map[ @@prefix_get_input( pcb, pcb->len++ ) ];
+			{
+				int ch = @@prefix_get_input( pcb, pcb->len++ );
+				int i;
+				
+				for( i = 0; i &lt; @@number-of-character-map * 2; i += 2 )
+					if( ch &gt;= @@prefix_char_map[ i ] &amp;&amp;
+							ch &lt;= @@prefix_char_map[ i+1 ] )
+					{
+						pcb->sym = @@prefix_char_map_sym[ i / 2 ];
+						break;
+					}
+			}
 #if @@model
 
 			if( pcb->sym &gt; -1 &amp;&amp; @@prefix_whitespaces[ pcb->sym ] )
@@ -1134,10 +1173,7 @@ int main( int argc, char** argv )
 	
 	if( @@copyright_len &gt; 0 )
 		printf( "@@copyright\n\n" );
-		
-	printf( "UniCC LALR(1) Parser Generator :: Standard C Parser Template\n"
-			"Copyright (C) 2008, 2009 by Phorward Software Technologies, Jan Max Meyer\n---\n" );
-	
+
 	do
 	{
 		first = 0;
