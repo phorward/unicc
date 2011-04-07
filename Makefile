@@ -16,13 +16,18 @@ include		../../include/Make.inc
 PROGRAM		=	$(RUN_DIR)$(PATH_SEP)$(UNICC)$(EXEEXT)
 PROG_BOOT1	=	boot_unicc1$(EXEEXT)
 PROG_BOOT2	=	boot_unicc2$(EXEEXT)
+PROG_BOOT3	=	boot_unicc3$(EXEEXT)
 
-PARSER		=	p_parse.c
-PARSER_OBJ	=	p_parse$(OBJEXT)
+PARSER_OUT	=	p_parse
+PARSER		=	$(PARSER_OUT).c
+PARSER_H	=	$(PARSER_OUT).h
+PARSER_OBJ	=	$(PARSER_OUT)$(OBJEXT)
 
 PARSER_BOOT	=	p_parse.syn
 PARSER_SRC	=	p_parse.par
 PARSER_DBG	=	p_parse.dbg
+
+PROTO		=	
 
 SRC			=	p_mem.c \
 				p_error.c \
@@ -36,6 +41,7 @@ SRC			=	p_mem.c \
 				p_debug.c \
 				p_keywords.c \
 				p_build.c \
+				p_xml.c \
 				p_main.c
 				
 OBJ			=	p_mem$(OBJEXT) \
@@ -50,18 +56,21 @@ OBJ			=	p_mem$(OBJEXT) \
 				p_debug$(OBJEXT) \
 				p_keywords$(OBJEXT) \
 				p_build$(OBJEXT) \
+				p_xml$(OBJEXT) \
 				p_main$(OBJEXT)
 				
 HEADERS		=	p_global.h \
 				p_error.h \
-				p_proto.h \
 				p_defs.h \
 				p_error.h
 				
-LIBS		=	$(PBASIS_LIB) \
-				$(PREGEX_LIB) \
-				$(PSTRING_LIB) \
-				$(XML_LIB)
+TEMPLATE_C	=	C.xml
+				
+LIBS		=	$(PREGEX_LIB) \
+				$(PBASIS_LIB)
+
+MISCDEP		=	$(TEMPLATE_C) \
+				Makefile
 
 #-------------------------------------------------------------------------------
 
@@ -69,29 +78,40 @@ all: $(PROGRAM)
 	@echo
 	@echo --- Compilation succeeded! ---
 
-$(PROG_BOOT1): $(PARSER_BOOT) $(SRC) $(HEADERS) $(LIBS) Makefile
+$(PROG_BOOT1): $(PARSER_BOOT) $(PROTO) $(SRC) $(HEADERS) $(LIBS) $(MISCDEP)
 	$(MIN_LALR1) $(PARSER_BOOT) >$(PARSER) 2>$(PARSER_DBG)
-	$(CC) $(CEXEOPTS) $(SRC) $(PARSER)
+	$(CC) $(CEXEOPTS) $(DEBUG) -DUNICC_BOOTSTRAP $(SRC) $(PARSER)
 	$(LLINK) $(LINKOPTS)$@ $(OBJ) $(PARSER_OBJ) $(LIBS)
 	@echo
 	@echo -- First bootstrap stage OK --
 	@echo
 
-$(PROG_BOOT2): $(PROG_BOOT1) $(PARSER_SRC) $(SRC) $(HEADERS) $(LIBS) Makefile
-	$(PROG_BOOT1) -v -w -o $(PARSER) $(PARSER_SRC)
-	$(CC) $(CEXEOPTS) $(SRC) $(PARSER)
+$(PROG_BOOT2): $(PROG_BOOT1) $(PARSER_SRC) $(PROTO) $(SRC) $(HEADERS) $(LIBS) $(MISCDEP)
+	$(PROG_BOOT1) -s -v -w -b $(PARSER_OUT) $(PARSER_SRC)
+	$(CC) $(CEXEOPTS) $(DEBUG) -DUNICC_BOOTSTRAP $(SRC) $(PARSER)
 	$(LLINK) $(LINKOPTS)$@ $(OBJ) $(PARSER_OBJ) $(LIBS)
 	@echo
 	@echo -- Second bootstrap stage OK --
 	@echo
 
-$(PROGRAM): $(PROG_BOOT2) $(PARSER_SRC) $(SRC) $(HEADERS) $(LIBS) Makefile
-	$(PROG_BOOT2) -v -w -o $(PARSER) $(PARSER_SRC)
-	$(CC) $(CEXEOPTS) $(SRC) $(PARSER)
+$(PROG_BOOT3): $(PROG_BOOT2) $(PARSER_SRC) $(PROTO) $(SRC) $(HEADERS) $(LIBS) $(MISCDEP)
+	$(PROG_BOOT2) -s -v -w -b $(PARSER_OUT) $(PARSER_SRC)
+	$(CC) $(CEXEOPTS) $(DEBUG) -DUNICC_BOOTSTRAP $(SRC) $(PARSER)
+	$(LLINK) $(LINKOPTS)$@ $(OBJ) $(PARSER_OBJ) $(LIBS)
+	@echo
+	@echo -- Third bootstrap stage OK --
+	@echo
+
+$(PROGRAM): $(PROG_BOOT3) $(PARSER_SRC) $(PROTO) $(SRC) $(HEADERS) $(LIBS) $(MISCDEP)
+	$(PROG_BOOT3) -s -v -w -b $(PARSER_OUT) $(PARSER_SRC)
+	$(CC) $(CEXEOPTS) $(DEBUG) $(SRC) $(PARSER)
 	$(LLINK) $(LINKOPTS)$@ $(OBJ) $(PARSER_OBJ) $(LIBS)
 	@echo
 	@echo -- Final bootstrap complete --
 	@echo
+	
+#$(PROTO): $(SRC) $(PARSER) $(HEADERS)
+#	cproto_all "$(SRC) $(PARSER)" $(INCLUDE_DIR) $@
 
 clean: clean_obj
 	-@$(RM) $(PROGRAM)
@@ -99,12 +119,14 @@ clean: clean_obj
 clean_obj:
 	-@$(RM) $(PROG_BOOT1)
 	-@$(RM) $(PROG_BOOT2)
+	-@$(RM) $(PROG_BOOT3)
 	-@$(RM) $(PARSER)
+	-@$(RM) $(PARSER_H)
 	-@$(RM) $(PARSER_DBG)
 	-@$(RM) $(PARSER_OBJ)
 	-@$(RM) $(OBJ)
 
-backup:
+backup:	clean
 	-@$(RM) ../p_lalr1_cc.tar
 	tar cvf ../p_lalr1_cc.tar ../p_lalr1_cc
 
