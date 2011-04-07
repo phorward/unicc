@@ -373,7 +373,7 @@ Some general things you have to know:
 #endif
 
 #ifndef UNICC_SRC_MOVE
-#define UNICC_SRC_MOVE( s, l )	0
+#define UNICC_SRC_MOVE( s, l )
 #endif
 
 #ifndef UNICC_PARSE_ERROR
@@ -620,10 +620,10 @@ int @@prefix_parse( char* src )
 	int		idx;
 	int		sym			= -1;
 	int		len			= 0;
-	int		i;
 	int		error_delay	= 0;
 	int		error_count	= 0;
 #if UNICC_DEBUG
+	int		i;
 	@@prefix_vtype*		vptr;
 	FILE* 				@@prefix_dbg;
 	
