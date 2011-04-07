@@ -215,20 +215,6 @@ void p_rewrite_grammar( PARSER* parser )
 	done = list_free( done );
 	stack = (LIST*)NULL;
 
-	/* Rewrite goal symbol, possibly again, for whitespaces in front of source */
-	/*
-	p = parser->goal->productions->pptr; / * Goal IS here already single! * /
-
-	l = p->rhs;
-	m = p->rhs_idents;
-
-	p->rhs = list_push( (LIST*)NULL, ws_optlist );
-	p->rhs->next = l;
-
-	p->rhs_idents = list_push( (LIST*)NULL, (char*)NULL );
-	p->rhs_idents->next = m;
-	*/
-
 	/* Build a new goal symbol */
 	deriv = p_strdup( parser->goal->name );
 
@@ -267,254 +253,274 @@ void p_rewrite_grammar( PARSER* parser )
 	Author:			Jan Max Meyer
 	
 	Usage:			Rewrites the grammar to work with uniquely identifyable
-					character sets instead of overlapping ones.
+					character sets instead of overlapping ones. This function
+					was completely rewritten in Nov 2009.
 					
-	Parameters:		<type>		<identifier>		<description>
+	Parameters:		PARSER*		parser			Pointer to parser to be
+												rewritten
 	
-	Returns:		<type>							<description>
+	Returns:		void
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
+	11.11.2009	Jan Max Meyer	Redesign of function, to work with full
+								Unicode-range character classes.
 ----------------------------------------------------------------------------- */
 void p_unique_charsets( PARSER* parser )
 {
-	int		i;
-	int		j;
-	LIST*	l;
-	LIST*	m;
-	LIST*	n;
-	int*	cmap;
-	bitset	charmap;
-	bitset	nmap;
-	bitset	xmap;
-	LIST*	csets;
-	SYMBOL*	sym;
-	SYMBOL* tsym;
-	SYMBOL*	xsym;
-	uchar*	nname;
-	int		old_prod_cnt;
-	BOOLEAN	done_something;
-	PROD*	p;
-	
-	if( !parser )
-		return;
+	LIST*		l;
+	LIST*		m;
+	SYMBOL*		sym;
+	SYMBOL*		tsym;
+	SYMBOL*		nsym;
+	SYMBOL*		rsym;
+	PROD*		p;
+	CCL			inter;
+	CCL			tinter;
+	CCL			base;
+	CCL			tmp;
+	CCL			diff;
+	int			old_prod_cnt;
+	uchar*		tmpstr;
 
-	/* Allocate character maps over character universe */
-	cmap = (int*)p_malloc( parser->p_universe * sizeof( int ) );
+	PROC( "p_unique_charsets" );
 
-	/* nmap = (int*)p_malloc( parser->p_universe * sizeof( int ) ); */
-	/* xmap = (int*)p_malloc( parser->p_universe * sizeof( int ) ); */
-
-	if( !cmap )
-	{
-		OUT_OF_MEMORY;
-		return;
-	}
-
-	/* Perform the algorithm! */
 	do
 	{
 		old_prod_cnt = list_count( parser->productions );
 
-		for( l = parser->symbols; l; l = l->next )
+		LISTFOR( parser->symbols, l )
 		{
-			sym = l->pptr;
-
-			if( !IS_TERMINAL( sym ) || sym->keyword || sym->extern_token )
+			/* Get symbol pointer */
+			sym = (SYMBOL*)list_access( l );
+			if( sym->type != SYM_CCL_TERMINAL )
 				continue;
-
-			/* memset( cmap, 0, parser->p_universe * sizeof( int ) ); */
-			for( i = 0; i < parser->p_universe; i++ )
-				cmap[i] = -1;
-
-			charmap = p_ccl_to_map( parser, sym->name );
+				
+			MSG( "NEXT SYMBOL FOR REVISION" );
+			VARS( "sym->name", "%s", sym->name );
 			
-			if( !charmap )
-			{
-				OUT_OF_MEMORY;
-				return;
-			}
-
-			for( i = 0; i < parser->p_universe; i++ )
-				if( bitset_get( charmap, i ) )
-					cmap[i] = sym->id;
-
 			/*
-			p_dump_map( stdout, charmap, parser->p_universe );
-			getchar();
+			fprintf( stderr, "sym->ccl: %d\n", ccl_size( sym->ccl ) );
+			ccl_print( stderr, sym->ccl, 1 );
 			*/
-
-			bitset_free( charmap );
 
 			/* Find overlapping character classes */
-			for( m = parser->symbols; m; m = m->next )
+			MSG( "Searching for overlapping character classes" );
+			LISTFOR( parser->symbols, m )
 			{
-				tsym = m->pptr;
+				/* Get valid symbol pointer */
+				/* if( l == m )
+					continue; */
+
+				tsym = (SYMBOL*)list_access( m );
+
+				if( tsym->type != SYM_CCL_TERMINAL )
+					continue;
+
+				VARS( "tsym->name", "%s", tsym->name );
+
+				inter = ccl_intersect( sym->ccl, tsym->ccl );
 				
-				if( !IS_TERMINAL( tsym )
-						|| tsym->keyword
-							|| tsym->extern_token
-								|| tsym == sym )
-					continue;
-
-				charmap = p_ccl_to_map( parser, tsym->name );
-				if( !charmap )
+				/*
+				fprintf( stderr, "inter: %d\n", ccl_size( inter ) );
+				ccl_print( stderr, inter, 1 );
+				fprintf( stderr, "tsym->ccl: %d\n", ccl_size( tsym->ccl ) );
+				ccl_print( stderr, tsym->ccl, 1 );
+				*/
+				
+				VARS( "ccl_size( inter )", "%d", ccl_size( inter ) );
+				if( ccl_size( inter ) )
 				{
-					OUT_OF_MEMORY;
-					return;
-				}
+					MSG( "Intersections found with tsym" );
 
-				for( i = 0; i < parser->p_universe; i++ )
-					if( bitset_get( charmap, i ) && cmap[i] == sym->id )
+					/* Create charclass-symbol for remaining symbols */					
+					diff = ccl_diff( tsym->ccl, inter );
+					if( !ccl_size( diff ) )
 					{
-						if( parser->p_model == MODEL_CONTEXT_INSENSITIVE )
-						{
-							char	tmp[ 10 + 1 ];
-
-							if( i >= 32 && i <= 126 )
-								sprintf( tmp, "%c", i );
-							else
-								sprintf( tmp, "\\%d", i );
-
-							p_error( ERR_CHARCLASS_OVERLAP, ERRSTYLE_FATAL, tmp );
-						}
-
-						cmap[i] = tsym->id;
+						ccl_free( diff );
+						continue;
 					}
 
-				bitset_free( charmap );
-			}
-			
-			/*
-			if( !strcmp( sym->name, "\\n" ) || !strcmp( sym->name, "\\n'" ) )
-			{
-				printf( "2 sym->name = >%s< (id %d)\n", sym->name, sym->id );
-				for( i = 0; i < 128; i++ )
-					printf( "%03d:%02d%s", i, cmap[i], ( i > 0 && i % 10 == 0 ? "\n" : " " ) );
-				printf( "\n\n" );
-			}
-			
-			p_dump_grammar( stderr, parser );
-			getchar();			
-			*/
-
-
-			csets = (LIST*)NULL;
-			for( m = parser->symbols; m; m = m->next )
-			{
-				tsym = m->pptr;
-
-				if( !IS_TERMINAL( tsym ) || tsym->keyword || tsym->extern_token )
-					continue;
-
-				done_something = FALSE;
-				/* memset( nmap, 0, parser->p_universe * sizeof( int ) ); */
-				nmap = bitset_create( parser->p_universe );
-				if( !nmap )
-				{
-					OUT_OF_MEMORY;
-					return;
-				}
-
-				for( i = 0; i < parser->p_universe; i++ )
-					if( cmap[i] == tsym->id )
+					/* Disallow intersections in context-sensitive model */
+					if( parser->p_model == MODEL_CONTEXT_INSENSITIVE )
 					{
-						bitset_set( nmap, i, 1 );
-						done_something = TRUE;
-					}
-
-				if( done_something )
-				{
-					/* p_dump_map( stdout, nmap, parser->p_universe ); */
-
-					/* Is there already such a set? */
-					for( n = parser->symbols; n; n = n->next )
-					{
-						xsym = n->pptr;
-
-						if( !IS_TERMINAL( xsym )
-							|| xsym->keyword
-								|| xsym->extern_token )
-							continue;
-
-						xmap = p_ccl_to_map( parser, xsym->name );
-						if( !xmap )
-						{
+						if( !( tmpstr = ccl_to_str( inter, TRUE ) ) )
 							OUT_OF_MEMORY;
-							return;
-						}
 
-						for( j = 0; j < parser->p_universe; j++ )
-							if( bitset_get( nmap, j ) != bitset_get( xmap, j ) )
-								break;
-						
-						/*
-						if( j == parser->p_universe )
-						{
-							printf( "@@ >%s<\n", xsym->name );
-							p_dump_map( stdout, xmap, parser->p_universe );
-						}
-						*/
+						p_error( ERR_CHARCLASS_OVERLAP,
+									ERRSTYLE_FATAL, tmpstr );
 
-						bitset_free( xmap );
-
-						if( j == parser->p_universe )
-							break;
+						pfree( tmpstr );
+						continue;
 					}
-
-					/* printf( "%p %p\n", sym, xsym ); */
-					if( !n )
+					
+					/* Create charclass-symbol for intersecting symbols */										
+					if( !( nsym = p_get_symbol( parser, (void*)inter,
+									SYM_CCL_TERMINAL, FALSE ) ) )
 					{
-						nname = p_map_to_ccl( parser, nmap );
-						/*
-						printf( "Making >%s<\n", nname );
-						p_dump_map( stdout, nmap, parser->p_universe );
-						getchar();
-						*/
-						
-						xsym = p_get_symbol( parser, nname,
-							SYM_CCL_TERMINAL, TRUE );
-						xsym->generated = TRUE;
-						xsym->used = TRUE;
-						xsym->defined = TRUE;
-						p_free( nname );
+						nsym = p_get_symbol( parser, (void*)inter,
+										SYM_CCL_TERMINAL, TRUE );					
+						nsym->used = TRUE;
+						nsym->defined = TRUE;
 					}
+					else
+						ccl_free( inter );
 
-					if( sym != xsym )
-						csets = list_push( csets, xsym );
+					rsym = p_get_symbol( parser, (void*)diff,
+									SYM_CCL_TERMINAL, TRUE );
+					rsym->used = TRUE;
+					rsym->defined = TRUE;
+
+					/* Re-configure symbol */	
+					ccl_free( tsym->ccl );
+					tsym->name = p_str_append( tsym->name,
+									P_REWRITTEN_CCL, FALSE );
+					tsym->type = SYM_NON_TERMINAL;
+					tsym->first = list_free( tsym->first );
+					
+					/* Create & append productions */
+					p = p_create_production( parser, tsym );
+					p_append_to_production( p, nsym, (uchar*)NULL );
+
+					p = p_create_production( parser, tsym );
+					p_append_to_production( p, rsym, (uchar*)NULL );
 				}
-
-				bitset_free( nmap );
-			}
-
-			if( list_count( csets ) > 0 )
-			{
-				/*printf( "csets counts %d\n", list_count( csets ) );*/
-				nname = p_str_append( p_strdup( sym->name ), P_REWRITTEN_CCL, FALSE );
-				
-				p_free( sym->name );
-				sym->name = nname;
-				sym->type = SYM_NON_TERMINAL;
-
-				for( m = csets; m; m = m->next )
+				else
 				{
- 					/*
- 					printf( "appending >%s< >%s<...\n",
- 						sym->name, ((SYMBOL*)(m->pptr))->name );
- 					*/
-					p = p_create_production( parser, sym );
-					p_append_to_production( p, m->pptr, (uchar*)NULL );
+					MSG( "Has no intersections, next" );
+					ccl_free( inter );
 				}
-
-				csets = list_free( csets );
 			}
 		}
-
-		/* printf( "Here I am %d %d\n", old_prod_cnt, list_count( parser->productions ) ); */
+		
+		/*
+		fprintf( stderr, "-----\nCURRENT GRAMMAR:\n" );
+		p_dump_grammar( stderr, parser );
+		getchar();
+		*/
 	}
-	while( old_prod_cnt < list_count( parser->productions ) );
+	while( old_prod_cnt != list_count( parser->productions ) );
 	
-	p_free( cmap );
+	
+#if 0			
+			MSG( "Revision of base" );
+			VARS( "ccl_size( inter )", "%d", ccl_size( inter ) );
+			
+			/* Rewrite base */
+			if( ccl_size( inter ) )
+			{
+				MSG( "Rewriting character class" );
+				VARS( "sym->name", "%s", sym->name );
+
+				base = ccl_diff( sym->ccl, inter );
+
+				fprintf( stderr, "base: %d\n", ccl_size( base ) );
+				ccl_print( stderr, base, 1 );
+				fprintf( stderr, "inter: %d\n", ccl_size( inter ) );
+				ccl_print( stderr, inter, 1 );
+				fprintf( stderr, "sym->ccl: %d\n", ccl_size( sym->ccl ) );
+				ccl_print( stderr, sym->ccl, 1 );
+
+				/* Create first production from 'base' */
+				VARS( "ccl_size( base )", "%d", ccl_size( base ) );
+				if( ccl_size( base ) )
+				{
+					/* Re-configure symbol to be a non-terminal, append
+						P_REWRITTEN_CCL to its name */
+					ccl_free( sym->ccl );
+					sym->name = p_str_append( sym->name,
+									P_REWRITTEN_CCL, FALSE );
+					sym->type = SYM_NON_TERMINAL;
+					sym->first = list_free( sym->first );
+				
+					VARS( "sym->name", "%s", sym->name );
+
+					tsym = p_get_symbol( parser, (void*)base,
+							SYM_CCL_TERMINAL, TRUE );
+					tsym->used = TRUE;
+					tsym->defined = TRUE;
+				
+					VARS( "sym", "%p", sym );
+					VARS( "tsym", "%p", tsym );
+				
+					MSG( "Appending tsym to sym" );
+					p = p_create_production( parser, sym );
+					p_append_to_production( p, tsym, (uchar*)NULL );
+					
+				
+					/* Create second production from 'intersect' */
+					tsym = p_get_symbol( parser, (void*)intersect,
+							SYM_CCL_TERMINAL, TRUE );
+					tsym->used = TRUE;
+					tsym->defined = TRUE;
+		
+					VARS( "sym", "%p", sym );
+					VARS( "tsym", "%p", tsym );
+		
+					MSG( "Appending tsym to sym" );
+					p = p_create_production( parser, sym );
+					p_append_to_production( p, tsym, (uchar*)NULL );
+					
+					tsym = sym;
+				}
+				
+				ccl_free( base );
+
+				
+				/* Now, create productions to intersecting symbols */
+				LISTFOR( parser->symbols, m )
+				{
+					tsym = (SYMBOL*)list_access( m );
+					if( tsym->type != SYM_CCL_TERMINAL )
+						continue;
+
+					tinter = ccl_intersect( tsym->ccl, inter );
+					VARS( "ccl_size( tinter )", "%d", ccl_size( tinter ) );
+					if( ccl_size( tinter ) )
+					{
+						MSG( "Having intersection with tsym - revision!" );
+						VARS( "tsym->name", "%s", tsym->name );
+
+						csym = p_get_symbol( parser, (void*)tinter,
+									SYM_CCL_TERMINAL, TRUE );
+
+						csym->used = TRUE;
+						csym->defined = TRUE;
+						
+						
+						p = p_create_production( parser, sym );
+						p_append_to_production( p, tsym, (uchar*)NULL );
+
+						tmp = ccl_diff( inter, tinter );
+						ccl_free( inter );
+						inter = tmp;
+					}
+					else
+						ccl_free( tinter );
+				}
+
+				if( ccl_size( inter ) )
+				{
+					MSG( "Obtaining symbol" );
+					tsym = p_get_symbol( parser, (void*)inter,
+							SYM_CCL_TERMINAL, TRUE );
+					tsym->used = TRUE;
+					tsym->defined = TRUE;
+
+					p = p_create_production( parser, sym );
+					p_append_to_production( p, tsym, (uchar*)NULL );
+				}
+			}
+			else
+			{
+				MSG( "No revision required - no intersections!" );
+			}
+			
+			ccl_free( inter );
+		}
+#endif
+
+	VOIDRET;
 }
 
 /* -FUNCTION--------------------------------------------------------------------
@@ -611,9 +617,11 @@ void p_fix_precedences( PARSER* parser )
 	Usage:			Inherits the fixiation definitions once done with "fixate"
 					parser directive.
 					
-	Parameters:		<type>		<identifier>		<description>
+	Parameters:		PARSER*		parser				Pointer to parser information
+													structure; This huge shit of
+													data, holding everything :)
 	
-	Returns:		<type>							<description>
+	Returns:		void
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
@@ -736,15 +744,18 @@ void p_setup_single_goal( PARSER* parser )
 
 				return; /* Nothing to do anymore! */
 			}
-			else if( list_count( p->rhs ) == 1 && sym->type == SYM_NON_TERMINAL )
+			else if( list_count( p->rhs ) == 1 &&
+					sym->type == SYM_NON_TERMINAL )
 			{
 				if( !( parser->end_of_input ) )
 				{
 					parser->end_of_input = p_get_symbol( parser,
-						P_DEF_EOF_SYMBOL, SYM_CCL_TERMINAL, TRUE );
+						ccl_create( P_DEF_EOF_SYMBOL ),
+							SYM_CCL_TERMINAL, TRUE );
 					parser->end_of_input->generated = TRUE;
 
-					p_error( ERR_ASSUMING_DEF_EOF, ERRSTYLE_WARNING, P_DEF_EOF_SYMBOL );
+					p_error( ERR_ASSUMING_DEF_EOF,
+							ERRSTYLE_WARNING, P_DEF_EOF_SYMBOL );
 				}
 
 				list_push( p->rhs, (void*)parser->end_of_input );
@@ -781,7 +792,7 @@ void p_setup_single_goal( PARSER* parser )
 	if( !( parser->end_of_input ) )
 	{
 		parser->end_of_input = p_get_symbol( parser,
-			P_DEF_EOF_SYMBOL, SYM_CCL_TERMINAL, TRUE );
+			(void*)ccl_create( P_DEF_EOF_SYMBOL ), SYM_CCL_TERMINAL, TRUE );
 
 		if( !( parser->end_of_input ) )
 		{
