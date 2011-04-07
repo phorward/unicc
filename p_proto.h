@@ -51,8 +51,13 @@ BOOLEAN p_keyword_anomalies( PARSER* parser );
 BOOLEAN p_stupid_productions( PARSER* parser );
 
 /* p_string.c */
+/*
 uchar* p_tpl_insert( uchar* tpl, ... );
 uchar* p_str_append( uchar* dest, uchar* src, BOOLEAN freesrc );
+*/
+#define p_tpl_insert pstr_render
+#define p_str_append pstr_append_str
+
 uchar* p_int_to_str( int val );
 uchar* p_chr_to_str( int val );
 uchar* p_long_to_str( long val );
@@ -67,7 +72,6 @@ uchar* p_str_no_whitespace( uchar* str );
 #define p_toupper( ch )		( ( ch >= 'a' && ch <= 'z' ) ? ch - 32 : ch )
 
 /* p_util.c */
-uchar* p_mapfile( uchar* filename );
 uchar* p_derivation_name( uchar* name, uchar append_char );
 int p_unescape_char( uchar* str, uchar** strfix );
 bitset p_ccl_to_map( PARSER* parser, uchar* ccl );
@@ -81,6 +85,7 @@ void p_rewrite_grammar( PARSER* parser );
 void p_unique_charsets( PARSER* parser );
 void p_fix_precedences( PARSER* parser );
 void p_inherit_fixiations( PARSER* parser );
+void p_inherit_vtypes( PARSER* parser );
 void p_setup_single_goal( PARSER* parser );
 
 /* p_virtual.c */
