@@ -5,7 +5,7 @@ Copyright (C) 2006-2010 by Phorward Software Technologies, Jan Max Meyer
 http://www.phorward-software.com ++ contact<AT>phorward<DASH>software<DOT>com
 
 File:		C.xml
-Version:	1.7.1
+Version:	1.8
 Author:		Jan Max Meyer
 Usage:		Target language template for the C programming language
 
@@ -22,7 +22,7 @@ Some general things you have to know:
 
 -->
 
-<generator name="C" version="1.7.1">
+<generator name="C" version="1.8">
 	<!--
 	****************************************************************************
 	Escape sequences
@@ -317,13 +317,16 @@ Some general things you have to know:
 		<col>@@symbol</col>
 		<col_sep>, </col_sep>
 	</charmap_sym>
+
 	<dfa_select>
 		<col>@@machine</col>
 		<col_sep>, </col_sep>
 	</dfa_select>
 	<dfa_char>
-		<col>@@from, @@to</col>
-		<col_sep>, </col_sep>
+		<col>@@from,
+@@to</col>
+		<col_sep>,
+</col_sep>
 	</dfa_char>
 	<dfa_trans>
 		<col>@@goto</col>
@@ -374,7 +377,7 @@ Some general things you have to know:
 		<col>"@@production"</col>
 		<col_sep>,&#x0A;</col_sep>
 	</productions>
-	<code_localization>//#line @@line "@@filename"
+	<code_localization>#line @@line "@@filename"
 </code_localization>
 	<file filename="@@basename.c">/*
  * Parser:		@@name
@@ -382,7 +385,7 @@ Some general things you have to know:
  * Copyright:	@@copyright
  * Description:	@@description
  *
- * UniCC Parser Template for C - Version 1.7
+ * UniCC Parser Template for C - Version 1.8
  * Copyright (C) by Phorward Software Technologies, Jan Max Meyer
  */
 
@@ -446,9 +449,7 @@ UNICC_STATIC char @@prefix_getchar( void )
 	fprintf( stderr, "ch = &gt;%d&lt; %d\n", ch, ch == -1 );
 	return ( ch == -1 ? @@eof : ch );
 }
-*/
 
-/*
 #define UNICC_GETINPUT			@@prefix_getchar()
 */
 #define UNICC_GETINPUT			getchar()
@@ -533,8 +534,7 @@ UNICC_STATIC int @@prefix_kw_invalid_suffixes[ @@number-of-keyword-invalid-suffi
 };
 #endif
 
-#endif
-
+#if 0
 /* Single Character Recognition */
 UNICC_STATIC int @@prefix_char_map[ @@number-of-character-map * 2 ] =
 {
@@ -546,6 +546,9 @@ UNICC_STATIC int @@prefix_char_map_sym[ @@number-of-character-map ] =
 {
 	@@character-map-symbols
 };
+#endif
+
+#endif
 
 #if @@number-of-symbols
 /* Whitespace symbols */
@@ -614,10 +617,10 @@ UNICC_STATIC int @@prefix_get_go_tab( @@prefix_pcb* pcb, int sym )
 
 UNICC_STATIC char @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offset )
 {
-	/*
-	if( pcb->bufend &amp;&amp; pcb->buf + pcb->len &lt; pcb->bufend )
-		return *( pcb->buf + pcb->len++ );
-	*/
+#if UNICC_DEBUG	&amp;&amp; 0
+	fprintf( stderr, "pcb->buf + offset = %d pcb->bufend = %d\n",
+				pcb->buf + offset, pcb->bufend );
+#endif
 	
 	while( pcb->buf + offset &gt;= pcb->bufend )
 	{
@@ -631,7 +634,8 @@ UNICC_STATIC char @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offset )
 	
 			*pcb->buf = '\0';
 		}
-		else if( *pcb->buf &amp;&amp; !( ( pcb->bufend - pcb->buf ) % UNICC_MALLOCSTEP ) )
+		else if( *pcb->buf &amp;&amp; !( ( pcb->bufend - pcb->buf ) %
+					UNICC_MALLOCSTEP ) )
 		{
 			pcb->buf = (char*)realloc( (char*)pcb->buf,
 				( ( pcb->bufend - pcb->buf ) + UNICC_MALLOCSTEP + 1 )
@@ -643,22 +647,27 @@ UNICC_STATIC char @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offset )
 			pcb->bufend = pcb->buf + strlen( pcb->buf );
 		}
 	
-		/*
+#if UNICC_DEBUG	&amp;&amp; 0
 		{
 			char ch = UNICC_GETINPUT;
 			fprintf( stderr, "reading char #%c# %d\n", ch, ch );
 			sprintf( pcb->bufend++, "%c", ch );
+			*( pcb->bufend ) = '\0';
 		}
-		*/
-		
+#else
 		sprintf( pcb->bufend++, "%c", UNICC_GETINPUT );
+#endif
 	}
-
-	/*
+/*
 	#if UNICC_DEBUG
 	fprintf( stderr, "reading &gt;%c&lt;\n", *( pcb->buf + offset ) );
 	#endif
-	*/
+*/
+#if UNICC_DEBUG	&amp;&amp; 0
+	fprintf( stderr, "pcb->buf = #%s# offset = %d ret = %d\n",
+				pcb->buf, offset, *( pcb->buf + offset ) );
+#endif
+
 	return *( pcb->buf + offset );
 }
 
@@ -674,8 +683,18 @@ UNICC_STATIC void @@prefix_clear_input( @@prefix_pcb* pcb )
 				if( pcb->buf[i] == '\n' )
 					pcb->line++;
 
+#if UNICC_DEBUG	&amp;&amp; 0
+	fprintf( stderr, "CLEARING %d CHARACTERS FROM buf = #%s#\n",
+		pcb->len, pcb->buf );
+#endif
+
 			strcpy( pcb->buf, pcb->buf + pcb->len );		
 			pcb->bufend = pcb->buf + strlen( pcb->buf );
+
+#if UNICC_DEBUG	&amp;&amp; 0
+	fprintf( stderr, "now buf = #%s# %d bufend %d\n",
+		pcb->buf, pcb->buf, pcb->bufend );
+#endif
 		}
 		else
 		{
@@ -703,29 +722,33 @@ UNICC_STATIC void @@prefix_get_keyword( @@prefix_pcb* pcb )
 
 	next = @@prefix_get_input( pcb, len );
 	
-/*
+#if UNICC_DEBUG	&amp;&amp; 0
 fprintf( stderr, "next=%d\n", next );
-*/
+#endif
 
 	do
 	{
 		chr = @@prefix_dfa_idx[ mach ][ dfa_st ];
-		
-/* fprintf( stderr, "chr=%d\n", chr ); */
+#if UNICC_DEBUG	&amp;&amp; 0
+fprintf( stderr, "chr=%d\n", chr );
+#endif
 
 		dfa_st = -1;
+#if UNICC_DEBUG	&amp;&amp; 0
+fprintf( stderr, "FIRST next=%d @@prefix_dfa_chars[ chr ] = %d, @@prefix_dfa_chars[ chr+1 ] = %d\n", next, @@prefix_dfa_chars[ chr ], @@prefix_dfa_chars[ chr + 1 ]);
+#endif
 		while( @@prefix_dfa_chars[ chr ] &gt; -1 )
 		{
-/*
+#if UNICC_DEBUG	&amp;&amp; 0
 fprintf( stderr, "next=%d @@prefix_dfa_chars[ chr ] = %d, @@prefix_dfa_chars[ chr+1 ] = %d\n", next, @@prefix_dfa_chars[ chr ], @@prefix_dfa_chars[ chr + 1 ]);
-*/
+#endif
 			if( next &gt;= @@prefix_dfa_chars[ chr ] &amp;&amp;
 				next &lt;= @@prefix_dfa_chars[ chr+1 ] )
 			{
 				dfa_st = *( @@prefix_dfa_trans + ( chr / 2 ) );
-/*
+#if UNICC_DEBUG	&amp;&amp; 0
 fprintf( stderr, "dfa_st=%d\n", dfa_st );
-*/
+#endif
 				if( @@prefix_dfa_accept[ mach ][ dfa_st ] &gt; -1 )
 					pcb->sym = @@prefix_dfa_accept[ mach ][ dfa_st ];
 
@@ -752,50 +775,31 @@ fprintf( stderr, "dfa_st=%d\n", dfa_st );
 
 UNICC_STATIC int @@prefix_get_sym( @@prefix_pcb* pcb )
 {
-#if !@@model
 	pcb->sym = -1;
 	pcb->len = 0;
 	
-#else /* @@model */
-	if( 1  ) /* pcb->sym == -1 */
+#if @@model
+	do
 	{
-		do
-		{
-#endif /* @@model */
-
-#if @@number-of-dfa-machines
+#endif
 #if !@@model
-			if( @@prefix_dfa_select[ *( pcb->tos ) ] &gt; -1 )
-				@@prefix_get_keyword( pcb );
-#else
+		if( @@prefix_dfa_select[ *( pcb->tos ) ] &gt; -1 )
 			@@prefix_get_keyword( pcb );
+#else
+		@@prefix_get_keyword( pcb );
 #endif /* !@@model */
-			if( pcb->sym == -1 )
-#endif /* @@number-of-dfa-machines */
-			{
-				int ch = @@prefix_get_input( pcb, pcb->len++ );
-				int i;
-				
-				for( i = 0; i &lt; @@number-of-character-map * 2; i += 2 )
-					if( ch &gt;= @@prefix_char_map[ i ] &amp;&amp;
-							ch &lt;= @@prefix_char_map[ i+1 ] )
-					{
-						pcb->sym = @@prefix_char_map_sym[ i / 2 ];
-						break;
-					}
-			}
+
 #if @@model
 
-			if( pcb->sym &gt; -1 &amp;&amp; @@prefix_whitespaces[ pcb->sym ] )
-			{
-				@@prefix_clear_input( pcb );
-				continue;
-			}
-			
-			break;
+		if( pcb->sym &gt; -1 &amp;&amp; @@prefix_whitespaces[ pcb->sym ] )
+		{
+			@@prefix_clear_input( pcb );
+			continue;
 		}
-		while( 1 );
+		
+		break;
 	}
+	while( 1 );
 #endif /* @@model */
 
 	return ( pcb->sym > -1 ) ? 1 : 0;
