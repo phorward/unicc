@@ -1,12 +1,14 @@
+
 <?xml version="1.0" standalone="yes"?>
 <!--
 UniCC LALR(1) Parser Generator
 Copyright (C) 2006-2009 by Phorward Software Technologies, Jan Max Meyer
 http://www.phorward-software.com ++ mail@phorward-software.com
 
-File:	C.xml
-Author:	Jan Max Meyer
-Usage:	Target language template for the C programming language
+File:		C.xml
+Version:	1.6
+Author:		Jan Max Meyer
+Usage:		Target language template for the C programming language
 
 This template should serve as a general description/reference of how
 templates for the UniCC parser generator are written. I know that some
@@ -374,12 +376,13 @@ Some general things you have to know:
 #endif
 
 #ifndef UNICC_SRC_MOVE
-#define UNICC_SRC_MOVE( s, l )
+#define UNICC_SRC_MOVE( l )	
 #endif
 
 #ifndef UNICC_PARSE_ERROR
-#define UNICC_PARSE_ERROR( pos, sym, state ) \
-	fprintf( stderr, "syntax error\n" )
+#define UNICC_PARSE_ERROR( pcb ) \
+	fprintf( stderr, "line %d: syntax error on token '%s'\n", \
+		( pcb )->line, @@prefix_symbol_names[ ( pcb )->sym ] )
 #endif
 
 #ifndef UNICC_CLEARIN
@@ -440,7 +443,8 @@ typedef struct
 	/* Error handling */
 	int				error_delay;
 	int				error_count;
-
+	
+	unsigned int	line;
 } @@prefix_pcb;
 
 /* Action Table */
@@ -527,7 +531,10 @@ static int @@prefix_whitespaces[ @@number-of-symbols ] =
 };
 #endif
 
-#if UNICC_DEBUG
+/* *** DO NOT "#if UNICC_DEBUG" THIS!
+       IT MAY BE USED FOR ERROR REPORTING!
+*/
+
 /* DEBUG: Symbol names */
 static char* @@prefix_symbol_names[] =
 {
@@ -539,7 +546,6 @@ static char* @@prefix_productions[] =
 {
 	@@productions
 };
-#endif
 
 static int @@prefix_get_act_tab( @@prefix_pcb* pcb )
 {
@@ -616,18 +622,26 @@ static char @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offset )
 		sprintf( pcb->bufend++, "%c", UNICC_GETINPUT );
 	}
 
+	/*
 	#if UNICC_DEBUG
 	fprintf( stderr, "reading &gt;%c&lt;\n", *( pcb->buf + offset ) );
 	#endif
+	*/
 	return *( pcb->buf + offset );
 }
 
 static void @@prefix_clear_input( @@prefix_pcb* pcb )
 {
+	int		i;
+
 	if( pcb->buf )
 	{
 		if( pcb->len )
 		{
+			for( i = 0; i &lt; pcb->len; i++ )
+				if( pcb->buf[i] == '\n' )
+					pcb->line++;
+
 			strcpy( pcb->buf, pcb->buf + pcb->len );		
 			pcb->bufend = pcb->buf + strlen( pcb->buf );
 		}
@@ -701,7 +715,6 @@ static int @@prefix_get_sym( @@prefix_pcb* pcb )
 	{
 		do
 		{
-			@@prefix_clear_input();
 #endif /* @@model */
 
 #if @@number-of-dfa-machines
@@ -711,7 +724,6 @@ static int @@prefix_get_sym( @@prefix_pcb* pcb )
 #else
 			@@prefix_get_keyword( pcb );
 #endif /* !@@model */
-
 			if( pcb->sym == -1 )
 #endif /* @@number-of-dfa-machines */
 				pcb->sym = @@prefix_char_map[ @@prefix_get_input( pcb, pcb->len++ ) ];
@@ -757,6 +769,7 @@ int @@prefix_parse( void )
 	pcb.sym = -1;
 	pcb.tos = pcb.stack;
 	pcb.vtos = pcb.vstack;
+	pcb.line = 1;
 
 	*pcb.stack = 0;
 	memset( &amp;pcb.test, 0, sizeof( @@prefix_vtype ) );
@@ -768,11 +781,6 @@ int @@prefix_parse( void )
 
 		if( !@@prefix_get_act_tab( &pcb ) )
 		{
-			
-/******************************************************************************
- START :: ERROR RECOVERY TEMPORARILY DISABLED DURING PARSER TEMPLATE REVISION
-******************************************************************************/
-#if 0
 			/*
 				Parse error
 			*/
@@ -780,29 +788,30 @@ int @@prefix_parse( void )
 #if UNICC_DEBUG
 			fprintf( @@prefix_dbg, "%s: !!!PARSE ERROR!!!\n"
 					"%s: error recovery: current token %d (%s)\n",
-						PARSERFILE, PARSERFILE, sym,
-							@@prefix_symbol_names[ sym ] );
+						PARSERFILE, PARSERFILE, pcb.sym,
+							@@prefix_symbol_names[ pcb.sym ] );
 			fprintf( @@prefix_dbg,
 					"%s: error recovery: expecting ", PARSERFILE );
 					
-			for( i = 1; i &lt; @@prefix_act[ *tos ][0] * 3; i += 3 )
+			for( i = 1; i &lt; @@prefix_act[ *( pcb.tos ) ][0] * 3; i += 3 )
 			{
 				fprintf( @@prefix_dbg, "%d (%s)%s",
-					@@prefix_act[ *tos ][i],
-					@@prefix_symbol_names[ @@prefix_act[ *tos ][i] ],
-					( i == @@prefix_act[ *tos ][0] * 3 - 3 ) ? "\n" : ", " );
+					@@prefix_act[ *( pcb.tos ) ][i],
+					@@prefix_symbol_names[ @@prefix_act[ *( pcb.tos ) ][i] ],
+					( i == @@prefix_act[ *( pcb.tos ) ][0] * 3 - 3 ) ?
+							"\n" : ", " );
 			}
 			
 			fprintf( @@prefix_dbg, "\n%s: error recovery: error_delay is %d, %s\n",
-						PARSERFILE, error_delay,
-						( error_delay ? "error recovery runs silently" :
+						PARSERFILE, pcb.error_delay,
+						( pcb.error_delay ? "error recovery runs silently" :
 							"error is reported before its recover!" ) );
 #endif
 
 			if( !pcb.error_delay )
 			{
-				UNICC_PARSE_ERROR( src, sym, *tos );
-				error_count++;
+				UNICC_PARSE_ERROR( &( pcb ) );
+				pcb.error_count++;
 			}
 
 #if @@error &lt; 0
@@ -816,41 +825,47 @@ int @@prefix_parse( void )
 #else
 
 #if UNICC_DEBUG
-			fprintf( @@prefix_dbg, "%s: error recovery: trying to recover...\n",
-				PARSERFILE );
+			fprintf( @@prefix_dbg, "%s: error recovery: "
+				"trying to recover...\n", PARSERFILE );
 #if UNICC_STACKDEBUG
-			@@prefix_dbg_stack( @@prefix_dbg, stack, tos, vstack, vtos );
+			@@prefix_dbg_stack( @@prefix_dbg, pcb.stack, pcb.tos,
+				pcb.vstack, pcb.vtos );
 #endif
 #endif
+			/* Save current sym, try to shift on error resync */
+			old_sym = pcb.sym;
+			pcb.sym = @@error;
 
-			while( tos &gt;= stack )
+			while( pcb.tos &gt;= pcb.stack )
 			{
 #if UNICC_DEBUG
 				fprintf( @@prefix_dbg, "%s: error recovery: trying "
 						"to shift error resync token...\n",
 							PARSERFILE );
 #if UNICC_STACKDEBUG
-				@@prefix_dbg_stack( @@prefix_dbg, stack, tos, vstack, vtos );
+				@@prefix_dbg_stack( @@prefix_dbg, pcb.stack, pcb.tos,
+					pcb.vstack, pcb.vtos );
 #endif
 #endif
-				if( @@prefix_get_act_tab( *tos, @@error, &act, &idx ) )
+				if( @@prefix_get_act_tab( &amp;pcb ) )
 				{
 					/* Shift */
-					if( act & 2 )
+					if( pcb.act &amp; 2 )
 					{
-						tos++;
-						vtos++;
+						pcb.tos++;
+						pcb.vtos++;
 						
-						*tos = idx;
+						*( pcb.tos ) = pcb.idx;
 #if UNICC_DEBUG
 						fprintf( @@prefix_dbg, "%s: error recovery: succeeded!\n",
 									PARSERFILE );
-#endif						
+#endif
+						
 						break;
 					}
 				}
 				
-				if( *tos == idx )
+				if( *( pcb.tos ) == pcb.idx )
 					break;
 
 #if UNICC_DEBUG
@@ -858,65 +873,87 @@ int @@prefix_parse( void )
 							PARSERFILE );
 #endif
 					
-				tos--;
-				vtos--;
+				pcb.tos--;
+				pcb.vtos--;
 			}
+			
+			pcb.sym = old_sym; /* Restore old sym */
 
-			if( *tos == idx )
+			if( *( pcb.tos ) == pcb.idx )
 			{
 #if UNICC_DEBUG
 				fprintf( @@prefix_dbg, "%s: error recovery: resync token found, "
 					"trying to re-synchronize...\n", PARSERFILE );
 #if UNICC_STACKDEBUG
-				@@prefix_dbg_stack( @@prefix_dbg, stack, tos, vstack, vtos );
+				@@prefix_dbg_stack( @@prefix_dbg, pcb.stack, pcb.tos,
+					pcb.vstack, pcb.vtos );
 #endif
 				fprintf( @@prefix_dbg, "%s: error recovery: resync begins with "
 					"token %d (%s)\n",
-						PARSERFILE, sym, @@prefix_symbol_names[ sym ] );
+						PARSERFILE, pcb.sym, @@prefix_symbol_names[ pcb.sym ] );
 #endif
-				while( sym != @@eof )
+				while( pcb.sym != @@eof )
 				{
 #if UNICC_DEBUG
 					fprintf( @@prefix_dbg, "%s: error recovery: "
-						"trying to shift on %d (%s)\n",
-							PARSERFILE, sym, @@prefix_symbol_names[ sym ] );
+						"trying to shift on %d (%s) in state %d\n",
+							PARSERFILE, pcb.sym, @@prefix_symbol_names[ pcb.sym ],
+								*( pcb.tos ) );
 #endif
-					if( @@prefix_get_act_tab( *tos, sym, &act, &idx ) )
+					if( @@prefix_get_act_tab( &amp;pcb ) )
 					{
+
 #if UNICC_DEBUG
 						fprintf( @@prefix_dbg, "%s: error recovery: "
-							"%d %d\n", PARSERFILE, act, idx );
+							"%d %d %d\n", PARSERFILE, *( pcb.tos ), pcb.act, pcb.idx );
 #endif
-						if( act & 2 )
+						if( pcb.act &amp; 2 )
 							break;
+
+						/* Reduce */
+						while( pcb.act &amp; 1 )
+						{
+							pcb.tos -= @@prefix_prod_lengths[ pcb.idx ];
+							pcb.vtos -= @@prefix_prod_lengths[ pcb.idx ];
+				
+							if( pcb.idx == @@goal-production )
+								break;
+				
+							@@prefix_get_go_tab( &amp;pcb, @@prefix_prod_lhs[ pcb.idx ] );
+							
+							*(++pcb.tos) = ( pcb.act &amp; 1 ) ? 0 : pcb.idx;
+							++pcb.vtos;
+						}
 					}
 
 #if UNICC_DEBUG
 					fprintf( @@prefix_dbg, "%s: error recovery: "
 						"skipping\n", PARSERFILE );
 #endif
-					UNICC_SRC_MOVE( src, len );				
-					src += len;
+					UNICC_SRC_MOVE( pcb.len );
+					@@prefix_clear_input( &amp;pcb );
 					
-					len = 0;
-					sym = -1;
-					while( !@@prefix_get_sym( &src, &sym, &len, *tos ) )
+					pcb.len = 0;
+					pcb.sym = -1;
+					while( !@@prefix_get_sym( &pcb ) )
 					{
-						sym = -1;
-						src++; /* Skip one character */
+						/* Skip one character */
+						pcb.len = 1;
+
+						@@prefix_clear_input( &amp;pcb );
 					}
 					
 					#if UNICC_DEBUG
 					fprintf( @@prefix_dbg, "%s: error recovery: "
-						"new token %d (%s)\n", PARSERFILE, sym, 
-							@@prefix_symbol_names[ sym ] );
+						"new token %d (%s)\n", PARSERFILE, pcb.sym, 
+							@@prefix_symbol_names[ pcb.sym ] );
 					#endif
 				}
 				
 			}
 						
 			/* If this is the end-of-file, then stop parsing! */
-			if( sym == @@eof )
+			if( pcb.sym == @@eof )
 			{
 #if UNICC_DEBUG
 				fprintf( @@prefix_dbg, "%s: error recovery: end-of-file "
@@ -927,7 +964,7 @@ int @@prefix_parse( void )
 			}
 			
 			/* If there is no transition possible here, than exit */
-			if( tos &lt; stack || !@@prefix_get_act_tab( *tos, sym, &act, &idx ) )
+			if( pcb.tos &lt; pcb.stack || !@@prefix_get_act_tab( &amp;pcb ) )
 			{
 #if UNICC_DEBUG
 				fprintf( @@prefix_dbg, "%s: error recovery: No transitions "
@@ -940,22 +977,9 @@ int @@prefix_parse( void )
 			fprintf( @@prefix_dbg, "%s: error recovery: that's it, "
 						"error has been recovered!\n", PARSERFILE );	
 #endif
-				
-			error_delay = 3;
+
+			pcb.error_delay = 3;
 #endif
-
-#endif /* EY END GE-DISST ALTA... SCHEISS BLAGENSPRACHE */
-
-
-			fprintf( stderr, "ey parse fehler, alter!\n" );
-			if( pcb.buf )
-				free( pcb.buf );
-			return 1;
-
-/******************************************************************************
-END :: ERROR RECOVERY TEMPORARILY DISABLED DURING PARSER TEMPLATE REVISION
-******************************************************************************/
-
 		}
 
 
@@ -995,7 +1019,7 @@ END :: ERROR RECOVERY TEMPORARILY DISABLED DURING PARSER TEMPLATE REVISION
 			}
 			
 			/* Perform the shift on input */
-			UNICC_SRC_MOVE( pcb.src, pcb.len );
+			UNICC_SRC_MOVE( pcb.len );
 			@@prefix_clear_input( &amp;pcb );
 			
 			if( pcb.error_delay )
@@ -1021,7 +1045,7 @@ END :: ERROR RECOVERY TEMPORARILY DISABLED DURING PARSER TEMPLATE REVISION
 
 			if( pcb.idx == @@goal-production )
 			{
-				UNICC_SRC_MOVE( pcb.src, pcb.len );
+				UNICC_SRC_MOVE( pcb.len );
 				@@prefix_clear_input( &amp;pcb );
 
 				#if UNICC_DEBUG
