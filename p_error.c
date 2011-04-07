@@ -53,13 +53,12 @@ uchar* error_txt[128] =
 	"Empty recursion",
 	"Useless production, no terminals in expansion",
 	/* semantic warnings and errors */
-	"Directive \"%s\" takes no effect in context-free model",
-	"Nonterminal whitespace \"%s\" is not allowed in context-free model",
-	"Invalid character universe",
-	"Character-class overlap in context-free model with \"%s\"",
+	"Directive \"%s\" takes no effect in context-insensitive model",
+	"Nonterminal whitespace \"%s\" is not allowed in context-insensitive model",
+	"Invalid value for character universe",
+	"Character-class overlap in context-insensitive model with \"%s\"",
 };
 
-int					error_protocol	= -1;
 int					error_count		= 0;
 int					warning_count	= 0;
 extern	BOOLEAN		first_progress;
@@ -98,9 +97,6 @@ void p_error( int err_id, int err_style, ... )
 	SYMBOL*		s;
 	BOOLEAN		do_print	= TRUE;
 	
-	if( error_protocol == -1 )
-		return;
-
 	va_start( params, err_style );
 
 	if( err_style & ERRSTYLE_WARNING && no_warnings )
@@ -120,56 +116,31 @@ void p_error( int err_id, int err_style, ... )
 	if( err_style & ERRSTYLE_SYMBOL )
 		s = va_arg( params, SYMBOL* );
 
-	if( error_protocol == ERR_PROT_CONSOLE )
+	if( do_print )
 	{
-		if( do_print )
-		{
-			if( first_progress )
-				fprintf( stderr, "\n" );
-		}
-
-		if( err_style & ERRSTYLE_FATAL )
-		{
-			fprintf( stderr, "%s: error: ", progname );
-			error_count++;
-		}
-		else if( err_style & ERRSTYLE_WARNING )
-		{
-			if( do_print )
-				fprintf( stderr, "%s: warning: ", progname );
-
-			warning_count++;
-		}
-
-		if( do_print )
-		{
-			if( err_style & ERRSTYLE_FILEINFO )
-				fprintf( stderr, "%s(%d):\n    ", filename, line );
-			else if( err_style & ERRSTYLE_STATEINFO )
-				fprintf( stderr, "state %d: ", state->state_id );
-		}
+		if( first_progress )
+			fprintf( stderr, "\n" );
 	}
-	else if( error_protocol == ERR_PROT_XML )
+
+	if( err_style & ERRSTYLE_FATAL )
 	{
-		if( !( error_count && warning_count ) )
-			fprintf( stderr, "<pcc-error-log>" );
-		if( err_style & ERRSTYLE_FATAL )
-		{
-			fprintf( stderr, "\t<error" );
-			error_count++;
-		}
-		else if( err_style & ERRSTYLE_WARNING )
-		{
-			fprintf( stderr, "\t<warning" );
-			warning_count++;
-		}
+		fprintf( stderr, "%s: error: ", progname );
+		error_count++;
+	}
+	else if( err_style & ERRSTYLE_WARNING )
+	{
+		if( do_print )
+			fprintf( stderr, "%s: warning: ", progname );
 
+		warning_count++;
+	}
+
+	if( do_print )
+	{
 		if( err_style & ERRSTYLE_FILEINFO )
-			fprintf( stderr, "file=\"%s\" line=\"%d\" ", filename, line );
+			fprintf( stderr, "%s(%d):\n    ", filename, line );
 		else if( err_style & ERRSTYLE_STATEINFO )
-			fprintf( stderr, "state=\"%d\"", state->state_id );
-
-		fprintf( stderr, ">" );
+			fprintf( stderr, "state %d: ", state->state_id );
 	}
 
 	if( do_print )
@@ -179,8 +150,7 @@ void p_error( int err_id, int err_style, ... )
 		if( err_style & ERRSTYLE_SYMBOL )
 			p_print_symbol( stderr, s );
 
-		if( error_protocol == ERR_PROT_CONSOLE )
-			fprintf( stderr, "\n" );
+		fprintf( stderr, "\n" );
 
 		if( err_style & ERRSTYLE_STATEINFO )
 		{
@@ -194,9 +164,6 @@ void p_error( int err_id, int err_style, ... )
 			p_dump_production( stderr, p, TRUE, FALSE );
 		}
 	}
-
-	if( error_protocol == ERR_PROT_XML )
-		fprintf( stderr, "</%s>", ( ( err_style & ERRSTYLE_FATAL ) ? "error" : "warning" ) );
 
 	va_end( params );
 
