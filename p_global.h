@@ -1,6 +1,6 @@
 /* -HEADER----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2009 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2010 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_global.h
@@ -25,7 +25,6 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 /* Standard Includes */
 #include <pbasis.h>
 #include <pregex.h>
-#include <pstring.h>
 #include <xml.h>
 
 #undef uchar
@@ -44,12 +43,14 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define SYM_CCL_TERMINAL		1
 #define SYM_KW_TERMINAL			2
 #define SYM_REGEX_TERMINAL		3
-#define SYM_EXTERN_TERMINAL		4	/* TODO */
+#define SYM_EXTERN_TERMINAL		4		/* TODO */
 #define SYM_ERROR_RESYNC		5
 
 /* Parser generation models */
-#define MODEL_CONTEXT_SENSITIVE		0	/* Create context-sensitive parser (default) */
-#define MODEL_CONTEXT_INSENSITIVE	1	/* Create context-insentivie parser */
+#define MODEL_CONTEXT_SENSITIVE		0	/* Create context-sensitive
+												parser (default) */
+#define MODEL_CONTEXT_INSENSITIVE	1	/* Create context-insentivie
+												parser */
 
 /* Macro to verify terminals */
 #define IS_TERMINAL( s ) \
@@ -62,9 +63,9 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define ASSOC_NOASSOC			3
 
 /* Parser actions */
-#define REDUCE					1 /* Reduce 0 1 */
-#define SHIFT					2 /* Shift 1 0 */
-#define SHIFT_REDUCE			3 /* Shift-Reduce 1 1 */
+#define REDUCE					1 	/* Reduce 0 1 */
+#define SHIFT					2 	/* Shift 1 0 */
+#define SHIFT_REDUCE			3 	/* Shift-Reduce 1 1 */
 
 /* Number of hash-table buckets */
 #define BUCKET_COUNT			64
@@ -76,27 +77,29 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define GEN_WILD_PREFIX			"@@"
 
 /* Phorward UniCC parser generator version number */
-#define PHORWARD_VERSION		"0.23.1"
+#define PHORWARD_VERSION		"0.25"
+
+/* Default target language */
 #define PHORWARD_DEFAULT_LNG	"C"
 
-/* Path separator */
-#ifdef _WIN32
-#define PATHSEP					"\\"
-#else
-#define PATHSEP					"/"
-#endif
-
 /*
- * Macsros
+ * Macros
  */
+ 
+#define OUTOFMEM					fprintf( stderr, "Ran out of memory\n" ), \
+									exit( -1 )
 
-/* Memory handling */
+/* Now uses pbasis library */
 #define p_malloc( size )			pmalloc( size )
 #define p_realloc( ptr, size )		prealloc( ptr, size )
 #define p_free( ptr )				pfree( ptr )
 #define p_strdup( ptr )				pstrdup( ptr )
 #define p_strlen( ptr )				pstrlen( ptr )
 #define p_strzero( ptr )			pstrzero( ptr )
+
+/* And pstring library */
+#define p_tpl_insert				pstr_render
+#define p_str_append				pstr_append_str
 
 /*
  * Type definitions
@@ -126,18 +129,16 @@ struct _symbol
 	
 	uchar*		name;			/* Symbol name */
 
-	int*		char_map;		/* Compressed character map (terminals) */
-	int			char_map_size;	/* Size of character map */
+	CCL			ccl;			/* Character-class definition */
 
 	LIST*		productions;	/* List of productions attached to a
 									non-terminal symbol */
 	LIST*		first;			/* The symbol's first set */
 
-	LIST*		nfa_def;		/* Start node of nondeterministic finite
-									automata of regular expression terminals
-										(expanded "KEYWORD" feature!) */
+	pregex_nfa	nfa;			/* Regular expression terminal */
 
-	BOOLEAN		fixated;		/* Flag, if fixated symbols (do always shift!) */
+	BOOLEAN		fixated;		/* Flag, if fixated symbols
+									(do always shift!) */
 	BOOLEAN		goal;			/* Flag, if goal non-terminal */
 	BOOLEAN		nullable;		/* Flag, if nullable */
 	BOOLEAN		defined;		/* Flag, if defined */
@@ -224,7 +225,7 @@ struct _state
 	BOOLEAN		done;			/* Done flag */
 	BOOLEAN		closed;			/* Closed flag */
 
-	LIST*		dfa;			/* DFA machine for keyword recognition
+	pregex_dfa*	dfa;			/* DFA machine for keyword recognition
 									in this state */
 									
 	STATE*		derived_from;	/* Previous state */
@@ -252,11 +253,14 @@ struct _vtype
 /* Parser information structure */
 struct _parser
 {
-	HASHTAB*	definitions;	/* Symbol hash table for faster symbol access */
-	LIST*		symbols;		/* Linked list for sequencial symbol management */
+	HASHTAB		definitions;	/* Symbol hash table for faster
+									symbol access */
+	LIST*		symbols;		/* Linked list for sequencial
+									symbol management */
 	LIST*		productions;	/* Linked list of productions */
 	LIST*		lalr_states;	/* Linked list of LALR(1) states */
-	LIST*		dfa;			/* List containing the DFA for keyword recognition */
+	LIST*		dfa;			/* List containing the DFA for
+									keyword recognition */
 	
 	SYMBOL*		goal;			/* Pointer to the goal non-terminal */
 	SYMBOL*		end_of_input;	/* End of input symbol */
@@ -265,9 +269,6 @@ struct _parser
 	LIST*		kw;				/* Keyword recognition machines */
 	LIST*		vtypes;			/* Value stack types */
 
-	LIST*		nfa_m;			/* List containing all NFA-states of regular expression
-									tokens */
-
 	short		p_model;		/* Parser model */
 	uchar*		p_name;			/* Parser name */
 	uchar*		p_desc;			/* Parser description */
@@ -275,24 +276,31 @@ struct _parser
 	uchar*		p_copyright;	/* Parser copyright notice */
 	uchar*		p_version;		/* Parser version */
 	uchar*		p_prefix;		/* Parser symbol prefix */
+	uchar*		p_basename;		/* Parser file basename */
 	uchar*		p_def_action;	/* Default reduce action */
-	uchar*		p_def_action_e;	/* Default reduce action for epsilon-productions */
+	uchar*		p_def_action_e;	/* Default reduce action for
+									epsilon-productions */
 
-	uchar*		p_invalid_suf;	/* Character class for invalid keyword suffix characters,
-									if (char*)NULL, empty table */
-	BOOLEAN		p_neg_inv_suf;	/* Defines if p_invalid_suf is negated or not. This must
-									be explicitly stored because p_universe is possibly not
-										known when this is read. */
-	BOOLEAN		p_lexem_sep;	/* Flag, if lexem separation is switched ON or not */
+	CCL			p_invalid_suf;	/* Character class for invalid keyword suffix
+									characters, if (CCL)NULL, empty table */
+	BOOLEAN		p_neg_inv_suf;	/* Defines if p_invalid_suf is negated or not.
+									This must be explicitly stored because
+									p_universe is possibly not known when this
+									is read. */
+	BOOLEAN		p_lexem_sep;	/* Flag, if lexem separation is switched
+									ON or not */
 	BOOLEAN		p_cis_keywords;	/* Flag, if case-insensitive keywords */
-	BOOLEAN		p_cis_types;	/* Flag, if case-insenstivie value stack types */
+	BOOLEAN		p_cis_types;	/* Flag, if case-insenstivie value
+									stack types */
 	BOOLEAN		p_extern_tokens;/* Flag if parser uses external tokens */
 	BOOLEAN		p_reserve_kw;	/* Flag, if keywords are reserved */
 	int			p_universe;		/* Maximum of the character universe */
 
 	uchar*		p_header;		/* Header/Prologue program code of the parser */
-	uchar*		p_footer;		/* Footer/Epilogue embedded program code of the parser */
-	uchar*		p_pcb;			/* Parser control block: Individual code segment */
+	uchar*		p_footer;		/* Footer/Epilogue embedded program code
+									of the parser */
+	uchar*		p_pcb;			/* Parser control block: Individual
+									code segment */
 	
 	VTYPE*		p_def_type;		/* Default value type */
 
@@ -347,26 +355,32 @@ struct _generator
 {
 	uchar*			name;						/* Target language name */
 	uchar*			driver;						/* Driver source code */
-	uchar*			vstack_def_type;			/* Default-type for nonterminals,
+	uchar*			vstack_def_type;			/* Default-type for nonterminals
 													if no type is specified */
-	uchar*			vstack_term_type;			/* Type for terminals (characters)
-													to be pushed on the value
-														stack */
+	uchar*			vstack_term_type;			/* Type for terminals
+													(characters) to be pushed on
+														the value stack */
 	_2D_TABLE		acttab;						/* Action table */
 	_2D_TABLE		gotab;						/* Goto table */
 	_1D_TABLE		prodlen;					/* Production lengths */
-	_1D_TABLE		prodlhs;					/* Production's left-hand sides */
-	_1D_TABLE		defprod;					/* Default production for each state */
-	_1D_TABLE		charmap;					/* Character-class validation map */
+	_1D_TABLE		prodlhs;					/* Production's left-hand
+													sides */
+	_1D_TABLE		defprod;					/* Default production for
+													each state */
+	_1D_TABLE		charmap;					/* Character-class validation
+													map */
+	_1D_TABLE		charmap_sym;				/* Character-class to symbol
+													association map */
 	_1D_TABLE		dfa_select;					/* DFA machine selection */
 	_2D_TABLE		dfa_idx;					/* DFA state index */
 	_1D_TABLE		dfa_char;					/* DFA transition characters */
 	_1D_TABLE		dfa_trans;					/* DFA transitions */
 	_2D_TABLE		dfa_accept;					/* DFA accepting states */
-	_1D_BOOL_TABLE	kw_invalid_suffix;			/* Invalid keyword-suffix
+	_1D_TABLE		kw_invalid_suffix;			/* Invalid keyword-suffix
 														character-map */
-	_1D_BOOL_TABLE	whitespace;					/* Whitespace identification table
-													(used by context-free model */
+	_1D_BOOL_TABLE	whitespace;					/* Whitespace identification
+													table (used by context-free
+														model) */
 	_1D_TABLE		symbols;					/* Symbol name table
 													(for debug) */
 	_1D_TABLE		productions;				/* Production definition table
@@ -376,30 +390,41 @@ struct _generator
 	uchar*			action_end;					/* Action code end */
 	uchar*			action_single;				/* Action vstack access */
 	uchar*			action_union;				/* Action union access */
-	uchar*			action_lhs_single;			/* Action left-hand side single access */
-	uchar*			action_lhs_union;			/* Action left-hand side union access */
-	uchar*			vstack_single;				/* Single value stack type definition */
-	uchar*			vstack_union_start;			/* Begin of value stack union definition */
-	uchar*			vstack_union_end;			/* End of value stack union definition */
-	uchar*			vstack_union_def;			/* Union inline type definition */
+	uchar*			action_lhs_single;			/* Action left-hand side
+													single access */
+	uchar*			action_lhs_union;			/* Action left-hand side
+													union access */
+	uchar*			vstack_single;				/* Single value stack type
+													definition */
+	uchar*			vstack_union_start;			/* Begin of value stack
+													union definition */
+	uchar*			vstack_union_end;			/* End of value stack
+													union definition */
+	uchar*			vstack_union_def;			/* Union inline type
+													definition */
 	uchar*			vstack_union_att;			/* Union attribute name */
 	uchar*			scan_action_start;			/* Scanner action code start */
 	uchar*			scan_action_end;			/* Scanner action code end */
-	uchar*			scan_action_begin_offset;	/* Begin-offset of scanned token in source */
-	uchar*			scan_action_end_offset;		/* End-offset of scanned token in source */
-	uchar*			scan_action_ret_single;		/* Semantic value, single access */
-	uchar*			scan_action_ret_union;		/* Semantic value, union access */
+	uchar*			scan_action_begin_offset;	/* Begin-offset of scanned token
+													in source */
+	uchar*			scan_action_end_offset;		/* End-offset of scanned token
+													in source */
+	uchar*			scan_action_ret_single;		/* Semantic value,
+													single access */
+	uchar*			scan_action_ret_union;		/* Semantic value,
+													union access */
 	
 	uchar*			code_localization;			/* Code localization template */
 
-	uchar**			for_sequences;				/* Dynamic array of string sequences
-													to be replaced/escaped in output
-														strings */
-	uchar**			do_sequences;				/* Dynamic array of escape-sequences
-													for the particular string
-														sequence in the above array */
-	int				sequences_count;			/* Number of elements in the above
+	uchar**			for_sequences;				/* Dynamic array of string
+													sequences to be replaced/es-
+													caped in output strings */
+	uchar**			do_sequences;				/* Dynamic array of escape-
+													sequences for the particular
+													string sequence in the above
 													array */
+	int				sequences_count;			/* Number of elements in the
+													above array */
 
 	XML_T			xml;						/* XML root node */
 };
