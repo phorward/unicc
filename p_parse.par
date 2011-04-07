@@ -12,6 +12,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 ---------------------------------------------------------------------------- */
 
 #!model			context-sensitive ;
+#!language		"C";
 
 /*
  * IMPORTANT NOTIFICATION ON THIS PARSER
@@ -35,7 +36,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
  * Information directives
  */
 #parser			"UniCC Grammar Definition Language";
-#version		"1.4";
+#version		"1.5";
 #description	"Parser for UniCC parser definitions";
 #copyright		"Copyright (C) 2008-2011 by Jan Max Meyer, Phorward Software Technologies";
 
@@ -43,7 +44,6 @@ of the Artistic License, version 2. Please see LICENSE for more information.
  * Parser configuration
  */
 #end of input		'\0';
-#language			"C";
 #whitespaces 		whitespace;
 #lexeme				terminal identifier modifier code ccl_string kw type;
 #lexeme separation	on;
@@ -276,7 +276,18 @@ fixed_directive_def	-> "#!" fixed_directive ';'
 
 fixed_directive		-> "model"				model_type
 
-					//TODO:
+					| "language"		string
+						[*	
+							if( !( parser->p_language ) )
+								parser->p_language = p_strdup( strbuf );
+							else
+								p_error( ERR_DIRECTIVE_ALREADY_USED,
+									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
+										parser->filename, line, 
+											"!language" );
+						*]
+
+					//TODO: Must be reworked!
 					| "character universe"	integer				
 					
 						[*	int universe = atoi( strbuf );
@@ -307,6 +318,14 @@ segment				->	code
 
 unfixed_directive	->	'#' directive_parms
 					;
+/*
+@USER_DIR<uchar*>	!'\0"\'/ \t\n\r!'+ 
+					[*
+						@@ = (uchar*)pmalloc( ( ( @< - @> ) + 1 )
+												* sizeof( uchar ) );
+						psprintf( @@, "%.*s", @< - @>, @> );
+					*];
+*/
 
 directive_parms		-> "whitespaces" 	symbol_list				
 						[*	LIST* l;
@@ -395,67 +414,68 @@ directive_parms		-> "whitespaces" 	symbol_list
 					| "nonassoc"		symbol_list
 						[*	set_assoc_and_prec( @2, ASSOC_NOASSOC ); *]
 
-
 					| "parser"			string
-						[*	if( !( parser->p_name ) )
-								parser->p_name = p_strdup( strbuf );	*]
-
+						[*	parser->p_name = pstr_append_str( 
+								parser->p_name, strbuf, FALSE );	*]
 
 					| "description"		string		
-						[*	if( !( parser->p_desc ) )
-								parser->p_desc = p_strdup( strbuf );	*]
+						[*	parser->p_desc = pstr_append_str( 
+								parser->p_desc, strbuf, FALSE );	*]
 
 					| "copyright"		string
-						[*	if( !( parser->p_copyright ) )
-							parser->p_copyright = p_strdup( strbuf ); *]
+						[*	parser->p_copyright = pstr_append_str( 
+								parser->p_copyright, strbuf, FALSE );	*]
 
 					| "version"			string					
-						[*	if( !( parser->p_version ) )
-								parser->p_version= p_strdup( strbuf );	*]
+						[*	parser->p_version = pstr_append_str( 
+								parser->p_version, strbuf, FALSE );	*]
 
 					| "prefix"			string
-						[*	if( !( parser->p_prefix ) )
-								parser->p_prefix = p_strdup( strbuf );	*]
+						[*	parser->p_prefix = pstr_append_str( 
+								parser->p_prefix, strbuf, FALSE );	*]
 
-					| "language"		string
-						[*	if( !( parser->p_language ) )
-								parser->p_language = p_strdup( strbuf ); *]
-
-					| "default action"	code
+					| "default action"	code_opt
 						[*	if( !( parser->p_def_action ) )
-								parser->p_def_action = p_strdup( strbuf ); *]
+								parser->p_def_action = p_strdup( strbuf );
+							else
+								p_error( ERR_DIRECTIVE_ALREADY_USED,
+									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
+										parser->filename, line,
+											"default epsilon action" );
+						*]
 
-					| "default epsilon action"		code
+					| "default epsilon action"		code_opt
 						[*	if( !( parser->p_def_action_e ) )
-								parser->p_def_action_e = p_strdup( strbuf ); *]
+								parser->p_def_action_e = p_strdup( strbuf );
+							else
+								p_error( ERR_DIRECTIVE_ALREADY_USED,
+									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
+										parser->filename, line,
+											"default epsilon action" );
+						*]
 
-					| "default value type" type					
+					| "default value type" type
 						[*	if( !( parser->p_def_type ) )
 								parser->p_def_type = p_create_vtype(
 									parser, (uchar*)@type );
+							else
+								p_error( ERR_DIRECTIVE_ALREADY_USED,
+									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
+										parser->filename, line,
+											"default value type" );
+
 							p_free( @type );
 						*]
 
 					| "end of input"	terminal
-						[*	parser->end_of_input = @2;	*]
-
-					| "invalid keyword suffix"	ccl				
-						[*	/* Ouput a warning, if this definition
-								is effectless */
-							if( parser->p_model != MODEL_CONTEXT_SENSITIVE )
-							{
-								p_error( ERR_NO_EFFECT_IN_MODEL,
+						[*	
+							if( !( parser->end_of_input ) )
+								parser->end_of_input = @2;
+							else
+								p_error( ERR_DIRECTIVE_ALREADY_USED,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 										parser->filename, line,
-											"invalid keyword suffix" );
-							}
-							else
-							{
-								parser->p_invalid_suf = ccl_create( strbuf );
-								parser->p_neg_inv_suf = @2;
-								if( @2 )
-									ccl_negate( parser->p_invalid_suf );
-							}
+											"end of input" );
 						*]
 
 					| "lexeme separation" boolean
@@ -900,10 +920,11 @@ terminal<SYMBOL*>	->	ccl
 							
 							if( pregex_nfa_from_string(
 								&( @@->nfa ), strbuf,
-									REGEX_MOD_NONE, @@->id )
+									parser->p_cis_keywords ?
+										REGEX_MOD_INSENSITIVE :
+											REGEX_MOD_NONE, @@->id )
 										!= ERR_OK )
 									OUT_OF_MEMORY;
-							
 						*]
 
 					| '@' identifier
