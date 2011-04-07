@@ -5,11 +5,22 @@ http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_parse.syn/p_parse.c
 Author:	Jan Max Meyer
-Usage:	Grammar definition parser
+Usage:	Grammar definition parser - FOR BOOTSTRAPPING ONLY!!
 
 You may use, modify and distribute this software under the terms and conditions
 of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
+
+/*
+ * IMPORTANT NOTIFICATION ON THIS PARSER
+ * -------------------------------------
+ * This parser is only used for bootstrapping UniCC, and is not be tended any-
+ * more with new features. Instead, implement new language-oriented features
+ * into the final UniCC parser, p_parse.par.
+ *
+ * Only bugfixing is allowed here!
+ */
+
 
 /*
  * Includes
@@ -69,7 +80,7 @@ LIST*	nfa_m	= (LIST*)NULL;
  */
 
 /* Append character to current string */
-void strbuf_append( uchar ch )
+static void strbuf_append( uchar ch )
 {
 	int len;
 	len = strbuf ? (int)strlen( strbuf ) : 0;
@@ -84,7 +95,7 @@ void strbuf_append( uchar ch )
 	strbuf[len+2] = '\0';
 }
 
-void strbuf_prefix( uchar ch )
+static void strbuf_prefix( uchar ch )
 {
 	int len;
 	uchar* tmp;
@@ -101,7 +112,7 @@ void strbuf_prefix( uchar ch )
 }
 
 /* Create a new string */
-void reset_strbuf( void )
+static void reset_strbuf( void )
 {
 	if( strbuf )
 	{
@@ -112,7 +123,7 @@ void reset_strbuf( void )
 
 
 /* Set precedence and associativiy */
-void set_assoc_and_prec( LIST* symbols, int assoc )
+static void set_assoc_and_prec( LIST* symbols, int assoc )
 {
 	LIST* l;
 	SYMBOL* sym;
@@ -128,7 +139,7 @@ void set_assoc_and_prec( LIST* symbols, int assoc )
 	prec_cnt++;
 }
 
-void set_nfa_to_symbols( SYMBOL* s, NFA* start, NFA* end )
+static void set_nfa_to_symbols( SYMBOL* s, NFA* start, NFA* end )
 {
 	NFA*	nstart;
 	
@@ -231,7 +242,7 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 																				parser->filename, line, "lexeme" );
 																	}
 																	else
-																	{																	
+																	{
 																		for( l = #2.ptr; l; l = l->next )
 																		{
 																			s = l->pptr;
@@ -254,7 +265,7 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 																				parser->filename, line, "fixate" );
 																	}
 																	else
-																	{																	
+																	{
 																		for( l = #2.ptr; l; l = l->next )
 																		{
 																			s = l->pptr;
