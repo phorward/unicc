@@ -44,9 +44,8 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define SYM_ERROR_RESYNC		3
 
 /* Parser generation models */
-#define MODEL_CONTEXT_SENSITIVE		0	/* Context-sensitive parser
-													(default) */
-#define MODEL_CONTEXT_INSENSITIVE	1	/* Context-insensitive parser */
+#define MODE_SENSITIVE			0	/* Sensitive parser construction mode */
+#define MODE_INSENSITIVE		1	/* Insensitive parser construction mode */
 
 /* Macro to verify terminals */
 #define IS_TERMINAL( s ) \
@@ -73,10 +72,10 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define GEN_WILD_PREFIX			"@@"
 
 /* Phorward UniCC parser generator version number */
-#define PHORWARD_VERSION		"0.27.9dev"
+#define UNICC_VERSION			"0.27.12dev"
 
 /* Default target language */
-#define PHORWARD_DEFAULT_LNG	"C"
+#define UNICC_DEFAULT_LNG		"C"
 
 /*
  * Macros
@@ -274,7 +273,7 @@ struct _parser
 	LIST*		kw;				/* Keyword recognition machines */
 	LIST*		vtypes;			/* Value stack types */
 
-	short		p_model;		/* Parser model */
+	short		p_mode;		/* Parser model */
 	uchar*		p_name;			/* Parser name */
 	uchar*		p_desc;			/* Parser description */
 	uchar*		p_language;		/* Parser target programming language */
@@ -298,7 +297,7 @@ struct _parser
 	BOOLEAN		p_cis_types;	/* Flag, if case-insenstivie value
 									stack types */
 	BOOLEAN		p_extern_tokens;/* Flag if parser uses external tokens */
-	BOOLEAN		p_reserve_kw;	/* Flag, if keywords are reserved */
+	BOOLEAN		p_reserve_regex;/* Flag, if regex'es are reserved */
 	int			p_universe;		/* Maximum of the character universe */
 
 	uchar*		p_header;		/* Header/Prologue program code of the parser */
@@ -330,6 +329,9 @@ struct _parser
 	/* Debug and maintainance */
 	uchar*		filename;
 	int			debug_level;
+	
+	/* XML-root node for XML-encoded error messages */
+	XML_T		err_xml;
 };
 
 
