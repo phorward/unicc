@@ -116,6 +116,6 @@ uchar* p_mkproduction_str( PROD* p );
 BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, uchar* genfile );
 
 /* p_xml.c */
-void p_build_xml( PARSER* parser );
+void p_build_xml( PARSER* parser, BOOLEAN finished );
 
 #endif
