@@ -1,6 +1,6 @@
 /* -HEADER----------------------------------------------------------------------
-J.M.K S.F. UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2009 by Phorward Software Technologies, Jan Max Meyer
+UniCC LALR(1) Parser Generator 
+Copyright (C) 2006-2010 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_error.h
@@ -57,6 +57,8 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define ERR_NONTERM_WS_NOT_ALLOWED	31
 #define ERR_INVALID_CHAR_UNIVERSE	32
 #define ERR_CHARCLASS_OVERLAP		33
+#define ERR_UNDEFINED_SYMREF		34
+#define ERR_NO_TARGET_LANG_SUPPLY	35
 
 #define OUT_OF_MEMORY				do { p_error( ERR_MEMORY_ERROR, ERRSTYLE_FATAL, __FILE__, __LINE__ ); \
 										exit( EXIT_FAILURE ); } while( 0 )
