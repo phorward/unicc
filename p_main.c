@@ -25,13 +25,12 @@ BOOLEAN	first_progress		= FALSE;
 BOOLEAN no_warnings			= TRUE;
 extern int error_count;
 extern int warning_count;
-extern int error_protocol;
 extern uchar* progname;
 
 uchar* pmod[] = 
 {
 	"context-sensitive",
-	"context-free"
+	"context-insensitive"
 };
 
 /*
@@ -80,10 +79,15 @@ void p_copyright( FILE* stream )
 
 	fprintf( stream, "UniCC LALR(1) Parser Generator v%s [build %s %s]\n",
 			PHORWARD_VERSION, __DATE__, __TIME__ );
-	fprintf( stream, "Copyright (C) 2006-2009 by Phorward Software, Jan Max Meyer\n" );
-	fprintf( stream, "http://www.phorward-software.com ++ contact@phorward-software.com\n" );
-
-	fprintf( stream, "!!!THIS IS A DEVELOPMENT VERSION: NOT FOR PUBLIC RELEASE!!!\n" );
+	fprintf( stream, "Copyright (C) 2006-2009 by Phorward Software Technologies, Jan Max Meyer\n" );
+	fprintf( stream, "http://www.phorward-software.com ++ "
+						"contact<at>phorward-software<dot>com\n\n" );
+						
+	fprintf( stream, "You may use, modify and distribute this software under the "
+						"terms and conditions\n" );
+	fprintf( stream, "of the Artistic License, version 2. Please see LICENSE for "
+						"more information.\n\n" );
+	
 }
 
 /* -FUNCTION--------------------------------------------------------------------
@@ -124,23 +128,6 @@ void p_usage( FILE* stream, uchar* progname )
 
 		progname );
 }
-
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_unicc_home()
-	
-	Author:			Jan Max Meyer
-	
-	Usage:			Extracts the unicc home directory from the unicc program
-					filename.
-					
-	Parameters:		???
-	
-	Returns:		void
-  
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
-/* TODO */
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_get_command_line()
@@ -227,26 +214,23 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 	Usage:			Global program entry
 					
 	Parameters:		int			argc				Argument count
-					char**		argv				Argument values array
+					char**		argv				Argument values
 	
-	Returns:		int								Error code (0 = no error)
+	Returns:		int								Number of errors count,
+													0 = all right :D
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
 int main( int argc, char** argv )
 {
-	uchar*	file		= (uchar*)NULL;
 	uchar*	filename	= (uchar*)NULL;
 	uchar*	output		= (uchar*)NULL;
-	uchar*	tmp			= (uchar*)NULL;
 	FILE*	out			= (FILE*)NULL;
-	SYMBOL*	goal		= (SYMBOL*)NULL;
 	PARSER*	parser;
 	BOOLEAN	recursions	= FALSE;
 	BOOLEAN	def_lang	= FALSE;
 
-	error_protocol = ERR_PROT_CONSOLE;
 	parser = p_create_parser();
 
 	if( p_get_command_line( argc, argv, &filename, &output, parser ) )
@@ -350,7 +334,7 @@ int main( int argc, char** argv )
 
 				if( parser->p_model == MODEL_CONTEXT_SENSITIVE )
 					p_keywords_to_dfa( parser );
-				else if( parser->p_model == MODEL_CONTEXT_FREE )
+				else if( parser->p_model == MODEL_CONTEXT_INSENSITIVE )
 					p_single_lexer( parser );
 
 				DONE()
@@ -384,18 +368,17 @@ int main( int argc, char** argv )
 				FAIL();
 				p_error( ERR_NO_GOAL_SYMBOL, ERRSTYLE_FATAL );
 			}
+		
+			if( parser->stats )
+				fprintf( stderr, "\n%s produced %d states (%d error%s, %d warning%s)\n",
+					filename, list_count( parser->lalr_states ),
+						error_count, ( error_count == 1 ) ? "" : "s",
+							warning_count, ( warning_count == 1 ) ? "" : "s" );			
 		}
 		else
 		{
-			if( parser->verbose )
-				fprintf( stderr, "\nFundamental errors in definition, unable to continue.\n" );
+			FAIL()
 		}
-
-		if( parser->stats )
-			fprintf( stderr, "\n%s produced %d states (%d error%s, %d warning%s)\n",
-				filename, list_count( parser->lalr_states ),
-					error_count, ( error_count == 1 ) ? "" : "s",
-						warning_count, ( warning_count == 1 ) ? "" : "s" );
 
 		p_free_parser( parser );
 	}
