@@ -127,8 +127,7 @@ BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 			{
 				map = p_ccl_to_map( parser, col->symbol->name );
 
-				/* p_dump_map( stderr, map, parser->p_universe ); */
-				if( bitset_get( map, (int)sym ) )
+				if( p_map_test_char( map, sym, parser->p_cis_keywords ) )
 				{
 					act = col->action;
 					idx = col->index;
@@ -302,7 +301,8 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 							keyword. This is not the problem if there is only
 							one reduce, but if there are more, output a warning!
 						*/
-						if( bitset_get( test, *( col->symbol->name ) ) )
+						if( p_map_test_char( test, *( col->symbol->name ),
+								parser->p_cis_keywords ) )
 						{
 							if( p_try_to_parse( parser, col->symbol->name,
 									st->state_id ) && cnt > 1 )
