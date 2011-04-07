@@ -165,8 +165,9 @@ void p_rewrite_grammar( PARSER* parser )
 					else if( ( sym->type == SYM_NON_TERMINAL && sym->lexem )
 							|| IS_TERMINAL( sym ) )
 					{
-						/* Do not rewrite the eof symbol! */
-						if( sym == parser->end_of_input )
+						/* Do not rewrite the eof or error resync symbol! */
+						if( sym == parser->end_of_input
+							|| sym->type == SYM_ERROR_RESYNC )
 							continue;
 
 						/* Construct derivative symbol name */							
