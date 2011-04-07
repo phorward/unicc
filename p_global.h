@@ -1,11 +1,14 @@
 /* -HEADER----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator
 Copyright (C) 2006-2009 by Phorward Software Technologies, Jan Max Meyer
-http://www.phorward-software.com ++ mail@phorward-software.com
+http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_global.h
 Author:	Jan Max Meyer
 Usage:	Global declarations, structures and includes
+
+You may use, modify and distribute this software under the terms and conditions
+of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
 
 #ifndef P_GLOBAL_H
