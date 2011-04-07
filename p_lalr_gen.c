@@ -144,7 +144,6 @@ static void p_item_closure( LIST* productions, ITEM* it, LIST** closure_set )
 	LIST*		j		= (LIST*)NULL;
 	LIST*		k		= (LIST*)NULL;
 	ITEM*		cit		= (ITEM*)NULL;
-	SYMBOL*		sym		= (SYMBOL*)NULL;
 	PROD*		prod	= (PROD*)NULL;
 	LIST*		first	= (LIST*)NULL;
 	int			pos		= 0;
@@ -271,18 +270,14 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 	LIST*		k					= (LIST*)NULL;
 	ITEM*		it					= (ITEM*)NULL;
 	ITEM*		cit					= (ITEM*)NULL;
-	PROD*		prod				= (PROD*)NULL;
-	SYMBOL*		sym					= (SYMBOL*)NULL;
 	SYMBOL*		sym_before_move		= (SYMBOL*)NULL;
 	STATE*		nstate				= (STATE*)NULL;
-	TABCOL*		act					= (TABCOL*)NULL;
 	
 	LIST*		part_symbols		= (LIST*)NULL;
 	LIST*		partitions			= (LIST*)NULL;
 	
 	int			prev_cnt			= 0;
 	int			cnt					= 0;
-	int			diff				= 0;
 
 #if ON_ALGORITHM_DEBUG
 	fprintf( stderr, "================\n");
@@ -488,14 +483,14 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 			SHIFT_REDUCE-feature added, as in min_lalr1
 
 			Jan Max Meyer, 28.05.2008
-			Improoved, not only for terminals, even for nonterminals :)
+			Improved, not only for terminals, even for nonterminals :)
 
 			Watch for partitions that are
 
 			x -> y .z
 
 			where x is nonterminal, y is a possible sequence of terminals and/or
-			nonterminals or even epsion, and z is a terminal or nonterminal.
+			nonterminals or even epsilon, and z is a terminal or nonterminal.
 		*/
 		if( parser->optimize_states
 				/* && ( IS_TERMINAL( sym_before_move ) & SYM_TERMINAL ) */
@@ -659,8 +654,6 @@ static void p_reduce_item( PARSER* parser, STATE* st, ITEM* it )
 	LIST*		i		= (LIST*)NULL;
 	SYMBOL*		sym		= (SYMBOL*)NULL;
 	TABCOL*		act		= (TABCOL*)NULL;
-	PROD*		prod	= (PROD*)NULL;
-	int			oldval	= 0;
 	int			resolved;
 	
 	if( it->next_symbol == (SYMBOL*)NULL )
