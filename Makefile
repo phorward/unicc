@@ -94,11 +94,11 @@ $(PROGRAM): $(PROG_BOOT2) $(PARSER_SRC) $(SRC) $(HEADERS) $(LIBS) Makefile
 	@echo
 
 clean: clean_obj
-	-@$(RM) $(PROG_BOOT2)
-	-@$(RM) $(PROG_BOOT1)
 	-@$(RM) $(PROGRAM)
 
 clean_obj:
+	-@$(RM) $(PROG_BOOT1)
+	-@$(RM) $(PROG_BOOT2)
 	-@$(RM) $(PARSER)
 	-@$(RM) $(PARSER_DBG)
 	-@$(RM) $(PARSER_OBJ)
