@@ -334,7 +334,6 @@ int main( int argc, char** argv )
 				DONE()
 
 				/* Keyword anomaly recognition */
-				/*
 				PROGRESS( "Performing keyword ambiguity detection" )
 				if( !recursions )
 				{
@@ -345,7 +344,6 @@ int main( int argc, char** argv )
 				{
 					SKIPPED( "Recursions detected" );
 				}
-				*/
 
 				/* Lexical analyzer generator */
 				PROGRESS( "Constructing lexical analyzer" )
