@@ -103,9 +103,9 @@ void p_dump_grammar( FILE* stream, PARSER* parser )
 	if( first_progress )
 		fprintf( stream, "\n" );
 
-	fprintf( stream, "\n--- %s%sGrammar ---\n\n",
+	fprintf( stream, "\n%s%sGRAMMAR\n\n",
 		( parser->p_name ? parser->p_name : "" ),
-			( parser->p_name ? " " : "" ) );
+			( parser->p_name ? ": " : "" ) );
 	
 	for( i = parser->symbols; i; i = i->next )
 	{
@@ -186,9 +186,9 @@ void p_dump_symbols( FILE* stream, PARSER* parser )
 	if( first_progress )
 		fprintf( stream, "\n" );
 
-	fprintf( stream, "\n--- %s%sSymbols ---\n\n",
+	fprintf( stream, "\n%s%sSYMBOLS\n\n",
 		( parser->p_name ? parser->p_name : "" ),
-			( parser->p_name ? " " : "" ) );
+			( parser->p_name ? ": " : "" ) );
 	
 	for( i = parser->symbols; i; i = i->next )
 	{
@@ -397,9 +397,9 @@ void p_dump_lalr_states( FILE* stream, PARSER* parser )
 		fprintf( stream, "\n\n" );
 	first_progress = FALSE;
 
-	fprintf( stream, "\n--- %s%sStates ---\n\n",
+	fprintf( stream, "\n%s%sLALR(1) STATES\n\n",
 		( parser->p_name ? parser->p_name : "" ),
-			( parser->p_name ? " " : "" ) );
+			( parser->p_name ? ": " : "" ) );
 
 	for( l = parser->lalr_states; l; l = l->next )
 	{
@@ -441,9 +441,9 @@ void p_dump_productions( FILE* stream, PARSER* parser )
 
 	if( first_progress )
 		fprintf( stream, "\n" );
-	fprintf( stream, "--- %s%sProductions ---\n\n",
+	fprintf( stream, "%s%sPRODUCTIONS\n\n",
 		( parser->p_name ? parser->p_name : "" ),
-			( parser->p_name ? " " : "" ) );
+			( parser->p_name ? ": " : "" ) );
 	
 	for( l = parser->productions; l; l = l->next )
 	{
