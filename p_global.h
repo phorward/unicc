@@ -25,7 +25,6 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 /* Standard Includes */
 #include <pbasis.h>
 #include <pregex.h>
-#include <xml.h>
 
 #undef uchar
 #define uchar char
@@ -41,16 +40,13 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define SYM_UNDEFINED			-1
 #define SYM_NON_TERMINAL		0
 #define SYM_CCL_TERMINAL		1
-#define SYM_KW_TERMINAL			2
-#define SYM_REGEX_TERMINAL		3
-#define SYM_EXTERN_TERMINAL		4		/* TODO */
-#define SYM_ERROR_RESYNC		5
+#define SYM_REGEX_TERMINAL		2
+#define SYM_ERROR_RESYNC		3
 
 /* Parser generation models */
-#define MODEL_CONTEXT_SENSITIVE		0	/* Create context-sensitive
-												parser (default) */
-#define MODEL_CONTEXT_INSENSITIVE	1	/* Create context-insentivie
-												parser */
+#define MODEL_CONTEXT_SENSITIVE		0	/* Context-sensitive parser
+													(default) */
+#define MODEL_CONTEXT_INSENSITIVE	1	/* Context-insensitive parser */
 
 /* Macro to verify terminals */
 #define IS_TERMINAL( s ) \
@@ -63,9 +59,9 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define ASSOC_NOASSOC			3
 
 /* Parser actions */
-#define REDUCE					1 	/* Reduce 0 1 */
-#define SHIFT					2 	/* Shift 1 0 */
-#define SHIFT_REDUCE			3 	/* Shift-Reduce 1 1 */
+#define REDUCE					1 	/* Reduce 			0 1 */
+#define SHIFT					2 	/* Shift 			1 0 */
+#define SHIFT_REDUCE			3 	/* Shift-Reduce 	1 1 */
 
 /* Number of hash-table buckets */
 #define BUCKET_COUNT			64
@@ -77,29 +73,32 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define GEN_WILD_PREFIX			"@@"
 
 /* Phorward UniCC parser generator version number */
-#define PHORWARD_VERSION		"0.25"
+#define PHORWARD_VERSION		"0.27.6dev"
 
 /* Default target language */
 #define PHORWARD_DEFAULT_LNG	"C"
 
 /*
  * Macros
- */
- 
-#define OUTOFMEM					fprintf( stderr, "Ran out of memory\n" ), \
-									exit( -1 )
+ */ 
+#define OUTOFMEM				fprintf( stderr, \
+									"%s, %d: Memory allocation failure; " \
+										"UniCC possibly ran out of memory!\n", \
+											__FILE__, __LINE__ ), \
+								exit( -1 )
+									
+#define MISS_MSG( txt )			fprintf( stderr, "%s, %d: %s\n", \
+										__FILE__, __LINE__, txt )
 
 /* Now uses pbasis library */
-#define p_malloc( size )			pmalloc( size )
-#define p_realloc( ptr, size )		prealloc( ptr, size )
-#define p_free( ptr )				pfree( ptr )
-#define p_strdup( ptr )				pstrdup( ptr )
-#define p_strlen( ptr )				pstrlen( ptr )
-#define p_strzero( ptr )			pstrzero( ptr )
-
-/* And pstring library */
-#define p_tpl_insert				pstr_render
-#define p_str_append				pstr_append_str
+#define p_malloc( size )		pmalloc( size )
+#define p_realloc( ptr, size )	prealloc( ptr, size )
+#define p_free( ptr )			pfree( ptr )
+#define p_strdup( ptr )			pstrdup( ptr )
+#define p_strlen( ptr )			pstrlen( ptr )
+#define p_strzero( ptr )		pstrzero( ptr )
+#define p_tpl_insert			pstr_render
+#define p_str_append			pstr_append_str
 
 /*
  * Type definitions
@@ -152,6 +151,8 @@ struct _symbol
 									recognized by Phorward */
 	BOOLEAN		generated;		/* Flag, if automatically generated
 									symbol */
+									
+	HASHTAB		options;		/* Options hash table */
 
 	SYMBOL*		derived_from;	/* Pointer to symbol from which the
 									current has been derived */
@@ -194,6 +195,10 @@ struct _prod
 	int			prec;			/* Precedence level */
 	int			assoc;			/* Associativity flag */
 	
+	HASHTAB		options;		/* Options hash table */
+	
+	int			line;			/* Line of definition */
+	
 	uchar*		code;			/* Semantic reduction action template */
 	int			code_at;		/* Beginning line of code-segment
 									in source file */
@@ -206,7 +211,7 @@ struct _item
 									to this item */	
 	int			dot_offset;		/* The dot's offset from the left
 									of the right hand side */
-	SYMBOL*		next_symbol;	/* Symbol following the dot */
+	SYMBOL*	next_symbol;	/* Symbol following the dot */
 	LIST*		lookahead;		/* Set of lookahead-symbols */
 };
 
@@ -303,6 +308,8 @@ struct _parser
 									code segment */
 	
 	VTYPE*		p_def_type;		/* Default value type */
+	
+	HASHTAB		options;		/* Options parameter hash table */
 
 	uchar*		source;			/* Parser definition source */
 
@@ -318,6 +325,7 @@ struct _parser
 	BOOLEAN		show_symbols;
 	BOOLEAN		optimize_states;
 	BOOLEAN		all_warnings;
+	BOOLEAN		gen_xml;
 
 	/* Debug and maintainance */
 	uchar*		filename;
