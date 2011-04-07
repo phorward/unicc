@@ -43,9 +43,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 					the parser template (which is defined within the
 					<driver>-tag of the generator file).
 					
-	Parameters:		FILE*		stream				Stream, where the output
-													file is written to.
-					PARSER*		parser				Parser information structure
+	Parameters:		PARSER*		parser				Parser information structure
 	
 	Returns:		void
   
@@ -94,7 +92,6 @@ void p_build_code( PARSER* parser )
 	int				max_goto			= 0;
 	int				max_dfa_idx			= 0;
 	int				max_dfa_accept		= 0;
-	int				kw_count			= 0;
 	int				max_symbol_name		= 0;
 	int				column;
 	int				charmap_count		= 0;
@@ -104,7 +101,7 @@ void p_build_code( PARSER* parser )
 	LIST*			n;
 	pregex_dfa*		dfa;
 	pregex_dfa_st*	dfa_st;
-	pregex_dfa_ent*	dfa_ent;
+	pregex_dfa_tr*	dfa_ent;
 	SYMBOL*			sym;
 	STATE*			st;
 	TABCOL*			col;
@@ -156,7 +153,7 @@ void p_build_code( PARSER* parser )
 		if( sym->type == SYM_NON_TERMINAL && !( sym->vtype ) &&
 			( gen->vstack_def_type && *( gen->vstack_def_type ) ) )
 			sym->vtype = p_create_vtype( parser, gen->vstack_def_type );
-		else if( IS_TERMINAL( sym ) && !( sym->keyword )
+		else if( IS_TERMINAL( sym ) /* && !( sym->keyword ) */
 			&& !( sym->vtype ) && ( gen->vstack_term_type &&
 				*( gen->vstack_term_type ) ) )
 			sym->vtype = p_create_vtype( parser, gen->vstack_term_type );
@@ -198,8 +195,7 @@ void p_build_code( PARSER* parser )
 		if( max_action < list_count( st->actions ) )
 			max_action = list_count( st->actions );
 
-		for( m = st->actions, column = 0, kw_count = 0;
-				m; m = m->next, column++ )
+		for( m = st->actions, column = 0; m; m = m->next, column++ )
 		{
 			col = (TABCOL*)(m->pptr);
 
@@ -211,9 +207,6 @@ void p_build_code( PARSER* parser )
 					GEN_WILD_PREFIX "index", p_int_to_str( col->index ), TRUE,
 					GEN_WILD_PREFIX "column", p_int_to_str( column ), TRUE,
 						(uchar*)NULL ), TRUE );
-
-			if( col->symbol->keyword )
-				kw_count++;
 
 			if( m->next )
 				action_table_row = p_str_append( action_table_row,
@@ -394,7 +387,7 @@ void p_build_code( PARSER* parser )
 			MSG( "Iterating to transitions of DFA" );
 			LISTFOR( dfa_st->trans, n )
 			{
-				dfa_ent = (pregex_dfa_ent*)list_access( n );
+				dfa_ent = (pregex_dfa_tr*)list_access( n );
 
 				for( c = dfa_ent->ccl; c && c->begin != CCL_MAX; c++ )
 				{
@@ -479,7 +472,7 @@ void p_build_code( PARSER* parser )
 		dfa_accept = p_str_append( dfa_accept, dfa_accept_row, TRUE );
 	}
 	
-	MSG( "Construct map of invalid characters (keyword recognition)" );
+	MSG( "Construct map of invalid characters (regex recognition)" );
 	
 	/* Map of invalid keyword suffix characters */
 	for( c = parser->p_invalid_suf; c && c->begin != CCL_MAX; c++ )
@@ -504,6 +497,7 @@ void p_build_code( PARSER* parser )
 	MSG( "Construct character map" );
 
 	/* Character map */
+/*
 	LISTFOR( parser->symbols, l )
 	{
 		sym = (SYMBOL*)list_access( l );
@@ -544,6 +538,7 @@ void p_build_code( PARSER* parser )
 			charmap_count += ccl_size( sym->ccl );
 		}
 	}
+*/
 
 	/* Whitespace identification table and symbol-name-table */
 	LISTFOR( parser->symbols, l ) /* Okidoki, now do the generation */
@@ -628,45 +623,42 @@ void p_build_code( PARSER* parser )
 		/* Select the semantic code to be processed! */
 		act = (uchar*)NULL;
 
-		if( TRUE ) /* !( p->lhs->keyword )  */
+		is_default_code = FALSE;
+
+		if( p->code )
+			act = p->code;
+		else if( list_count( p->rhs ) == 0 )
 		{
-			is_default_code = FALSE;
+			act = parser->p_def_action_e;
+			is_default_code = TRUE;
+		}
+		else
+		{
+			act = parser->p_def_action;
+			is_default_code = TRUE;
+		}
+		
+		if( is_default_code &&
+			( p->lhs->whitespace ||
+				list_find( p->rhs, parser->error ) > -1 ) )
+		{
+			act = (uchar*)NULL;
+		}
 
-			if( p->code )
-				act = p->code;
-			else if( list_count( p->rhs ) == 0 )
+		if( act )
+		{
+			if( gen->code_localization )
 			{
-				act = parser->p_def_action_e;
-				is_default_code = TRUE;
-			}
-			else
-			{
-				act = parser->p_def_action;
-				is_default_code = TRUE;
-			}
-			
-			if( is_default_code &&
-				( p->lhs->whitespace ||
-					list_find( p->rhs, parser->error ) > -1 ) )
-			{
-				act = (uchar*)NULL;
+				actions = p_str_append( actions,
+					p_tpl_insert( gen->code_localization,
+						GEN_WILD_PREFIX "line",
+							p_int_to_str( p->code_at ), TRUE,	
+						(uchar*)NULL ),
+					TRUE );
 			}
 
-			if( act )
-			{
-				if( gen->code_localization )
-				{
-					actions = p_str_append( actions,
-						p_tpl_insert( gen->code_localization,
-							GEN_WILD_PREFIX "line",
-								p_int_to_str( p->code_at ), TRUE,	
-							(uchar*)NULL ),
-						TRUE );
-				}
-
-				act = p_build_action( parser, gen, p, act, is_default_code );
-				actions = p_str_append( actions, act, TRUE );
-			}
+			act = p_build_action( parser, gen, p, act, is_default_code );
+			actions = p_str_append( actions, act, TRUE );
 		}
 
 		actions = p_str_append( actions, p_tpl_insert( gen->action_end, 
@@ -689,30 +681,27 @@ void p_build_code( PARSER* parser )
 	for( l = parser->symbols, row = 0; l; l = l->next, row++ )
 	{
 		sym = (SYMBOL*)( l->pptr );
-		if( sym->type != SYM_REGEX_TERMINAL )
+		if( sym->keyword )
 			continue;
 
-		scan_actions = p_str_append( scan_actions,
-			p_tpl_insert(gen->scan_action_start,
-				GEN_WILD_PREFIX "symbol-number", p_int_to_str( sym->id ), TRUE,
-					(uchar*)NULL ), TRUE );
-
 		/* Select the semantic code to be processed! */
-		act = (uchar*)NULL;
-
-		if( sym->code )
-			act = sym->code;
-
-		if( act )
+		if( ( act = sym->code ) )
 		{
+			scan_actions = p_str_append( scan_actions,
+				p_tpl_insert(gen->scan_action_start,
+					GEN_WILD_PREFIX "symbol-number",
+							p_int_to_str( sym->id ), TRUE,
+								(uchar*)NULL ), TRUE );			
+
 			act = p_build_scan_action( parser, gen, sym, act );
 			scan_actions = p_str_append( scan_actions, act, TRUE );
-		}
 
-		scan_actions = p_str_append( scan_actions,
-			p_tpl_insert( gen->scan_action_end, 
-			GEN_WILD_PREFIX "symbol-number", p_int_to_str( sym->id ), TRUE,
-					(uchar*)NULL ), TRUE );
+			scan_actions = p_str_append( scan_actions,
+				p_tpl_insert( gen->scan_action_end, 
+					GEN_WILD_PREFIX "symbol-number",
+						p_int_to_str( sym->id ), TRUE,
+							(uchar*)NULL ), TRUE );
+		}
 	}
 
 	/* Get the goal production */
@@ -962,6 +951,8 @@ uchar* p_escape_for_target( GENERATOR* g, uchar* str, BOOLEAN clear )
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
+	12.07.2010	Jan Max Meyer	Print warning if code symbol references to un-
+								defined symbol on the semantic rhs!
 ----------------------------------------------------------------------------- */
 uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 			uchar* base, BOOLEAN def_code )
@@ -992,21 +983,26 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 	
 	/* Prepare regular expression engine */
 	pregex_comp_init( &replacer, REGEX_MOD_GLOBAL );
+
+	if( pregex_comp_compile( &replacer, "@'([^']|\\')*'", 0 ) != ERR_OK )
+		RETURN( (uchar*)NULL );
+
+	if( pregex_comp_compile( &replacer, "@\"([^\"]|\\\")*\"", 0 ) != ERR_OK )
+		RETURN( (uchar*)NULL );
+
+	if( pregex_comp_compile( &replacer, "@[A-Za-z_][A-Za-z0-9_]*", 1 )
+			!= ERR_OK )
+		RETURN( (uchar*)NULL );
+
+	if( pregex_comp_compile( &replacer, "@[0-9]+", 2 ) != ERR_OK )
+		RETURN( (uchar*)NULL );
+
+	if( pregex_comp_compile( &replacer, "@@", 3 ) != ERR_OK )
+		RETURN( (uchar*)NULL );
 	
-	if( pregex_comp_compile( &replacer, "@[A-Za-z_][A-Za-z0-9_]*", 0 )
-			!= ERR_OK )
-		RETURN( (uchar*)NULL );
-
-	if( pregex_comp_compile( &replacer, "@[0-9]+", 1 )
-			!= ERR_OK )
-		RETURN( (uchar*)NULL );
-
-	if( pregex_comp_compile( &replacer, "@@", 2 )
-			!= ERR_OK )
-		RETURN( (uchar*)NULL );
-		
 	/* Run regular expression */
-	if( ( result_cnt = pregex_comp_match( &replacer, base, &result ) ) < 0 )
+	if( ( result_cnt = pregex_comp_match( &replacer, base,
+							REGEX_NO_CALLBACK, &result ) ) < 0 )
 	{
 		MSG( "Error occured" );
 		VARS( "result_cnt", "%d", result_cnt );
@@ -1038,6 +1034,7 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 	{
 		VARS( "i", "%d", i );
 		off = 0;
+		tmp = (uchar*)NULL;
 
 		if( last < result[i].begin )
 		{
@@ -1054,32 +1051,48 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 		switch( result[i].accept )
 		{
 			case 0:
-				MSG( "Identifier" );				
+				result[i].begin++;
+				result[i].len -= 2;
+
+			case 1:
+				MSG( "Identifier" );
 				for( l = rhs_idents, m = rhs, off = 1; l && m;
 						l = list_next( l ), m = list_next( m ), off++ )
 				{
 					chk = (uchar*)list_access( l );
 					VARS( "chk", "%s", chk ? chk : "(NULL)" );
-
+					
+					/*
+					printf( "check >%.*s< with >%.*s<\n",
+						result[i].len - 1, chk,
+							result[i].len - 1, result[i].begin + 1 );
+					*/
 					if( chk && !pstrncmp( chk, result[i].begin + 1,
-									pstrlen( chk ) * sizeof( uchar ) ) )
+									result[i].len - 1 )
+							&& pstrlen( chk ) == result[i].len - 1 )
 					{
 						break;
 					}
 				}
 				
 				if( !l )
+				{
+					p_error( ERR_UNDEFINED_SYMREF, ERRSTYLE_WARNING,
+						result[i].begin + 1 );
 					off = 0;
+					
+					tmp = p_strdup( result[i].begin );
+				}
 				
 				VARS( "off", "%d", off );
 				break;
 
-			case 1:
+			case 2:
 				MSG( "Offset" );
 				off = patoi( result[i].begin + 1 );
 				break;
 
-			case 2:
+			case 3:
 				MSG( "Left-hand side" );
 				if( p->lhs->vtype && list_count( parser->vtypes ) > 1 )
 					ret = pstr_append_str( ret,
@@ -1105,12 +1118,10 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 		VARS( "off", "%d", off );
 		if( off > 0 )
 		{
-			tmp = (uchar*)NULL;
-
 			MSG( "Handing offset" );
 			sym = (SYMBOL*)list_getptr( rhs, off - 1 );
 
-			if( !( sym->type == SYM_KW_TERMINAL ) )
+			if( !( sym->keyword ) )
 			{				
 				if( list_count( parser->vtypes ) > 1 )
 				{
@@ -1154,10 +1165,10 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 
 				on_error = TRUE;
 			}
-			
-			if( tmp )
-				ret = pstr_append_str( ret, tmp, TRUE );
 		}
+		
+		if( tmp )
+			ret = pstr_append_str( ret, tmp, TRUE );
 	}
 		
 	if( last && *last )
@@ -1202,7 +1213,6 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 	uchar*			ret			= (uchar*)NULL;
 	uchar*			last;
 	int				i;
-	BOOLEAN			on_error	= FALSE;
 	
 	PROC( "p_build_scan_action" );
 	PARMS( "parser", "%p", parser );
@@ -1226,7 +1236,8 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 		RETURN( (uchar*)NULL );
 		
 	/* Run regular expression */
-	if( ( result_cnt = pregex_comp_match( &replacer, base, &result ) ) < 0 )
+	if( ( result_cnt = pregex_comp_match( &replacer, base,
+							REGEX_NO_CALLBACK, &result ) ) < 0 )
 	{
 		MSG( "Error occured" );
 		VARS( "result_cnt", "%d", result_cnt );
@@ -1245,7 +1256,7 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 	pregex_comp_free( &replacer );
 	
 	MSG( "Iterating trough result array" );	
-	for( i = 0, last = base; i < result_cnt && !on_error; i++ )
+	for( i = 0, last = base; i < result_cnt; i++ )
 	{
 		VARS( "i", "%d", i );
 
@@ -1342,14 +1353,11 @@ uchar* p_mkproduction_str( PROD* p )
 			case SYM_CCL_TERMINAL:
 				sprintf( wtf, "\'%s\'", sym->name );
 				break;
-			case SYM_KW_TERMINAL:
-				sprintf( wtf, "\"%s\"", sym->name );
-				break;
 			case SYM_REGEX_TERMINAL:
-				sprintf( wtf, "@%s", sym->name );
-				break;
-			case SYM_EXTERN_TERMINAL:
-				sprintf( wtf, "*%s", sym->name );
+				if( sym->keyword )
+					sprintf( wtf, "\"%s\"", sym->name );
+				else
+					sprintf( wtf, "@%s", sym->name );
 				break;
 			case SYM_ERROR_RESYNC:
 				strcpy( wtf, P_ERROR_RESYNC );
@@ -1490,7 +1498,8 @@ BOOLEAN p_load_generator( GENERATOR* g, uchar* genfile )
 	GET_XML_DEF( g->xml, g->code_localization, "code_localization" );
 
 	/* Escape sequence definitions */
-	for( tmp = xml_child( g->xml, "escape-sequence" ); tmp; tmp = xml_next( tmp ) )
+	for( tmp = xml_child( g->xml, "escape-sequence" ); tmp;
+			tmp = xml_next( tmp ) )
 	{
 		att_for = (uchar*)xml_attr( tmp, "for" );
 		att_do = (uchar*)xml_attr( tmp, "do" );
@@ -1501,7 +1510,8 @@ BOOLEAN p_load_generator( GENERATOR* g, uchar* genfile )
 			{
 				if( !strcmp( g->for_sequences[ i ], att_for ) )
 				{
-					p_error( ERR_DUPLICATE_ESCAPE_SEQ, ERRSTYLE_WARNING, att_for, genfile );
+					p_error( ERR_DUPLICATE_ESCAPE_SEQ, ERRSTYLE_WARNING,
+						att_for, genfile );
 					break;
 				}
 			}
@@ -1529,9 +1539,11 @@ BOOLEAN p_load_generator( GENERATOR* g, uchar* genfile )
 		else
 		{
 			if( !att_for )
-				p_error( ERR_XML_INCOMPLETE, ERRSTYLE_FATAL, genfile, xml_name( tmp ), "for" );
+				p_error( ERR_XML_INCOMPLETE, ERRSTYLE_FATAL,
+					genfile, xml_name( tmp ), "for" );
 			if( !att_do )
-				p_error( ERR_XML_INCOMPLETE, ERRSTYLE_FATAL, genfile, xml_name( tmp ), "do" );
+				p_error( ERR_XML_INCOMPLETE, ERRSTYLE_FATAL,
+					genfile, xml_name( tmp ), "do" );
 		}
 	}
 
