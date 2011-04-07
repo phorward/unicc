@@ -230,7 +230,7 @@ static BOOLEAN p_nfa_matches_parser(
 			break;
 
 		/* Error */
-		if( act == 0 )
+		if( act == ERROR )
 			return FALSE;
 
 		/* Shift */		
