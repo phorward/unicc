@@ -296,6 +296,7 @@ struct _parser
 	BOOLEAN		p_cis_keywords;	/* Flag, if case-insensitive keywords */
 	BOOLEAN		p_cis_types;	/* Flag, if case-insenstivie value stack types */
 	BOOLEAN		p_extern_tokens;/* Flag if parser uses external tokens */
+	BOOLEAN		p_reserve_kw;	/* Flag, if keywords are reserved */
 	int			p_universe;		/* Maximum of the character universe */
 
 	uchar*		p_header;		/* Header/Prologue program code of the parser */
