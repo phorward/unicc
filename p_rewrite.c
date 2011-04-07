@@ -665,6 +665,37 @@ void p_inherit_fixiations( PARSER* parser )
 }
 
 /* -FUNCTION--------------------------------------------------------------------
+	Function:		p_inherit_vtypes()
+	
+	Author:			Jan Max Meyer
+	
+	Usage:			Inherits value types of rewritten symbols from their
+					base. This is required for symbols that where generated
+					before their definition in the code - where a possible
+					value type is still unknown.
+					
+	Parameters:		<type>		<identifier>		<description>
+	
+	Returns:		<type>							<description>
+  
+	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	Date:		Author:			Note:
+----------------------------------------------------------------------------- */
+void p_inherit_vtypes( PARSER* parser )
+{
+	SYMBOL*	sym;
+	LIST*	l;
+	
+	for( l = parser->symbols; l; l = list_next( l ) )
+	{
+		sym = (SYMBOL*)list_access( l );
+		
+		if( !sym->vtype && sym->derived_from )
+			sym->vtype = sym->derived_from->vtype;
+	}
+}
+
+/* -FUNCTION--------------------------------------------------------------------
 	Function:		p_setup_single_goal()
 	
 	Author:			Jan Max Meyer
