@@ -1,6 +1,6 @@
 /* -HEADER----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2009 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2011 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_proto.h (created on 30.01.2007)
@@ -70,12 +70,9 @@ uchar* p_str_no_whitespace( uchar* str );
 /* p_util.c */
 uchar* p_derivation_name( uchar* name, uchar append_char );
 int p_unescape_char( uchar* str, uchar** strfix );
-bitset p_ccl_to_map( PARSER* parser, uchar* ccl );
-uchar* p_map_to_ccl( PARSER* parser, bitset map );
-uchar* p_negate_ccl( PARSER* parser, uchar* ccl );
-BOOLEAN p_map_test_char( bitset map, uchar chr, BOOLEAN insensitive );
 BOOLEAN p_ccl_test_char( CCL ccl, pchar chr, BOOLEAN insensitive );
 SYMBOL* p_find_base_symbol( SYMBOL* sym );
+uchar* p_gen_c_identifier( uchar* str, BOOLEAN to_upper );
 
 /* p_rewrite.c */
 void p_rewrite_grammar( PARSER* parser );
