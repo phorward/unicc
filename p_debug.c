@@ -54,18 +54,14 @@ void p_print_symbol( FILE* stream, SYMBOL* sym )
 
 	if( sym->type == SYM_CCL_TERMINAL )
 	{
-		/* ccl_print( stream, sym->ccl, 0 ); */
-		/* fprintf( stream, "\'%s\'", sym->name ); */
 		cclstr = ccl_to_str( sym->ccl, TRUE );
 		fprintf( stream, "'%s'", cclstr );
 		pfree( cclstr );
 	}
-	else if( sym->type == SYM_KW_TERMINAL )
+	else if( sym->type == SYM_REGEX_TERMINAL && sym->keyword )
 		fprintf( stream, "\"%s\"", sym->name );
-	else if( sym->type == SYM_REGEX_TERMINAL )
+	else if( sym->type == SYM_REGEX_TERMINAL && !( sym->keyword ) )
 		fprintf( stream, "@%s", sym->name );
-	else if( sym->type == SYM_EXTERN_TERMINAL )
-		fprintf( stream, "*%s", sym->name );
 	else if( sym->type == SYM_ERROR_RESYNC )
 		fprintf( stream, P_ERROR_RESYNC );
 	else
@@ -209,27 +205,22 @@ void p_dump_symbols( FILE* stream, PARSER* parser )
 		switch( s->type )
 		{
 			case SYM_NON_TERMINAL:
-				fprintf( stream, "nonterminal" );
+				fprintf( stream, "non-terminal" );
 				break;
 
 			case SYM_CCL_TERMINAL:
-				fprintf( stream, "character-class" );
-				break;
-
-			case SYM_KW_TERMINAL:
-				fprintf( stream, "keyword" );
+				fprintf( stream, "terminal: character class" );
 				break;
 
 			case SYM_REGEX_TERMINAL:
-				fprintf( stream, "regular expression" );
-				break;
-
-			case SYM_EXTERN_TERMINAL:
-				fprintf( stream, "external" );
+				if( s->keyword )
+					fprintf( stream, "terminal: keyword" );
+				else
+					fprintf( stream, "terminal: regular expression" );
 				break;
 
 			case SYM_ERROR_RESYNC:
-				fprintf( stream, "error-resync" );
+				fprintf( stream, "terminal: error resyncronization" );
 				break;
 				
 			default:
