@@ -382,7 +382,8 @@ Some general things you have to know:
 #define UNICC_PARSE_ERROR( pcb ) \
 	fprintf( stderr, "line %d: syntax error on token '%s'\n", \
 	( pcb )->line, \
-		( ( pcb )->sym ) ? @@prefix_symbol_names[ ( pcb )->sym ] : "(null)" )
+		( ( ( pcb )->sym &gt;= 0 ) ? \
+			@@prefix_symbol_names[ ( pcb )->sym ] : "(null)" ) )
 #endif
 
 #ifndef UNICC_CLEARIN
@@ -832,7 +833,9 @@ UNICC_STATIC int @@prefix_parse( @@prefix_pcb* pcb )
 			fprintf( @@prefix_dbg, "%s: !!!PARSE ERROR!!!\n"
 					"%s: error recovery: current token %d (%s)\n",
 						UNICC_PARSER, UNICC_PARSER, pcb->sym,
-							@@prefix_symbol_names[ pcb->sym ] );
+							( ( pcb->sym &gt;= 0 ) ?
+								@@prefix_symbol_names[ pcb->sym ] :
+									"(null)" ) );
 			fprintf( @@prefix_dbg,
 					"%s: error recovery: expecting ", UNICC_PARSER );
 					
