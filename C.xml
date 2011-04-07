@@ -2,10 +2,10 @@
 <!--
 UniCC LALR(1) Parser Generator
 Copyright (C) 2006-2010 by Phorward Software Technologies, Jan Max Meyer
-http://www.phorward-software.com ++ mail<AT>phorward<DASH>software<DOT>com
+http://www.phorward-software.com ++ contact<AT>phorward<DASH>software<DOT>com
 
 File:		C.xml
-Version:	1.7
+Version:	1.7.1
 Author:		Jan Max Meyer
 Usage:		Target language template for the C programming language
 
@@ -22,11 +22,11 @@ Some general things you have to know:
 
 -->
 
-<generator name="C" version="1.7">
+<generator name="C" version="1.7.1">
 	<!--
-	***********************************************************************************************
+	****************************************************************************
 	Escape sequences
-	***********************************************************************************************
+	****************************************************************************
 	These are the escapable sequence definitions for the target language
 	which should be replaced when terminal-/nonterminal (especially generated
 	ones) names are generated into the target file, e.g. in the <symbols>-tag.
@@ -35,9 +35,9 @@ Some general things you have to know:
 	<escape-sequence for="&#x22;" do="\&#x22;" />
 	
 	<!--
-	***********************************************************************************************
+	****************************************************************************
 	Value-stack related definitions
-	***********************************************************************************************
+	****************************************************************************
 	-->
 
 	<!-- Default (return) value type for nonterminals -->
@@ -46,66 +46,77 @@ Some general things you have to know:
 	<vstack_term_type>int</vstack_term_type>
 	
 	<!--
-	Code to be generated for the value stack datatype-definition when only one datatype is used
-	within the whole grammar (or if always the default-type is used).
+	Code to be generated for the value stack datatype-definition
+	when only one datatype is used within the whole grammar (or if
+	always the default-type is used).
 	
-	Placeholders:		@@value-type			- 	Expands to the type-declaration of the only
-													used value type.
+	Placeholders:	@@value-type			- 	Expands to the type-declaration
+												of the only used value type.
 	-->
 	<vstack_single>typedef @@value-type @@prefix_vtype;</vstack_single>
 
 	<!--
-	Begin and end of code to be generated for the value stack datatype-definition when multiple
-	datatypes are used within the whole grammar.
-	Note that you can define here even struct-like code or array-like structure if your target
-	language supports only those.
+	Begin and end of code to be generated for the value stack 
+	datatype-definition when multiple datatypes are used within the
+	whole grammar.  Note that you can define here even struct-like
+	code or array-like structure if your target language supports
+	only those.
 	
-	Placeholders:		@@number-of-value-types	-	Expands to the maximum number of value types
-													possible here. Can be used in both of the 
-													following tags.
+	Placeholders:	@@number-of-value-types	-	Expands to the maximum number
+												of value types possible here.
+												Can be used in both of the 
+												following tags.
 	-->
 	<vstack_union_start>typedef union @@prefix_VTYPE&#x0A;{&#x0A;</vstack_union_start>
 	<vstack_union_end>} @@prefix_vtype;&#x0A;&#x0A;</vstack_union_end>
 	
 	<!--
-	This tag defines a data type definition within the union. As @@attribute, the content of the
-	<vstack_union_att>-tag is expanded, which then contains a consecutive number of the datatype.
+	This tag defines a data type definition within the union.
+	As @@attribute, the content of the <vstack_union_att>-tag is expanded,
+	which then contains a consecutive number of the datatype.
 	This block is repeated for every value type within the union/whatever ;)
 	
-	Placeholders:		@@value-type			- 	Expands to the type-declaration of the
-													current data type as specified within the
-													grammar.
-						@@attribute				-	As @@attribute, the content of the
-													<vstack_union_att>-tag is expanded, which
-													then contains a consecutive number of the
-													datatype.
-						@@value-type-id			-	The value type ID, which begins at 0.
-													This can be the index of an array!
+	Placeholders:	@@value-type			- 	Expands to the type-declaration
+												of the current data type as
+												specified within the grammar.
+					@@attribute				-	As @@attribute, the content
+												of the <vstack_union_att>-tag
+												is expanded, which then
+												contains a consecutive number
+												of the datatype.
+					@@value-type-id			-	The value type ID, which begins 
+												at 0. This can be the index of
+												an array!
 	-->
 	<vstack_union_def>&#x09;@@value-type @@attribute;&#x0A;</vstack_union_def>
 	
 	<!--
-	This tag defines is used in several code-generation parts, both when the value stack union
-	is defined and when reduction code for productions is produced.
+	This tag defines is used in several code-generation parts, both when
+	the value stack union is defined and when reduction code for productions
+	is produced.
 	
-	Placeholders:		@@value-type-id			-	The value type ID, which begins at 0.
-													This can be the index of an array!
+	Placeholders:	@@value-type-id			-	The value type ID, which 
+												begins at 0.
+												This can be the index of
+												an array!
 	-->
 	<vstack_union_att>value_@@value-type-id</vstack_union_att>
 
 	<!--
-	***********************************************************************************************
+	****************************************************************************
 	Reduction-code related definitions
-	***********************************************************************************************
+	****************************************************************************
 	-->
 	
 	<!--
-	Begin and end of code to be generated for each reduction code action of a production. This
-	code is embedded to a switch-structure below, every block is a "case" within this switch.
-	<action_start> is generated BEFORE and <action_end> BEHIND each reduction code.
+	Begin and end of code to be generated for each reduction code action of a
+	production. This code is embedded to a switch-structure below, every block
+	is a "case" within this switch. <action_start> is generated BEFORE and 
+	<action_end> BEHIND each reduction code.
 	
-	Placeholders:		@@production-number		-	The number of the production to be reduced.
-													Can be used in both of the following tags.
+	Placeholders:	@@production-number		-	The number of the production to
+												be reduced. Can be used in both
+												of the following tags.
 	-->
 	<action_start>&#x09;&#x09;&#x09;&#x09;case @@production-number:&#x09;&#x09;&#x09;&#x09;{&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;</action_start>
 	<action_end>&#x0A;&#x09;&#x09;&#x09;&#x09;}&#x09;&#x09;&#x09;&#x09;break;&#x0A;&#x0A;</action_end>
@@ -113,87 +124,99 @@ Some general things you have to know:
 	<!--
 	Single value access when only one datatype is used in the whole grammar.
 	
-	Placeholders:		@@offset				-	The number of the right-hand side symbol to be
-													accessed. This is the number specified in
-													the production reduction code as number or
-													even by the right-hand side element's identi-
-													fier. The offset is inserted here by UniCC's
-													code generator.
+	Placeholders:	@@offset				-	The number of the right-hand
+												side symbol to be accessed.
+												This is the number specified in
+												the production reduction code 
+												as number or even by the 
+												right-hand side element's 
+												identifier. The offset is
+												inserted here by UniCC's
+												code generator.
 	-->
 	<action_single>(*( pcb->vtos - @@offset ))</action_single>
 
 	<!--
-	Multiple value access, in case of different datatypes used within the grammar.
+	Multiple value access, in case of different datatypes used within the 
+	grammar.
 	
-	Placeholders:		@@offset				-	The number of the right-hand side symbol to be
-													accessed. This is the number specified in
-													the production reduction code as number or
-													even by the right-hand side element's identi-
-													fier. The offset is inserted here by UniCC's
-													code generator.
-						@@attribute				-	As @@attribute, the content of the
-													<vstack_union_att>-tag is expanded, which
-													then contains a consecutive number of the
-													datatype.
+	Placeholders:	@@offset				-	The number of the right-hand 
+												side symbol to be accessed. 
+												This is the number specified in
+												the production reduction code
+												as number or even by the 
+												right-hand side element's
+												identifier. The offset is
+												inserted here by UniCC's
+												code generator.
+					@@attribute				-	As @@attribute, the content of
+												the <vstack_union_att>-tag is
+												expanded, which then contains
+												a consecutive number of the
+												datatype.
 	-->
 	<action_union>(*( pcb->vtos - @@offset )).@@attribute</action_union>
 
 	<!--
-	Single value left-hand side assignment variable when only one datatype is used in the whole
-	grammar.
+	Single value left-hand side assignment variable when only one datatype
+	is used in the whole grammar.
 	
-	Placeholders:		none
+	Placeholders:	none
 	-->
 	<action_lhs_single>pcb->ret</action_lhs_single>
 
 	<!--
-	Multiple value left-hand side assignment variable when different datatypes are used within
-	the whole grammar.
+	Multiple value left-hand side assignment variable when different 
+	datatypes are used within the whole grammar.
 	
-	Placeholders:		@@attribute				-	As @@attribute, the content of the
-													<vstack_union_att>-tag is expanded, which
-													then contains a consecutive number of the
-													datatype.
+	Placeholders:	@@attribute				-	As @@attribute, the content of
+												the <vstack_union_att>-tag is
+												expanded, which then contains
+												a consecutive number of the
+												datatype.
 	-->
 	<action_lhs_union>pcb->ret.@@attribute</action_lhs_union>
 
 	<!--
-	***********************************************************************************************
+	****************************************************************************
 	Regular expression terminal match related definitions
-	***********************************************************************************************
+	****************************************************************************
 	-->
 	
 	<!--
-	Begin and end of code to be generated for each match of a regular expression token. This
-	code is embedded to a switch-structure below, every block is a "case" within this switch.
-	<scan_action_start> is generated BEFORE and <scan_action_end> BEHIND each reduction code.
-	The code here is only produced when the matched regex-terminal contains individual code
-	segments.
+	Begin and end of code to be generated for each match of a regular
+	expression token. This code is embedded to a switch-structure below,
+	every block is a "case" within this switch. <scan_action_start> is
+	generated BEFORE and <scan_action_end> BEHIND each reduction code.
+
+	The code here is only produced when the matched regex-terminal contains
+	individual code segments.
 	
-	Placeholders:		@@symbol-number			-	The id of the terminal the lexical analyzer
-													action belongs to.
-													Can be used in both of the following tags.
+	Placeholders:	@@symbol-number			-	The id of the terminal the
+												lexical analyzer action belongs
+												to. Can be used in both of the
+												following tags.
 	-->
 	
-			<scan_action_start>&#x09;&#x09;&#x09;&#x09;case @@symbol-number:&#x0A;&#x09;&#x09;&#x09;&#x09;{&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;</scan_action_start>
-			<scan_action_end>&#x0A;&#x09;&#x09;&#x09;&#x09;}&#x09;&#x09;&#x09;&#x09;break;&#x0A;&#x0A;</scan_action_end>
+	<scan_action_start>&#x09;&#x09;&#x09;&#x09;case @@symbol-number:&#x0A;&#x09;&#x09;&#x09;&#x09;{&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;</scan_action_start>
+	<scan_action_end>&#x0A;&#x09;&#x09;&#x09;&#x09;}&#x09;&#x09;&#x09;&#x09;break;&#x0A;&#x0A;</scan_action_end>
 
 	<!--
-	The content of the tags <scan_action_begin_offset> and <scan_action_end_offset> are
-	inserted in regex-terminal semantic code blocks for the placeholders @> and @< to
-	get the start- and end-offset of the matched string. Normally, these are variable
-	names.
+	The content of the tags <scan_action_begin_offset> and 
+	<scan_action_end_offset> are inserted in regex-terminal semantic code
+	blocks for the placeholders @> and @< to get the start- and end-offset
+	of the matched string. Normally, these are variable names.
 	
-	Placeholders:		none
+	Placeholders:	none
 	-->
 	<scan_action_begin_offset>(pcb->buf)</scan_action_begin_offset>
 	<scan_action_end_offset>(pcb->buf + pcb->len)</scan_action_end_offset>
 
 	<!--
-	When @@ is used in regex-terminal semantic code blocks, a variable that receives
-	the semantic value of the token to be pushed to the value stack must be given.
-	For single value assignments,this is done here. This value is only used when the
-	grammar uses only one datatype.
+	When @@ is used in regex-terminal semantic code blocks, a variable that
+	receives the semantic value of the token to be pushed to the value stack
+	must be given. For single value assignments,this is done here.
+	This value is only used when the grammar uses only one datatype.
 	
 	Placeholders:		none
 	-->
@@ -202,31 +225,35 @@ Some general things you have to know:
 	<!--
 	Same play for multiple value assignments in regex-terminal semantic action blocks.
 	
-	Placeholders:		@@attribute				-	As @@attribute, the content of the
-													<vstack_union_att>-tag is expanded, which
-													then contains a consecutive number of the
-													datatype.
+	Placeholders:	@@attribute				-	As @@attribute, the content of
+												the <vstack_union_att>-tag is
+												expanded, which then contains
+												a consecutive number of the
+												datatype.
 	-->
 	<scan_action_ret_union>(*(pcb->vtos)).@@attribute</scan_action_ret_union>
 
 	<!--
-	***********************************************************************************************
+	****************************************************************************
 	Parse tables
-	***********************************************************************************************
+	****************************************************************************
 	-->
 	
 	<!--
-	The <prodlen>-Tag defines an one-dimensional array for the production lengths, which means the
-	number of items on a right-hand side of every production used within the grammar. This is used
-	when a reduction occurs to pop the correct number of items off the parse stack.
-	The Placeholders can only be used in the <col>-tag below <prodlen>.
+	The <prodlen>-Tag defines an one-dimensional array for the production
+	lengths, which means the number of items on a right-hand side of every
+	production used within the grammar. This is used when a reduction occurs
+	to pop the correct number of items off the parse stack. The Placeholders
+	can only be used in the <col>-tag below <prodlen>.
 	
-	Placeholders:		@@length-of-rhs			-	Number of items on a production's
-													right-hand side.
-						@@production-number		-	The production id number identifying
-													the production. This can be automatically
-													solved via the array index itself. The
-													production number begins at 0.
+	Placeholders:	@@length-of-rhs			-	Number of items on a
+												production's right-hand side.
+					@@production-number		-	The production id number
+												indexing the production.
+												This can be automatically
+												solved via the array index
+												itself. The production numbers
+												begin at 0.
 	-->
 	<prodlen>
 		<col>@@length-of-rhs</col>
@@ -234,55 +261,54 @@ Some general things you have to know:
 	</prodlen>
 
 	<!--
-	The <prodlhs>-Tag defines an one-dimensional array for the id's of the left-hand side each pro-
-	duction belons to. This is used	when a reduction occurs to push the correct left-hand side symbol
-	onto the parse stack. The Placeholders can only be used in the <col>-tag below <prodlhs>.
+	The <prodlhs>-Tag defines an one-dimensional array for the id's of the
+	left-hand side each production belons to. This is used	when a reduction
+	occurs to push the correct left-hand side symbol onto the parse stack.
+	The Placeholders can only be used in the <col>-tag below <prodlhs>.
 	
-	Placeholders:		@@lhs					-	The id-number of the left-hand side symbol
-													the production belons to.
-						@@production-number		-	The production id number identifying
-													the production. This can be automatically
-													solved via the array index itself. The
-													production number begins at 0.
-	-->
+	Placeholders:	@@lhs					-	The id-number of the
+												left-hand side symbol
+												the production belons to.
+					@@production-number		-	The production id number
+												indexing the production.
+												This can be automatically
+												solved via the array index
+												itself. The production
+												numbers begin at 0.
+-->
 	<prodlhs>
 		<col>@@lhs</col>
 		<col_sep>, </col_sep>
 	</prodlhs>
 	
 	<!--
-		The <defprod>-Tag defines an one-dimensional array for the id's of the default productions
-		that should be reduced when no other action is selected. UniCC choses the default production
-		by the most common reduction that comes up. All reductions which belong to that production
-		are removed from the action table, so that the default table is chosen.
-		The following Placeholders can only be used in the <col>-tag below <defprod>.
+	The <defprod>-Tag defines an one-dimensional array for the id's of
+	the default productions that should be reduced when no other action
+	is selected. UniCC choses the default production by the most common
+	reduction that comes up. All reductions which belong to that production
+	are removed from the action table, so that the default table is chosen.
+	The following Placeholders can only be used in the <col>-tag below
+	<defprod>.
 					
-		Placeholders:		@@state-number			-	The id-number of the state where the
-														default production belongs to.
-							@@production-number		-	The production id number identifying
-														the production. This can be automatically
-														solved via the array index itself. The
-														production number begins at 0. If there
-														is no default-production, than the
-														production-number will be -1.
+	Placeholders:	@@state-number			-	The id-number of the state
+												where the default production
+												belongs to.
+					@@production-number		-	The production id number
+												indexing the production.
+												This can be automatically
+												solved via the array index
+												itself. The production
+												numbers begins at 0.
+												If there is no adequate
+												default-production, the
+												production-number will be
+												-1.
 	-->
 	<defprod>
 		<col>@@production-number</col>
 		<col_sep>, </col_sep>
 	</defprod>
 
-	<!--
-	The <charmap>-Tag defines an one-dimensional array for the id's of the left-hand side each pro-
-	duction belons to. This is used	when a reduction occurs to push the correct left-hand side symbol
-	onto the parse stack. The Placeholders can only be used in the <col>-tag below <prodlhs>.
-	
-	Placeholders:		@@lhs					-	The id-number of the left-hand side symbol
-													the production belons to.
-						@@production-number		-	The production id number identifying
-													the production. This can be automatically
-													solved via the array index itself. The
-													production number begins at 0.
-	-->
 	<charmap>
 		<col>@@from, @@to</col>
 		<col_sep>, </col_sep>
@@ -693,7 +719,7 @@ fprintf( stderr, "next=%d\n", next );
 /*
 fprintf( stderr, "next=%d @@prefix_dfa_chars[ chr ] = %d, @@prefix_dfa_chars[ chr+1 ] = %d\n", next, @@prefix_dfa_chars[ chr ], @@prefix_dfa_chars[ chr + 1 ]);
 */
-			if( next &gt;= @@prefix_dfa_chars[ chr ] &&
+			if( next &gt;= @@prefix_dfa_chars[ chr ] &amp;&amp;
 				next &lt;= @@prefix_dfa_chars[ chr+1 ] )
 			{
 				dfa_st = *( @@prefix_dfa_trans + ( chr / 2 ) );
@@ -1163,12 +1189,9 @@ UNICC_STATIC int @@prefix_parse( @@prefix_pcb* pcb )
 #if UNICC_MAIN
 int main( int argc, char** argv )
 {
-	char			s[ 24576+1 ];
-	char			l[ 24576+1 ] ;
-	short 			first;
 	@@prefix_pcb	pcb;
 	
-	if( @@name_len &gt; 0 && @@version_len &gt; 0 )
+	if( @@name_len &gt; 0 &amp;&amp; @@version_len &gt; 0 )
 		printf( "@@name v@@version\n" );
 	
 	if( @@copyright_len &gt; 0 )
@@ -1176,33 +1199,7 @@ int main( int argc, char** argv )
 
 	do
 	{
-		first = 0;
-		*s = '\0';
-		
 		printf( "\nok\n" );
-#if 0 /* OLD SRC */
-		do
-		{
-			printf( "@@name>" );
-			fgets( l, sizeof( l ), stdin );
-		
-			if( *l == '\n' )
-			{
-				if( first )
-					break;
-				else
-					first = 1;
-			}
-			else
-				strcat( s, l );
-		}
-		while( 1 );
-		
-		//s[ strlen( s ) - 1 ] = '\0';
-		
-		if( !( *s ) )
-			break;
-#endif
 
 		memset( &amp;pcb, 0, sizeof( @@prefix_pcb ) );
 		@@prefix_parse( &amp;pcb );
