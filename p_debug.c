@@ -88,10 +88,8 @@ void p_dump_grammar( FILE* stream, PARSER* parser )
 {
 	LIST*		i		= (LIST*)NULL;
 	LIST*		j		= (LIST*)NULL;
-	LIST*		k		= (LIST*)NULL;
 	
 	SYMBOL*		s		= (SYMBOL*)NULL;
-	SYMBOL*		sf		= (SYMBOL*)NULL;
 	SYMBOL*		sym		= (SYMBOL*)NULL;
 	PROD*		p		= (PROD*)NULL;
 	
@@ -342,11 +340,8 @@ void p_dump_lalr_states( FILE* stream, PARSER* parser )
 ----------------------------------------------------------------------------- */
 void p_dump_productions( FILE* stream, PARSER* parser )
 {
-	LIST*		l		= (LIST*)NULL;
-	LIST*		m		= (LIST*)NULL;
-	LIST*		n		= (LIST*)NULL;
-	SYMBOL*		s		= (SYMBOL*)NULL;
 	PROD*		p;
+	LIST*		l;
 
 	if( !stream )
 		stream = stderr;
