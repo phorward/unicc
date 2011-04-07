@@ -58,6 +58,7 @@ void p_build_code( PARSER* parser )
 	FILE*			stream;
 	
 	uchar			xml_file			[ BUFSIZ + 1 ];
+	uchar*			option;
 	uchar*			tpldir;
 	uchar*			complete			= (uchar*)NULL;
 	uchar*			all					= (uchar*)NULL;
@@ -111,6 +112,8 @@ void p_build_code( PARSER* parser )
 	CCL				c;
 	int				i;
 	BOOLEAN			is_default_code;
+	
+	HASHELEM*		he;
 
 	PROC( "p_build_code" );
 	PARMS( "parser", "%p", parser );
@@ -814,6 +817,25 @@ void p_build_code( PARSER* parser )
 	
 			(uchar*)NULL
 		);
+		
+		/* Replace all top-level options */
+		for( l = hashtab_list( &( parser->options ) ); l; l = list_next( l ) )
+		{
+			he = (HASHELEM*)list_access( l );
+			
+			if( !( option = pasprintf( "%s%s",
+					GEN_WILD_PREFIX, hashelem_key( he ) ) ) )
+				OUTOFMEM;
+				
+			if( !( complete = p_tpl_insert( all,
+								option, (uchar*)hashelem_access( he ), FALSE,
+								(uchar*)NULL ) ) )
+				OUTOFMEM;
+				
+			p_free( all );
+			p_free( option );
+			all = complete;
+		}
 		
 		/* Now replace all prefixes */
 		complete = p_tpl_insert( all,
