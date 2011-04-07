@@ -59,6 +59,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define ERR_CHARCLASS_OVERLAP		33
 #define ERR_UNDEFINED_SYMREF		34
 #define ERR_NO_TARGET_LANG_SUPPLY	35
+#define ERR_DIRECTIVE_ALREADY_USED	36
 
 #define OUT_OF_MEMORY				do { p_error( ERR_MEMORY_ERROR, ERRSTYLE_FATAL, __FILE__, __LINE__ ); \
 										exit( EXIT_FAILURE ); } while( 0 )
