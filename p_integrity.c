@@ -243,7 +243,6 @@ BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 BOOLEAN p_keyword_anomalies( PARSER* parser )
 {
 	STATE*		st;
-	STATE*		prev;
 	LIST*		l;
 	LIST*		m;
 	LIST*		n;
@@ -254,7 +253,6 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 	SYMBOL*		sym;
 	TABCOL*		col;
 	TABCOL*		ccol;
-	ITEM*		it;
 	bitset		test;
 	int			cnt;
 	BOOLEAN		found;
