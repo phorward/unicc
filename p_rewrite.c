@@ -22,7 +22,6 @@ of the Artistic License, version 2. Please see LICENSE for more information.
  * Global variables
  */
 
-
 /*
  * Functions
  */
@@ -165,35 +164,44 @@ void p_rewrite_grammar( PARSER* parser )
 					else if( ( sym->type == SYM_NON_TERMINAL && sym->lexem )
 							|| IS_TERMINAL( sym ) )
 					{
-						/* Do not rewrite the eof or error resync symbol! */
+						/* Do not rewrite the eof and error resync symbol! */
 						if( sym == parser->end_of_input
 							|| sym->type == SYM_ERROR_RESYNC )
 							continue;
 
-						/* Construct derivative symbol name */							
+						/* Construct derivative symbol name */
 						deriv = p_strdup( sym->name );
-	
+						
+						/* Create unique symbol name */
 						do
 						{
 							deriv = p_str_append( deriv, P_REWRITTEN_TOKEN, FALSE );
 							nsym = p_get_symbol( parser, deriv, SYM_NON_TERMINAL, FALSE );
 						}
 						while( nsym && nsym->derived_from != sym );
+						
+						/* If you already found a symbol, don't do anything! */
+						if( !nsym )
+						{
+							nsym = p_get_symbol( parser, deriv, SYM_NON_TERMINAL, TRUE );
+
+							p = p_create_production( parser, nsym );
+							p_append_to_production( p, sym, (uchar*)NULL );
+							p_append_to_production( p, ws_optlist, (uchar*)NULL );
+							
+							/* p_dump_production( stdout, p, TRUE, FALSE ); */
 	
-						nsym = p_get_symbol( parser, deriv, SYM_NON_TERMINAL, TRUE );
-
-						p = p_create_production( parser, nsym );
-						p_append_to_production( p, sym, (uchar*)NULL );
-						p_append_to_production( p, ws_optlist, (uchar*)NULL );
-
-						nsym->prec = sym->prec;
-						nsym->assoc = sym->assoc;
-						nsym->nullable = sym->nullable;
-						nsym->generated = TRUE;
-						nsym->keyword = sym->keyword;
-						nsym->vtype = sym->vtype;
-
-						nsym->derived_from = sym;
+							nsym->prec = sym->prec;
+							nsym->assoc = sym->assoc;
+							nsym->nullable = sym->nullable;
+							nsym->generated = TRUE;
+							nsym->keyword = sym->keyword;
+							nsym->vtype = sym->vtype;
+	
+							nsym->derived_from = sym;
+						}
+						
+						/* Replace the rewritten symbol with the production's symbol! */						
 						m->pptr = nsym;
 
 						p_free( deriv );
@@ -375,14 +383,20 @@ void p_unique_charsets( PARSER* parser )
 
 				bitset_free( charmap );
 			}
-
+			
 			/*
-			printf( "2 sym->name = >%s< (id %d)\n", sym->name, sym->id );
-			for( i = 0; i < 128; i++ )
-				printf( "%03d:%02d%s", i, cmap[i], ( i > 0 && i % 10 == 0 ? "\n" : " " ) );
-			printf( "\n\n" );
-			getchar();
+			if( !strcmp( sym->name, "\\n" ) || !strcmp( sym->name, "\\n'" ) )
+			{
+				printf( "2 sym->name = >%s< (id %d)\n", sym->name, sym->id );
+				for( i = 0; i < 128; i++ )
+					printf( "%03d:%02d%s", i, cmap[i], ( i > 0 && i % 10 == 0 ? "\n" : " " ) );
+				printf( "\n\n" );
+			}
+			
+			p_dump_grammar( stderr, parser );
+			getchar();			
 			*/
+
 
 			csets = (LIST*)NULL;
 			for( m = parser->symbols; m; m = m->next )
@@ -417,7 +431,9 @@ void p_unique_charsets( PARSER* parser )
 					{
 						xsym = n->pptr;
 
-						if( !IS_TERMINAL( xsym ) || xsym->keyword || xsym->extern_token )
+						if( !IS_TERMINAL( xsym )
+							|| xsym->keyword
+								|| xsym->extern_token )
 							continue;
 
 						xmap = p_ccl_to_map( parser, xsym->name );
@@ -460,7 +476,7 @@ void p_unique_charsets( PARSER* parser )
 						xsym->generated = TRUE;
 						xsym->used = TRUE;
 						xsym->defined = TRUE;
-						p_free( nname );	
+						p_free( nname );
 					}
 
 					if( sym != xsym )
@@ -481,7 +497,10 @@ void p_unique_charsets( PARSER* parser )
 
 				for( m = csets; m; m = m->next )
 				{
-					/* printf( "appending %s...\n", ((SYMBOL*)(m->pptr))->name ); */
+ 					/*
+ 					printf( "appending >%s< >%s<...\n",
+ 						sym->name, ((SYMBOL*)(m->pptr))->name );
+ 					*/
 					p = p_create_production( parser, sym );
 					p_append_to_production( p, m->pptr, (uchar*)NULL );
 				}
@@ -496,77 +515,6 @@ void p_unique_charsets( PARSER* parser )
 	
 	p_free( cmap );
 }
-
-#if 0 /* Not needed anymore, was just a test */
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_convert_keywords()
-	
-	Author:			Jan Max Meyer
-	
-	Usage:			Converts keyword strings to sequences of characters, and
-					replaces their calls.
-					
-	Parameters:		<type>		<identifier>		<description>
-	
-	Returns:		<type>							<description>
-  
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
-void p_convert_keywords( PARSER* parser )
-{
-	LIST*		l;
-	SYMBOL*		sym;
-	SYMBOL*		nt;
-	uchar*		nname;
-	uchar		kwc_name	[ 2 + 1 ];
-	uchar*		kwc_ptr;
-	uchar*		name_ptr;
-	LIST*		rhs			= (LIST*)NULL;
-	PROD*		p;
-
-	for( l = parser->symbols; l; l = l->next )
-	{
-		sym = (SYMBOL*)l->pptr;
-
-		if( sym->type == SYM_TERMINAL
-			&& sym->keyword )
-		{
-			for( name_ptr = sym->name; *name_ptr; name_ptr++ )
-			{
-				kwc_ptr = kwc_name;
-				
-				*(kwc_ptr++) = *name_ptr;
-				if( parser->p_cis_keywords )
-				{
-					if( *name_ptr >= 'A' && *name_ptr <= 'Z' )
-						*(kwc_ptr++) = *name_ptr + 32;
-					else if( *name_ptr >= 'a' && *name_ptr <= 'z' )
-						*(kwc_ptr++) = *name_ptr - 32;
-				}
-				*(kwc_ptr) = '\0';
-
-				rhs = list_push( rhs, p_get_symbol( parser, kwc_name, SYM_TERMINAL ) );
-			}
-
-			if( rhs )
-			{
-				nname = p_derivation_name( sym->name, P_REWRITTEN_KW );
-				p_free( sym->name );
-				sym->name = nname;
-				sym->type = SYM_NON_TERMINAL;
-				sym->keyword = FALSE;
-
-				p = p_create_production( parser, sym );
-				p->rhs = rhs;
-
-				rhs = (LIST*)NULL;
-			}
-		}
-	}
-}
-#endif
-
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_fix_precedences()
@@ -654,7 +602,6 @@ void p_fix_precedences( PARSER* parser )
 	}
 }
 
-
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_inherit_fixiations()
 	
@@ -716,7 +663,6 @@ void p_inherit_fixiations( PARSER* parser )
 
 	list_free( done );
 }
-
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_setup_single_goal()
@@ -818,5 +764,3 @@ void p_setup_single_goal( PARSER* parser )
 
 	p_append_to_production( p, parser->end_of_input, (uchar*)NULL );
 }
-
-
