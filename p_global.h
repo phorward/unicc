@@ -58,6 +58,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define ASSOC_NOASSOC			3
 
 /* Parser actions */
+#define ERROR					0	/* Force parse error */
 #define REDUCE					1 	/* Reduce 			0 1 */
 #define SHIFT					2 	/* Shift 			1 0 */
 #define SHIFT_REDUCE			3 	/* Shift-Reduce 	1 1 */
@@ -72,7 +73,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define GEN_WILD_PREFIX			"@@"
 
 /* Phorward UniCC parser generator version number */
-#define UNICC_VERSION			"0.27.12dev"
+#define UNICC_VERSION			"0.27.14dev"
 
 /* Default target language */
 #define UNICC_DEFAULT_LNG		"C"
