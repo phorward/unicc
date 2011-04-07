@@ -52,14 +52,14 @@ void p_undef_or_unused( PARSER* parser )
 		sym = l->pptr;
 		if( sym->generated == FALSE && sym->defined == FALSE )
 		{
-			p_error( (sym->type == SYM_NON_TERMINAL ) ?
+			p_error( parser, (sym->type == SYM_NON_TERMINAL ) ?
 				ERR_UNDEFINED_NONTERM : ERR_UNDEFINED_TERM, ERRSTYLE_FATAL,
 					sym->name );
 		}
 		
 		if( sym->generated == FALSE && sym->used == FALSE )
 		{			
-			p_error( (sym->type == SYM_NON_TERMINAL ) ?
+			p_error( parser, (sym->type == SYM_NON_TERMINAL ) ?
 				ERR_UNUSED_NONTERM : ERR_UNUSED_TERM, ERRSTYLE_WARNING,
 					sym->name );
 		}
@@ -67,15 +67,80 @@ void p_undef_or_unused( PARSER* parser )
 }
 
 /* -FUNCTION--------------------------------------------------------------------
-	Function:		p_try_to_parse()
+	Function:		p_nfa_transition_on_ccl()
 	
 	Author:			Jan Max Meyer
 	
-	Usage:			Tries to parse a string from a given state; This function
-					is internally used by p_keyword_anomalies() to find out
-					if a keyword can even be recognized by a grammar construct
-					of the language.
+	Usage:			This function is required to test if a given character
+					class will be consumed by a NFA machine state.
 					
+	Parameters:		pregex_nfa*		nfa				The NFA to work on.
+					LIST*			res				Defines the closure set
+													of NFA states required 
+													for the next transition.
+													(LIST*)NULL causes the
+													NFA to be startet from
+													initial state.
+					int*			accept			Return pointer for the
+													accepting ID of the
+													NFA.
+					CCL				check_with		Character-class to test
+													transitions on.
+	
+	Returns:		LIST*							The result of the
+													transition on the given
+													character class, (LIST*)NULL
+													if there is no transition.
+  
+	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	Date:		Author:			Note:
+----------------------------------------------------------------------------- */
+static LIST* p_nfa_transition_on_ccl(
+	pregex_nfa* nfa, LIST* res, int* accept, CCL check_with )
+{
+	CCL		i;
+	pchar	ch;
+	LIST*	tr;
+	LIST*	ret_res	= (LIST*)NULL;
+
+	if( !res )
+		res = list_push( (LIST*)NULL, list_access( nfa->states ) );
+	
+	res = pregex_nfa_epsilon_closure( nfa, res, accept, (int*)NULL );
+
+	for( i = check_with; !ccl_end( i ); i++ )
+	{
+		/*
+			TODO:
+			This may be the source for large run time latency.
+			The way chosen by pregex/dfa.c should be used if necessary
+			somewhere in future.
+		*/
+		for( ch = i->begin; ch <= i->end; ch++ )
+		{
+			tr = list_dup( res );
+			if( ( tr = pregex_nfa_move( nfa, tr, ch, ch ) ) )
+				ret_res = list_union( ret_res, tr );
+
+			list_free( tr );
+		}
+	}
+
+	list_free( res );
+	return ret_res;
+}
+
+/* -FUNCTION--------------------------------------------------------------------
+	Function:		p_nfa_matches_parser()
+	
+	Author:			Jan Max Meyer
+	
+	Usage:			Tries to parse along an NFA state machine using character
+					class terminals from a given LALR(1) state. It should prove
+					if the grammar is capable to match the string the regular
+					expression matches. It is used for the regex anomaly
+					detection.
+	
 	Parameters:		PARSER*		parser		Pointer to the parser information
 											structure.
 					uchar*		str			String to be recognized (the key-
@@ -92,39 +157,42 @@ void p_undef_or_unused( PARSER* parser )
 	06.03.2008	Jan Max Meyer	Changes on the algorithm because of new
 								SHIFT_REDUCE-transitions. They are either
 								reduces.
+	30.01.2011	Jan Max Meyer	Renamed to p_nfa_matches_parser(), the
+								function now tries to parse along a NFA
+								state machine which must not have its
+								origin in a keyword terminal.
 ----------------------------------------------------------------------------- */
-BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
+static BOOLEAN p_nfa_matches_parser(
+	PARSER* parser, pregex_nfa* nfa, LIST* start_res, int start )
 {
-	int stack[ 1024 ];
-	pchar sym;
-	int act;
-	int idx;
-	int error;
-	int tos = 0;
-	PROD* rprod;
-	STATE* st;
-	TABCOL* col;
-	LIST* l;
+	int		stack[ 1024 ];
+	pchar	sym;
+	int		act;
+	int		accept;
+	int		idx;
+	int		error;
+	int		tos 			= 0;
+	PROD*	rprod;
+	STATE*	st;
+	TABCOL*	col;
+	LIST*	l;
+	LIST*	res;
 
+	/*
+		TODO:
+		This part of UniCC is programmed very rude, should be
+		changed somewhere in the future. But for now, it does
+		its job.
+	*/
 	error = list_count( parser->productions ) * -1;
 	
-	if( ( st = list_getptr( parser->lalr_states, start ) ) )	
+	if( ( st = list_getptr( parser->lalr_states, start ) ) )
 		stack[ tos++ ] = st->derived_from->state_id;
 	else
 		stack[ tos++ ] = start;
 	
 	stack[ tos ] = start;
-#ifdef UNICODE
-	sym = u8_char( str );
-	str += u8_seqlen( str );
-#else
-	sym = *(str++); 
-#endif
-	
-	/*
-	fprintf( stderr, "STATE %d\n", start );
-	*/
-	
+
 	do
 	{
 		act = 0;
@@ -136,21 +204,31 @@ BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 			col = (TABCOL*)l->pptr;
 			if( col->symbol->type == SYM_CCL_TERMINAL )
 			{
-				if( p_ccl_test_char( col->symbol->ccl, sym,
-						parser->p_cis_keywords ) )
+				res = list_dup( start_res );
+
+				if( ( res = p_nfa_transition_on_ccl( nfa, res,
+						&accept, col->symbol->ccl ) ) )
 				{
 					act = col->action;
 					idx = col->index;
 				}
 
-				if( act )
+				if( act || accept != REGEX_ACCEPT_NONE )
 					break;
+
+				list_free( res );
 			}
 		}
 		/*
-		fprintf( stderr, "state = %d, sym = >%c< act = %d idx = %d\n",
-			st->state_id, sym, act, idx );
+		fprintf( stderr, "state = %d, act = %d idx = %d accept = %d res = %p\n",
+			st->state_id, act, idx, accept, res );
 		*/
+
+		list_free( start_res );
+		start_res = res;
+
+		if( accept != REGEX_ACCEPT_NONE )
+			break;
 
 		/* Error */
 		if( act == 0 )
@@ -158,22 +236,12 @@ BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 
 		/* Shift */		
 		if( act & SHIFT )
-		{
 			stack[ ++tos ] = idx;
-
-#ifdef UNICODE
-			sym = u8_char( str );
-			str += u8_seqlen( str );
-#else
-			sym = *(str++); 
-#endif
-		}
 
 		/* Reduce */
 		while( act & REDUCE )
 		{
 			rprod = (PROD*)list_getptr( parser->productions, idx );
-
 			/*
 			fprintf( stderr, "tos = %d, reducing production %d, %d\n",
 				tos, idx, list_count( rprod->rhs ) );
@@ -181,6 +249,10 @@ BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 			*/
 
 			tos -= list_count( rprod->rhs );
+
+			/*
+			fprintf( stderr, "tos %d\n", tos );
+			*/
 			tos++;
 			
 			st = list_getptr( parser->lalr_states, stack[ tos - 1 ] );
@@ -201,38 +273,32 @@ BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 				return FALSE;
 		}
 	}
-	while( sym );
+	while( accept == REGEX_ACCEPT_NONE );
 
+	list_free( res );
 	return TRUE;
 }
 
 /* -FUNCTION--------------------------------------------------------------------
-	Function:		p_keyword_anomalies()
+	Function:		p_regex_anomalies()
 	
 	Author:			Jan Max Meyer
 	
-	Usage:			Checks for keyword anomalies in the resulting parse tables.
-					Keyword anomalies occur, when the parser can reduce both
-					by a keyword and by a character, so it decides for the key-
-					word. Under some circumstances, the token to be shifted is
-					NOT the keyword it was reduced for, and the parse fails.
+	Usage:			Checks for regex anomalies in the resulting parse tables.
+					Such regex anomalies occur, when the parser can reduce both
+					by a regular expression based terminal and by a character,
+					so it decides for the regular expression.
+					
+					Under some circumstances, the token to be shifted is
+					NOT the regex it was reduced for, and the parse fails.
 
 					A demonstation grammar for a keyword anomaly is the
 					following:
 
-					start -> a;
+					start$ -> a;
 					a -> b "PRINT";
 					b -> c | '[' b ']';
 					c -> 'A-Z' | c 'A-Z';
-
-
-					and even this one
-
-					language$ 	->	p;
-					p ->	ident "PRINT" ident;
-					ident -> 'A-Z' ident
-							| 'A-Z';
-
 
 					At the input "[HALLOPRINT]", which is valid, the parser
 					will fail after successfully parsing "[HALLO", expecting a 
@@ -241,7 +307,7 @@ BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 	Parameters:		PARSER*		parser		Pointer to the parser information
 											structure.
 	
-	Returns:		BOOLEAN					TRUE if keyword anomalies where
+	Returns:		BOOLEAN					TRUE if regex anomalies where
 											found, FALSE if not.
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -252,8 +318,11 @@ BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 	12.06.2010	Jan Max Meyer	Changed to new regular expression library
 								functions, which can handle entire sets of
 								characters from 0x0 - 0xFFFF.
+	31.01.2011	Jan Max Meyer	Renamed the function to p_regex_anomalies()
+								because not only keywords are tested now, even
+								entire regular expressions.
 ----------------------------------------------------------------------------- */
-BOOLEAN p_keyword_anomalies( PARSER* parser )
+BOOLEAN p_regex_anomalies( PARSER* parser )
 {
 	STATE*		st;
 	LIST*		l;
@@ -269,6 +338,10 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 	int			cnt;
 	BOOLEAN		found;
 
+	LIST*		res			= (LIST*)NULL;
+	pregex_nfa*	nfa;
+	int			accept;
+
 	/*
 		For every keyword, try to find a character class beginning with the
 		same character as the keyword. Then, try to recognize the keyword
@@ -283,7 +356,7 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 		for( m = st->actions, cnt = 0; m; m = m->next )
 		{
 			col = (TABCOL*)m->pptr;
-			if( col->action == REDUCE )
+			if( col->action & REDUCE )
 				cnt++;
 		}
 
@@ -291,24 +364,26 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 		{
 			col = (TABCOL*)m->pptr;
 
-			/* Keyword to be reduced? */
-			if( col->symbol->keyword && col->action == REDUCE )
+			/* Regular expression to be reduced? */
+			if( col->symbol->type == SYM_REGEX_TERMINAL
+					&& col->action & REDUCE )
 			{
 				/*
 					Table columns not derived from the kernel set
 					of the state are ignored
 				*/
-				if( col->derived_from
-					&& list_find( st->epsilon,
-							col->derived_from ) >= 0 )
+				if( col->derived_from && list_find( st->epsilon,
+						col->derived_from ) >= 0 )
 					continue;
 
+				nfa = &( col->symbol->nfa );
+
 				/*
-					p_try_to_parse() can either be called here; But to be
-					sure, we have a try if there are shifts on the same
-					character, and then we try to parse the keyword using
+					p_nfa_matches_parser() can either be called here;
+					But to be sure, we have a try if there are shifts on
+					the same character, and then we try to parse the using
 					the existing parse tables. This will even be more
-					faster (I think ;)).
+					faster, I think.
 				*/
 				for( n = st->actions; n; n = n->next )
 				{
@@ -326,23 +401,25 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 							keyword. This is not the problem if there is only
 							one reduce, but if there are more, output a warning!
 						*/
-						if( p_ccl_test_char( ccol->symbol->ccl,
-#if UTF8
-								u8_char( col->symbol->name ),
-#else
-								*( col->symbol->name ),
-#endif
-								parser->p_cis_keywords ) )
+						if( ( res = p_nfa_transition_on_ccl(
+									nfa, (LIST*)NULL, &accept,
+										ccol->symbol->ccl ) ) )
 						{
-							if( p_try_to_parse( parser, col->symbol->name,
+							/*
+							printf( "state %d\n", st->state_id );
+							p_dump_item_set( stderr, (char*)NULL, st->kernel );
+							p_dump_item_set( stderr, (char*)NULL, st->epsilon );
+							getchar();
+							*/
+							if( p_nfa_matches_parser( parser, nfa, res,
 									st->state_id ) && cnt > 1 )
-							{							
+							{
 								/*
 									At this point, we have a candidate for a
-									keyword abiguity anomaly.. now we check
-									out all positions where the left-hand side
-									of the reduced production appears in...
-									of there is no keyword to shift in the
+									regex anomaly.. now we check out all
+									positions where the left-hand side of the
+									reduced production appears in...
+									if there is no keyword to shift in the
 									FIRST-sets of following symbols, report
 									this anomaly!
 								*/								
@@ -379,7 +456,7 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 														col->symbol ) == -1 
 													&& !sym->nullable )
 												{
-													p_error(
+													p_error( parser,
 														ERR_KEYWORD_ANOMALY,
 														ERRSTYLE_WARNING |
 															ERRSTYLE_STATEINFO,
@@ -388,41 +465,19 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 													
 													found = TRUE;
 													break;
-												}												
+												}
 											}
 											while( sym && sym->nullable );
 										}
 									}									
 								}
-								
-#if 0
-								/*
-									Just a test...
-								*/
-								for( o = st->kernel; o; o = list_next( o ) )
-								{
-									it = (ITEM*)list_access( o );
-									if( it->next_symbol &&
-										it->next_symbol->nullable )
-										break;
-								}
-								
-								if( !o )
-								{
-									
-									p_error( ERR_KEYWORD_ANOMALY,
-										ERRSTYLE_WARNING | ERRSTYLE_STATEINFO,
-											st, ccol->symbol->name,
-												col->symbol->name );
-								}
-#endif
 							}
 						}
 					}
 				}
 			}
 		}
-	}
+	} /* This is stupid... */
 
 	return FALSE;
 }
@@ -463,7 +518,7 @@ BOOLEAN p_stupid_productions( PARSER* parser )
 		if( list_count( p->rhs ) == 1 &&
 				(SYMBOL*)( p->rhs->pptr ) == p->lhs )
 		{
-			p_error( ERR_CIRCULAR_DEFINITION,
+			p_error( parser, ERR_CIRCULAR_DEFINITION,
 				ERRSTYLE_WARNING | ERRSTYLE_PRODUCTION, p );
 			stupid = TRUE;
 		}
@@ -486,7 +541,7 @@ BOOLEAN p_stupid_productions( PARSER* parser )
 
 			if( possible )
 			{
-				p_error( ERR_EMPTY_RECURSION,
+				p_error( parser, ERR_EMPTY_RECURSION,
 					ERRSTYLE_WARNING | ERRSTYLE_PRODUCTION, p );
 				stupid = TRUE;
 			}
@@ -498,7 +553,7 @@ BOOLEAN p_stupid_productions( PARSER* parser )
 		{
 			p_rhs_first( &first_check, p->rhs );
 			if( list_count( first_check ) == 0 )
-				p_error( ERR_USELESS_RULE,
+				p_error( parser, ERR_USELESS_RULE,
 					ERRSTYLE_WARNING | ERRSTYLE_PRODUCTION, p );
 
 			first_check = list_free( first_check );
