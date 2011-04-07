@@ -11,7 +11,7 @@ You may use, modify and distribute this software under the terms and conditions
 of the Artistic License, version 2. Please see LICENSE for more information.
 ---------------------------------------------------------------------------- */
 
-#!model			context-sensitive ;
+#!mode			sensitive ;
 #!language		"C";
 
 /*
@@ -27,7 +27,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
  * 1. Don't use embedded productions - insert a new nonterminal for this
  * 2. Don't set precedence to productions
  * 3. Don't use long-string identifiers for symbols
- * 4. The #option-Feature is not supported
+ * 4. The #option-features are not supported
  *
  * Some other rules may be inserted here in future versions.
  */
@@ -274,14 +274,14 @@ grammar_spec$		->	fixed_directive_def* segment*
 fixed_directive_def	-> "#!" fixed_directive ';'
 					;
 
-fixed_directive		-> "model"				model_type
-
+fixed_directive		-> "mode"				mode_type
+					|  "model"				mode_type
 					| "language"		string
 						[*	
 							if( !( parser->p_language ) )
 								parser->p_language = p_strdup( strbuf );
 							else
-								p_error( ERR_DIRECTIVE_ALREADY_USED,
+								p_error( parser, ERR_DIRECTIVE_ALREADY_USED,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 										parser->filename, line, 
 											"!language" );
@@ -295,20 +295,20 @@ fixed_directive		-> "model"				model_type
 							if( universe > 0 )
 								parser->p_universe = universe;
 							else
-								p_error( ERR_INVALID_CHAR_UNIVERSE,
+								p_error( parser, ERR_INVALID_CHAR_UNIVERSE,
 									ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
 										parser->filename, line );
 						*]
 					;
 
-model_type			->	"context-sensitive"
-						[*	parser->p_model = MODEL_CONTEXT_SENSITIVE;	*]
+mode_type			->	"context-sensitive"
+						[*	parser->p_mode = MODE_SENSITIVE; *]
 					|	"sensitive"
-						[*	parser->p_model = MODEL_CONTEXT_SENSITIVE;	*]
+						[*	parser->p_mode = MODE_SENSITIVE; *]
 					| "context-insensitive"
-						[*	parser->p_model = MODEL_CONTEXT_INSENSITIVE;*]
+						[*	parser->p_mode = MODE_INSENSITIVE;*]
 					| "insensitive"
-						[*	parser->p_model = MODEL_CONTEXT_INSENSITIVE;*]
+						[*	parser->p_mode = MODE_INSENSITIVE;*]
 					;
 
 segment				->	code
@@ -318,14 +318,25 @@ segment				->	code
 
 unfixed_directive	->	'#' directive_parms
 					;
-/*
-@USER_DIR<uchar*>	!'\0"\'/ \t\n\r!'+ 
+
+@USERDEF<uchar*>	!'\0"\'/ \t\n\r!'+ 
 					[*
 						@@ = (uchar*)pmalloc( ( ( @< - @> ) + 1 )
 												* sizeof( uchar ) );
 						psprintf( @@, "%.*s", @< - @>, @> );
 					*];
-*/
+
+userparam			->	code
+					|	string
+					|	boolean
+						[*
+							if( !@boolean )
+								strbuf_append( '1' );
+							else
+								strbuf_append( '0' );
+						*]
+					|	[*	reset_strbuf(); *]
+					;
 
 directive_parms		-> "whitespaces" 	symbol_list				
 						[*	LIST* l;
@@ -338,10 +349,10 @@ directive_parms		-> "whitespaces" 	symbol_list
 								/* Do not allow nonterminal definitions here
 									in conext-free model */
 								if( s->type == SYM_NON_TERMINAL &&
-									parser->p_model !=
-										MODEL_CONTEXT_SENSITIVE )
+									parser->p_mode !=
+										MODE_SENSITIVE )
 								{
-									p_error( ERR_NONTERM_WS_NOT_ALLOWED,
+									p_error( parser, ERR_NONTERM_WS_NOT_ALLOWED,
 										ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
 												parser->filename, line,
 													s->name );
@@ -360,9 +371,9 @@ directive_parms		-> "whitespaces" 	symbol_list
 
 							/* Ouput a warning, if this definition
 								is effectless */
-							if( parser->p_model != MODEL_CONTEXT_SENSITIVE )
+							if( parser->p_mode != MODE_SENSITIVE )
 							{
-								p_error( ERR_NO_EFFECT_IN_MODEL,
+								p_error( parser, ERR_NO_EFFECT_IN_MODE,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 										parser->filename, line, "lexeme" );
 							}
@@ -384,9 +395,9 @@ directive_parms		-> "whitespaces" 	symbol_list
 
 							/* Ouput a warning, if this definition
 								is effectless */
-							if( parser->p_model != MODEL_CONTEXT_SENSITIVE )
+							if( parser->p_mode != MODE_SENSITIVE )
 							{
-								p_error( ERR_NO_EFFECT_IN_MODEL,
+								p_error( parser, ERR_NO_EFFECT_IN_MODE,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 										parser->filename, line, "fixate" );
 							}
@@ -438,7 +449,7 @@ directive_parms		-> "whitespaces" 	symbol_list
 						[*	if( !( parser->p_def_action ) )
 								parser->p_def_action = p_strdup( strbuf );
 							else
-								p_error( ERR_DIRECTIVE_ALREADY_USED,
+								p_error( parser, ERR_DIRECTIVE_ALREADY_USED,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 										parser->filename, line,
 											"default epsilon action" );
@@ -448,7 +459,7 @@ directive_parms		-> "whitespaces" 	symbol_list
 						[*	if( !( parser->p_def_action_e ) )
 								parser->p_def_action_e = p_strdup( strbuf );
 							else
-								p_error( ERR_DIRECTIVE_ALREADY_USED,
+								p_error( parser, ERR_DIRECTIVE_ALREADY_USED,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 										parser->filename, line,
 											"default epsilon action" );
@@ -459,7 +470,7 @@ directive_parms		-> "whitespaces" 	symbol_list
 								parser->p_def_type = p_create_vtype(
 									parser, (uchar*)@type );
 							else
-								p_error( ERR_DIRECTIVE_ALREADY_USED,
+								p_error( parser, ERR_DIRECTIVE_ALREADY_USED,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 										parser->filename, line,
 											"default value type" );
@@ -472,18 +483,18 @@ directive_parms		-> "whitespaces" 	symbol_list
 							if( !( parser->end_of_input ) )
 								parser->end_of_input = @2;
 							else
-								p_error( ERR_DIRECTIVE_ALREADY_USED,
+								p_error( parser, ERR_DIRECTIVE_ALREADY_USED,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 										parser->filename, line,
 											"end of input" );
 						*]
 
-					| "lexeme separation" boolean
+					| "lexeme separation" boolean_opt
 						[*	/* Ouput a warning, if this definition
 								is effectless */
-							if( parser->p_model != MODEL_CONTEXT_SENSITIVE )
+							if( parser->p_mode != MODE_SENSITIVE )
 							{
-								p_error( ERR_NO_EFFECT_IN_MODEL,
+								p_error( parser, ERR_NO_EFFECT_IN_MODE,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 										parser->filename, line,
 											"lexem separation" );
@@ -492,11 +503,11 @@ directive_parms		-> "whitespaces" 	symbol_list
 								parser->p_lexem_sep = !@2;
 						*]
 
-					| "case insensitive keywords"	boolean
+					| "case insensitive keywords"	boolean_opt
 						[*	parser->p_cis_keywords = !@2;	*]
 
-					| "reserve keywords"			boolean
-						[*	parser->p_reserve_kw = !@2;		*]
+					| "reserve regex"				boolean_opt
+						[*	parser->p_reserve_regex = !@2;		*]
 
 					| "prologue"					code
 						[*	parser->p_header = p_str_append(
@@ -510,20 +521,22 @@ directive_parms		-> "whitespaces" 	symbol_list
 						[*	parser->p_pcb = p_str_append(
 								parser->p_pcb, strbuf, FALSE );	*]
 
-					| "option" identifier_cpy:key string
+					| "option"? @USERDEF:key userparam
 						[*
 							set_option( &( parser->options ),
 								@key, strbuf );
 
-							strbuf = (char*)NULL;
 							pfree( @key );
+							strbuf = (char*)NULL;
 						*]
+					;
 
+boolean_opt<BOOLEAN>->	boolean
+					|					[*	@@ = FALSE; *]
 					;
 
 boolean<BOOLEAN>	->	"on"			[*	@@ = FALSE; 	*]
 					| 	"off"			[*	@@ = TRUE; 		*]
-					|					[*	@@ = FALSE; 	*]
 					;
 
 symbol_list<LIST*>	->	symbol_list sym
@@ -575,7 +588,7 @@ regex_sym<SYMBOL*>	-> identifier
 										
 							if( @@->defined )
 							{
-								p_error( ERR_DOUBLE_TERMINAL_DEF,
+								p_error( parser, ERR_DOUBLE_TERMINAL_DEF,
 									ERRSTYLE_FATAL, @@->name );
 							}
 
@@ -631,7 +644,7 @@ definition			->	lhs:primary
 							{
 								if( parser->goal )
 								{
-									p_error( ERR_MULTIPLE_GOAL_DEF,
+									p_error( parser, ERR_MULTIPLE_GOAL_DEF,
 										ERRSTYLE_FATAL,
 											parser->goal->name );
 								}
@@ -643,7 +656,7 @@ definition			->	lhs:primary
 							}
 						*]
 
-					| '@' alt_regex_sym type regex sym_option* code_opt
+					| '@' alt_regex_sym type regex code_opt sym_option* 
 					
 						[*
 							SYMBOL*	primary;
@@ -684,7 +697,7 @@ definition			->	lhs:primary
 						*]
 					;
 
-sym_option			->	'#' "option" identifier_cpy:key string
+sym_option			->	'#' "option"? @USERDEF:key userparam
 
 						[*
 							set_option( &( current_sym->options ), @key,
@@ -708,7 +721,7 @@ productions<LIST*>	->	productions '|' production
 						[*	@@ = list_push( (LIST*)NULL, @1 ); *]
 					;
 					
-production<PROD*>	->	line_number rhs_opt:rhs prod_directives* code_opt
+production<PROD*>	->	line_number rhs_opt:rhs code_opt prod_directives*
 						[*
 							@rhs->line = @line_number;
 
@@ -736,7 +749,7 @@ prod_directives<int>
 
 						[*	current_prod->prec = @terminal->prec; *]
 
-					|	'#' "option" identifier_cpy:key string
+					|	'#' "option"? @USERDEF:key userparam
 
 						[* 	set_option( &( current_prod->options ),
 								@key, strbuf );
@@ -1148,6 +1161,7 @@ type_str		->	type_str !'>'
 				|	[* 	reset_strbuf(); *]
 				;
 
+/*
 identifier_cpy<uchar*>
 				->	identifier
 					[*
@@ -1155,6 +1169,7 @@ identifier_cpy<uchar*>
 						reset_strbuf();
 					*]
 				;
+*/
 
 identifier		->	identifier_start identifier_follow
 				;
@@ -1193,7 +1208,7 @@ code			->	code_begin inner_code_opt "*]"
 					[*
 						if( !parser->p_language )
 						{
-							p_error(
+							p_error( parser,
 								ERR_NO_TARGET_LANG_SUPPLY,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 										parser->filename, last_code_begin );
