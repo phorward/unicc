@@ -149,10 +149,8 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 	int				i;
 	int				off;
 	uchar*			last;
-	uchar*			ret		= (uchar*)NULL;
 	uchar*			chk;
 	uchar*			tmp;
-	uchar*			att;
 	LIST*			l;
 	LIST*			m;
 	LIST*			rhs			= p->rhs;
@@ -573,48 +571,29 @@ void p_build_xml( PARSER* parser )
 	XML_T			state;
 	XML_T			action;
 	XML_T			go_to;
-	XML_T			kernel;
-	XML_T			epsilon;
 	
 	XML_T			lex_tab;
 	XML_T			lex;
-	XML_T			trans;
 
 	XML_T			code;
 	XML_T			attrib;
 	XML_T			option;
-
-	XML_T			errors;
 
 	uchar*			transtype;
 	
 	FILE* 			out					= (FILE*)NULL;
 	uchar*			outname;
 
-	int				max_action			= 0;
-	int				max_goto			= 0;
-	int				max_dfa_idx			= 0;
-	int				max_dfa_accept		= 0;
-	int				max_symbol_name		= 0;
-	int				column;
-	int				row;
 	int				st_lex;
 	LIST*			l;
 	LIST*			m;
-	LIST*			n;
 	pregex_dfa*		dfa;
-	pregex_dfa_st*	dfa_st;
-	pregex_dfa_tr*	dfa_ent;
 	uchar*			tmp;
 	uchar*			act;
 	SYMBOL*			sym;
 	STATE*			st;
 	TABCOL*			col;
 	PROD*			p;
-	PROD*			goalprod;
-	VTYPE*			vt;
-	ITEM*			item;
-	CCL				c;
 	int				i;
 	int				j;
 	BOOLEAN			is_default_code;
