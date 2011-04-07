@@ -3,10 +3,10 @@
 <!--
 UniCC LALR(1) Parser Generator
 Copyright (C) 2006-2009 by Phorward Software Technologies, Jan Max Meyer
-http://www.phorward-software.com ++ mail@phorward-software.com
+http://www.phorward-software.com ++ mail<AT>phorward<DASH>software<DOT>com
 
 File:		C.xml
-Version:	1.6.1
+Version:	1.6.3
 Author:		Jan Max Meyer
 Usage:		Target language template for the C programming language
 
@@ -348,7 +348,7 @@ Some general things you have to know:
 	</productions>
 	<code_localization>#line @@line "@@filename"
 </code_localization>
-	<driver>/*
+	<file filename="@@basename.c">/*
  * Parser:		@@name
  * Version:		@@version
  * Copyright:	@@copyright
@@ -395,10 +395,6 @@ Some general things you have to know:
 #define UNICC_NO_INPUT_BUFFER	0
 #endif
 
-#ifndef UNICC_GETINPUT
-#define UNICC_GETINPUT			getchar()
-#endif
-
 #ifndef UNICC_MALLOCSTEP
 #define UNICC_MALLOCSTEP		128
 #endif
@@ -412,56 +408,28 @@ Some general things you have to know:
 #define UNICC_STATIC			static
 #endif
 
+#ifndef UNICC_GETINPUT
+/*
+UNICC_STATIC char @@prefix_getchar( void )
+{
+	char	ch;
+	ch = getchar();
+	
+	fprintf( stderr, "ch = &gt;%d&lt; %d\n", ch, ch == -1 );
+	return ( ch == -1 ? @@eof : ch );
+}
+*/
+
+#define UNICC_GETINPUT			getchar()
+#endif
+
 #ifdef UNICC_PARSER
 #undef UNICC_PARSER
 #endif
-#define UNICC_PARSER "@@prefix" "debug"
+#define UNICC_PARSER			"@@prefix" "debug"
 
-/*sephead:begin*/
-/* Value Types */
-@@value-type-definition
-
-/* Parser Control Block */
-typedef struct
-{
-	/* Stack */
-	int				stack	[ 1024 ];
-	int*			tos;
-	/* Value Stack */
-	@@prefix_vtype	vstack	[ 1024 ];
-	@@prefix_vtype*	vtos;
-	
-	/* Values */
-	@@prefix_vtype	ret;
-	@@prefix_vtype	test;
-	
-	/* State */
-	int				act;
-	int				idx;
-	
-	/* Lookahead */
-	char*			buf;
-	char*			bufend;
-	char*			bufsize;
-
-	int				sym;
-	unsigned int	len;
-	
-	/* Error handling */
-	int				error_delay;
-	int				error_count;
-	
-	unsigned int	line;
-	
-	@@pcb
-} @@prefix_pcb;
-/*sephead:end*/
-
-/*
-#ifndef @@prefix_pcb
-#define @@prefix_pcb struct @@prefix_PCB
-#endif
-*/
+/* Include parser control block definitions */
+#include "@@basename.h"
 
 /* Action Table */
 UNICC_STATIC int @@prefix_act[ @@number-of-states ][ @@deepest-action-row * 3 + 1 ] =
@@ -642,6 +610,7 @@ UNICC_STATIC char @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offset )
 			sprintf( pcb->bufend++, "%c", ch );
 		}
 		*/
+		
 		sprintf( pcb->bufend++, "%c", UNICC_GETINPUT );
 	}
 
@@ -1208,5 +1177,48 @@ int main( int argc, char** argv )
 	return 0;
 }
 #endif
-</driver>
+</file>
+<file filename="@@basename.h">#ifndef @@basename_h
+#define @@basename_h
+	
+/* Value Types */
+@@value-type-definition
+
+/* Parser Control Block */
+typedef struct
+{
+	/* Stack */
+	int				stack	[ 1024 ];
+	int*			tos;
+	/* Value Stack */
+	@@prefix_vtype	vstack	[ 1024 ];
+	@@prefix_vtype*	vtos;
+	
+	/* Values */
+	@@prefix_vtype	ret;
+	@@prefix_vtype	test;
+	
+	/* State */
+	int				act;
+	int				idx;
+	
+	/* Lookahead */
+	char*			buf;
+	char*			bufend;
+	char*			bufsize;
+
+	int				sym;
+	unsigned int	len;
+	
+	/* Error handling */
+	int				error_delay;
+	int				error_count;
+	
+	unsigned int	line;
+	
+	@@pcb
+} @@prefix_pcb;
+
+#endif
+</file>
 </generator>
