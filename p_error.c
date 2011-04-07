@@ -54,10 +54,10 @@ uchar* error_txt[128] =
 	"Empty recursion",
 	"Useless production, no terminals in expansion",
 	/* semantic warnings and errors */
-	"Directive \'%s\' takes no effect in context-insensitive model",
-	"Nonterminal whitespace \'%s\' is not allowed in context-insensitive model",
+	"Use of effectless directive \'%s\' in insensitive mode",
+	"Nonterminal whitespace \'%s\' is not allowed in insensitive mode",
 	"Invalid value for character universe",
-	"Character-class overlap in context-insensitive model with \'%s\'",
+	"Character-class overlap in insensitive mode with \'%s\'",
 	"Action references to undefined right-hand side symbol '%s'",
 	"Semantic code will be ignored: No target language specified.",
 	"Multiple use of directive '#%s' ignored; It has already been defined."
@@ -80,45 +80,96 @@ uchar*				progname;
 	
 	Usage:			Prints an error message.
 					
-	Parameters:		int			err_id				Error ID
-					int			err_style			Error message behavior
-					...								Additional parameters depending
-													on error message text and
-													error message style.
+	Parameters:		PARSER*		parser			Parser information structure
+					int			err_id			Error ID
+					int			err_style		Error message behavior
+					...							Additional parameters depending
+												on error message text and
+												error message style.
 
 	Returns:		void
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-void p_error( int err_id, int err_style, ... )
+void p_error( PARSER* parser, int err_id, int err_style, ... )
 {
 	va_list		params;
 	uchar*		filename 	= (uchar*)NULL;
 	int			line 		= 0;
-	STATE*		state;
-	PROD*		p;
-	SYMBOL*		s;
+	STATE*		state		= (STATE*)NULL;
+	PROD*		p			= (PROD*)NULL;
+	SYMBOL*		s			= (SYMBOL*)NULL;
+	XML_T		messages;
+	XML_T		errmsg		= (XML_T)NULL;
+
 	BOOLEAN		do_print	= TRUE;
+
+	uchar*		tmp;
 	
 	va_start( params, err_style );
 
 	if( err_style & ERRSTYLE_WARNING && no_warnings )
 		do_print = FALSE;
+
+	if( parser->gen_xml )
+	{
+		/* 
+			This XML library is a cramp...
+			it's not possible to move a root-tag,
+			so it's required to create a dummy-root
+			that is never used.
+		*/
+		if( !parser->err_xml )
+		{
+			parser->err_xml = xml_new( "dummy" );
+			messages = xml_add_child( parser->err_xml, "messages", 0 );
+		}
+		else
+			messages = xml_child( parser->err_xml, "messages" );
+
+		if( err_style & ERRSTYLE_FATAL )
+			errmsg = xml_add_child( messages, "error", 0 );
+		else
+			errmsg = xml_add_child( messages, "warning", 0 );
+
+		xml_set_int_attr( errmsg, "errorcode", err_id );
+	}
 	
 	if( err_style & ERRSTYLE_FILEINFO )
 	{
 		filename = va_arg( params, uchar* );		
 		line = va_arg( params, int );
+
+		if( errmsg )
+		{
+			xml_set_attr_d( errmsg, "filename", filename );
+			xml_set_int_attr( errmsg, "line", line );
+		}
 	}
 	else if( err_style & ERRSTYLE_STATEINFO )
+	{
 		state = va_arg( params, STATE* );
+
+		if( errmsg )
+			xml_set_int_attr( errmsg, "state", state->state_id );
+	}
 	else if( err_style & ERRSTYLE_PRODUCTION )
+	{
 		p = va_arg( params, PROD* );
+
+		if( errmsg )
+			xml_set_int_attr( errmsg, "production", p->id );
+	}
 	
 	/* NO ELSE IF!! */
 	if( err_style & ERRSTYLE_SYMBOL )
+	{
 		s = va_arg( params, SYMBOL* );
+
+		if( errmsg )
+			xml_set_int_attr( errmsg, "symbol", s->id );
+	}
 
 	if( do_print )
 	{
@@ -169,9 +220,25 @@ void p_error( int err_id, int err_style, ... )
 		}
 	}
 
+	/* Halt on memory error! */
+	if( err_id == ERR_MEMORY_ERROR )
+	{
+		va_end( params );
+		exit( 1 );
+	}
+
+	if( errmsg )
+	{
+		/* Unfortunatelly, this must be done this ugly way... */
+		pvasprintf( &tmp, error_txt[ err_id ], params );
+		xml_set_txt_d( errmsg, tmp );
+		p_free( tmp );
+	}
+
 	va_end( params );
 
 	if( do_print )
 		first_progress = FALSE;
+
 }
 
