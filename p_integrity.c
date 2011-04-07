@@ -34,8 +34,8 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 	Usage:			Checks for undefined but called, and/or defined but
 					uncalled symbols.
 					
-	Parameters:		PARSER*		parser			Pointer to the parser information
-												structure.
+	Parameters:		PARSER*		parser		Pointer to the parser information
+											structure.
 	
 	Returns:		void
   
@@ -76,15 +76,16 @@ void p_undef_or_unused( PARSER* parser )
 					if a keyword can even be recognized by a grammar construct
 					of the language.
 					
-	Parameters:		PARSER*		parser			Pointer to the parser information
-												structure.
-					uchar*		str				String to be recognized (the key-
-												word)
-					int			start			The start state; This is the state
-												where parsing is immediatelly stated.
+	Parameters:		PARSER*		parser		Pointer to the parser information
+											structure.
+					uchar*		str			String to be recognized (the key-
+											word)
+					int			start		The start state; This is the state
+											where parsing is immediatelly
+											stated.
 	
-	Returns:		TRUE if the parse succeeded (when str was completely absorbed),
-					FALSE else.
+	Returns:		TRUE if the parse succeeded (when str was completely
+					absorbed), FALSE else.
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
@@ -133,7 +134,7 @@ BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 		for( l = st->actions; l; l = l->next )
 		{
 			col = (TABCOL*)l->pptr;
-			if( !( col->symbol->keyword ) )
+			if( col->symbol->type == SYM_CCL_TERMINAL )
 			{
 				if( p_ccl_test_char( col->symbol->ccl, sym,
 						parser->p_cis_keywords ) )
@@ -174,7 +175,8 @@ BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 			rprod = (PROD*)list_getptr( parser->productions, idx );
 
 			/*
-			fprintf( stderr, "tos = %d, reducing production %d, %d\n", tos, idx, list_count( rprod->rhs ) );
+			fprintf( stderr, "tos = %d, reducing production %d, %d\n",
+				tos, idx, list_count( rprod->rhs ) );
 			p_dump_production( stderr, rprod, FALSE, FALSE );
 			*/
 
@@ -215,7 +217,8 @@ BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 					word. Under some circumstances, the token to be shifted is
 					NOT the keyword it was reduced for, and the parse fails.
 
-					A demonstation grammar for a keyword anomaly is the following:
+					A demonstation grammar for a keyword anomaly is the
+					following:
 
 					start -> a;
 					a -> b "PRINT";
@@ -235,17 +238,20 @@ BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 					will fail after successfully parsing "[HALLO", expecting a 
 					"]".
 					
-	Parameters:		PARSER*		parser			Pointer to the parser information
-												structure.
+	Parameters:		PARSER*		parser		Pointer to the parser information
+											structure.
 	
-	Returns:		BOOLEAN						TRUE if keyword anomalies where
-												found, FALSE if not.
+	Returns:		BOOLEAN					TRUE if keyword anomalies where
+											found, FALSE if not.
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 	06.03.2008	Jan Max Meyer	Changes on the algorithm because of new
 								SHIFT_REDUCE-transitions. They are either
 								reduces.
+	12.06.2010	Jan Max Meyer	Changed to new regular expression library
+								functions, which can handle entire sets of
+								characters from 0x0 - 0xFFFF.
 ----------------------------------------------------------------------------- */
 BOOLEAN p_keyword_anomalies( PARSER* parser )
 {
@@ -286,8 +292,7 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 			col = (TABCOL*)m->pptr;
 
 			/* Keyword to be reduced? */
-			if( col->symbol->type == SYM_KW_TERMINAL
-				&& col->action == REDUCE )
+			if( col->symbol->keyword && col->action == REDUCE )
 			{
 				/*
 					Table columns not derived from the kernel set
@@ -359,23 +364,27 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 											do
 											{
 												q = list_next( q );
-												if( !( sym = (SYMBOL*)list_access( q ) ) )
+												if( !( sym = (SYMBOL*)
+														list_access( q ) ) )
 													break;
 												/*
 												fprintf( stderr, "sym = " );
 												p_print_symbol( stderr, sym );
 												fprintf( stderr, " %d %d\n",
 													list_find( sym->first,
-														col->symbol ), sym->nullable );
+														col->symbol ),
+															sym->nullable );
 												*/
 												if( list_find( sym->first,
 														col->symbol ) == -1 
 													&& !sym->nullable )
 												{
-													p_error( ERR_KEYWORD_ANOMALY,
-														ERRSTYLE_WARNING | ERRSTYLE_STATEINFO,
-															st, ccol->symbol->name,
-																col->symbol->name );
+													p_error(
+														ERR_KEYWORD_ANOMALY,
+														ERRSTYLE_WARNING |
+															ERRSTYLE_STATEINFO,
+														st, ccol->symbol->name,
+															col->symbol->name );
 													
 													found = TRUE;
 													break;
@@ -385,8 +394,6 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 										}
 									}									
 								}
-								
-								
 								
 #if 0
 								/*
@@ -405,7 +412,8 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 									
 									p_error( ERR_KEYWORD_ANOMALY,
 										ERRSTYLE_WARNING | ERRSTYLE_STATEINFO,
-											st, ccol->symbol->name, col->symbol->name );
+											st, ccol->symbol->name,
+												col->symbol->name );
 								}
 #endif
 							}
@@ -428,8 +436,8 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 	Usage:			Checks for productions resulting in circular definitions,
 					empty recursions or with wrong FIRST-sets.
 					
-	Parameters:		PARSER*		parser			Pointer to the parser information
-												structure.
+	Parameters:		PARSER*		parser			Pointer to the parser
+												information structure.
 	
 	Returns:		BOOLEAN		TRUE			In case if stupid productions
 												where detected,
@@ -455,7 +463,8 @@ BOOLEAN p_stupid_productions( PARSER* parser )
 		if( list_count( p->rhs ) == 1 &&
 				(SYMBOL*)( p->rhs->pptr ) == p->lhs )
 		{
-			p_error( ERR_CIRCULAR_DEFINITION, ERRSTYLE_WARNING | ERRSTYLE_PRODUCTION, p );
+			p_error( ERR_CIRCULAR_DEFINITION,
+				ERRSTYLE_WARNING | ERRSTYLE_PRODUCTION, p );
 			stupid = TRUE;
 		}
 		else if( p->lhs->nullable )
@@ -477,7 +486,8 @@ BOOLEAN p_stupid_productions( PARSER* parser )
 
 			if( possible )
 			{
-				p_error( ERR_EMPTY_RECURSION, ERRSTYLE_WARNING | ERRSTYLE_PRODUCTION, p );
+				p_error( ERR_EMPTY_RECURSION,
+					ERRSTYLE_WARNING | ERRSTYLE_PRODUCTION, p );
 				stupid = TRUE;
 			}
 		}
@@ -488,7 +498,8 @@ BOOLEAN p_stupid_productions( PARSER* parser )
 		{
 			p_rhs_first( &first_check, p->rhs );
 			if( list_count( first_check ) == 0 )
-				p_error( ERR_USELESS_RULE, ERRSTYLE_WARNING | ERRSTYLE_PRODUCTION, p );
+				p_error( ERR_USELESS_RULE,
+					ERRSTYLE_WARNING | ERRSTYLE_PRODUCTION, p );
 
 			first_check = list_free( first_check );
 		}
