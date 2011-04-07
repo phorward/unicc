@@ -217,7 +217,7 @@ pregex_dfa* p_find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
 	LIST*			p;
 	pregex_dfa*		tdfa;
 	pregex_dfa_st*	dfa_st		[2];
-	pregex_dfa_ent*	dfa_ent		[2];
+	pregex_dfa_tr*	dfa_ent		[2];
 	BOOLEAN			match;
 
 	PROC( "p_find_equal_dfa" );
@@ -262,16 +262,6 @@ pregex_dfa* p_find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
 				{
 					MSG( "Deep scan of transitions not equal" );
 					match = FALSE;
-				
-					/*
-					fprintf( stderr, "ccl_compare = %d\n",
-						ccl_compare( dfa_ent[0]->ccl, dfa_ent[1]->ccl ) );
-					fprintf( stderr, "*** 0\n" );
-					ccl_print( stderr, dfa_ent[0]->ccl, 1 );
-					fprintf( stderr, "*** 1\n" );
-					ccl_print( stderr, dfa_ent[1]->ccl, 1 );
-					getchar();
-					*/
 					break;
 				}
 			}
@@ -323,12 +313,15 @@ void p_symbol_to_nfa( PARSER* parser, pregex_nfa* nfa, SYMBOL* sym )
 	PARMS( "nfa", "%p", nfa );
 	PARMS( "sym", "%p", sym );
 
-	VARS( "sym->keyword", "%d", sym->keyword );
-	if( !( sym->keyword ) )
+	/*
+	if( !( sym->type == SYM_REGEX_TERMINAL ) )
 	{
-		MSG( "Symbol is not a keyword-like one" );
+		MSG( "Symbol is not a regular expression" );
 		VOIDRET;
 	}
+
+	TODO: Maybe later, check terminal types here according to config
+	*/
 
 	memset( &tmp_nfa, 0, sizeof( pregex_nfa ) );
 
@@ -344,8 +337,10 @@ void p_symbol_to_nfa( PARSER* parser, pregex_nfa* nfa, SYMBOL* sym )
 		memcpy( nfa_cpy, nfa_ptr, sizeof( pregex_nfa_st ) );
 
 		if( nfa_ptr->ccl )
+		{
 			if( !( nfa_cpy->ccl = ccl_dup( nfa_ptr->ccl ) ) )
 				OUT_OF_MEMORY;
+		}
 
 		if( nfa_ptr->next )
 		{
@@ -402,3 +397,4 @@ void p_symbol_to_nfa( PARSER* parser, pregex_nfa* nfa, SYMBOL* sym )
 
 	VOIDRET;
 }
+
