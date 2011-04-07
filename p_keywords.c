@@ -1,6 +1,6 @@
 /* -MODULE----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator 
-Copyright (C) 2006-2009 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2010 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_keywords.c
@@ -33,71 +33,87 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 	
 	Author:			Jan Max Meyer
 	
-	Usage:			Converts the keywords within the states into a DFA, and maybe
-					re-uses state machines matching the same pool of keywords.
+	Usage:			Converts the keywords within the states into a DFA, and
+					maybe re-uses state machines matching the same pool of
+					keywords.
 					
-	Parameters:		<type>		<identifier>		<description>
+	Parameters:		PARSER*		parser				Pointer to parser
+													information structure.
 	
-	Returns:		<type>							<description>
+	Returns:		void
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
 void p_keywords_to_dfa( PARSER* parser )
 {
-	LIST*	nfa;
-	LIST*	dfa;
-	LIST*	dfa_tmp;
+	pregex_nfa	nfa;
+	pregex_dfa	dfa;
+	pregex_dfa*	ex_dfa;
 	LIST*	l;
 	LIST*	m;
 	STATE*	s;
 	TABCOL*	col;
 
-	for( l = parser->lalr_states; l; l = l->next )
-	{
-		s = (STATE*)(l->pptr);
+	PROC( "p_keywords_to_dfa" );
+	PARMS( "parser", "%p", parser );
 
-		nfa = (LIST*)NULL;
+	LISTFOR( parser->lalr_states, l )
+	{
+		s = (STATE*)list_access( l );
+
+		VARS( "s->state_id", "%d", s->state_id );
+		memset( &nfa, 0, sizeof( pregex_nfa ) );
 
 		/* Construct NFAs from keywords */
-		for( m = s->actions; m; m = m->next )
+		LISTFOR( s->actions, m )
 		{
-			col = (TABCOL*)(m->pptr);
-			nfa = p_symbol_to_nfa( parser, nfa, col->symbol );
+			col = (TABCOL*)list_access( m );
+			p_symbol_to_nfa( parser, &nfa, col->symbol );
 		}
 
-		/* re_dbg_print_nfa( nfa, parser->p_universe ); */
-
 		/* Construct DFA, if NFA has been constructed */
-		if( nfa )
+		VARS( "list_count( nfa.states )", "%d", list_count( nfa.states ) );
+		if( list_count( nfa.states ) )
 		{
-			if( !( dfa_tmp = re_build_dfa( nfa, parser->p_universe ) ) )
-			{
-				re_free_nfa_table( nfa );
+			MSG( "Constructing DFA from NFA" );
+			if( pregex_dfa_from_nfa( &dfa, &nfa ) < ERR_OK )
 				OUT_OF_MEMORY;
-			}
 
-			if( !( dfa_tmp = re_dfa_minimize( dfa_tmp, parser->p_universe ) ) )
-			{
-				re_free_dfa( &dfa_tmp );
+			VARS( "list_count( dfa.states )", "%d",
+					list_count( dfa.states ) );
+
+			MSG( "Freeing NFA" );
+			pregex_nfa_free( &nfa );
+
+			MSG( "Minimizing DFA" );
+			if( pregex_dfa_minimize( &dfa ) < ERR_OK )
 				OUT_OF_MEMORY;
-			}
 
-			if( ( dfa = p_find_equal_dfa( parser, dfa_tmp ) ) )
+			VARS( "list_count( dfa.states )", "%d",
+					list_count( dfa.states ) );
+
+			if( ( ex_dfa = p_find_equal_dfa( parser, &dfa ) ) )
 			{
-				re_free_dfa( &dfa_tmp );
-				/* printf( "Re-using DFA...\n" ); */
+				MSG( "An equal DFA exists; Freeing temporary one!" );
+				pregex_dfa_free( &dfa );
 			}
 			else
 			{
-				dfa = dfa_tmp;
-				parser->kw = list_push( parser->kw, dfa );				
-				/* printf( "Creating new DFA...\n" ); */
+				MSG( "This DFA does not exist in pool yet - integrating!" );
+				if( !( ex_dfa = memdup( &dfa, sizeof( pregex_dfa ) ) ) )
+					OUT_OF_MEMORY;
+
+				if( !( parser->kw = list_push( parser->kw, (void*)ex_dfa ) ) )
+					OUT_OF_MEMORY;
 			}
 
-			s->dfa = dfa;			
+			VARS( "ex_dfa", "%p", ex_dfa );
+			s->dfa = ex_dfa;
 		}
 	}
+
+	VOIDRET;
 }
 
 /* -FUNCTION--------------------------------------------------------------------
@@ -107,47 +123,64 @@ void p_keywords_to_dfa( PARSER* parser )
 	
 	Usage:			Constructs a single DFA for a general token lexer.
 					
-	Parameters:		<type>		<identifier>		<description>
+	Parameters:		PARSER*		parser				Pointer to parser
+													information structure.
 	
-	Returns:		<type>							<description>
+	Returns:		void
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
 void p_single_lexer( PARSER* parser )
 {
-	LIST*	nfa			= (LIST*)NULL;
-	LIST*	dfa_tmp;
-	LIST*	l;
-	SYMBOL*	s;
+	pregex_nfa			nfa;
+	pregex_dfa			dfa;
+	pregex_dfa*			pdfa;
+	LIST*				l;
+	SYMBOL*				s;
 
-	for( l = parser->symbols; l; l = l->next )
+	PROC( "p_single_lexer" );
+	PARMS( "parser", "%p", parser );
+
+	MSG( "Constructing NFA" );
+	memset( &nfa, 0, sizeof( pregex_nfa ) );
+	LISTFOR( parser->symbols, l )
 	{
-		s = (SYMBOL*)(l->pptr);
+		s = (SYMBOL*)list_access( l );
+		VARS( "s->id", "%d", s->id );
 
-		if( s->type == SYM_NON_TERMINAL )
-			continue;
-
-		nfa = p_symbol_to_nfa( parser, nfa, s );
+		p_symbol_to_nfa( parser, &nfa, s );
 	}
 
 	/* Construct DFA, if NFA has been constructed */
-	if( nfa )
+	VARS( "list_count( nfa.states )", "%d", list_count( nfa.states ) );
+	if( list_count( nfa.states ) )
 	{
-		if( !( dfa_tmp = re_build_dfa( nfa, parser->p_universe ) ) )
-		{
-			re_free_nfa_table( nfa );
+		MSG( "Constructing DFA from NFA" );
+		if( pregex_dfa_from_nfa( &dfa, &nfa ) < ERR_OK )
 			OUT_OF_MEMORY;
-		}
 
-		if( !( dfa_tmp = re_dfa_minimize( dfa_tmp, parser->p_universe ) ) )
-		{
-			re_free_dfa( &dfa_tmp );
+		VARS( "list_count( dfa.states )", "%d",
+				list_count( dfa.states ) );
+
+		MSG( "Freeing NFA" );
+		pregex_nfa_free( &nfa );
+
+		MSG( "Minimizing DFA" );
+		if( pregex_dfa_minimize( &dfa ) < ERR_OK )
 			OUT_OF_MEMORY;
-		}
 
-		parser->kw = list_push( parser->kw, dfa_tmp ) ;
+		VARS( "list_count( dfa.states )", "%d",
+				list_count( dfa.states ) );
+
+		if( !( pdfa = memdup( &dfa, sizeof( pregex_dfa ) ) ) )
+			OUT_OF_MEMORY;
+
+		if( !( parser->kw = list_push( parser->kw, (void*)pdfa ) ) )
+			OUT_OF_MEMORY;
 	}
+
+	VOIDRET;
 }
 
 /* -FUNCTION--------------------------------------------------------------------
@@ -155,142 +188,106 @@ void p_single_lexer( PARSER* parser )
 	
 	Author:			Jan Max Meyer
 	
-	Usage:			Walks trough the DFA machines of the current parser definition
-					and tests if the temporary generated DFA contains the same
-					states than a one already defined in the parser.
+	Usage:			Walks trough the DFA machines of the current parser
+					definition and tests if the temporary generated DFA contains
+					the same states than a one already defined in the parser.
 					
-	Parameters:		<type>		<identifier>		<description>
+	Parameters:		PARSER*		parser				The parser information
+													structure
+					pregex_dfa*	ndfa				Pointer to DFA that is
+													compared with the other
+													machine already integrated
+													into the parser structure.
 	
-	Returns:		<type>							<description>
+	Returns:		pregex_dfa*						Returns the pointer to a
+													matching DFA, else 
+													(pregex_dfa*)NULL.
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
+	19.11.2009	Jan Max Meyer	Revision of entire function, to work with
+								structures of the new regex-library.
 ----------------------------------------------------------------------------- */
-LIST* p_find_equal_dfa( PARSER* parser, LIST* ndfa )
+pregex_dfa* p_find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
 {
-	LIST*	l;
-	LIST*	m;
-	LIST*	n;
-	LIST*	tdfa		= (LIST*)NULL;
-	DFA*	dfa[2];
-	BOOLEAN	match;
+	LIST*			l;
+	LIST*			m;
+	LIST*			n;
+	LIST*			o;
+	LIST*			p;
+	pregex_dfa*		tdfa;
+	pregex_dfa_st*	dfa_st		[2];
+	pregex_dfa_ent*	dfa_ent		[2];
+	BOOLEAN			match;
 
-	for( l = parser->kw; l; l = l->next )
+	PROC( "p_find_equal_dfa" );
+	PARMS( "parser", "%p", parser );
+	PARMS( "ndfa", "%p", ndfa );
+
+	LISTFOR( parser->kw, l )
 	{
-		tdfa = (LIST*)(l->pptr);
+		tdfa = (pregex_dfa*)list_access( l );
 
-		if( list_count( tdfa ) != list_count( ndfa ) )
+		VARS( "list_count( tdfa->states )", "%d", list_count( tdfa->states ) );
+		VARS( "list_count( ndfa->states )", "%d", list_count( ndfa->states ) );
+		if( list_count( tdfa->states ) != list_count( ndfa->states ) )
 		{
-			tdfa = (LIST*)NULL;
+			MSG( "Number of states does already not match - test next" );
 			continue;
 		}
 
-		match = TRUE;
-		for( m = tdfa, n = ndfa; m && n; m = m->next, n = n->next )
+		for( m = tdfa->states, n = ndfa->states, match = TRUE;
+				m && n && match; m = list_next( m ), n = list_next( n ) )
 		{
-			dfa[0] = (DFA*)(m->pptr);
-			dfa[1] = (DFA*)(n->pptr);
+			dfa_st[0] = (pregex_dfa_st*)list_access( m );
+			dfa_st[1] = (pregex_dfa_st*)list_access( n );
 
-			if( !( dfa[0]->accept == dfa[1]->accept &&
-					memcmp( dfa[0]->line, dfa[1]->line,
-						parser->p_universe * sizeof( int ) ) == 0 ) )
+			if( !( dfa_st[0]->accept == dfa_st[1]->accept
+					&& list_count( dfa_st[0]->trans )
+							== list_count( dfa_st[1]->trans ) ) )
 			{
+				MSG( "Number of transitions or accepting ID does not match" );
 				match = FALSE;
 				break;
 			}
+
+			for( o = dfa_st[0]->trans, p = dfa_st[1]->trans; o && p;
+					o = list_next( o ), p = list_next( p ) )
+			{
+				dfa_ent[0] = list_access( o );
+				dfa_ent[1] = list_access( p );
+
+				if( !( ccl_compare( dfa_ent[0]->ccl, dfa_ent[1]->ccl ) == 0
+						&& dfa_ent[0]->go_to == dfa_ent[1]->go_to ) )
+				{
+					MSG( "Deep scan of transitions not equal" );
+					match = FALSE;
+				
+					/*
+					fprintf( stderr, "ccl_compare = %d\n",
+						ccl_compare( dfa_ent[0]->ccl, dfa_ent[1]->ccl ) );
+					fprintf( stderr, "*** 0\n" );
+					ccl_print( stderr, dfa_ent[0]->ccl, 1 );
+					fprintf( stderr, "*** 1\n" );
+					ccl_print( stderr, dfa_ent[1]->ccl, 1 );
+					getchar();
+					*/
+					break;
+				}
+			}
 		}
 
+		VARS( "match", "%d", match );
 		if( match )
-			break;
-
-		tdfa = (LIST*)NULL;
+		{
+			MSG( "DFA matches!" );
+			VARS( "tdfa", "%p", tdfa );
+			RETURN( tdfa );
+		}
 	}
 
-	return tdfa;
-}
-
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_keyword_to_nfa()
-	
-	Author:			Jan Max Meyer
-	
-	Usage:			Builds a nondeterminisitic finite automation structure from
-					a keyword string. This will later be turned into a DFA.
-					
-	Parameters:		<type>		<identifier>		<description>
-	
-	Returns:		<type>							<description>
-  
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
-	21.08.2008	Jan Max Meyer	Small bugfix on empty keywords
------------------------------------------------------------------------------ */
-void p_keyword_to_nfa( PARSER* parser, LIST** nfa, uchar* keyword, int accepting_id )
-{
-	NFA*	start;
-	NFA*	end;
-	NFA*	tmp			= (NFA*)NULL;
-	NFA*	tmp_start;
-	LIST*	tmp_nfa		= (LIST*)NULL;
-	uchar*	kp;
-	uchar	ch;
-
-	if( !( start = re_create_nfa( &tmp_nfa ) ) )
-		OUT_OF_MEMORY;
-
-	for( kp = keyword; *kp; )
-	{
-		if( kp == keyword )
-		{
-			if( !( start->next = tmp = re_create_nfa( &tmp_nfa ) ) )
-				OUT_OF_MEMORY;
-		}
-		else
-		{
-			if( !( tmp->next = re_create_nfa( &tmp_nfa ) ) )
-				OUT_OF_MEMORY;
-
-			tmp = tmp->next;
-		}
-
-		ch = p_unescape_char( kp, &kp );
-		if( parser->p_cis_keywords )
-		{
-			tmp->edge = CCL;
-			tmp->cclass = bitset_create( parser->p_universe );
-
-			bitset_set( tmp->cclass, p_tolower( ch ), TRUE );
-			bitset_set( tmp->cclass, p_toupper( ch ), TRUE );
-
-			//p_dump_map( stdout, tmp->cclass, parser->p_universe );
-		}
-		else
-			tmp->edge = ch;
-	}
-
-	if( !( end = re_create_nfa( &tmp_nfa ) ) )
-		OUT_OF_MEMORY;
-
-	if( tmp )
-		tmp->next = end;
-	else
-		start->next = end;
-
-	end->accept = accepting_id;
-
-	if( !(*nfa) )
-		*nfa = tmp_nfa;
-	else
-	{
-		*nfa = list_union( *nfa, tmp_nfa );
-		list_free( tmp_nfa );
-
-		tmp_start = (NFA*)((*nfa)->pptr);
-		while( tmp_start->next2 )
-			tmp_start = tmp_start->next2;
-
-		tmp_start->next2 = start;
-	}
+	MSG( "No DFA matches!" );
+	RETURN( (pregex_dfa*)NULL );
 }
 
 /* -FUNCTION--------------------------------------------------------------------
@@ -298,141 +295,110 @@ void p_keyword_to_nfa( PARSER* parser, LIST** nfa, uchar* keyword, int accepting
 	
 	Author:			Jan Max Meyer
 	
-	Usage:			Converts a symbol - based on its type - to a nfa.
-					This can only be done for keywords and for pre-compiled
-					regular expression terminals.
-					This function is used in several places, so it was
-					established here.
+	Usage:			Merges one NFA state machine with another one; States are
+					copied to the new state machine.
 					
-	Parameters:		<type>		<identifier>		<description>
+	Parameters:		PARSER*		parser				Pointer to parser informa-
+													tion structure
+					pregex_nfa*	nfa					Pointer to NFA structure,
+													that is extended by this
+													function.
+					SYMBOL*		sym					Symbol which is associated
+													with this NFA
 	
-	Returns:		<type>							<description>
+	Returns:		
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-LIST* p_symbol_to_nfa( PARSER* parser, LIST* nfa, SYMBOL* sym )
+void p_symbol_to_nfa( PARSER* parser, pregex_nfa* nfa, SYMBOL* sym )
 {
-	LIST*	tmp_nfa = (LIST*)NULL;
-	NFA*	nfa_ptr;
-	NFA*	nfa_copy;
-	LIST*	l;
+	pregex_nfa		tmp_nfa;
+	pregex_nfa_st*	nfa_ptr;
+	pregex_nfa_st*	nfa_cpy;
+	LIST*			l;
 
-	if( sym->type == SYM_KW_TERMINAL )
-		p_keyword_to_nfa( parser, &nfa, sym->name, sym->id );
-	else if( sym->type == SYM_REGEX_TERMINAL && sym->nfa_def )
+	PROC( "p_symbol_to_nfa" );
+	PARMS( "parser", "%p", parser );
+	PARMS( "nfa", "%p", nfa );
+	PARMS( "sym", "%p", sym );
+
+	VARS( "sym->keyword", "%d", sym->keyword );
+	if( !( sym->keyword ) )
 	{
-		/* Copy the whole NFA - this does not work nice with the
-			regex lib if we do it using another way :( */
-		for( l = sym->nfa_def; l; l = l->next )
-		{
-			nfa_ptr = (NFA*)( l->pptr );
-			if( !( nfa_copy = re_create_nfa( &tmp_nfa ) ) )
+		MSG( "Symbol is not a keyword-like one" );
+		VOIDRET;
+	}
+
+	memset( &tmp_nfa, 0, sizeof( pregex_nfa ) );
+
+	MSG( "Copying pointers" );
+	/* First of all, copy all pointers */
+	LISTFOR( sym->nfa.states, l )
+	{
+		nfa_ptr = (pregex_nfa_st*)list_access( l );
+
+		if( !( nfa_cpy = pregex_nfa_create_state(
+				&tmp_nfa, (uchar*)NULL, REGEX_MOD_NONE ) ) )
+			OUT_OF_MEMORY;
+		memcpy( nfa_cpy, nfa_ptr, sizeof( pregex_nfa_st ) );
+
+		if( nfa_ptr->ccl )
+			if( !( nfa_cpy->ccl = ccl_dup( nfa_ptr->ccl ) ) )
 				OUT_OF_MEMORY;
 
-			memcpy( nfa_copy, nfa_ptr, sizeof( NFA ) );
-			if( nfa_copy->edge == CCL )
-				nfa_copy->cclass = bitset_copy(
-					parser->p_universe, nfa_ptr->cclass );
-
-			/*
-				Just for the protocol:
-				I LIKE HACKS, BUT I WOULD OMIT... ;(
-			*/
-
-			/* Temporary replace pointers... */
-			if( nfa_copy->next )
-				nfa_copy->next = (NFA*)list_find( 
-					sym->nfa_def, nfa_ptr->next );
-
-			if( nfa_copy->next2 )
-				nfa_copy->next2 = (NFA*)list_find(
-					sym->nfa_def, nfa_ptr->next2 );
+		if( nfa_ptr->next )
+		{
+			VARS( "(1) nfa_cpy->next", "%p", nfa_cpy->next );
+			nfa_cpy->next = (pregex_nfa_st*)list_find(
+								sym->nfa.states, (void*)nfa_ptr->next );
+			VARS( "(2) nfa_cpy->next", "%p", nfa_cpy->next );
 		}
 
-		/* ...and then restore them... this product is more than just freaky...
-			but its the most quick solution ... maybe to be reworked anywhere
-				in the future... oh shit... */
-		for( l = tmp_nfa; l; l = l->next )
+		if( nfa_ptr->next2 )
 		{
-			nfa_ptr = (NFA*)( l->pptr );
-			
-			if( nfa_ptr->next )
-				nfa_ptr->next = list_getptr( tmp_nfa, (int)( nfa_ptr->next ) );
-
-			if( nfa_ptr->next2 )
-				nfa_ptr->next2 = list_getptr( tmp_nfa, (int)( nfa_ptr->next2 ) );
-		}
-		
-		if( tmp_nfa )
-		{
-			if( !nfa )
-				nfa = tmp_nfa;
-			else
-			{
-				nfa = list_union( nfa, tmp_nfa );
-	
-				nfa_ptr = (NFA*)( nfa->pptr );
-				while( nfa_ptr->next2 )
-					nfa_ptr = nfa_ptr->next2;
-	
-				nfa_ptr->next2 = (NFA*)( tmp_nfa->pptr );
-				list_free( tmp_nfa );
-			}
+			VARS( "(1) nfa_cpy->next2", "%p", nfa_cpy->next2 );
+			nfa_cpy->next2 = (pregex_nfa_st*)list_find(
+								sym->nfa.states, (void*)nfa_ptr->next2 );
+			VARS( "(2) nfa_cpy->next2", "%p", nfa_cpy->next2 );
 		}
 	}
 
-	return nfa;
-}
-
-#if 0
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_create_dfa_from_keywords()
-	
-	Author:			Jan Max Meyer
-	
-	Usage:			Creates a determisitic finite automation from the keywords
-					defined within the grammar.
-					
-	Parameters:		<type>		<identifier>		<description>
-	
-	Returns:		<type>							<description>
-  
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
-void p_create_dfa_from_nfa( PARSER* parser )
-{
-	LIST*	l;
-	LIST*	nfa		= (LIST*)NULL;
-	SYMBOL*	sym;
-
-	for( l = parser->symbols; l; l = l->next )
+	/* Then, restore the pointers */
+	MSG( "Restoring pointers" );
+	LISTFOR( tmp_nfa.states, l )
 	{
-		sym = (SYMBOL*)l->pptr;
-		if( sym->type == SYM_TERMINAL && sym->keyword )
-			p_keyword_to_nfa( &nfa, sym->name, sym->id, parser->p_cis_keywords );
-	}
-
-	/* nfa is NULL, if there are no keywords ;) */
-	if( nfa )
-	{
-		/*
-		printf( "\n" );
-		re_dbg_print_nfa( nfa, parser->p_universe );
-		*/
-		if( !( parser->dfa = re_build_dfa( nfa, parser->p_universe ) ) )
-		{
-			re_free_nfa_table( nfa );
-			OUT_OF_MEMORY;
-		}
+		nfa_ptr = (pregex_nfa_st*)list_access( l );
 		
-		if( !( parser->dfa = re_dfa_minimize( parser->dfa, parser->p_universe ) ) )
-		{
-			re_free_dfa( &( parser->dfa ) );
-			OUT_OF_MEMORY;
-		}
+		if( nfa_ptr->next )
+			nfa_ptr->next = (pregex_nfa_st*)list_getptr(
+								tmp_nfa.states, (int)nfa_ptr->next );
+		if( nfa_ptr->next2 )
+			nfa_ptr->next2 = (pregex_nfa_st*)list_getptr(
+								tmp_nfa.states, (int)nfa_ptr->next2 );
 	}
-}
-#endif
 
+	/* Extend NFA, if not existing yet */
+	if( !list_count( nfa->states ) )
+	{
+		MSG( "Copying temporary nfa into nfa" );
+		memcpy( nfa, &tmp_nfa, sizeof( pregex_nfa ) );
+	}
+	else
+	{
+		MSG( "Extendind existing nfa with temporary nfa" );
+		if( !( nfa->states = list_union( nfa->states, tmp_nfa.states ) ) )
+			OUT_OF_MEMORY;
+
+		nfa_ptr = (pregex_nfa_st*)list_access( nfa->states );
+		while( nfa_ptr->next2 )
+			nfa_ptr = nfa_ptr->next2;
+
+		nfa_ptr->next2 = (pregex_nfa_st*)list_access( tmp_nfa.states );
+		list_free( tmp_nfa.states );
+	}
+	
+	/* pregex_nfa_print( &( sym->nfa ) ); */
+
+	VOIDRET;
+}
