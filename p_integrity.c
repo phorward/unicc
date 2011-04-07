@@ -95,7 +95,7 @@ void p_undef_or_unused( PARSER* parser )
 BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 {
 	int stack[ 1024 ];
-	uchar sym;
+	pchar sym;
 	int act;
 	int idx;
 	int error;
@@ -104,7 +104,6 @@ BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 	STATE* st;
 	TABCOL* col;
 	LIST* l;
-	bitset map;
 
 	error = list_count( parser->productions ) * -1;
 	
@@ -114,7 +113,12 @@ BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 		stack[ tos++ ] = start;
 	
 	stack[ tos ] = start;
-	sym = *(str++);
+#ifdef UNICODE
+	sym = u8_char( str );
+	str += u8_seqlen( str );
+#else
+	sym = *(str++); 
+#endif
 	
 	/*
 	fprintf( stderr, "STATE %d\n", start );
@@ -131,17 +135,14 @@ BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 			col = (TABCOL*)l->pptr;
 			if( !( col->symbol->keyword ) )
 			{
-				map = p_ccl_to_map( parser, col->symbol->name );
-
-				if( p_map_test_char( map, sym, parser->p_cis_keywords ) )
+				if( p_ccl_test_char( col->symbol->ccl, sym,
+						parser->p_cis_keywords ) )
 				{
 					act = col->action;
 					idx = col->index;
 				}
 
-				p_free( map );
-
-				if( act != 0 )
+				if( act )
 					break;
 			}
 		}
@@ -158,7 +159,13 @@ BOOLEAN p_try_to_parse( PARSER* parser, uchar* str, int start )
 		if( act & SHIFT )
 		{
 			stack[ ++tos ] = idx;
-			sym = *(str++);
+
+#ifdef UNICODE
+			sym = u8_char( str );
+			str += u8_seqlen( str );
+#else
+			sym = *(str++); 
+#endif
 		}
 
 		/* Reduce */
@@ -253,7 +260,6 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 	SYMBOL*		sym;
 	TABCOL*		col;
 	TABCOL*		ccol;
-	bitset		test;
 	int			cnt;
 	BOOLEAN		found;
 
@@ -307,10 +313,6 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 					if( ccol->symbol->type == SYM_CCL_TERMINAL
 							&& ccol->action & SHIFT )
 					{
-						/* Make a character map from the symbol's name,
-							maybe we get a match! */
-						test = p_ccl_to_map( parser, ccol->symbol->name );
-
 						/*
 							If this is a match with the grammar and the keyword,
 							a keyword anomaly exists between the shift by a 
@@ -319,7 +321,12 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 							keyword. This is not the problem if there is only
 							one reduce, but if there are more, output a warning!
 						*/
-						if( p_map_test_char( test, *( col->symbol->name ),
+						if( p_ccl_test_char( ccol->symbol->ccl,
+#if UTF8
+								u8_char( col->symbol->name ),
+#else
+								*( col->symbol->name ),
+#endif
 								parser->p_cis_keywords ) )
 						{
 							if( p_try_to_parse( parser, col->symbol->name,
@@ -403,8 +410,6 @@ BOOLEAN p_keyword_anomalies( PARSER* parser )
 #endif
 							}
 						}
-
-						p_free( test );
 					}
 				}
 			}
