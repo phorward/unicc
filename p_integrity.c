@@ -166,7 +166,6 @@ static BOOLEAN p_nfa_matches_parser(
 	PARSER* parser, pregex_nfa* nfa, LIST* start_res, int start )
 {
 	int		stack[ 1024 ];
-	pchar	sym;
 	int		act;
 	int		accept;
 	int		idx;
