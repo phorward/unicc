@@ -111,7 +111,7 @@ void p_copyright( FILE* stream )
 		stream = stdout;
 
 	fprintf( stream, "UniCC LALR(1) Parser Generator v%s [build %s %s]\n",
-			PHORWARD_VERSION, __DATE__, __TIME__ );
+			UNICC_VERSION, __DATE__, __TIME__ );
 	fprintf( stream, "Copyright (C) 2006-2011 by "
 						"Phorward Software Technologies, Jan Max Meyer\n" );
 	fprintf( stream, "http://www.phorward-software.com ++ "
@@ -160,7 +160,7 @@ void p_usage( FILE* stream, uchar* progname )
 		"\t-sym --symbols         Dump symbols to stderr\n"
 		"\t-v   --verbose         Print progress messages\n"
 		"\t-w   --warnings        Print warnings\n"
-		"\t-x   --xml             Build XML output [under development]\n",
+		"\t-x   --xml             Build XML output (XML code generator)\n",
 
 		progname );
 }
@@ -207,7 +207,8 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 				if( ++i < argc && !( *output ) )
 					*output = argv[i];
 				else
-					p_error( ERR_CMD_LINE, ERRSTYLE_WARNING, argv[i-1] );
+					p_error( parser, ERR_CMD_LINE, ERRSTYLE_WARNING,
+								argv[ i - 1 ] );
 			}
 			else if( !strcmp( opt, "verbose" ) || !strcmp( opt, "v" ) )
 				parser->verbose = TRUE;
@@ -226,7 +227,10 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 			else if( !strcmp( opt, "no-opt" ) || !strcmp( opt, "no" ) )
 				parser->optimize_states = FALSE;
 			else if( !strcmp( opt, "all-warnings" ) || !strcmp( opt, "all" ) )
+			{
 				parser->all_warnings = TRUE;
+				no_warnings = FALSE;
+			}
 			else if( !strcmp( opt, "version" ) || !strcmp( opt, "V" ) )
 			{
 				p_copyright( stderr );
@@ -267,6 +271,7 @@ int main( int argc, char** argv )
 {
 	uchar*	filename	= (uchar*)NULL;
 	uchar*	base_name	= (uchar*)NULL;
+	uchar*	mbase_name	= (uchar*)NULL;
 	PARSER*	parser;
 	BOOLEAN	recursions	= FALSE;
 	BOOLEAN	def_lang	= FALSE;
@@ -285,7 +290,7 @@ int main( int argc, char** argv )
 		switch( map_file( &parser->source, filename ) )
 		{
 			case 1:
-				p_error( ERR_OPEN_INPUT_FILE,
+				p_error( parser, ERR_OPEN_INPUT_FILE,
 					ERRSTYLE_FATAL, filename );
 				return error_count;
 				
@@ -299,22 +304,27 @@ int main( int argc, char** argv )
 		/* Basename */
 		if( !base_name )
 		{
-			parser->p_basename = pbasename( filename );
+			parser->p_basename = mbase_name = p_strdup(
+												pbasename( filename ) );
 			if( ( base_name = strrchr( parser->p_basename, '.' ) ) )
 				*base_name = '\0';
 		}
 		else
 			parser->p_basename = base_name;
 
-		PROGRESS( "Parsing source grammar" )
+		if( parser->verbose )
+			fprintf( stderr, "UniCC version: %s\n", UNICC_VERSION );
+
+		PROGRESS( "Parsing grammar" )
 		/* Parse grammar structure */
 		if( p_parse( parser, parser->source ) == 0 )
 		{
 			DONE()
 
 			if( parser->verbose )
-				fprintf( stderr, "Detected parser model: %s\n",
-					pmod[ parser->p_model ] );
+				fprintf( stderr, "Parser construction mode: %s\n",
+					pmod[ parser->p_mode ] );
+
 
 			PROGRESS( "Goal symbol detection" )
 			if( parser->goal )
@@ -328,14 +338,14 @@ int main( int argc, char** argv )
 					
 				/* Rewrite the grammar, if required */
 				PROGRESS( "Rewriting grammar" )
-				if( parser->p_model == MODEL_CONTEXT_SENSITIVE )
+				if( parser->p_mode == MODE_SENSITIVE )
 					p_rewrite_grammar( parser );
 
 				p_unique_charsets( parser );
 				p_symbol_order( parser );
 				p_charsets_to_nfa( parser );
 				
-				if( parser->p_model == MODEL_CONTEXT_SENSITIVE )
+				if( parser->p_mode == MODE_SENSITIVE )
 					p_inherit_fixiations( parser );
 				DONE()
 
@@ -377,21 +387,21 @@ int main( int argc, char** argv )
 
 				DONE()
 
-				/* Keyword anomaly recognition */
-				PROGRESS( "Performing keyword anomaly detection" )
-				if( parser->p_model == MODEL_CONTEXT_SENSITIVE )
+				/* Regex anomaly recognition */
+				PROGRESS( "Regex-terminal anomaly detection" )
+				if( parser->p_mode == MODE_SENSITIVE )
 				{
 					if( recursions )
 					{
 						SKIPPED( "Recursions detected" );
 					}
-					else if( parser->p_reserve_kw )
+					else if( parser->p_reserve_regex )
 					{
-						SKIPPED( "Keywords are reserved" );
+						SKIPPED( "Tokens are reserved!" );
 					}
 					else
 					{
-						p_keyword_anomalies( parser );
+						p_regex_anomalies( parser );
 						DONE()
 					}
 				}
@@ -403,22 +413,22 @@ int main( int argc, char** argv )
 				/* Lexical analyzer generator */
 				PROGRESS( "Constructing lexical analyzer" )
 
-				if( parser->p_model == MODEL_CONTEXT_SENSITIVE )
+				if( parser->p_mode == MODE_SENSITIVE )
 					p_keywords_to_dfa( parser );
-				else if( parser->p_model == MODEL_CONTEXT_INSENSITIVE )
+				else if( parser->p_mode == MODE_INSENSITIVE )
 					p_single_lexer( parser );
 
 				DONE()
 				
 				/* Default production detection */
-				PROGRESS( "Detecting default actions" )
+				PROGRESS( "Detecting default rules" )
 				p_detect_default_productions( parser );
 				DONE()
 
 				/* Code generator */
 				if( !( parser->p_language ) )
 				{
-					parser->p_language = p_strdup( PHORWARD_DEFAULT_LNG );
+					parser->p_language = p_strdup( UNICC_DEFAULT_LNG );
 					def_lang = TRUE;
 				}
 
@@ -435,7 +445,7 @@ int main( int argc, char** argv )
 				}
 				else
 				{
-					PROGRESS( "Generating parser definition" )
+					PROGRESS( "Generating parser definition file" )
 					p_build_xml( parser );
 					DONE()
 				}
@@ -443,7 +453,7 @@ int main( int argc, char** argv )
 			else
 			{
 				FAIL();
-				p_error( ERR_NO_GOAL_SYMBOL, ERRSTYLE_FATAL );
+				p_error( parser, ERR_NO_GOAL_SYMBOL, ERRSTYLE_FATAL );
 			}
 		
 			if( parser->stats )
@@ -451,7 +461,7 @@ int main( int argc, char** argv )
 							"(%d error%s, %d warning%s)\n",
 					filename, list_count( parser->lalr_states ),
 						error_count, ( error_count == 1 ) ? "" : "s",
-							warning_count, ( warning_count == 1 ) ? "" : "s" );			
+						warning_count, ( warning_count == 1 ) ? "" : "s" );	
 		}
 		else
 		{
@@ -467,6 +477,8 @@ int main( int argc, char** argv )
 		p_usage( stderr, *argv );
 		error_count++;
 	}
+
+	p_free( mbase_name );
 
 	return error_count;
 }
