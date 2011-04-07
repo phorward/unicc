@@ -30,6 +30,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #include "p_global.h"
 #include "p_proto.h"
 #include "p_error.h"
+#undef ERROR /* min_lalr1 defines its own ERROR! */
 
 /*
  * Global variables
@@ -471,7 +472,7 @@ symbol:			sym modifier 									{
 																			break;
 																	}
 																}
-				|	'#' "error"									{	SYMBOL* sym;
+				|	"&error"									{	SYMBOL* sym;
 																	sym = p_get_symbol( parser,
 																			P_ERROR_RESYNC, SYM_ERROR_RESYNC,
 																				TRUE );
