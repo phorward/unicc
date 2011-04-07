@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 # UniCC LALR(1) Parser Generator
-# Copyright (C) 2006-2009 by Phorward Software Technologies, Jan Max Meyer
+# Copyright (C) 2006-2011 by Phorward Software Technologies, Jan Max Meyer
 # http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 #
 # Make-File:	Makefile
@@ -64,7 +64,7 @@ HEADERS		=	p_global.h \
 				p_defs.h \
 				p_error.h
 				
-TEMPLATE_C	=	C.xml
+TEMPLATE_C	=	../Cparser/C.xml
 				
 LIBS		=	$(PREGEX_LIB) \
 				$(PBASIS_LIB)
@@ -77,6 +77,9 @@ MISCDEP		=	$(TEMPLATE_C) \
 all: $(PROGRAM)
 	@echo
 	@echo --- Compilation succeeded! ---
+
+$(TEMPLATE_C):
+	cd ..;  cd Cparser; make ../$(PROJECT)/$@; cd ..; cd $(PROJECT)
 
 $(PROG_BOOT1): $(PARSER_BOOT) $(PROTO) $(SRC) $(HEADERS) $(LIBS) $(MISCDEP)
 	$(MIN_LALR1) $(PARSER_BOOT) >$(PARSER) 2>$(PARSER_DBG)
