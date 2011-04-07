@@ -66,7 +66,7 @@ void p_print_symbol( FILE* stream, SYMBOL* sym )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_dump_grammar()
-	
+	ymbols 
 	Author:			Jan Max Meyer
 	
 	Usage:			Dumps the analyzed grammar and all its symbols to a desired
@@ -99,19 +99,17 @@ void p_dump_grammar( FILE* stream, PARSER* parser )
 	if( first_progress )
 		fprintf( stream, "\n" );
 
-	fprintf( stream, "\n--- %s%sGrammar ---\n",
+	fprintf( stream, "\n--- %s%sGrammar ---\n\n",
 		( parser->p_name ? parser->p_name : "" ),
 			( parser->p_name ? " " : "" ) );
-
 	
 	for( i = parser->symbols; i; i = i->next )
 	{
-		fprintf( stream, "    " );
-
 		s = i->pptr;
-		if( 1 || s->type == SYM_NON_TERMINAL )
+
+		if( s->type == SYM_NON_TERMINAL )
 		{
-			fprintf( stream, "(%d) ", s->id );
+			fprintf( stream, "    " );
 			p_print_symbol( stream, s );
 			fprintf( stream, " " );
 			
@@ -136,7 +134,7 @@ void p_dump_grammar( FILE* stream, PARSER* parser )
 				for( j = s->productions; j; j = j->next )
 				{
 					p = j->pptr;
-					fprintf( stream, "    (%d) -> ", p->id );
+					fprintf( stream, "      (%d) -> ", p->id );
 					p_dump_production( stream, p, FALSE, FALSE );
 				}
 			}
@@ -150,6 +148,99 @@ void p_dump_grammar( FILE* stream, PARSER* parser )
 			fprintf( stream, "\n" );
 		}
 	}
+
+	first_progress = FALSE;
+}
+
+/* -FUNCTION--------------------------------------------------------------------
+	Function:		p_dump_symbols()
+	
+	Author:			Jan Max Meyer
+	
+	Usage:			Dumps the analyzed grammar symbols.
+					
+	Parameters:		FILE*		stream				The stream where to dump the
+													grammar to. If this is
+													(FILE*)NULL, output is written
+													to stderr.
+					PARSER*		parser				Parser information structure
+													pointer.
+													
+	Returns:		void
+  
+	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	Date:		Author:			Note:
+----------------------------------------------------------------------------- */
+void p_dump_symbols( FILE* stream, PARSER* parser )
+{
+	LIST*		i		= (LIST*)NULL;
+	SYMBOL*		s		= (SYMBOL*)NULL;
+	
+	if( !stream )
+		stream = stderr;
+
+	if( first_progress )
+		fprintf( stream, "\n" );
+
+	fprintf( stream, "\n--- %s%sSymbols ---\n\n",
+		( parser->p_name ? parser->p_name : "" ),
+			( parser->p_name ? " " : "" ) );
+	
+	for( i = parser->symbols; i; i = i->next )
+	{
+		fprintf( stream, "    " );
+
+		s = i->pptr;
+		fprintf( stream, "%c%d: ",
+			( IS_TERMINAL( s ) ? 'T' : 'N' ),
+				s->id, s->name );
+				
+		p_print_symbol( stream, s );
+		
+		fprintf( stream, " [" );
+		
+		switch( s->type )
+		{
+			case SYM_NON_TERMINAL:
+				fprintf( stream, "nonterminal" );
+				break;
+
+			case SYM_CCL_TERMINAL:
+				fprintf( stream, "character-class" );
+				break;
+
+			case SYM_KW_TERMINAL:
+				fprintf( stream, "keyword" );
+				break;
+
+			case SYM_REGEX_TERMINAL:
+				fprintf( stream, "regular expression" );
+				break;
+
+			case SYM_EXTERN_TERMINAL:
+				fprintf( stream, "external" );
+				break;
+
+			case SYM_ERROR_RESYNC:
+				fprintf( stream, "error-resync" );
+				break;
+				
+			default:
+				fprintf( stream, "undefined" );
+				break;
+		}
+		
+		fprintf( stream, "]" );
+		
+		if( s->vtype )
+		{
+			fprintf( stream, " <%s>", s->vtype->int_name );
+		}
+		
+		fprintf( stream, "\n" );
+	}
+	
+	fprintf( stream, "\n" );
 
 	first_progress = FALSE;
 }
@@ -308,11 +399,15 @@ void p_dump_lalr_states( FILE* stream, PARSER* parser )
 		fprintf( stream, "\n\n" );
 	first_progress = FALSE;
 
+	fprintf( stream, "\n--- %s%sStates ---\n\n",
+		( parser->p_name ? parser->p_name : "" ),
+			( parser->p_name ? " " : "" ) );
+
 	for( l = parser->lalr_states; l; l = l->next )
 	{
 		st = (STATE*)(l->pptr);
 		
-		fprintf( stream, "  --- State %d ---\n", st->state_id );
+		fprintf( stream, "  State %d:\n", st->state_id );
 		p_dump_item_set( stream, "Kernel:", st->kernel );
 		p_dump_item_set( stream, "Epsilon:", st->epsilon );
 		fprintf( stream, "\n" );
@@ -348,16 +443,14 @@ void p_dump_productions( FILE* stream, PARSER* parser )
 
 	if( first_progress )
 		fprintf( stream, "\n" );
-	fprintf( stream, "--- %s%sProductions ---\n",
+	fprintf( stream, "--- %s%sProductions ---\n\n",
 		( parser->p_name ? parser->p_name : "" ),
 			( parser->p_name ? " " : "" ) );
 	
 	for( l = parser->productions; l; l = l->next )
 	{
 		p = (PROD*)( l->pptr );
-	
 		p_dump_production( stream, p, TRUE, TRUE );
-
 		fprintf( stream, "\n" );
 	}
 
