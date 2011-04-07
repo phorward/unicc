@@ -128,10 +128,9 @@ HEADERS		=	p_global.h \
 				p_defs.h \
 				p_error.h
 				
-LIBS		=	$(LLIST_LIB) \
-				$(BITSET_LIB) \
-				$(HASH_LIB) \
-				$(RE_LIB) \
+LIBS		=	$(PBASIS_LIB) \
+				$(PREGEX_LIB) \
+				$(PSTRING_LIB) \
 				$(XML_LIB)
 
 #-------------------------------------------------------------------------------
