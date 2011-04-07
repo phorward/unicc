@@ -82,6 +82,8 @@ uchar* p_mapfile( uchar* filename )
 		}
 	}
 	src[ pos ] = '\0';
+	
+	fclose( file );
 
 	return src;
 }
