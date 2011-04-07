@@ -120,7 +120,13 @@ void p_build_code( FILE* stream, PARSER* parser )
 	memset( gen, 0, sizeof( GENERATOR ) );
 
 	sprintf( xml_file, "%s.xml", parser->p_language );
-	if( access( xml_file, F_OK ) &&
+
+	if( 
+#ifndef _WIN32
+	access( xml_file, F_OK ) &&
+#else
+	_access( xml_file, 0 ) &&
+#endif
 		( tpldir = getenv( "UNICC_TPLDIR" ) ) )
 	{
 		sprintf( xml_file, "%s%s%s.xml",
@@ -136,6 +142,9 @@ void p_build_code( FILE* stream, PARSER* parser )
 	for( l = parser->symbols; l; l = l->next )
 	{
 		sym = (SYMBOL*)( l->pptr );
+		
+		if( !( sym->vtype ) )
+			sym->vtype = parser->p_def_type;
 
 		if( sym->type == SYM_NON_TERMINAL && !( sym->vtype ) &&
 			( gen->vstack_def_type && *( gen->vstack_def_type ) ) )
@@ -618,7 +627,7 @@ void p_build_code( FILE* stream, PARSER* parser )
 	for( l = parser->symbols, row = 0; l; l = l->next, row++ )
 	{
 		sym = (SYMBOL*)( l->pptr );
-		if( sym->type != SYM_REGEX_TERMINAL )
+		if( sym->type != SYM_REGEX_TERMINAL && !sym->nfa_def )
 			continue;
 
 		scan_actions = p_str_append( scan_actions, p_tpl_insert( gen->scan_action_start,
@@ -645,7 +654,7 @@ void p_build_code( FILE* stream, PARSER* parser )
 	/* Get the goal production */
 	goalprod = (PROD*)( parser->goal->productions->pptr );
 
-	/* Assembling all together! */
+	/* Assembling all together - Warning, this is ONE single function call! */
 	all = p_tpl_insert( gen->driver,
 	
 		/* Lengths of names and Prologue/Epilogue codes */
@@ -661,6 +670,8 @@ void p_build_code( FILE* stream, PARSER* parser )
 			p_long_to_str( (long)p_strlen( parser->p_header ) ), TRUE,
 		GEN_WILD_PREFIX "epilogue" LEN_EXT,
 			p_long_to_str( (long)p_strlen( parser->p_footer ) ), TRUE,
+		GEN_WILD_PREFIX "pcb" LEN_EXT,
+			p_long_to_str( (long)p_strlen( parser->p_pcb ) ), TRUE,
 
 		/* Names and Prologue/Epilogue codes */
 		GEN_WILD_PREFIX "name", parser->p_name, FALSE,
@@ -669,6 +680,7 @@ void p_build_code( FILE* stream, PARSER* parser )
 		GEN_WILD_PREFIX "description", parser->p_desc, FALSE,
 		GEN_WILD_PREFIX "prologue", parser->p_header, FALSE,
 		GEN_WILD_PREFIX "epilogue", parser->p_footer, FALSE,
+		GEN_WILD_PREFIX "pcb", parser->p_pcb, FALSE,
 
 		/* Limits and sizes, parse tables */
 		GEN_WILD_PREFIX "number-of-symbols", p_int_to_str( list_count( parser->symbols ) ), TRUE,
