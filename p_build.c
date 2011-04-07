@@ -606,7 +606,7 @@ void p_build_code( FILE* stream, PARSER* parser )
 		productions = p_str_append( productions, p_tpl_insert(
 			gen->productions.col,
 				GEN_WILD_PREFIX "production", p_escape_for_target(
-						gen, p_mkproduction_str( p ), TRUE ),
+						gen, p_mkproduction_str( p ), TRUE ), TRUE,
 			(uchar*)NULL ), TRUE );
 			
 		if( l->next )
