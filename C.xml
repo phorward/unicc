@@ -1,0 +1,907 @@
+<?xml version="1.0" standalone="yes"?>
+<!--
+UniCC LALR(1) Parser Generator
+Copyright (C) 2006-2009 by Phorward Software Technologies, Jan Max Meyer
+http://www.phorward-software.com ++ mail@phorward-software.com
+
+File:	C.xml
+Author:	Jan Max Meyer
+Usage:	Target language template for the C programming language
+
+This template should serve as a general description/reference of how
+templates for the UniCC parser generator are written. I know that some
+things could be done better, and that there are many ways to speed up
+the parsers UniCC produces. If you know some ways, improve it!
+
+Some general things you have to know:
+-	The placeholder @@prefix holds the prefix which is possibly defined for
+	a grammar. You can use @@prefix everywhere!
+-	No tag is 'really' required. UniCC will give a warning when it misses a
+	tag, but continues code generation with the tags it found.
+
+-->
+
+<generator name="C">
+	<!--
+	***********************************************************************************************
+	Escape sequences
+	***********************************************************************************************
+	These are the escapable sequence definitions for the target language
+	which should be replaced when terminal-/nonterminal (especially generated
+	ones) names are generated into the target file, e.g. in the <symbols>-tag.
+	-->
+	<escape-sequence for="\" do="\\" />
+	<escape-sequence for="&#x22;" do="\&#x22;" />
+	
+	<!--
+	***********************************************************************************************
+	Value-stack related definitions
+	***********************************************************************************************
+	-->
+
+	<!-- Default (return) value type for nonterminals -->
+	<vstack_def_type>int</vstack_def_type>
+	<!-- Default value type for character-class terminals -->
+	<vstack_term_type>int</vstack_term_type>
+	
+	<!--
+	Code to be generated for the value stack datatype-definition when only one datatype is used
+	within the whole grammar (or if always the default-type is used).
+	
+	Placeholders:		@@value-type			- 	Expands to the type-declaration of the only
+													used value type.
+	-->
+	<vstack_single>typedef @@value-type @@prefix_vtype;</vstack_single>
+
+	<!--
+	Begin and end of code to be generated for the value stack datatype-definition when multiple
+	datatypes are used within the whole grammar.
+	Note that you can define here even struct-like code or array-like structure if your target
+	language supports only those.
+	
+	Placeholders:		@@number-of-value-types	-	Expands to the maximum number of value types
+													possible here. Can be used in both of the 
+													following tags.
+	-->
+	<vstack_union_start>typedef union @@prefix_VTYPE&#x0A;{&#x0A;</vstack_union_start>
+	<vstack_union_end>} @@prefix_vtype;&#x0A;&#x0A;</vstack_union_end>
+	
+	<!--
+	This tag defines a data type definition within the union. As @@attribute, the content of the
+	<vstack_union_att>-tag is expanded, which then contains a consecutive number of the datatype.
+	This block is repeated for every value type within the union/whatever ;)
+	
+	Placeholders:		@@value-type			- 	Expands to the type-declaration of the
+													current data type as specified within the
+													grammar.
+						@@attribute				-	As @@attribute, the content of the
+													<vstack_union_att>-tag is expanded, which
+													then contains a consecutive number of the
+													datatype.
+						@@value-type-id			-	The value type ID, which begins at 0.
+													This can be the index of an array!
+	-->
+	<vstack_union_def>&#x09;@@value-type @@attribute;&#x0A;</vstack_union_def>
+	
+	<!--
+	This tag defines is used in several code-generation parts, both when the value stack union
+	is defined and when reduction code for productions is produced.
+	
+	Placeholders:		@@value-type-id			-	The value type ID, which begins at 0.
+													This can be the index of an array!
+	-->
+	<vstack_union_att>value_@@value-type-id</vstack_union_att>
+
+	<!--
+	***********************************************************************************************
+	Reduction-code related definitions
+	***********************************************************************************************
+	-->
+	
+	<!--
+	Begin and end of code to be generated for each reduction code action of a production. This
+	code is embedded to a switch-structure below, every block is a "case" within this switch.
+	<action_start> is generated BEFORE and <action_end> BEHIND each reduction code.
+	
+	Placeholders:		@@production-number		-	The number of the production to be reduced.
+													Can be used in both of the following tags.
+	-->
+	<action_start>&#x09;&#x09;&#x09;&#x09;case @@production-number:&#x09;&#x09;&#x09;&#x09;{&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;</action_start>
+	<action_end>&#x0A;&#x09;&#x09;&#x09;&#x09;}&#x09;&#x09;&#x09;&#x09;break;&#x0A;&#x0A;</action_end>
+	
+	<!--
+	Single value access when only one datatype is used in the whole grammar.
+	
+	Placeholders:		@@offset				-	The number of the right-hand side symbol to be
+													accessed. This is the number specified in
+													the production reduction code as number or
+													even by the right-hand side element's identi-
+													fier. The offset is inserted here by UniCC's
+													code generator.
+	-->
+	<action_single>(*( vtos - @@offset ))</action_single>
+
+	<!--
+	Multiple value access, in case of different datatypes used within the grammar.
+	
+	Placeholders:		@@offset				-	The number of the right-hand side symbol to be
+													accessed. This is the number specified in
+													the production reduction code as number or
+													even by the right-hand side element's identi-
+													fier. The offset is inserted here by UniCC's
+													code generator.
+						@@attribute				-	As @@attribute, the content of the
+													<vstack_union_att>-tag is expanded, which
+													then contains a consecutive number of the
+													datatype.
+	-->
+	<action_union>(*( vtos - @@offset )).@@attribute</action_union>
+
+	<!--
+	Single value left-hand side assignment variable when only one datatype is used in the whole
+	grammar.
+	
+	Placeholders:		none
+	-->
+	<action_lhs_single>ret</action_lhs_single>
+
+	<!--
+	Multiple value left-hand side assignment variable when different datatypes are used within
+	the whole grammar.
+	
+	Placeholders:		@@attribute				-	As @@attribute, the content of the
+													<vstack_union_att>-tag is expanded, which
+													then contains a consecutive number of the
+													datatype.
+	-->
+	<action_lhs_union>ret.@@attribute</action_lhs_union>
+
+	<!--
+	***********************************************************************************************
+	Regular expression terminal match related definitions
+	***********************************************************************************************
+	-->
+	
+	<!--
+	Begin and end of code to be generated for each match of a regular expression token. This
+	code is embedded to a switch-structure below, every block is a "case" within this switch.
+	<scan_action_start> is generated BEFORE and <scan_action_end> BEHIND each reduction code.
+	The code here is only produced when the matched regex-terminal contains individual code
+	segments.
+	
+	Placeholders:		@@symbol-number			-	The id of the terminal the lexical analyzer
+													action belongs to.
+													Can be used in both of the following tags.
+	-->
+	
+	<scan_action_start>&#x09;&#x09;case @@symbol-number:&#x09;&#x09;{&#x0A;&#x09;&#x09;&#x09;</scan_action_start>
+	<scan_action_end>&#x0A;&#x09;&#x09;}&#x09;&#x09;break;&#x0A;&#x0A;</scan_action_end>
+
+	<!--
+	The content of the tags <scan_action_begin_offset> and <scan_action_end_offset> are
+	inserted in regex-terminal semantic code blocks for the placeholders @> and @< to
+	get the start- and end-offset of the matched string. Normally, these are variable
+	names.
+	
+	Placeholders:		none
+	-->
+	<scan_action_begin_offset>start</scan_action_begin_offset>
+	<scan_action_end_offset>end</scan_action_end_offset>
+
+	<!--
+	When @@ is used in regex-terminal semantic code blocks, a variable that receives
+	the semantic value of the token to be pushed to the value stack must be given.
+	For single value assignments,this is done here. This value is only used when the
+	grammar uses only one datatype.
+	
+	Placeholders:		none
+	-->
+	<scan_action_ret_single>*ret</scan_action_ret_single>
+
+	<!--
+	Same play for multiple value assignments in regex-terminal semantic action blocks.
+	
+	Placeholders:		@@attribute				-	As @@attribute, the content of the
+													<vstack_union_att>-tag is expanded, which
+													then contains a consecutive number of the
+													datatype.
+	-->
+	<scan_action_ret_union>ret->@@attribute</scan_action_ret_union>
+
+	<!--
+	***********************************************************************************************
+	Parse tables
+	***********************************************************************************************
+	-->
+	
+	<!--
+	The <prodlen>-Tag defines an one-dimensional array for the production lengths, which means the
+	number of items on a right-hand side of every production used within the grammar. This is used
+	when a reduction occurs to pop the correct number of items off the parse stack.
+	The Placeholders can only be used in the <col>-tag below <prodlen>.
+	
+	Placeholders:		@@length-of-rhs			-	Number of items on a production's
+													right-hand side.
+						@@production-number		-	The production id number identifying
+													the production. This can be automatically
+													solved via the array index itself. The
+													production number begins at 0.
+	-->
+	<prodlen>
+		<col>@@length-of-rhs</col>
+		<col_sep>, </col_sep>
+	</prodlen>
+
+	<!--
+	The <prodlhs>-Tag defines an one-dimensional array for the id's of the left-hand side each pro-
+	duction belongs to. This is used	when a reduction occurs to push the correct left-hand side symbol
+	onto the parse stack. The Placeholders can only be used in the <col>-tag below <prodlhs>.
+	
+	Placeholders:		@@lhs					-	The id-number of the left-hand side symbol
+													the production belongs to.
+						@@production-number		-	The production id number identifying
+													the production. This can be automatically
+													solved via the array index itself. The
+													production number begins at 0.
+	-->
+	<prodlhs>
+		<col>@@lhs</col>
+		<col_sep>, </col_sep>
+	</prodlhs>
+
+	<!--
+	The <defprod>-Tag defines an one-dimensional array for the id's of the default productions
+	that should be reduced when no other action is selected. UniCC choses the default production
+	by the most common reduction that comes up. All reductions which belong to that production
+	are removed from the action table, so that the default table is chosen.
+	The following Placeholders can only be used in the <col>-tag below <defprod>.
+	
+	Placeholders:		@@state-number			-	The id-number of the state where the
+													default production belongs to.
+						@@production-number		-	The production id number identifying
+													the production. This can be automatically
+													solved via the array index itself. The
+													production number begins at 0. If there
+													is no default-production, than the
+													production-number will be -1.
+	-->
+	<defprod>
+		<col>@@production-number</col>
+		<col_sep>, </col_sep>
+	</defprod>
+
+	<!--
+	The <charmap>-Tag defines an one-dimensional array for the id's of the left-hand side each pro-
+	duction belongs to. This is used	when a reduction occurs to push the correct left-hand side symbol
+	onto the parse stack. The Placeholders can only be used in the <col>-tag below <prodlhs>.
+	
+	Placeholders:		@@lhs					-	The id-number of the left-hand side symbol
+													the production belongs to.
+						@@production-number		-	The production id number identifying
+													the production. This can be automatically
+													solved via the array index itself. The
+													production number begins at 0.
+	-->
+	<charmap>
+		<col>@@symbol</col>
+		<col_sep>, </col_sep>
+	</charmap>
+	<dfa_select>
+		<col>@@machine</col>
+		<col_sep>, </col_sep>
+	</dfa_select>
+	<dfa_char>
+		<col>@@code</col>
+		<col_sep>, </col_sep>
+	</dfa_char>
+	<dfa_trans>
+		<col>@@goto</col>
+		<col_sep>, </col_sep>
+	</dfa_trans>
+	<acttab>
+		<row_start>&#x09;{ @@number-of-columns</row_start>
+		<row_end> }</row_end>
+		<row_sep>,&#x0A;</row_sep>
+		<col>, @@symbol,@@action,@@index </col>
+		<col_sep></col_sep>
+	</acttab>
+	<gotab>
+		<row_start>&#x09;{ @@number-of-columns</row_start>
+		<row_end> }</row_end>
+		<row_sep>,&#x0A;</row_sep>
+		<col>, @@symbol,@@action,@@index </col>
+		<col_sep></col_sep>
+	</gotab>
+	<dfa_idx>
+		<row_start>&#x09;{ </row_start>
+		<row_end> }</row_end>
+		<row_sep>,&#x0A;</row_sep>
+		<col>@@index</col>
+		<col_sep>, </col_sep>
+	</dfa_idx>
+	<dfa_accept>
+		<row_start>&#x09;{ </row_start>
+		<row_end> }</row_end>
+		<row_sep>,&#x0A;</row_sep>
+		<col>@@accept</col>
+		<col_sep>, </col_sep>
+	</dfa_accept>
+	<kw_invalid_suffix>
+		<col_true>1</col_true>
+		<col_false>0</col_false>
+		<col_sep>, </col_sep>
+	</kw_invalid_suffix>
+	<whitespace>
+		<col_true>1</col_true>
+		<col_false>0</col_false>
+		<col_sep>, </col_sep>
+	</whitespace>
+	<symbols>
+		<col>/* @@symbol */ "@@symbol-name"</col>
+		<col_sep>, </col_sep>
+	</symbols>
+	<productions>
+		<col>"@@production"</col>
+		<col_sep>,&#x0A;</col_sep>
+	</productions>
+	<code_localization>/* #line @@line "@@filename" */
+</code_localization>
+	<driver>/*
+ * Parser:		@@name
+ * Version:		@@version
+ * Copyright:	@@copyright
+ * Description:	@@description
+ *
+ *
+ * Generated by the Phorward LALR(1) Parser Generator
+ * Copyright (C) by Phorward Software Technologies, Jan Max Meyer
+ */
+ 
+#if @@prologue_len == 0
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+#else
+@@prologue
+#endif
+
+
+#ifndef WITHDEBUG
+#define WITHDEBUG	0
+#endif
+
+#ifndef WITHSTACKDEBUG
+#define WITHSTACKDEBUG	0
+#endif
+
+#define PARSERFILE "@@prefix" "debug"
+
+@@value-type-definition
+
+int @@prefix_act[ @@number-of-states ][ @@deepest-action-row * 3 + 1 ] =
+{
+@@action-table
+};
+
+int @@prefix_go[ @@number-of-states ][ @@deepest-goto-row * 3 + 1 ] =
+{
+@@goto-table
+};
+
+int @@prefix_prod_lengths[ @@number-of-productions ] =
+{
+	@@production-lengths
+};
+
+int @@prefix_prod_lhs[ @@number-of-productions ] =
+{
+	@@production-lhs
+};
+
+int @@prefix_def_prod[ @@number-of-states ] =
+{
+	@@default-productions
+};
+
+#if !@@model
+int @@prefix_dfa_select[ @@number-of-states ] =
+{
+	@@dfa-select
+};
+#endif
+
+#if @@number-of-dfa-machines
+int @@prefix_dfa_idx[ @@number-of-dfa-machines ][ @@deepest-dfa-index-row ] =
+{
+@@dfa-index
+};
+
+int @@prefix_dfa_chars[ @@size-of-dfa-characters ] =
+{
+	@@dfa-char
+};
+
+int @@prefix_dfa_trans[ @@size-of-dfa-characters ] =
+{
+	@@dfa-trans
+};
+
+int @@prefix_dfa_accept[ @@number-of-dfa-machines ][ @@deepest-dfa-accept-row ] =
+{
+@@dfa-accept
+};
+
+int @@prefix_kw_invalid_suffixes[ @@character-universe ] =
+{
+@@keyword-invalid-suffixes
+};
+#endif
+
+int @@prefix_char_map[ @@character-universe ] =
+{
+	@@character-map
+};
+
+#if @@number-of-symbols
+int @@prefix_whitespaces[ @@number-of-symbols ] =
+{
+	@@whitespaces
+};
+#endif
+
+char* @@prefix_symbol_names[] =
+{
+	@@symbols
+};
+
+char* @@prefix_productions[] =
+{
+	@@productions
+};
+
+static int @@prefix_get_act_tab( int state, int sym, int* act, int* idx )
+{
+	int i;
+
+	for( i = 1; i &lt;@@prefix_act[state][0] * 3; i += 3 )
+	{
+		if( @@prefix_act[state][i] == sym )
+		{
+			*act = @@prefix_act[state][i+1];
+			*idx = @@prefix_act[state][i+2];
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+static int @@prefix_get_go_tab( int state, int sym, int* act, int* idx )
+{
+	int i;
+
+	for( i = 1; i &lt; @@prefix_go[state][0] * 3; i += 3 )
+	{
+		if( @@prefix_go[state][i] == sym )
+		{
+			*act = @@prefix_go[state][i+1];
+			*idx = @@prefix_go[state][i+2];
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+#if @@number-of-dfa-machines
+static int @@prefix_get_keyword( char* src, int* len, int top, @@prefix_vtype* ret )
+{
+	char*	start = src;
+	char*	end = start;
+	int 	dfa_st	= 0;
+	int		chr;
+	int		sym		= -1;
+#if !@@model
+	int		mach	= @@prefix_dfa_select[ top ];
+#else
+	int		mach	= 0;
+#endif
+	*len = 0;
+
+	do
+	{
+		chr = @@prefix_dfa_idx[ mach ][ dfa_st ];
+
+		dfa_st = -1;
+		while( @@prefix_dfa_chars[ chr ] &gt; -1 )
+		{
+			if( @@prefix_dfa_chars[ chr ] == *( src + *len ) )
+			{
+				dfa_st = *( @@prefix_dfa_trans + chr );
+
+				if( @@prefix_dfa_accept[ mach ][ dfa_st ] &gt; -1 )
+					sym = @@prefix_dfa_accept[ mach ][ dfa_st ];
+
+				(*len)++;
+				break;
+			}
+			chr++;
+		}
+	}
+	while( dfa_st &gt; -1 );
+	
+	
+	if( sym &gt; -1 &amp;&amp; @@prefix_kw_invalid_suffixes[ *( src + *len ) ] )
+		return -1;
+	
+	end += *len;
+	switch( sym )
+	{
+@@scan_actions
+	}
+	
+	return sym;
+}
+#endif
+
+static int @@prefix_get_sym( char** src, int* sym,
+	int* len, int tos, @@prefix_vtype* next )
+{
+#if !@@model
+	*sym = -1;
+	*len = 0;
+	
+#else
+	if( *sym == -1 )
+	{
+		memset( next, 0, sizeof( @@prefix_vtype ) );
+
+		do
+		{
+			*src += *len;
+#endif
+#if @@number-of-dfa-machines
+#if !@@model
+			if( @@prefix_dfa_select[ tos ] &gt; -1 )
+				*sym = @@prefix_get_keyword( *src, len, tos, next );
+#else
+			*sym = @@prefix_get_keyword( *src, len, 0, next );
+#endif
+
+			if( *sym == -1 )
+#endif
+			{
+				*sym = @@prefix_char_map[ **src ];
+				*len = 1;
+			}
+#if @@model
+		}
+		while( *sym &gt; -1 && @@prefix_whitespaces[ *sym ] );
+	}
+#endif
+
+	return ( *sym > -1 ) ? 1 : 0;
+}
+
+#if WITHSTACKDEBUG
+static void @@prefix_dbg_stack( FILE* out, int* stack, int* tos,
+	@@prefix_vtype* vstack, @@prefix_vtype* vtos )
+{
+	fprintf( out, "%s: Stack        ", PARSERFILE );
+	for( ; stack &lt;= tos; stack++ )
+		fprintf( out, "%d ", *stack );
+		
+	fprintf( out, "\n" );
+	fprintf( out, "%s: Value-Stack  ", PARSERFILE );	
+	for( ; vstack &lt;= vtos; vstack++ )
+		fprintf( out, "%d ", *( (int*)vstack ) );
+	
+	fprintf( out, "\n" );
+}
+#endif /* WITHSTACKDEBUG */
+
+int @@prefix_parse( char* src )
+{
+	int		stack		[ 1024 ];
+	int*	tos			= stack;
+	@@prefix_vtype		vstack[ 1024 ];
+	@@prefix_vtype*		vtos = vstack;
+
+	@@prefix_vtype		ret;
+	@@prefix_vtype		next;
+	@@prefix_vtype		test;
+	int		act;
+	int		idx;
+	int		sym			= -1;
+	int		len			= 0;
+	int		i;
+	int		error_delay	= 0;
+	int		error_count	= 0;
+#if WITHDEBUG
+	@@prefix_vtype*		vptr;
+	FILE* 				@@prefix_dbg;
+	
+	@@prefix_dbg = stderr;
+#endif
+
+	*stack = 0;
+	memset( &amp;test, 0, sizeof( @@prefix_vtype ) );
+	memset( &amp;next, 0, sizeof( @@prefix_vtype ) );
+	memset( vstack, 0, 1024 * sizeof( @@prefix_vtype ) );
+
+	while( 1 )
+	{
+		@@prefix_get_sym( &src, &sym, &len, *tos, &next );
+
+		if( !@@prefix_get_act_tab( *tos, sym, &act, &idx ) )
+		{
+			/*
+				Parse error
+			*/
+			
+#if WITHDEBUG
+			fprintf( @@prefix_dbg, "%s: !!!PARSE ERROR!!!\n"
+					"%s: error recovery: current token %d (%s)\n",
+						PARSERFILE, PARSERFILE, sym,
+							@@prefix_symbol_names[ sym ] );
+			fprintf( @@prefix_dbg,
+					"%s: error recovery: expecting ", PARSERFILE );
+					
+			for( i = 1; i &lt; @@prefix_act[ *tos ][0] * 3; i += 3 )
+			{
+				fprintf( @@prefix_dbg, "%d (%s)%s",
+					@@prefix_act[ *tos ][i],
+					@@prefix_symbol_names[ @@prefix_act[ *tos ][i] ],
+					( i == @@prefix_act[ *tos ][0] * 3 - 3 ) ? "\n" : ", " );
+			}
+			
+			fprintf( @@prefix_dbg, "\n%s: error recovery: error_delay is %d, %s\n",
+						PARSERFILE, error_delay,
+						( error_delay ? "error recovery runs silently" :
+							"error is reported before its recover!" ) );
+#endif
+			fprintf( stderr, "syntax error\n" );
+
+			if( !error_delay )
+			{
+				error_count++;
+			}
+			return 1;
+			
+#if @@error &lt; 0
+#if WITHDEBUG
+			fprintf( @@prefix_dbg,
+				"%s: error recovery: No error resync token used, "
+					"exiting parser.\n", PARSERFILE );
+#endif
+			/* No error token defined? Then exit here! */
+			return 1;
+#else
+
+#if WITHDEBUG
+			fprintf( @@prefix_dbg, "%s: error recovery: trying to recover...\n",
+				PARSERFILE );
+#if WITHSTACKDEBUG
+			@@prefix_dbg_stack( @@prefix_dbg, stack, tos, vstack, vtos );
+#endif
+#endif
+					
+			while( tos &gt; stack )
+			{
+				if( @@prefix_get_act_tab( *tos, @@error, &act, &idx ) )
+				{
+					if( act & 2 )
+					{
+						tos++;
+						vtos++;
+						
+						*tos = idx;
+						break;
+					}
+				}
+
+				tos--;
+				vtos--;
+			}
+
+			if( *tos == idx )
+			{			
+#if WITHDEBUG
+				fprintf( @@prefix_dbg, "%s: error recovery: resync token found, "
+					"trying to re-synchronize...\n", PARSERFILE );
+#if WITHSTACKDEBUG
+				@@prefix_dbg_stack( @@prefix_dbg, stack, tos, vstack, vtos );
+#endif
+#endif
+				while( sym != @@eof )
+				{
+#if WITHDEBUG
+					fprintf( @@prefix_dbg, "%s: error recovery: "
+						"trying to shift on %d (%s)\n",
+							PARSERFILE, sym, @@prefix_symbol_names[ sym ] );
+#endif
+					if( @@prefix_get_act_tab( *tos, sym, &act, &idx ) )
+						break;
+
+#if WITHDEBUG
+					fprintf( @@prefix_dbg, "%s: error recovery: "
+						"skipping\n", PARSERFILE );
+#endif
+					src += len;
+					
+					len = 0;
+					sym = -1;
+					while( !@@prefix_get_sym( &src, &sym, &len, *tos, &next ) )
+					{
+						sym = -1;
+						src++; /* Skip one character */
+					}					
+				}
+			}
+			
+			/* If there is no transition possible here, than exit */
+			if( !@@prefix_get_act_tab( *tos, sym, &act, &idx ) )
+			{
+#if WITHDEBUG
+				fprintf( @@prefix_dbg, "%s: error recovery: No transitions "
+					"possible, can't recover!\n", PARSERFILE );
+#endif
+				break;
+			}
+			
+#if WITHDEBUG
+			fprintf( @@prefix_dbg, "%s: error recovery: that's it, "
+						"error has been recovered!\n", PARSERFILE );	
+#endif
+				
+			error_delay = 3;
+#endif
+		}
+
+#if WITHDEBUG
+		fprintf( @@prefix_dbg,
+			"%s: sym = %d (%s) [len = %d] *tos = %d act = %s idx = %d\n",
+				PARSERFILE, sym, @@prefix_symbol_names[ sym ], len, *tos, 
+					( ( act == 3 ) ? "shift/reduce" :
+						( act & 2 ) ? "shift" : "reduce" ),
+							idx, src );
+#if WITHSTACKDEBUG
+		@@prefix_dbg_stack( @@prefix_dbg, stack, tos, vstack, vtos );
+#endif
+#endif
+
+		/* Shift */
+		if( act & 2 )
+		{
+#if WITHDEBUG
+			fprintf( @@prefix_dbg, "%s: &gt;&gt; shifting terminal %d (%s)\n",
+				PARSERFILE, sym, @@prefix_symbol_names[ sym ] );
+#endif
+			tos++;
+			vtos++;
+
+			*tos = ( act & 1 ) ? 0 : idx;
+			
+			if( !@@model && !memcmp( &amp;next, &amp;test, sizeof( @@prefix_vtype ) ) )
+				@@top-value = *src;
+			else
+			{
+				memcpy( vtos, &amp;next, sizeof( @@prefix_vtype ) );
+				memset( &amp;next, 0, sizeof( @@prefix_vtype ) );
+			}
+
+			src += len;
+			
+			len = 0;
+			sym = -1;
+			
+			if( error_delay )
+				error_delay--;
+		}
+
+		/* Reduce */
+		while( act & 1 )
+		{
+#if WITHDEBUG			
+			fprintf( @@prefix_dbg, "%s: &lt;&lt; reducing by production %d (%s)\n",
+				PARSERFILE, idx, @@prefix_productions[ idx ] );
+#endif
+			memset( &amp;ret, 0, sizeof( @@prefix_vtype ) );
+
+			switch( idx )
+			{
+@@actions
+			}
+
+			tos -= @@prefix_prod_lengths[ idx ];
+			vtos -= @@prefix_prod_lengths[ idx ];
+
+			if( idx == @@goal-production )
+			{
+				src += len;
+
+				#if WITHDEBUG
+				fprintf( stderr, "%s: Goal symbol reduced, exiting parser\n\n",
+						PARSERFILE, src );
+				#endif
+				
+				break;
+			}
+
+			#if WITHDEBUG
+			fprintf( @@prefix_dbg, "%s: after reduction, shifting nonterminal %d (%s)\n",
+				PARSERFILE, @@prefix_prod_lhs[ idx ], @@prefix_symbol_names[
+					@@prefix_prod_lhs[ idx ] ] );
+			#endif
+
+			@@prefix_get_go_tab( *tos, @@prefix_prod_lhs[ idx ], &act, &idx );
+			
+			*(++tos) = ( act & 1 ) ? 0 : idx;
+			memcpy( ++vtos, &amp;ret, sizeof( @@prefix_vtype ) );
+		}
+		
+		if( act & 1 && idx == @@goal-production )
+			break;
+	}
+	
+	printf( "%s: parse completed with %d errors\n", PARSERFILE, error_count );
+	return error_count;
+}
+
+#if @@epilogue_len == 0
+int main( int argc, char** argv )
+{
+	char	s[ 24576+1 ];
+	char	l[ 24576+1 ] ;
+	short 	first;
+	
+	if( @@name_len &gt; 0 && @@version_len &gt; 0 )
+		printf( "@@name v@@version\n" );
+	
+	if( @@copyright_len &gt; 0 )
+		printf( "@@copyright\n\n" );
+		
+	printf( "UniCC LALR(1) Parser Generator :: Standard Parser Template for C programming language\n"
+			"Copyright (C) 2008, 2009 by Phorward Software Technologies, Jan Max Meyer\n---\n" );
+	
+	do
+	{
+		first = 0;
+		*s = '\0';
+		
+		printf( "\nok\n" );
+		do
+		{
+			printf( "@@name>" );
+			fgets( l, sizeof( l ), stdin );
+		
+			if( *l == '\n' )
+			{
+				if( first )
+					break;
+				else
+					first = 1;
+			}
+			else
+				sprintf( s + strlen( s ), "%s\n", l );
+		}
+		while( 1 );
+		
+		//s[ strlen( s ) - 1 ] = '\0';
+		
+		if( !( *s ) )
+			break;
+			
+		/* printf( "Compiling source\n&gt;%s&lt;\n\n~~~\n", s ) ; */
+		@@prefix_parse( s );
+
+	}
+	while( 1 );
+	
+	return 0;
+}
+#else
+@@epilogue
+#endif
+</driver>
+</generator>
