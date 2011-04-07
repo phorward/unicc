@@ -344,12 +344,12 @@ void p_unique_charsets( PARSER* parser )
 					}
 
 					/* Disallow intersections in context-sensitive model */
-					if( parser->p_model == MODEL_CONTEXT_INSENSITIVE )
+					if( parser->p_mode == MODE_INSENSITIVE )
 					{
 						if( !( tmpstr = ccl_to_str( inter, TRUE ) ) )
 							OUT_OF_MEMORY;
 
-						p_error( ERR_CHARCLASS_OVERLAP,
+						p_error( parser, ERR_CHARCLASS_OVERLAP,
 									ERRSTYLE_FATAL, tmpstr );
 
 						pfree( tmpstr );
@@ -756,7 +756,7 @@ void p_setup_single_goal( PARSER* parser )
 							SYM_CCL_TERMINAL, TRUE );
 					parser->end_of_input->generated = TRUE;
 
-					p_error( ERR_ASSUMING_DEF_EOF,
+					p_error( parser, ERR_ASSUMING_DEF_EOF,
 							ERRSTYLE_WARNING, P_DEF_EOF_SYMBOL );
 				}
 
@@ -804,7 +804,7 @@ void p_setup_single_goal( PARSER* parser )
 
 		parser->end_of_input->generated = TRUE;
 
-		p_error( ERR_ASSUMING_DEF_EOF, ERRSTYLE_WARNING, P_DEF_EOF_SYMBOL );
+		p_error( parser, ERR_ASSUMING_DEF_EOF, ERRSTYLE_WARNING, P_DEF_EOF_SYMBOL );
 	}
 
 	p_append_to_production( p, parser->end_of_input, (uchar*)NULL );
