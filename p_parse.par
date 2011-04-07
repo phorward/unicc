@@ -843,6 +843,8 @@ ccl<BOOLEAN>	->	ccl_string									[*	@@ = FALSE; *]
 				| '!' ccl_string								[*	@@ = TRUE; *]
 				;
 
+
+/* ------------------------------------- TODO: Must be re-designed... --- */
 ccl_string		->	'\'' ccl_str '\'';
 
 ccl_str			->	ccl_str ccl_char
@@ -854,10 +856,16 @@ ccl_char		->	!'\\\''										[* strbuf_append( @1 ); *]
 																   strbuf_append( @2 ); 	  *]
 				;
 
-kw				->	'\"' kw_str '\"';
+kw				->	'\"' kw_str '\"'
+				;
 
-kw_str			->	kw_str !'\"'								[* 	strbuf_append( @2 ); *]
+kw_str			->	kw_str kw_char								[* 	strbuf_append( @2 ); *]
 				|												[*	reset_strbuf(); *]
+				;
+				
+kw_char			->	!'\\"'										[* strbuf_append( @1 ); *]
+				| '\\' !'\0'									[* strbuf_append( (uchar)'\\' );
+																   strbuf_append( @2 ); 	  *]
 				;
 
 type<uchar*>	->	'<' type_str '>'							[*	@@ = p_strdup( strbuf );		*]
@@ -881,6 +889,8 @@ identifier_follow
 				-> identifier_follow 'A-Za-z0-9_'				[*	strbuf_append( @2 ); 		*]
 				|
 				;
+				
+/* ------------------------------------- TODO: ...until here --- */
 
 integer			->	integer '0-9'								[*	strbuf_append( @2 ); 		*]
 				| '0-9'											[* 	reset_strbuf();
