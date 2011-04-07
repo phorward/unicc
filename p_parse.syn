@@ -160,8 +160,6 @@ static void set_nfa_to_symbol( SYMBOL* s,
 		
 	list_free( nfa_x.states );
 	memset( &nfa_x, 0, sizeof( pregex_nfa ) );
-	
-	s->keyword = TRUE;
 }
 
 /*
@@ -510,7 +508,7 @@ terminal:		ccl												{ 	SYMBOL* s;
 																	
 																	
 																	s = p_get_symbol( parser,
-																			strbuf, SYM_KW_TERMINAL, TRUE );
+																			strbuf, SYM_REGEX_TERMINAL, TRUE );
 
 																	s->used = TRUE;
 																	s->defined = TRUE;
@@ -522,14 +520,6 @@ terminal:		ccl												{ 	SYMBOL* s;
 																				!= ERR_OK )
 																		OUT_OF_MEMORY;
 																	
-																	##.ptr = s;
-																}
-				| integer										{	SYMBOL* s;
-																	s = p_get_symbol( parser,
-																			strbuf, SYM_EXTERN_TERMINAL, TRUE );
-																	s->used = TRUE;
-																	s->defined = TRUE;
-
 																	##.ptr = s;
 																}
 				| '@' identifier								{	SYMBOL* s;
@@ -555,6 +545,7 @@ modifier:		'*'												{	##.ch = '*';	}
 				;
 				
 access_name:	':' identifier
+				| ':' string
 				|												{	reset_strbuf(); }
 				;
 
@@ -732,7 +723,16 @@ code_opt:	code
 			|													{	reset_strbuf(); }
 			;
 
-code:		"[*" inner_code "*]"
+code:		"[*" inner_code "*]"								{
+																	if( !parser->p_language )
+																	{
+																		p_error( 
+																			ERR_NO_TARGET_LANG_SUPPLY,
+																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
+																			parser->filename, line );
+																		reset_strbuf();
+																	}
+																}
 			;
 
 inner_code:	inner_code '^'										{	strbuf_append( #2.ch ); }
