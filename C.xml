@@ -187,8 +187,8 @@ Some general things you have to know:
 	
 	Placeholders:		none
 	-->
-	<scan_action_begin_offset>src</scan_action_begin_offset>
-	<scan_action_end_offset>(src + len)</scan_action_end_offset>
+	<scan_action_begin_offset>(pcb.buf)</scan_action_begin_offset>
+	<scan_action_end_offset>(pcb.buf + pcb.len)</scan_action_end_offset>
 
 	<!--
 	When @@ is used in regex-terminal semantic code blocks, a variable that receives
@@ -386,11 +386,12 @@ Some general things you have to know:
 #endif
 
 #ifndef UNICC_CLEARIN
-#define UNICC_CLEARIN			sym = -1
+#define UNICC_CLEARIN			@@prefix_clear_input( &amp;@@prefix_pcb )
 #endif
 
+/*TODO:*/
 #ifndef UNICC_NO_INPUT_BUFFER
-#define UNICC_NO_INPUT_BUFFER	1
+#define UNICC_NO_INPUT_BUFFER	0
 #endif
 
 #ifndef UNICC_GETINPUT
@@ -445,6 +446,8 @@ typedef struct
 	int				error_count;
 	
 	unsigned int	line;
+	
+	@@pcb
 } @@prefix_pcb;
 
 /* Action Table */
@@ -564,7 +567,7 @@ static int @@prefix_get_act_tab( @@prefix_pcb* pcb )
 	/* Default production */
 	if( ( pcb->idx = @@prefix_def_prod[ *( pcb->tos ) ] ) > -1 )
 	{
-	pcb->act = 1; /* Reduce */
+		pcb->act = 1; /* Reduce */
 		return 1;
 	}
 
@@ -711,7 +714,7 @@ static int @@prefix_get_sym( @@prefix_pcb* pcb )
 	pcb->len = 0;
 	
 #else /* @@model */
-	if( pcb->sym == -1 )
+	if( 1  ) /* pcb->sym == -1 */
 	{
 		do
 		{
@@ -728,8 +731,16 @@ static int @@prefix_get_sym( @@prefix_pcb* pcb )
 #endif /* @@number-of-dfa-machines */
 				pcb->sym = @@prefix_char_map[ @@prefix_get_input( pcb, pcb->len++ ) ];
 #if @@model
+
+			if( pcb->sym &gt; -1 &amp;&amp; @@prefix_whitespaces[ pcb->sym ] )
+			{
+				@@prefix_clear_input( pcb );
+				continue;
+			}
+			
+			break;
 		}
-		while( pcb->sym &gt; -1 &amp;&amp; @@prefix_whitespaces[ pcb->sym ] );
+		while( 1 );
 	}
 #endif /* @@model */
 
@@ -756,6 +767,7 @@ static void @@prefix_dbg_stack( FILE* out, int* stack, int* tos,
 int @@prefix_parse( void )
 {
 	@@prefix_pcb		pcb;
+	int					old_sym;
 #if UNICC_DEBUG
 	int		i;
 	@@prefix_vtype*		vptr;
