@@ -24,7 +24,8 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 uchar* error_txt[128] =
 {
 	"Memory allocation error (out of memory?) in %s, line %d",
-	"Expecting \'%s\' but found \'%s\'",
+	"Parse error: Invalid input \'%s\'",
+	"Parse error: Found \'%s\', but expecting %s",
 	"Multiple goal symbol defined; \'%s\' is already the goal symbol",
 	"Invalid right-hand side definition for goal symbol",
 	"No goal symbol defined",
@@ -37,7 +38,7 @@ uchar* error_txt[128] =
 	"Terminal-symbol \'%s\' is defined but never used",
 	"Reduce-reduce conflict on lookahead: ",
 	"Shift-reduce conflict on lookahead: ",
-	"Nonassociativity conflict on lookahead: ",
+	/* "Nonassociativity conflict on lookahead: ", */
 	"Keyword anomaly at shift on \'%s\' and reduce on \'%s\'",
 	"Unimplemented target language \'%s\' for code generator",
 	"Undefined value type for \'%s\' in reduction code of rule %d, \'%.*s\'",
