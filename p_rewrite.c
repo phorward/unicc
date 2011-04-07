@@ -1,6 +1,6 @@
 /* -MODULE----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator 
-Copyright (C) 2006-2009 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2011 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_rewrite.c
@@ -832,6 +832,12 @@ void p_setup_single_goal( PARSER* parser )
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
+	17.01.2010	Jan Max Meyer	Sort keyword regex terminals before any
+								other kind of terminal... hmm ... in the past,
+								keywords where of type SYM_KW_TERMINAL, now
+								they are SYM_REGEX_TERMINAL, so this must be
+								hard-coded here, check for it if one's like
+								to change this (be careful!!)
 ----------------------------------------------------------------------------- */
 void p_symbol_order( PARSER* parser )
 {
@@ -842,6 +848,11 @@ void p_symbol_order( PARSER* parser )
 	pregex_nfa_st*	n_st;
 
 	int				sort_order[]	=	{
+											/* SYM_REGEX_TERMINAL,
+												once for keywords, then for
+												real regex terminals
+											*/
+											SYM_REGEX_TERMINAL,
 											SYM_REGEX_TERMINAL,
 											SYM_CCL_TERMINAL,
 											SYM_ERROR_RESYNC,
@@ -853,30 +864,36 @@ void p_symbol_order( PARSER* parser )
 	/* Sort symbols according above sort order into a new list */
 	for( i = 0; i < sizeof( sort_order ) / sizeof( *sort_order ); i++ )
 	{
-			LISTFOR( parser->symbols, l )
+		LISTFOR( parser->symbols, l )
+		{
+			sym = (SYMBOL*)list_access( l );
+
+			if( sym->type == sort_order[i] )
 			{
-				sym = (SYMBOL*)list_access( l );
+				/* That's it... */
+				if( i == 0 && sym->keyword == FALSE )
+					continue;
+				else if( i == 1 && sym->keyword == TRUE )
+					continue;
 
-				if( sym->type == sort_order[i] )
+				if( !( new_order = list_push( new_order, (void*)sym ) ) )
+					OUT_OF_MEMORY;
+
+				/* In case of an NFA-based token, the accepting-IDs
+					of the constructed machine need to be updated */
+				LISTFOR( sym->nfa.states, m )
 				{
-					if( !( new_order = list_push( new_order, (void*)sym ) ) )
-						OUT_OF_MEMORY;
+					n_st = (pregex_nfa_st*)list_access( m );
 
-					/* In case of an NFA-based token, the accepting-IDs
-						of the constructed machine need to be updated */
-					LISTFOR( sym->nfa.states, m )
-					{
-						n_st = (pregex_nfa_st*)list_access( m );
-
-						if( n_st->accept != REGEX_ACCEPT_NONE &&
-								n_st->accept == sym->id )
-							n_st->accept = id;
-					}
-
-					/* Re-assign new ID! */
-					sym->id = id++;
+					if( n_st->accept != REGEX_ACCEPT_NONE &&
+							n_st->accept == sym->id )
+						n_st->accept = id;
 				}
+
+				/* Re-assign new ID! */
+				sym->id = id++;
 			}
+		}
 	}
 
 	/* Replace the list */
