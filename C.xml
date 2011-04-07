@@ -11,7 +11,7 @@ Usage:	Target language template for the C programming language
 This template should serve as a general description/reference of how
 templates for the UniCC parser generator are written. I know that some
 things could be done better, and that there are many ways to speed up
-the parsers UniCC produces. If you know some ways, improve it!
+the parsers UniCC produces. If you know some ways, please improve it!
 
 Some general things you have to know:
 -	The placeholder @@prefix holds the prefix which is possibly defined for
@@ -119,7 +119,7 @@ Some general things you have to know:
 													fier. The offset is inserted here by UniCC's
 													code generator.
 	-->
-	<action_single>(*( vtos - @@offset ))</action_single>
+	<action_single>(*( pcb.vtos - @@offset ))</action_single>
 
 	<!--
 	Multiple value access, in case of different datatypes used within the grammar.
@@ -135,7 +135,7 @@ Some general things you have to know:
 													then contains a consecutive number of the
 													datatype.
 	-->
-	<action_union>(*( vtos - @@offset )).@@attribute</action_union>
+	<action_union>(*( pcb.vtos - @@offset )).@@attribute</action_union>
 
 	<!--
 	Single value left-hand side assignment variable when only one datatype is used in the whole
@@ -143,7 +143,7 @@ Some general things you have to know:
 	
 	Placeholders:		none
 	-->
-	<action_lhs_single>ret</action_lhs_single>
+	<action_lhs_single>pcb.ret</action_lhs_single>
 
 	<!--
 	Multiple value left-hand side assignment variable when different datatypes are used within
@@ -154,7 +154,7 @@ Some general things you have to know:
 													then contains a consecutive number of the
 													datatype.
 	-->
-	<action_lhs_union>ret.@@attribute</action_lhs_union>
+	<action_lhs_union>pcb.ret.@@attribute</action_lhs_union>
 
 	<!--
 	***********************************************************************************************
@@ -196,7 +196,7 @@ Some general things you have to know:
 	
 	Placeholders:		none
 	-->
-	<scan_action_ret_single>*ret</scan_action_ret_single>
+	<scan_action_ret_single>*(pcb.vtos)</scan_action_ret_single>
 
 	<!--
 	Same play for multiple value assignments in regex-terminal semantic action blocks.
@@ -206,7 +206,7 @@ Some general things you have to know:
 													then contains a consecutive number of the
 													datatype.
 	-->
-	<scan_action_ret_union>ret->@@attribute</scan_action_ret_union>
+	<scan_action_ret_union>(*(pcb.vtos)).@@attribute</scan_action_ret_union>
 
 	<!--
 	***********************************************************************************************
@@ -352,13 +352,14 @@ Some general things you have to know:
  * Copyright:	@@copyright
  * Description:	@@description
  *
- * UniCC Parser Template for C - Version 1.5
+ * UniCC Parser Template for C - Version 1.6
  * Copyright (C) by Phorward Software Technologies, Jan Max Meyer
  */
  
 #if @@prologue_len == 0
 #include &lt;stdlib.h&gt;
 #include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
 #else
 @@prologue
 #endif
@@ -381,129 +382,199 @@ Some general things you have to know:
 	fprintf( stderr, "syntax error\n" )
 #endif
 
-#ifndef UNICC_CLEAR_TOKEN
-#define UNICC_CLEAR_TOKEN()		sym = -1
+#ifndef UNICC_CLEARIN
+#define UNICC_CLEARIN			sym = -1
 #endif
 
+#ifndef UNICC_NO_INPUT_BUFFER
+#define UNICC_NO_INPUT_BUFFER	1
+#endif
+
+#ifndef UNICC_GETINPUT
+#define UNICC_GETINPUT			getchar()
+#endif
+
+#ifndef UNICC_MALLOCSTEP
+#define UNICC_MALLOCSTEP		128
+#endif
+
+#ifndef UNICC_OUTOFMEM
+#define UNICC_OUTOFMEM			fprintf( stderr, "Fatal error, ran out of memory\n" ),\
+								exit( 1 )
+#endif
+
+#ifdef PARSERFILE
+#undef PARSERFILE
+#endif
 #define PARSERFILE "@@prefix" "debug"
 
+/* Value Types */
 @@value-type-definition
 
-int @@prefix_act[ @@number-of-states ][ @@deepest-action-row * 3 + 1 ] =
+/* Parser Control Block */
+typedef struct
+{
+	/* Stack */
+	int				stack	[ 1024 ];
+	int*			tos;
+	/* Value Stack */
+	@@prefix_vtype	vstack	[ 1024 ];
+	@@prefix_vtype*	vtos;
+	
+	/* Values */
+	@@prefix_vtype	ret;
+	@@prefix_vtype	test;
+	
+	/* State */
+	int				act;
+	int				idx;
+	
+	/* Lookahead */
+	char*			buf;
+	char*			bufend;
+	char*			bufsize;
+
+	int				sym;
+	unsigned int	len;
+	
+	/* Error handling */
+	int				error_delay;
+	int				error_count;
+
+} @@prefix_pcb;
+
+/* Action Table */
+static int @@prefix_act[ @@number-of-states ][ @@deepest-action-row * 3 + 1 ] =
 {
 @@action-table
 };
 
-int @@prefix_go[ @@number-of-states ][ @@deepest-goto-row * 3 + 1 ] =
+/* GoTo Table */
+static int @@prefix_go[ @@number-of-states ][ @@deepest-goto-row * 3 + 1 ] =
 {
 @@goto-table
 };
 
-int @@prefix_prod_lengths[ @@number-of-productions ] =
+/* Production Lengths */
+static int @@prefix_prod_lengths[ @@number-of-productions ] =
 {
 	@@production-lengths
 };
 
-int @@prefix_prod_lhs[ @@number-of-productions ] =
+/* Production's Left-Hand-Sides */
+static int @@prefix_prod_lhs[ @@number-of-productions ] =
 {
 	@@production-lhs
 };
 
-int @@prefix_def_prod[ @@number-of-states ] =
+/* Default productions per state */
+static int @@prefix_def_prod[ @@number-of-states ] =
 {
 	@@default-productions
 };
 
 #if !@@model
-int @@prefix_dfa_select[ @@number-of-states ] =
+/* DFA selection table */
+static int @@prefix_dfa_select[ @@number-of-states ] =
 {
 	@@dfa-select
 };
 #endif
 
 #if @@number-of-dfa-machines
-int @@prefix_dfa_idx[ @@number-of-dfa-machines ][ @@deepest-dfa-index-row ] =
+/* DFA index table */
+static int @@prefix_dfa_idx[ @@number-of-dfa-machines ][ @@deepest-dfa-index-row ] =
 {
 @@dfa-index
 };
 
-int @@prefix_dfa_chars[ @@size-of-dfa-characters ] =
+/* DFA transition chars */
+static int @@prefix_dfa_chars[ @@size-of-dfa-characters ] =
 {
 	@@dfa-char
 };
 
-int @@prefix_dfa_trans[ @@size-of-dfa-characters ] =
+/* DFA transitions */
+static int @@prefix_dfa_trans[ @@size-of-dfa-characters ] =
 {
 	@@dfa-trans
 };
 
-int @@prefix_dfa_accept[ @@number-of-dfa-machines ][ @@deepest-dfa-accept-row ] =
+/* DFA acception states */
+static int @@prefix_dfa_accept[ @@number-of-dfa-machines ][ @@deepest-dfa-accept-row ] =
 {
 @@dfa-accept
 };
 
-int @@prefix_kw_invalid_suffixes[ @@character-universe ] =
+/* Invalid characters behind keywords */
+static int @@prefix_kw_invalid_suffixes[ @@character-universe ] =
 {
 @@keyword-invalid-suffixes
 };
 #endif
 
-int @@prefix_char_map[ @@character-universe ] =
+/* Single Character Lookahead */
+static int @@prefix_char_map[ @@character-universe ] =
 {
 	@@character-map
 };
 
 #if @@number-of-symbols
-int @@prefix_whitespaces[ @@number-of-symbols ] =
+/* Whitespace symbols */
+static int @@prefix_whitespaces[ @@number-of-symbols ] =
 {
 	@@whitespaces
 };
 #endif
 
-char* @@prefix_symbol_names[] =
+#if UNICC_DEBUG
+/* DEBUG: Symbol names */
+static char* @@prefix_symbol_names[] =
 {
 	@@symbols
 };
 
-char* @@prefix_productions[] =
+/* DEBUG: Productions */
+static char* @@prefix_productions[] =
 {
 	@@productions
 };
+#endif
 
-static int @@prefix_get_act_tab( int state, int sym, int* act, int* idx )
+static int @@prefix_get_act_tab( @@prefix_pcb* pcb )
 {
 	int i;
 
-	for( i = 1; i &lt; @@prefix_act[state][0] * 3; i += 3 )
+	for( i = 1; i &lt; @@prefix_act[ *( pcb->tos ) ][0] * 3; i += 3 )
 	{
-		if( @@prefix_act[state][i] == sym )
+		if( @@prefix_act[ *( pcb->tos ) ][i] == pcb->sym )
 		{
-			*act = @@prefix_act[state][i+1];
-			*idx = @@prefix_act[state][i+2];
+			pcb->act = @@prefix_act[ *( pcb->tos ) ][i+1];
+			pcb->idx = @@prefix_act[ *( pcb->tos ) ][i+2];
 			return 1;
 		}
 	}
 	
 	/* Default production */
-	if( ( *idx = @@prefix_def_prod[ state ] ) > -1 )
+	if( ( pcb->idx = @@prefix_def_prod[ *( pcb->tos ) ] ) > -1 )
 	{
-		*act = 1; /* Reduce */
+	pcb->act = 1; /* Reduce */
 		return 1;
 	}
 
 	return 0;
 }
 
-static int @@prefix_get_go_tab( int state, int sym, int* act, int* idx )
+static int @@prefix_get_go_tab( @@prefix_pcb* pcb, int sym )
 {
 	int i;
 
-	for( i = 1; i &lt; @@prefix_go[state][0] * 3; i += 3 )
+	for( i = 1; i &lt; @@prefix_go[ *( pcb->tos ) ][0] * 3; i += 3 )
 	{
-		if( @@prefix_go[state][i] == sym )
+		if( @@prefix_go[ *( pcb->tos ) ][i] == sym )
 		{
-			*act = @@prefix_go[state][i+1];
-			*idx = @@prefix_go[state][i+2];
+			pcb->act = @@prefix_go[ *( pcb->tos ) ][i+1];
+			pcb->idx = @@prefix_go[ *( pcb->tos ) ][i+2];
 			return 1;
 		}
 	}
@@ -511,18 +582,80 @@ static int @@prefix_get_go_tab( int state, int sym, int* act, int* idx )
 	return 0;
 }
 
+static char @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offset )
+{
+	/*
+	if( pcb->bufend &amp;&amp; pcb->buf + pcb->len &lt; pcb->bufend )
+		return *( pcb->buf + pcb->len++ );
+	*/
+	
+	while( pcb->buf + offset &gt;= pcb->bufend )
+	{
+		if( !pcb->buf )
+		{
+			pcb->bufend = pcb->buf = (char*)malloc(
+				( UNICC_MALLOCSTEP + 1 ) * sizeof( char ) );		
+	
+			if( !pcb->buf )
+				UNICC_OUTOFMEM;
+	
+			*pcb->buf = '\0';
+		}
+		else if( *pcb->buf &amp;&amp; !( ( pcb->bufend - pcb->buf ) % UNICC_MALLOCSTEP ) )
+		{
+			pcb->buf = (char*)realloc( (char*)pcb->buf,
+				( ( pcb->bufend - pcb->buf ) + UNICC_MALLOCSTEP + 1 )
+					* sizeof( char ) );
+	
+			if( !pcb->buf )
+				UNICC_OUTOFMEM;
+	
+			pcb->bufend = pcb->buf + strlen( pcb->buf );
+		}
+	
+		sprintf( pcb->bufend++, "%c", UNICC_GETINPUT );
+	}
+
+	#if UNICC_DEBUG
+	fprintf( stderr, "reading &gt;%c&lt;\n", *( pcb->buf + offset ) );
+	#endif
+	return *( pcb->buf + offset );
+}
+
+static void @@prefix_clear_input( @@prefix_pcb* pcb )
+{
+	if( pcb->buf )
+	{
+		if( pcb->len )
+		{
+			strcpy( pcb->buf, pcb->buf + pcb->len );		
+			pcb->bufend = pcb->buf + strlen( pcb->buf );
+		}
+		else
+		{
+			pcb->bufend = pcb->buf;
+			*( pcb->buf ) = '\0';
+		}
+	}
+	
+	pcb->len = 0;
+	pcb->sym = -1;
+}
+
 #if @@number-of-dfa-machines
-static int @@prefix_get_keyword( char* src, int* len, int top )
+static void @@prefix_get_keyword( @@prefix_pcb* pcb )
 {
 	int 	dfa_st	= 0;
 	int		chr;
-	int		sym		= -1;
+	int		len		= 0;
 #if !@@model
-	int		mach	= @@prefix_dfa_select[ top ];
+	int		mach	= @@prefix_dfa_select[ *( pcb->tos ) ];
 #else
 	int		mach	= 0;
 #endif
-	*len = 0;
+	char	next;
+
+	next = @@prefix_get_input( pcb, len );
 
 	do
 	{
@@ -531,62 +664,64 @@ static int @@prefix_get_keyword( char* src, int* len, int top )
 		dfa_st = -1;
 		while( @@prefix_dfa_chars[ chr ] &gt; -1 )
 		{
-			if( @@prefix_dfa_chars[ chr ] == *( src + *len ) )
+			if( @@prefix_dfa_chars[ chr ] == next )
 			{
 				dfa_st = *( @@prefix_dfa_trans + chr );
 
 				if( @@prefix_dfa_accept[ mach ][ dfa_st ] &gt; -1 )
-					sym = @@prefix_dfa_accept[ mach ][ dfa_st ];
+					pcb->sym = @@prefix_dfa_accept[ mach ][ dfa_st ];
 
-				(*len)++;
+				next = @@prefix_get_input( pcb, ++len );
 				break;
 			}
+
 			chr++;
 		}
 	}
 	while( dfa_st &gt; -1 );
-
-	if( sym &gt; -1 &amp;&amp; @@prefix_kw_invalid_suffixes[ *( src + *len ) ] )
-		return -1;
-
-	return sym;
+	
+	if( pcb->sym &gt; -1 )
+	{
+		if( @@prefix_kw_invalid_suffixes[ next ] )
+			pcb->sym = -1;
+		else
+			pcb->len = len;
+	}
 }
 #endif
 
-static int @@prefix_get_sym( char** src, int* sym, int* len, int tos )
+static int @@prefix_get_sym( @@prefix_pcb* pcb )
 {
 #if !@@model
-	*sym = -1;
-	*len = 0;
+	pcb->sym = -1;
+	pcb->len = 0;
 	
-#else
-	if( *sym == -1 )
+#else /* @@model */
+	if( pcb->sym == -1 )
 	{
 		do
 		{
-			*src += *len;
-#endif
+			@@prefix_clear_input();
+#endif /* @@model */
+
 #if @@number-of-dfa-machines
 #if !@@model
-			if( @@prefix_dfa_select[ tos ] &gt; -1 )
-				*sym = @@prefix_get_keyword( *src, len, tos );
+			if( @@prefix_dfa_select[ *( pcb->tos ) ] &gt; -1 )
+				@@prefix_get_keyword( pcb );
 #else
-			*sym = @@prefix_get_keyword( *src, len, 0 );
-#endif
+			@@prefix_get_keyword( pcb );
+#endif /* !@@model */
 
-			if( *sym == -1 )
-#endif
-			{
-				*sym = @@prefix_char_map[ **src ];
-				*len = 1;
-			}
+			if( pcb->sym == -1 )
+#endif /* @@number-of-dfa-machines */
+				pcb->sym = @@prefix_char_map[ @@prefix_get_input( pcb, pcb->len++ ) ];
 #if @@model
 		}
-		while( *sym &gt; -1 && @@prefix_whitespaces[ *sym ] );
+		while( pcb->sym &gt; -1 &amp;&amp; @@prefix_whitespaces[ pcb->sym ] );
 	}
-#endif
+#endif /* @@model */
 
-	return ( *sym > -1 ) ? 1 : 0;
+	return ( pcb->sym > -1 ) ? 1 : 0;
 }
 
 #if UNICC_STACKDEBUG
@@ -606,22 +741,9 @@ static void @@prefix_dbg_stack( FILE* out, int* stack, int* tos,
 }
 #endif /* UNICC_STACKDEBUG */
 
-int @@prefix_parse( char* src )
+int @@prefix_parse( void )
 {
-	int		stack		[ 1024 ];
-	int*	tos			= stack;
-	@@prefix_vtype		vstack[ 1024 ];
-	@@prefix_vtype*		vtos = vstack;
-
-	@@prefix_vtype		ret;
-	@@prefix_vtype		next;
-	@@prefix_vtype		test;
-	int		act;
-	int		idx;
-	int		sym			= -1;
-	int		len			= 0;
-	int		error_delay	= 0;
-	int		error_count	= 0;
+	@@prefix_pcb		pcb;
 #if UNICC_DEBUG
 	int		i;
 	@@prefix_vtype*		vptr;
@@ -630,17 +752,27 @@ int @@prefix_parse( char* src )
 	@@prefix_dbg = stderr;
 #endif
 
-	*stack = 0;
-	memset( &amp;test, 0, sizeof( @@prefix_vtype ) );
-	memset( &amp;next, 0, sizeof( @@prefix_vtype ) );
-	memset( vstack, 0, 1024 * sizeof( @@prefix_vtype ) );
+	/* Initialize Parser Control Block */
+	memset( &pcb, 0, sizeof( @@prefix_pcb ) );
+	pcb.sym = -1;
+	pcb.tos = pcb.stack;
+	pcb.vtos = pcb.vstack;
+
+	*pcb.stack = 0;
+	memset( &amp;pcb.test, 0, sizeof( @@prefix_vtype ) );
+	memset( pcb.vstack, 0, 1024 * sizeof( @@prefix_vtype ) );
 
 	while( 1 )
 	{
-		@@prefix_get_sym( &src, &sym, &len, *tos );
+		@@prefix_get_sym( &pcb );
 
-		if( !@@prefix_get_act_tab( *tos, sym, &act, &idx ) )
+		if( !@@prefix_get_act_tab( &pcb ) )
 		{
+			
+/******************************************************************************
+ START :: ERROR RECOVERY TEMPORARILY DISABLED DURING PARSER TEMPLATE REVISION
+******************************************************************************/
+#if 0
 			/*
 				Parse error
 			*/
@@ -667,8 +799,7 @@ int @@prefix_parse( char* src )
 							"error is reported before its recover!" ) );
 #endif
 
-
-			if( !error_delay )
+			if( !pcb.error_delay )
 			{
 				UNICC_PARSE_ERROR( src, sym, *tos );
 				error_count++;
@@ -812,84 +943,90 @@ int @@prefix_parse( char* src )
 				
 			error_delay = 3;
 #endif
+
+#endif /* EY END GE-DISST ALTA... SCHEISS BLAGENSPRACHE */
+
+
+			fprintf( stderr, "ey parse fehler, alter!\n" );
+			if( pcb.buf )
+				free( pcb.buf );
+			return 1;
+
+/******************************************************************************
+END :: ERROR RECOVERY TEMPORARILY DISABLED DURING PARSER TEMPLATE REVISION
+******************************************************************************/
+
 		}
+
 
 #if UNICC_DEBUG
 		fprintf( @@prefix_dbg,
 			"%s: sym = %d (%s) [len = %d] *tos = %d act = %s idx = %d\n",
-				PARSERFILE, sym, @@prefix_symbol_names[ sym ], len, *tos, 
-					( ( act == 3 ) ? "shift/reduce" :
-						( act & 2 ) ? "shift" : "reduce" ),
-							idx, src );
+				PARSERFILE, pcb.sym, @@prefix_symbol_names[ pcb.sym ], pcb.len,
+					*pcb.tos, ( ( pcb.act == 3 ) ? "shift/reduce" :
+								( pcb.act &amp; 2 ) ? "shift" : "reduce" ),
+									pcb.idx );
 #if UNICC_STACKDEBUG
-		@@prefix_dbg_stack( @@prefix_dbg, stack, tos, vstack, vtos );
+		@@prefix_dbg_stack( @@prefix_dbg, pcb.stack, pcb.tos, pcb.vstack, pcb.vtos );
 #endif
 #endif
 
 		/* Shift */
-		if( act & 2 )
+		if( pcb.act &amp; 2 )
 		{
 #if UNICC_DEBUG
 			fprintf( @@prefix_dbg, "%s: &gt;&gt; shifting terminal %d (%s)\n",
-				PARSERFILE, sym, @@prefix_symbol_names[ sym ] );
+			PARSERFILE, pcb.sym, @@prefix_symbol_names[ pcb.sym ] );
 #endif
 
+			pcb.tos++;
+			pcb.vtos++;
+
+			*( pcb.tos ) = ( pcb.act &amp; 1 ) ? 0 : pcb.idx;
+
 			/* Execute scanner actions, if existing */
-			switch( sym )
+			switch( pcb.sym )
 			{
 				@@scan_actions
 
 				default:
+					@@top-value = @@prefix_get_input( &amp;pcb, 0 );
 					break;
 			}
-
-			tos++;
-			vtos++;
-
-			*tos = ( act & 1 ) ? 0 : idx;
 			
-			if( !@@model && !memcmp( &amp;next, &amp;test, sizeof( @@prefix_vtype ) ) )
-				@@top-value = *src;
-			else
-			{
-				memcpy( vtos, &amp;next, sizeof( @@prefix_vtype ) );
-				memset( &amp;next, 0, sizeof( @@prefix_vtype ) );
-			}
-
-			UNICC_SRC_MOVE( src, len );
-			src += len;
+			/* Perform the shift on input */
+			UNICC_SRC_MOVE( pcb.src, pcb.len );
+			@@prefix_clear_input( &amp;pcb );
 			
-			len = 0;
-			sym = -1;
-			
-			if( error_delay )
-				error_delay--;
+			if( pcb.error_delay )
+				pcb.error_delay--;
 		}
 
 		/* Reduce */
-		while( act & 1 )
+		while( pcb.act &amp; 1 )
 		{
 #if UNICC_DEBUG			
 			fprintf( @@prefix_dbg, "%s: &lt;&lt; reducing by production %d (%s)\n",
-				PARSERFILE, idx, @@prefix_productions[ idx ] );
+				PARSERFILE, pcb.idx, @@prefix_productions[ pcb.idx ] );
 #endif
-			memset( &amp;ret, 0, sizeof( @@prefix_vtype ) );
+			memset( &amp;( pcb.ret ), 0, sizeof( @@prefix_vtype ) );
 
-			switch( idx )
+			switch( pcb.idx )
 			{
 @@actions
 			}
 
-			tos -= @@prefix_prod_lengths[ idx ];
-			vtos -= @@prefix_prod_lengths[ idx ];
+			pcb.tos -= @@prefix_prod_lengths[ pcb.idx ];
+			pcb.vtos -= @@prefix_prod_lengths[ pcb.idx ];
 
-			if( idx == @@goal-production )
+			if( pcb.idx == @@goal-production )
 			{
-				src += len;
+				UNICC_SRC_MOVE( pcb.src, pcb.len );
+				@@prefix_clear_input( &amp;pcb );
 
 				#if UNICC_DEBUG
 				fprintf( stderr, "%s: Goal symbol reduced, exiting parser\n\n",
-						PARSERFILE, src );
+						PARSERFILE );
 				#endif
 				
 				break;
@@ -897,26 +1034,28 @@ int @@prefix_parse( char* src )
 
 			#if UNICC_DEBUG
 			fprintf( @@prefix_dbg, "%s: after reduction, shifting nonterminal %d (%s)\n",
-				PARSERFILE, @@prefix_prod_lhs[ idx ], @@prefix_symbol_names[
-					@@prefix_prod_lhs[ idx ] ] );
+					PARSERFILE, @@prefix_prod_lhs[ pcb.idx ],
+						@@prefix_symbol_names[ @@prefix_prod_lhs[ pcb.idx ] ] );
 			#endif
 
-			@@prefix_get_go_tab( *tos, @@prefix_prod_lhs[ idx ], &act, &idx );
+			@@prefix_get_go_tab( &amp;pcb, @@prefix_prod_lhs[ pcb.idx ] );
 			
-			*(++tos) = ( act & 1 ) ? 0 : idx;
-			memcpy( ++vtos, &amp;ret, sizeof( @@prefix_vtype ) );
+			*(++pcb.tos) = ( pcb.act &amp; 1 ) ? 0 : pcb.idx;
+			memcpy( ++pcb.vtos, &amp;( pcb.ret ), sizeof( @@prefix_vtype ) );
 		}
 		
-		if( act & 1 && idx == @@goal-production )
+		if( pcb.act &amp; 1 &amp;&amp; pcb.idx == @@goal-production )
 			break;
 	}
 
 	#if UNICC_DEBUG
 	fprintf( @@prefix_dbg, "%s: parse completed with %d errors\n",
-		PARSERFILE, error_count );
+		PARSERFILE, pcb.error_count );
 	#endif
-
-	return error_count;
+	
+	if( pcb.buf )
+		free( pcb.buf );
+	return pcb.error_count;
 }
 
 #if @@epilogue_len == 0
@@ -941,6 +1080,7 @@ int main( int argc, char** argv )
 		*s = '\0';
 		
 		printf( "\nok\n" );
+#if 0 /* OLD SRC */
 		do
 		{
 			printf( "@@name>" );
@@ -962,9 +1102,10 @@ int main( int argc, char** argv )
 		
 		if( !( *s ) )
 			break;
+#endif
 
-		/* printf( "Compiling source\n&gt;%s&lt;\n\n~~~\n", s ) ; */
-		@@prefix_parse( s );
+		printf( "@@name>" );
+		@@prefix_parse();
 
 	}
 	while( 1 );
