@@ -42,6 +42,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
+	30.09.2010	Jan Max Meyer	Inherit defined_at information
 ----------------------------------------------------------------------------- */
 SYMBOL* p_positive_closure( PARSER* parser, SYMBOL* base )
 {
@@ -61,6 +62,7 @@ SYMBOL* p_positive_closure( PARSER* parser, SYMBOL* base )
 			s->defined = TRUE;
 			s->vtype = base->vtype;
 			s->derived_from = base;
+			s->line = base->line;
 
 			p = p_create_production( parser, s );
 			p_append_to_production( p, s, (uchar*)NULL );
@@ -99,6 +101,7 @@ SYMBOL* p_positive_closure( PARSER* parser, SYMBOL* base )
 
 								s+ -> s+ base | base;
 								s* -> s+ | ;
+	30.09.2010	Jan Max Meyer	Inherit defined_at information
 ----------------------------------------------------------------------------- */
 SYMBOL* p_kleene_closure( PARSER* parser, SYMBOL* base )
 {
@@ -123,6 +126,7 @@ SYMBOL* p_kleene_closure( PARSER* parser, SYMBOL* base )
 			s->defined = TRUE;
 			s->vtype = base->vtype;
 			s->derived_from = base;
+			s->line = base->line;
 
 			p = p_create_production( parser, s );
 			/*p_append_to_production( p, s, (uchar*)NULL );
@@ -153,6 +157,7 @@ SYMBOL* p_kleene_closure( PARSER* parser, SYMBOL* base )
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
+	30.09.2010	Jan Max Meyer	Inherit defined_at information
 ----------------------------------------------------------------------------- */
 SYMBOL* p_optional_closure( PARSER* parser, SYMBOL* base )
 {
@@ -172,6 +177,7 @@ SYMBOL* p_optional_closure( PARSER* parser, SYMBOL* base )
 			s->defined = TRUE;
 			s->vtype = base->vtype;
 			s->derived_from = base;
+			s->line = base->line;
 
 			p = p_create_production( parser, s );
 			p_append_to_production( p, base, (uchar*)NULL );
