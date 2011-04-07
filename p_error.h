@@ -1,11 +1,14 @@
 /* -HEADER----------------------------------------------------------------------
 J.M.K S.F. UniCC LALR(1) Parser Generator
 Copyright (C) 2006-2009 by Phorward Software Technologies, Jan Max Meyer
-http://www.phorward-software.com ++ mail@phorward-software.com
+http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_error.h
 Author:	Jan Max Meyer
 Usage:	Error message defines
+
+You may use, modify and distribute this software under the terms and conditions
+of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
 
 #ifndef P_ERROR_H
