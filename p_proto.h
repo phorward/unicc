@@ -35,7 +35,7 @@ ITEM* p_create_item( STATE* st, PROD* p, LIST* lookahead );
 void p_free_item( ITEM* it );
 STATE* p_create_state( PARSER* p );
 void p_free_state( STATE* st );
-TABCOL* p_create_tabcol( SYMBOL* sym, short action, int index );
+TABCOL* p_create_tabcol( SYMBOL* sym, short action, int index, ITEM* item );
 void p_free_tabcol( TABCOL* act );
 TABCOL* p_find_tabcol( LIST* row, SYMBOL* sym );
 PARSER* p_create_parser( void );
