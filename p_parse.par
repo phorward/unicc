@@ -34,8 +34,6 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #include "p_proto.h"
 #include "p_error.h"
 
-#define WITHDEBUG 0
-
 /*
  * Global variables
  */
@@ -436,11 +434,6 @@ definition			->	lhs goal_mark type "->" productions		[*
 																		s->code = strbuf;
 																		s->code_at = last_code_begin;
 																		strbuf = (uchar*)NULL;
-																		
-																		if( parser->p_model == MODEL_CONTEXT_SENSITIVE )
-																			p_error( ERR_MULTIPLE_SEMANTIC_CALL,
-																				ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
-																					 parser->filename, line );
 																	}
 
 																	/* Value type */
