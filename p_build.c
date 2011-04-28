@@ -5,8 +5,9 @@ http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_build.c
 Author:	Jan Max Meyer
-Usage:	Builds the target parser based on configurations from a
-		parser definition file.
+Usage:	The dynamic program module generator of the UniCC parser generator,
+		to construct a parser program module in a specific programming language
+		using a template.
 		
 You may use, modify and distribute this software under the terms and conditions
 of the Artistic License, version 2. Please see LICENSE for more information.
@@ -23,6 +24,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
  * Defines
  */
 #define	LEN_EXT		"_len"
+#define SYMBOL_VAR	"symbol"
 
 /*
  * Global variables
@@ -121,14 +123,14 @@ void p_build_code( PARSER* parser )
 	gen = &generator;
 	memset( gen, 0, sizeof( GENERATOR ) );
 
-	sprintf( xml_file, "%s.xml", parser->p_language );
+	sprintf( xml_file, "%s.tlt", parser->p_language );
 	VARS( "xml_file", "%s", xml_file );
 
 	if( !pfileexists( xml_file ) && ( tpldir = getenv( "UNICC_TPLDIR" ) ) )
 	{
 		MSG( "File not found, trying to get it from UNICC_TPLDIR" );
 
-		sprintf( xml_file, "%s%c%s.xml",
+		sprintf( xml_file, "%s%c%s.tlt",
 			tpldir, 
 				( ( tpldir[ pstrlen( tpldir ) ] == PPATHSEP )
 					? '\0' : PPATHSEP ), parser->p_language );
@@ -984,6 +986,7 @@ uchar* p_escape_for_target( GENERATOR* g, uchar* str, BOOLEAN clear )
 	Date:		Author:			Note:
 	12.07.2010	Jan Max Meyer	Print warning if code symbol references to un-
 								defined symbol on the semantic rhs!
+	23.04.2011	Jan Max Meyer	Assignment of multiple left-hand sides
 ----------------------------------------------------------------------------- */
 uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 			uchar* base, BOOLEAN def_code )
@@ -1030,6 +1033,14 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 
 	if( pregex_comp_compile( &replacer, "@@", 3 ) != ERR_OK )
 		RETURN( (uchar*)NULL );
+		
+	/* 
+	 * Hmm ... this way looks "cooler" for future versions, maybe
+	 * this would be a nice extension: @<command>:<parameters>
+	 */
+	if( pregex_comp_compile( &replacer,
+			"@" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 4 ) != ERR_OK )
+		RETURN( (uchar*)NULL );
 	
 	/* Run regular expression */
 	if( ( result_cnt = pregex_comp_match( &replacer, base,
@@ -1060,7 +1071,7 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 		rhs_idents = p->sem_rhs_idents;
 	}
 	
-	MSG( "Iterating trough result array" );	
+	MSG( "Iterating through the results array" );	
 	for( i = 0, last = base; i < result_cnt && !on_error; i++ )
 	{
 		VARS( "i", "%d", i );
@@ -1137,10 +1148,62 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 								(uchar*)NULL ), TRUE );
 				else
 					ret = pstr_append_str( ret, g->action_lhs_single, FALSE );					
-					
+
 				VARS( "ret", "%s", ret );
 				break;
+
+			case 4:
+				MSG( "Assign left-hand side symbol" );
+				off = 0;
 				
+				if( !( tmp = pasprintf( "%.*s",
+								result[i].len - ( pstrlen( SYMBOL_VAR ) + 2 ),
+								result[i].begin + ( pstrlen( SYMBOL_VAR ) + 2 ) 
+									) ) )
+				{
+					OUTOFMEM;
+					RETURN( (uchar*)NULL );
+				}
+				
+				VARS( "tmp", "%s", tmp );
+
+				/* Go through all possible left-hand side symbols */
+				for( l = p->all_lhs; l; l = list_next( l ) )
+				{
+					sym = (SYMBOL*)list_access( l );
+					
+					if( !pstrcmp( sym->name, tmp ) )
+					{
+						MSG( "Found a matching symbol!" );
+
+						p_free( tmp );
+						tmp = (uchar*)NULL;
+
+						ret = pstr_append_str( ret,
+								p_tpl_insert( g->action_set_lhs,
+									GEN_WILD_PREFIX "sym",
+										p_int_to_str( sym->id ), TRUE,
+											(uchar*)NULL ), TRUE );
+						break;
+					}
+				}
+				
+				if( !l )
+				{
+					MSG( "No match found..." );
+
+					p_error( parser, ERR_UNDEFINED_LHS, ERRSTYLE_WARNING, tmp );
+					p_free( tmp );
+					
+					if( !( tmp = p_strdup( result[i].begin ) ) )
+					{
+						OUTOFMEM;
+						RETURN( (uchar*)NULL );
+					}
+				}
+
+				break;
+
 			default:
 				MSG( "Uncaught regular expression match!" );
 				break;
@@ -1149,7 +1212,7 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 		VARS( "off", "%d", off );
 		if( off > 0 )
 		{
-			MSG( "Handing offset" );
+			MSG( "Handling offset" );
 			sym = (SYMBOL*)list_getptr( rhs, off - 1 );
 
 			if( !( sym->keyword ) )
@@ -1243,6 +1306,9 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 	int				result_cnt;
 	uchar*			ret			= (uchar*)NULL;
 	uchar*			last;
+	uchar*			tmp;
+	LIST*			l;
+	SYMBOL*		sym;
 	int				i;
 	
 	PROC( "p_build_scan_action" );
@@ -1266,6 +1332,10 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 			!= ERR_OK )
 		RETURN( (uchar*)NULL );
 		
+	if( pregex_comp_compile( &replacer,
+			"@" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 3 ) != ERR_OK )
+		RETURN( (uchar*)NULL );
+
 	/* Run regular expression */
 	if( ( result_cnt = pregex_comp_match( &replacer, base,
 							REGEX_NO_CALLBACK, &result ) ) < 0 )
@@ -1332,6 +1402,48 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 				else
 					ret = pstr_append_str( ret,
 							g->scan_action_ret_single, FALSE );
+				break;
+				
+			case 3:
+				MSG( "Set terminal symbol" );
+
+				if( !( tmp = pasprintf( "%.*s",
+								result[i].len - ( pstrlen( SYMBOL_VAR ) + 2 ),
+								result[i].begin + ( pstrlen( SYMBOL_VAR ) + 2 ) 
+									) ) )
+				{
+					OUTOFMEM;
+					RETURN( (uchar*)NULL );
+				}
+				
+				VARS( "tmp", "%s", tmp );
+
+				/* Go through all possible terminal symbols */
+				for( l = s->all_sym; l; l = list_next( l ) )
+				{
+					sym = (SYMBOL*)list_access( l );
+					
+					if( !pstrcmp( sym->name, tmp ) )
+					{
+						MSG( "Found a matching symbol!" );
+						ret = pstr_append_str( ret,
+								p_tpl_insert( g->scan_action_set_symbol,
+									GEN_WILD_PREFIX "sym",
+										p_int_to_str( sym->id ), TRUE,
+											(uchar*)NULL ), TRUE );
+						break;
+					}
+				}
+
+				if( !l )
+				{
+					MSG( "No match found..." );
+
+					p_error( parser, ERR_UNDEFINED_TERMINAL,
+								ERRSTYLE_WARNING, tmp );
+				}
+				
+				p_free( tmp );
 				break;
 				
 			default:
@@ -1495,6 +1607,7 @@ BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, uchar* genfile )
 	GET_XML_DEF( g->xml, g->action_union, "action_union" );
 	GET_XML_DEF( g->xml, g->action_lhs_single, "action_lhs_single" );
 	GET_XML_DEF( g->xml, g->action_lhs_union, "action_lhs_union" );
+	GET_XML_DEF( g->xml, g->action_set_lhs, "action_set_lhs" );
 
 	GET_XML_DEF( g->xml, g->scan_action_start, "scan_action_start" );
 	GET_XML_DEF( g->xml, g->scan_action_end, "scan_action_end" );
@@ -1502,6 +1615,7 @@ BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, uchar* genfile )
 	GET_XML_DEF( g->xml, g->scan_action_end_offset, "scan_action_end_offset" );
 	GET_XML_DEF( g->xml, g->scan_action_ret_single, "scan_action_ret_single" );
 	GET_XML_DEF( g->xml, g->scan_action_ret_union, "scan_action_ret_union" );
+	GET_XML_DEF( g->xml, g->scan_action_set_symbol, "scan_action_set_symbol" );
 
 	GET_XML_DEF( g->xml, g->vstack_single, "vstack_single" );
 	GET_XML_DEF( g->xml, g->vstack_union_start, "vstack_union_start" );

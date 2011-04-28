@@ -222,6 +222,7 @@ void p_free_symbol( SYMBOL* sym )
 	p_free( sym->ccl );
 	list_free( sym->first );
 	list_free( sym->productions );
+	list_free( sym->all_sym );
 
 	pregex_nfa_free( &( sym->nfa ) );
 

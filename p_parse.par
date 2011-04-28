@@ -714,6 +714,10 @@ definition			->	lhs:primary
 
 							/* re_dbg_print_nfa( s->nfa_def,
 								parser->p_universe ); */
+							
+							/* Assign the list of all possible symbols to
+								the primary symbol */
+							primary->all_sym = @alt_regex_sym;
 
 							current_sym = (SYMBOL*)NULL;
 						*]
@@ -841,43 +845,9 @@ sym<SYMBOL*>		-> terminal
 									strbuf, SYM_NON_TERMINAL, TRUE );
 							@@->used = TRUE;
 						*]
-
-					| '%' type line_number code
-					
-						[*	uchar	temp_nonterm[ ONE_LINE + 1 ];
-							PROD*	prod;
-							
-							sprintf( temp_nonterm, P_EMBEDDED,
-									embedded_count++ );
-							
-							@@ = p_get_symbol( parser,
-									temp_nonterm, SYM_NON_TERMINAL,
-										TRUE );
-							@@->defined = TRUE;
-							@@->used = TRUE;
-							@@->generated = TRUE;
-
-							/* Value type */
-							if( @2 )
-							{
-								VTYPE*	vt;
-
-								vt = p_create_vtype( parser,
-										(uchar*)@2 );
-								@@->vtype = vt;
-
-								p_free( @2 );
-							}
-										
-							prod = p_create_production( parser, @@ );
-							prod->code = p_strdup( strbuf );
-							prod->code_at = @3;
-							
-							make_semantic_rhs( prod );
-						*]
-
-					| '%' type stack_cur_prod
-							'(' productions ')'	
+						
+					//Embedded productions
+					| type '('  stack_cur_prod productions ')'
 							
 						[*
 							uchar	temp_nonterm[ ONE_LINE + 1 ];
@@ -895,29 +865,28 @@ sym<SYMBOL*>		-> terminal
 							@@->generated = TRUE;
 
 							/* Value type */
-							if( @2 )
+							if( @type )
 							{
 								VTYPE*	vt;
 
 								vt = p_create_vtype( parser,
-										(uchar*)@2 );
+										(uchar*)@type );
 								@@->vtype = vt;
 
-								p_free( @2 );
+								p_free( @type );
 							}
 							
 							/* Associate the productions */
-							@@->productions = @5;
-							current_prod = @3;
+							@@->productions = @productions;
+							current_prod = @stack_cur_prod;
 
 							/* Link productions with this left-hand side */
-							for( l = @5; l; l = list_next( l ) )
+							for( l = @@->productions; l; l = list_next( l ) )
 							{
 								prod = (PROD*)list_access( l );
+
 								prod->lhs = @@ ;
-								prod->all_lhs = list_push(
-									(LIST*)NULL, @@ );
-								
+								prod->all_lhs = list_push( (LIST*)NULL, @@ );
 								make_semantic_rhs( prod );
 							}
 						*]

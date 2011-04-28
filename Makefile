@@ -64,7 +64,7 @@ HEADERS		=	p_global.h \
 				p_defs.h \
 				p_error.h
 				
-TEMPLATE_C	=	../Cparser/C.xml
+TEMPLATE_C	=	../Cparser/C.tlt
 				
 LIBS		=	$(PREGEX_LIB) \
 				$(PBASIS_LIB)

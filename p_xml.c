@@ -25,6 +25,8 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define XML_YES		"yes"
 #define XML_NO		"no"
 
+#define SYMBOL_VAR	"symbol"
+
 /*
  * Global variables
  */
@@ -186,6 +188,10 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 	if( pregex_comp_compile( &replacer, "@@", 3 ) != ERR_OK )
 		VOIDRET;
 		
+	if( pregex_comp_compile( &replacer,
+			"@" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 4 ) != ERR_OK )
+		VOIDRET;
+		
 	/* Run regular expression */
 	if( ( result_cnt = pregex_comp_match( &replacer, base,
 							REGEX_NO_CALLBACK, &result ) ) < 0 )
@@ -302,6 +308,63 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 
 				break;
 				
+			case 4:
+				MSG( "Assign left-hand side symbol" );
+				
+				if( !( tmp = pasprintf( "%.*s",
+								result[i].len - ( pstrlen( SYMBOL_VAR ) + 2 ),
+								result[i].begin + ( pstrlen( SYMBOL_VAR ) + 2 ) 
+									) ) )
+				{
+					OUTOFMEM;
+					RETURN( (uchar*)NULL );
+				}
+				
+				VARS( "tmp", "%s", tmp );
+
+				/* Go through all possible left-hand side symbols */
+				for( l = p->all_lhs; l; l = list_next( l ) )
+				{
+					sym = (SYMBOL*)list_access( l );
+					
+					if( !pstrcmp( sym->name, tmp ) )
+					{
+						MSG( "Found a matching symbol!" );
+
+						p_free( tmp );
+						tmp = (uchar*)NULL;
+
+						if( !( code = xml_add_child( code_xml,
+								"command", 0 ) ) )
+							OUTOFMEM;
+
+						if( !( xml_set_attr( code,
+								"action", "set-symbol" ) ) )
+							OUTOFMEM;
+							
+						if( !( xml_set_int_attr( code, "symbol", sym->id ) ) )
+							OUTOFMEM;
+
+						break;
+					}
+				}
+				
+				if( !l )
+				{
+					MSG( "No match found..." );
+
+					p_error( parser, ERR_UNDEFINED_LHS, ERRSTYLE_WARNING, tmp );
+					p_free( tmp );
+					
+					if( !( tmp = p_strdup( result[i].begin ) ) )
+					{
+						OUTOFMEM;
+						RETURN( (uchar*)NULL );
+					}
+				}
+
+				break;
+				
 			default:
 				MSG( "Uncaught regular expression match!" );
 				break;
@@ -386,6 +449,9 @@ static void p_xml_build_scan_action(
 	uchar*			raw;
 	XML_T			code;
 	int				i;
+	uchar*			tmp;
+	SYMBOL*		sym;
+	LIST*			l;
 	
 	PROC( "p_build_scan_action" );
 	PARMS( "code_xml", "%p", code_xml );
@@ -406,6 +472,10 @@ static void p_xml_build_scan_action(
 
 	if( pregex_comp_compile( &replacer, "@@", 2 )
 			!= ERR_OK )
+		VOIDRET;
+		
+	if( pregex_comp_compile( &replacer,
+			"@" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 3 ) != ERR_OK )
 		VOIDRET;
 		
 	/* Run regular expression */
@@ -485,6 +555,54 @@ static void p_xml_build_scan_action(
 							s->vtype->id ) ) )
 						OUTOFMEM;					
 				}
+				break;
+				
+			case 3:
+				MSG( "Set terminal symbol" );
+
+				if( !( tmp = pasprintf( "%.*s",
+								result[i].len - ( pstrlen( SYMBOL_VAR ) + 2 ),
+								result[i].begin + ( pstrlen( SYMBOL_VAR ) + 2 ) 
+									) ) )
+				{
+					OUTOFMEM;
+					RETURN( (uchar*)NULL );
+				}
+				
+				VARS( "tmp", "%s", tmp );
+
+				/* Go through all possible terminal symbols */
+				for( l = s->all_sym; l; l = list_next( l ) )
+				{
+					sym = (SYMBOL*)list_access( l );
+					
+					if( !pstrcmp( sym->name, tmp ) )
+					{
+						MSG( "Found a matching symbol!" );
+
+						if( !( code = xml_add_child( code_xml,
+								"command", 0 ) ) )
+							OUTOFMEM;
+
+						if( !( xml_set_attr( code,
+								"action", "set-symbol" ) ) )
+							OUTOFMEM;
+							
+						if( !( xml_set_int_attr( code, "symbol", sym->id ) ) )
+							OUTOFMEM;
+						break;
+					}
+				}
+
+				if( !l )
+				{
+					MSG( "No match found..." );
+
+					p_error( parser, ERR_UNDEFINED_TERMINAL,
+								ERRSTYLE_WARNING, tmp );
+				}
+				
+				p_free( tmp );
 				break;
 				
 			default:

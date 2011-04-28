@@ -43,7 +43,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define SYM_REGEX_TERMINAL		2
 #define SYM_ERROR_RESYNC		3
 
-/* Parser generation models */
+/* Parser construction modes */
 #define MODE_SENSITIVE			0	/* Sensitive parser construction mode */
 #define MODE_INSENSITIVE		1	/* Insensitive parser construction mode */
 
@@ -73,7 +73,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define GEN_WILD_PREFIX			"@@"
 
 /* Phorward UniCC parser generator version number */
-#define UNICC_VERSION			"0.27.15dev"
+#define UNICC_VERSION			"0.27.17dev"
 
 /* Default target language */
 #define UNICC_DEFAULT_LNG		"C"
@@ -134,6 +134,12 @@ struct _symbol
 	LIST*		productions;	/* List of productions attached to a
 									non-terminal symbol */
 	LIST*		first;			/* The symbol's first set */
+	
+	LIST*		all_sym;		/* List of all possible terminal
+									definitions, for multi-terminals.
+									This list will only be set in the
+									primary symbol.
+								*/
 
 	pregex_nfa	nfa;			/* Regular expression terminal */
 
@@ -416,6 +422,9 @@ struct _generator
 													single access */
 	uchar*			action_lhs_union;			/* Action left-hand side
 													union access */
+	uchar*			action_set_lhs;				/* Set a left-hand
+													side within semantic
+													action code */
 	uchar*			vstack_single;				/* Single value stack type
 													definition */
 	uchar*			vstack_union_start;			/* Begin of value stack
@@ -435,6 +444,8 @@ struct _generator
 													single access */
 	uchar*			scan_action_ret_union;		/* Semantic value,
 													union access */
+	uchar*			scan_action_set_symbol;		/* Set regex symbol depending
+													on action code decision */
 	
 	uchar*			code_localization;			/* Code localization template */
 
