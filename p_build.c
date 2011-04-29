@@ -1039,7 +1039,7 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 	 * this would be a nice extension: @<command>:<parameters>
 	 */
 	if( pregex_comp_compile( &replacer,
-			"@" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 4 ) != ERR_OK )
+			"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 4 ) != ERR_OK )
 		RETURN( (uchar*)NULL );
 	
 	/* Run regular expression */
@@ -1157,8 +1157,8 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 				off = 0;
 				
 				if( !( tmp = pasprintf( "%.*s",
-								result[i].len - ( pstrlen( SYMBOL_VAR ) + 2 ),
-								result[i].begin + ( pstrlen( SYMBOL_VAR ) + 2 ) 
+								result[i].len - ( pstrlen( SYMBOL_VAR ) + 3 ),
+								result[i].begin + ( pstrlen( SYMBOL_VAR ) + 3 ) 
 									) ) )
 				{
 					OUTOFMEM;
@@ -1333,7 +1333,7 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 		RETURN( (uchar*)NULL );
 		
 	if( pregex_comp_compile( &replacer,
-			"@" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 3 ) != ERR_OK )
+			"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 3 ) != ERR_OK )
 		RETURN( (uchar*)NULL );
 
 	/* Run regular expression */
@@ -1408,8 +1408,8 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 				MSG( "Set terminal symbol" );
 
 				if( !( tmp = pasprintf( "%.*s",
-								result[i].len - ( pstrlen( SYMBOL_VAR ) + 2 ),
-								result[i].begin + ( pstrlen( SYMBOL_VAR ) + 2 ) 
+								result[i].len - ( pstrlen( SYMBOL_VAR ) + 3 ),
+								result[i].begin + ( pstrlen( SYMBOL_VAR ) + 3 ) 
 									) ) )
 				{
 					OUTOFMEM;

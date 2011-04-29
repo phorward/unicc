@@ -189,7 +189,7 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 		VOIDRET;
 		
 	if( pregex_comp_compile( &replacer,
-			"@" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 4 ) != ERR_OK )
+			"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 4 ) != ERR_OK )
 		VOIDRET;
 		
 	/* Run regular expression */
@@ -312,8 +312,8 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 				MSG( "Assign left-hand side symbol" );
 				
 				if( !( tmp = pasprintf( "%.*s",
-								result[i].len - ( pstrlen( SYMBOL_VAR ) + 2 ),
-								result[i].begin + ( pstrlen( SYMBOL_VAR ) + 2 ) 
+								result[i].len - ( pstrlen( SYMBOL_VAR ) + 3 ),
+								result[i].begin + ( pstrlen( SYMBOL_VAR ) + 3 ) 
 									) ) )
 				{
 					OUTOFMEM;
@@ -475,7 +475,7 @@ static void p_xml_build_scan_action(
 		VOIDRET;
 		
 	if( pregex_comp_compile( &replacer,
-			"@" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 3 ) != ERR_OK )
+			"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 3 ) != ERR_OK )
 		VOIDRET;
 		
 	/* Run regular expression */
@@ -561,8 +561,8 @@ static void p_xml_build_scan_action(
 				MSG( "Set terminal symbol" );
 
 				if( !( tmp = pasprintf( "%.*s",
-								result[i].len - ( pstrlen( SYMBOL_VAR ) + 2 ),
-								result[i].begin + ( pstrlen( SYMBOL_VAR ) + 2 ) 
+								result[i].len - ( pstrlen( SYMBOL_VAR ) + 3 ),
+								result[i].begin + ( pstrlen( SYMBOL_VAR ) + 3 ) 
 									) ) )
 				{
 					OUTOFMEM;
