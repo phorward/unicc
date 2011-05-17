@@ -83,7 +83,7 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 		MSG( "SYM_CCL_TERMINAL detected - converting character class" );
 		if( !( name = ccl_to_str( (CCL)dfn, TRUE ) ) )
 		{
-			OUT_OF_MEMORY;
+			OUTOFMEM;
 			RETURN( (SYMBOL*)NULL );
 		}
 
@@ -126,7 +126,7 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 			( pstrlen( name ) + 1 + 1 )
 				* sizeof( uchar ) ) ) )
 	{
-		OUT_OF_MEMORY;
+		OUTOFMEM;
 		return (SYMBOL*)NULL;
 	}
 
@@ -163,7 +163,7 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 			}
 			else if( !( sym->name = pstrdup( name ) ) )
 			{
-				OUT_OF_MEMORY;
+				OUTOFMEM;
 				RETURN( (SYMBOL*)NULL );
 			}
 
@@ -171,7 +171,7 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 			if( !( hashtab_insert( &( p->definitions ),
 					keyname, (void*)sym ) ) )
 			{
-				OUT_OF_MEMORY;
+				OUTOFMEM;
 				RETURN( (SYMBOL*)NULL );
 			}
 			
@@ -184,7 +184,7 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 		}
 		else
 		{
-			OUT_OF_MEMORY;
+			OUTOFMEM;
 			RETURN( (SYMBOL*)NULL );
 		}
 	}
@@ -266,7 +266,7 @@ PROD* p_create_production( PARSER* p, SYMBOL* lhs )
 			/* Insert into production table */
 			if( !( p->productions = list_push( p->productions, prod ) ) )
 			{
-				OUT_OF_MEMORY;
+				OUTOFMEM;
 				p_free( prod );
 				return (PROD*)NULL;
 			}
@@ -286,14 +286,14 @@ PROD* p_create_production( PARSER* p, SYMBOL* lhs )
 				/* Add to left-hand side non-terminal */
 				if( !( lhs->productions ) )
 				{
-					OUT_OF_MEMORY;
+					OUTOFMEM;
 					p_free( prod );
 					return (PROD*)NULL;
 				}
 			}
 		}
 		else
-			OUT_OF_MEMORY;
+			OUTOFMEM;
 	}
 
 	return prod;
@@ -325,7 +325,7 @@ void p_append_to_production( PROD* p, SYMBOL* sym, uchar* name )
 	if( p && sym )
 	{
 		if( !( p->rhs = list_push( p->rhs, sym ) ) )
-			OUT_OF_MEMORY;
+			OUTOFMEM;
 		
 		/* If no name is given, then use the symbol's name, if it's a
 			nonterminal or a regex-terminal. */
@@ -339,12 +339,12 @@ void p_append_to_production( PROD* p, SYMBOL* sym, uchar* name )
 						|| sym->type == SYM_REGEX_TERMINAL ) )
 			{
 				if( !( name = p_strdup( sym->name ) ) )
-					OUT_OF_MEMORY;
+					OUTOFMEM;
 			}
 		}
 
 		if( !( p->rhs_idents = list_push( p->rhs_idents, name ) ) )
-			OUT_OF_MEMORY;
+			OUTOFMEM;
 	}
 }
 
@@ -433,7 +433,7 @@ ITEM* p_create_item( STATE* st, PROD* p, LIST* lookahead )
 			i->lookahead = list_dup( lookahead );
 	}
 	else
-		OUT_OF_MEMORY;
+		OUTOFMEM;
 	
 	return i;
 }
@@ -495,7 +495,7 @@ STATE* p_create_state( PARSER* p )
 			p->lalr_states = list_push( p->lalr_states, st );
 		}
 		else
-			OUT_OF_MEMORY;
+			OUTOFMEM;
 	}
 	return st;
 }
@@ -584,7 +584,7 @@ TABCOL* p_create_tabcol( SYMBOL* sym, short action, int idx, ITEM* item )
 		act->derived_from = item;
 	}
 	else
-		OUT_OF_MEMORY;
+		OUTOFMEM;
 
 	return act;
 }
@@ -674,7 +674,7 @@ OPT* p_create_opt( HASHTAB* ht, uchar* opt, uchar* def )
 
 	if( !( option = (OPT*)p_malloc( sizeof( OPT ) ) ) )
 	{
-		OUT_OF_MEMORY;
+		OUTOFMEM;
 		return (OPT*)NULL;
 	}
 
@@ -684,7 +684,7 @@ OPT* p_create_opt( HASHTAB* ht, uchar* opt, uchar* def )
 	{
 		p_free( option );
 
-		OUT_OF_MEMORY;
+		OUTOFMEM;
 		return (OPT*)NULL;
 	}
 
@@ -694,7 +694,7 @@ OPT* p_create_opt( HASHTAB* ht, uchar* opt, uchar* def )
 	{
 		p_free_opt( option );
 
-		OUT_OF_MEMORY;
+		OUTOFMEM;
 		return (OPT*)NULL;
 	}
 
@@ -745,7 +745,7 @@ PARSER* p_create_parser( void )
 
 	if( !( pptr = p_malloc( sizeof( PARSER ) ) ) )
 	{
-		OUT_OF_MEMORY;
+		OUTOFMEM;
 		return (PARSER*)NULL;
 	}
 
@@ -823,7 +823,6 @@ void p_free_parser( PARSER* parser )
 
 	p_free( parser->p_def_action );
 	p_free( parser->p_def_action_e );
-	p_free( parser->p_invalid_suf );
 	
 	p_free( parser->source );
 
@@ -860,7 +859,7 @@ VTYPE* p_find_vtype( PARSER* p, uchar* name )
 
 	test_name = p_strdup( name );
 	if( !test_name )
-		OUT_OF_MEMORY;
+		OUTOFMEM;
 
 	p_str_no_whitespace( test_name );
 
@@ -903,19 +902,19 @@ VTYPE* p_create_vtype( PARSER* p, uchar* name )
 	{
 		vt = (VTYPE*)p_malloc( sizeof( VTYPE ) );
 		if( !vt )
-			OUT_OF_MEMORY;
+			OUTOFMEM;
 
 		vt->id = list_count( p->vtypes );
 		
 		vt->int_name = p_strdup( name );
 		if( !( vt->int_name ) )
-			OUT_OF_MEMORY;
+			OUTOFMEM;
 
 		p_str_no_whitespace( vt->int_name );
 
 		vt->real_def = p_strdup( name );
 		if( !( vt->real_def ) )
-			OUT_OF_MEMORY;
+			OUTOFMEM;
 
 		/*
 		printf( "Adding vtype >%s< >%s< and >%s<\n",

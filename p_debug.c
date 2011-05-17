@@ -214,7 +214,7 @@ void p_dump_symbols( FILE* stream, PARSER* parser )
 
 			case SYM_REGEX_TERMINAL:
 				if( s->keyword )
-					fprintf( stream, "terminal: keyword" );
+					fprintf( stream, "terminal: string" );
 				else
 					fprintf( stream, "terminal: regular expression" );
 				break;

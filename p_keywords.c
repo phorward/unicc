@@ -5,8 +5,8 @@ http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_keywords.c
 Author:	Jan Max Meyer
-Usage:	Turns keyword definitions into deterministic state machines, by
-		using the regular expression library.
+Usage:	Turns regular expression definitions into deterministic state
+		machines, by using the Phorward regular expression library.
 		
 You may use, modify and distribute this software under the terms and conditions
 of the Artistic License, version 2. Please see LICENSE for more information.
@@ -47,6 +47,16 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
 void p_keywords_to_dfa( PARSER* parser )
 {
+/*
+	A note on history:
+	Until UniCC v0.24, the keyword-only feature has been extended to
+	entrie regular expressions. Later on in UniCC 0.27, the term
+	"keyword" was renamed to "string", and the classification of the
+	various terminals was not that strong anymore than before. So this
+	is the reason why everything in here is still called "keyword",
+	altought it means any terminal in general. All terminals are now
+	put into one lexical analysis part, since UniCC 0.27.
+*/
 	pregex_nfa	nfa;
 	pregex_dfa	dfa;
 	pregex_dfa*	ex_dfa;
@@ -78,7 +88,7 @@ void p_keywords_to_dfa( PARSER* parser )
 		{
 			MSG( "Constructing DFA from NFA" );
 			if( pregex_dfa_from_nfa( &dfa, &nfa ) < ERR_OK )
-				OUT_OF_MEMORY;
+				OUTOFMEM;
 
 			VARS( "list_count( dfa.states )", "%d",
 					list_count( dfa.states ) );
@@ -88,7 +98,7 @@ void p_keywords_to_dfa( PARSER* parser )
 
 			MSG( "Minimizing DFA" );
 			if( pregex_dfa_minimize( &dfa ) < ERR_OK )
-				OUT_OF_MEMORY;
+				OUTOFMEM;
 
 			VARS( "list_count( dfa.states )", "%d",
 					list_count( dfa.states ) );
@@ -102,10 +112,10 @@ void p_keywords_to_dfa( PARSER* parser )
 			{
 				MSG( "This DFA does not exist in pool yet - integrating!" );
 				if( !( ex_dfa = memdup( &dfa, sizeof( pregex_dfa ) ) ) )
-					OUT_OF_MEMORY;
+					OUTOFMEM;
 
 				if( !( parser->kw = list_push( parser->kw, (void*)ex_dfa ) ) )
-					OUT_OF_MEMORY;
+					OUTOFMEM;
 			}
 
 			VARS( "ex_dfa", "%p", ex_dfa );
@@ -158,7 +168,7 @@ void p_single_lexer( PARSER* parser )
 	{
 		MSG( "Constructing DFA from NFA" );
 		if( pregex_dfa_from_nfa( &dfa, &nfa ) < ERR_OK )
-			OUT_OF_MEMORY;
+			OUTOFMEM;
 
 		VARS( "list_count( dfa.states )", "%d",
 				list_count( dfa.states ) );
@@ -168,16 +178,16 @@ void p_single_lexer( PARSER* parser )
 
 		MSG( "Minimizing DFA" );
 		if( pregex_dfa_minimize( &dfa ) < ERR_OK )
-			OUT_OF_MEMORY;
+			OUTOFMEM;
 
 		VARS( "list_count( dfa.states )", "%d",
 				list_count( dfa.states ) );
 
 		if( !( pdfa = memdup( &dfa, sizeof( pregex_dfa ) ) ) )
-			OUT_OF_MEMORY;
+			OUTOFMEM;
 
 		if( !( parser->kw = list_push( parser->kw, (void*)pdfa ) ) )
-			OUT_OF_MEMORY;
+			OUTOFMEM;
 	}
 
 	VOIDRET;
@@ -333,13 +343,13 @@ void p_symbol_to_nfa( PARSER* parser, pregex_nfa* nfa, SYMBOL* sym )
 
 		if( !( nfa_cpy = pregex_nfa_create_state(
 				&tmp_nfa, (uchar*)NULL, REGEX_MOD_NONE ) ) )
-			OUT_OF_MEMORY;
+			OUTOFMEM;
 		memcpy( nfa_cpy, nfa_ptr, sizeof( pregex_nfa_st ) );
 
 		if( nfa_ptr->ccl )
 		{
 			if( !( nfa_cpy->ccl = ccl_dup( nfa_ptr->ccl ) ) )
-				OUT_OF_MEMORY;
+				OUTOFMEM;
 		}
 
 		if( nfa_ptr->next )
@@ -383,7 +393,7 @@ void p_symbol_to_nfa( PARSER* parser, pregex_nfa* nfa, SYMBOL* sym )
 	{
 		MSG( "Extendind existing nfa with temporary nfa" );
 		if( !( nfa->states = list_union( nfa->states, tmp_nfa.states ) ) )
-			OUT_OF_MEMORY;
+			OUTOFMEM;
 
 		nfa_ptr = (pregex_nfa_st*)list_access( nfa->states );
 		while( nfa_ptr->next2 )

@@ -249,7 +249,7 @@ uchar* p_gen_c_identifier( uchar* str, BOOLEAN to_upper )
 	uchar*	p;
 
 	if( !( str = pstrdup( str ) ) )
-	 	OUT_OF_MEMORY;
+	 	OUTOFMEM;
 
 	for( p = str; *p; p++ )
 	{

@@ -191,13 +191,13 @@ static void set_nfa_to_symbols( SYMBOL* s,
 	
 	if( !( nstart = pregex_nfa_create_state(
 			&( s->nfa ), (uchar*)NULL, REGEX_MOD_NONE ) ) )
-		OUT_OF_MEMORY;
+		OUTOFMEM;
 
 	nstart->next = start;
 	end->accept = s->id;
 	
 	if( !( s->nfa.states = list_union( s->nfa.states, nfa_m.states ) ) )
-		OUT_OF_MEMORY;
+		OUTOFMEM;
 		
 	list_free( nfa_m.states );
 	memset( &nfa_m, 0, sizeof( pregex_nfa ) );
@@ -238,7 +238,7 @@ static void make_semantic_rhs( PROD* p )
 			if( dup )
 			{
 				if( !( dup = p_strdup( dup ) ) )
-					OUT_OF_MEMORY;
+					OUTOFMEM;
 			}
 				
 			p->sem_rhs_idents = list_push(
@@ -253,7 +253,7 @@ static OPT* set_option( HASHTAB* ht, uchar* key, uchar* val, int line )
 	OPT*		opt;
 
 	if( !( opt = p_create_opt( ht, key, (uchar*)NULL ) ) )
-		OUT_OF_MEMORY;
+		OUTOFMEM;
 
 	opt->def = val;
 	opt->line = line;
@@ -265,12 +265,12 @@ static OPT* set_option( HASHTAB* ht, uchar* key, uchar* val, int line )
 	{
 		if( !( val = pstr_append_str(
 				(uchar*)hashelem_access( he ), val, TRUE ) ) )
-			OUT_OF_MEMORY;
+			OUTOFMEM;
 
 		hashtab_update( ht, key, (void*)val );
 	}
 	else if( !hashtab_insert( ht, key, val ) )
-		OUT_OF_MEMORY;
+		OUTOFMEM;
 	*/
 }
 
@@ -525,10 +525,10 @@ directive_parms		-> "whitespaces" 	symbol_list
 								parser->p_lexem_sep = !@2;
 						*]
 
-					| "case insensitive keywords"	boolean_opt
-						[*	parser->p_cis_keywords = !@2;	*]
+					| "case insensitive strings"	boolean_opt
+						[*	parser->p_cis_strings = !@2;	*]
 
-					| "reserve regex"				boolean_opt
+					| "reserve terminals"			boolean_opt
 						[*	parser->p_reserve_regex = !@2;		*]
 
 					| "prologue"					code
@@ -925,11 +925,11 @@ terminal<SYMBOL*>	->	ccl
 							
 							if( pregex_nfa_from_string(
 								&( @@->nfa ), strbuf,
-									parser->p_cis_keywords ?
+									parser->p_cis_strings ?
 										REGEX_MOD_INSENSITIVE :
 											REGEX_MOD_NONE, @@->id )
 										!= ERR_OK )
-									OUT_OF_MEMORY;
+									OUTOFMEM;
 						*]
 
 					| '@' identifier
@@ -1281,7 +1281,7 @@ static void p_parse_error( @@prefix_pcb* pcb )
 	if( !( vptr = valid =
 			(uchar**)p_malloc( ( @@prefix_act[ *( pcb->tos ) ][0] + 1 )
 						* sizeof( uchar* ) ) ) )
-		OUT_OF_MEMORY;
+		OUTOFMEM;
 
 	for( i = 1; i < @@prefix_act[ *( pcb->tos ) ][0] * 3; i += 3 )
 		*( vptr++ ) = @@prefix_symbol_names[ _act[ *( pcb->tos ) ][i] ];

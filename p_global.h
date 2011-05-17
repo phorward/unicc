@@ -73,7 +73,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define GEN_WILD_PREFIX			"@@"
 
 /* Phorward UniCC parser generator version number */
-#define UNICC_VERSION			"0.27.18dev"
+#define UNICC_VERSION			"0.27.20dev"
 
 /* Default target language */
 #define UNICC_DEFAULT_LNG		"C"
@@ -85,7 +85,9 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 									"%s, %d: Memory allocation failure; " \
 										"UniCC possibly ran out of memory!\n", \
 											__FILE__, __LINE__ ), \
-								exit( -1 )
+								p_error( (PARSER*)NULL, ERR_MEMORY_ERROR,\
+									ERRSTYLE_FATAL, __FILE__, __LINE__ ), \
+								exit( EXIT_FAILURE )
 									
 #define MISS_MSG( txt )			fprintf( stderr, "%s, %d: %s\n", \
 										__FILE__, __LINE__, txt )
@@ -136,27 +138,25 @@ struct _symbol
 	LIST*		first;			/* The symbol's first set */
 	
 	LIST*		all_sym;		/* List of all possible terminal
-									definitions, for multi-terminals.
+									definitions, for multiple-terminals.
 									This list will only be set in the
 									primary symbol.
 								*/
 
-	pregex_nfa	nfa;			/* Regular expression terminal */
+	pregex_nfa	nfa;			/* Regular expression-based terminal */
 
-	BOOLEAN		fixated;		/* Flag, if fixated symbols
+	BOOLEAN		fixated;		/* Flags, if fixated symbols
 									(do always shift!) */
-	BOOLEAN		goal;			/* Flag, if goal non-terminal */
-	BOOLEAN		nullable;		/* Flag, if nullable */
-	BOOLEAN		defined;		/* Flag, if defined */
-	BOOLEAN		used;			/* Flag, if used */
-	BOOLEAN		lexem;			/* Flag, if distinguished as lexem */
-	BOOLEAN		keyword;		/* Flag, if it is a keyword
+	BOOLEAN		goal;			/* Flags, if goal non-terminal */
+	BOOLEAN		nullable;		/* Flags, if nullable */
+	BOOLEAN		defined;		/* Flags, if defined */
+	BOOLEAN		used;			/* Flags, if used */
+	BOOLEAN		lexem;			/* Flags, if distinguished as lexem */
+	BOOLEAN		keyword;		/* Flags, if it is a keyword
 									(or if it has been derived from a
 										keyword) */
-	BOOLEAN		whitespace;		/* Flag, if it is a whitespace */
-	BOOLEAN		extern_token;	/* Flag, if it is an external token not	
-									recognized by Phorward */
-	BOOLEAN		generated;		/* Flag, if automatically generated
+	BOOLEAN		whitespace;		/* Flags, if it is a whitespace */
+	BOOLEAN		generated;		/* Flags, if automatically generated
 									symbol */
 									
 	HASHTAB		options;		/* Options hash table */
@@ -218,7 +218,7 @@ struct _item
 									to this item */	
 	int			dot_offset;		/* The dot's offset from the left
 									of the right hand side */
-	SYMBOL*	next_symbol;	/* Symbol following the dot */
+	SYMBOL*		next_symbol;	/* Symbol following the dot */
 	LIST*		lookahead;		/* Set of lookahead-symbols */
 };
 
@@ -237,7 +237,7 @@ struct _state
 	BOOLEAN		done;			/* Done flag */
 	BOOLEAN		closed;			/* Closed flag */
 
-	pregex_dfa*	dfa;			/* DFA machine for keyword recognition
+	pregex_dfa*	dfa;			/* DFA machine for regex recognition
 									in this state */
 									
 	STATE*		derived_from;	/* Previous state */
@@ -280,7 +280,7 @@ struct _parser
 	LIST*		productions;	/* Linked list of productions */
 	LIST*		lalr_states;	/* Linked list of LALR(1) states */
 	LIST*		dfa;			/* List containing the DFA for
-									keyword recognition */
+									regex terminal recognition */
 	
 	SYMBOL*		goal;			/* Pointer to the goal non-terminal */
 	SYMBOL*		end_of_input;	/* End of input symbol */
@@ -301,17 +301,9 @@ struct _parser
 	uchar*		p_def_action_e;	/* Default reduce action for
 									epsilon-productions */
 
-	CCL			p_invalid_suf;	/* Character class for invalid keyword suffix
-									characters, if (CCL)NULL, empty table */
-	BOOLEAN		p_neg_inv_suf;	/* Defines if p_invalid_suf is negated or not.
-									This must be explicitly stored because
-									p_universe is possibly not known when this
-									is read. */
 	BOOLEAN		p_lexem_sep;	/* Flag, if lexem separation is switched
 									ON or not */
-	BOOLEAN		p_cis_keywords;	/* Flag, if case-insensitive keywords */
-	BOOLEAN		p_cis_types;	/* Flag, if case-insenstivie value
-									stack types */
+	BOOLEAN		p_cis_strings;	/* Flag, if case-insensitive strings */
 	BOOLEAN		p_extern_tokens;/* Flag if parser uses external tokens */
 	BOOLEAN		p_reserve_regex;/* Flag, if regex'es are reserved */
 	int			p_universe;		/* Maximum of the character universe */
@@ -354,112 +346,110 @@ struct _parser
 /* Generator 2D table structure */
 struct _generator_2d_tab
 {
-	uchar*	row_start;
-	uchar*	row_end;
-	uchar*	col;
-	uchar*	col_sep;
-	uchar*	row_sep;
+	uchar*		row_start;
+	uchar*		row_end;
+	uchar*		col;
+	uchar*		col_sep;
+	uchar*		row_sep;
 };
 
 /* Generator 1D table structur */
 struct _generator_1d_tab
 {
-	uchar*	col;
-	uchar*	col_sep;
+	uchar*		col;
+	uchar*		col_sep;
 };
 
 /* Generator 1D boolean table structur */
 struct _generator_1d_btab
 {
-	uchar*	col_true;
-	uchar*	col_false;
-	uchar*	col_sep;
+	uchar*		col_true;
+	uchar*		col_false;
+	uchar*		col_sep;
 };
 
 /* Generator template structure */
 struct _generator
 {
-	uchar*			name;						/* Target language name */
-	uchar*			driver;						/* Driver source code */
-	uchar*			vstack_def_type;			/* Default-type for nonterminals
-													if no type is specified */
-	uchar*			vstack_term_type;			/* Type for terminals
-													(characters) to be pushed on
-														the value stack */
-	_2D_TABLE		acttab;						/* Action table */
-	_2D_TABLE		gotab;						/* Goto table */
-	_1D_TABLE		prodlen;					/* Production lengths */
-	_1D_TABLE		prodlhs;					/* Production's left-hand
-													sides */
-	_1D_TABLE		defprod;					/* Default production for
-													each state */
+	uchar*		name;						/* Target language name */
+	uchar*		driver;						/* Driver source code */
+	uchar*		vstack_def_type;			/* Default-type for nonterminals
+												if no type is specified */
+	uchar*		vstack_term_type;			/* Type for terminals
+												(characters) to be pushed on
+													the value stack */
+	_2D_TABLE	acttab;						/* Action table */
+	_2D_TABLE	gotab;						/* Goto table */
+	_1D_TABLE	prodlen;					/* Production lengths */
+	_1D_TABLE	prodlhs;					/* Production's left-hand
+												sides */
+	_1D_TABLE	defprod;					/* Default production for
+												each state */
 #if 0
-	_1D_TABLE		charmap;					/* Character-class validation
-													map */
-	_1D_TABLE		charmap_sym;				/* Character-class to symbol
-													association map */
+	_1D_TABLE	charmap;					/* Character-class validation
+												map */
+	_1D_TABLE	charmap_sym;				/* Character-class to symbol
+												association map */
 #endif
-	_1D_TABLE		dfa_select;					/* DFA machine selection */
-	_2D_TABLE		dfa_idx;					/* DFA state index */
-	_1D_TABLE		dfa_char;					/* DFA transition characters */
-	_1D_TABLE		dfa_trans;					/* DFA transitions */
-	_2D_TABLE		dfa_accept;					/* DFA accepting states */
-	_1D_TABLE		kw_invalid_suffix;			/* Invalid keyword-suffix
-														character-map */
-	_1D_BOOL_TABLE	whitespace;					/* Whitespace identification
-													table (used by context-free
-														model) */
-	_1D_TABLE		symbols;					/* Symbol name table
-													(for debug) */
-	_1D_TABLE		productions;				/* Production definition table
-													(for debug) */
+	_1D_TABLE	dfa_select;					/* DFA machine selection */
+	_2D_TABLE	dfa_idx;					/* DFA state index */
+	_1D_TABLE	dfa_char;					/* DFA transition characters */
+	_1D_TABLE	dfa_trans;					/* DFA transitions */
+	_2D_TABLE	dfa_accept;					/* DFA accepting states */
+	_1D_BOOL_TABLE	whitespace;				/* Whitespace identification
+												table (used by context-free
+													model) */
+	_1D_TABLE	symbols;					/* Symbol name table
+												(for debug) */
+	_1D_TABLE	productions;				/* Production definition table
+												(for debug) */
 
-	uchar*			action_start;				/* Action code start */
-	uchar*			action_end;					/* Action code end */
-	uchar*			action_single;				/* Action vstack access */
-	uchar*			action_union;				/* Action union access */
-	uchar*			action_lhs_single;			/* Action left-hand side
-													single access */
-	uchar*			action_lhs_union;			/* Action left-hand side
-													union access */
-	uchar*			action_set_lhs;				/* Set a left-hand
-													side within semantic
-													action code */
-	uchar*			vstack_single;				/* Single value stack type
-													definition */
-	uchar*			vstack_union_start;			/* Begin of value stack
-													union definition */
-	uchar*			vstack_union_end;			/* End of value stack
-													union definition */
-	uchar*			vstack_union_def;			/* Union inline type
-													definition */
-	uchar*			vstack_union_att;			/* Union attribute name */
-	uchar*			scan_action_start;			/* Scanner action code start */
-	uchar*			scan_action_end;			/* Scanner action code end */
-	uchar*			scan_action_begin_offset;	/* Begin-offset of scanned token
-													in source */
-	uchar*			scan_action_end_offset;		/* End-offset of scanned token
-													in source */
-	uchar*			scan_action_ret_single;		/* Semantic value,
-													single access */
-	uchar*			scan_action_ret_union;		/* Semantic value,
-													union access */
-	uchar*			scan_action_set_symbol;		/* Set regex symbol depending
-													on action code decision */
-	
-	uchar*			code_localization;			/* Code localization template */
+	uchar*		action_start;				/* Action code start */
+	uchar*		action_end;					/* Action code end */
+	uchar*		action_single;				/* Action vstack access */
+	uchar*		action_union;				/* Action union access */
+	uchar*		action_lhs_single;			/* Action left-hand side
+												single access */
+	uchar*		action_lhs_union;			/* Action left-hand side
+												union access */
+	uchar*		action_set_lhs;				/* Set a left-hand
+												side within semantic
+												action code */
+	uchar*		vstack_single;				/* Single value stack type
+												definition */
+	uchar*		vstack_union_start;			/* Begin of value stack
+												union definition */
+	uchar*		vstack_union_end;			/* End of value stack
+												union definition */
+	uchar*		vstack_union_def;			/* Union inline type
+												definition */
+	uchar*		vstack_union_att;			/* Union attribute name */
+	uchar*		scan_action_start;			/* Scanner action code start */
+	uchar*		scan_action_end;			/* Scanner action code end */
+	uchar*		scan_action_begin_offset;	/* Begin-offset of scanned token
+												in source */
+	uchar*		scan_action_end_offset;		/* End-offset of scanned token
+												in source */
+	uchar*		scan_action_ret_single;		/* Semantic value,
+												single access */
+	uchar*		scan_action_ret_union;		/* Semantic value,
+												union access */
+	uchar*		scan_action_set_symbol;		/* Set regex symbol depending
+												on action code decision */
 
-	uchar**			for_sequences;				/* Dynamic array of string
-													sequences to be replaced/es-
-													caped in output strings */
-	uchar**			do_sequences;				/* Dynamic array of escape-
-													sequences for the particular
-													string sequence in the above
-													array */
-	int				sequences_count;			/* Number of elements in the
-													above array */
+	uchar*		code_localization;			/* Code localization template */
 
-	XML_T			xml;						/* XML root node */
+	uchar**		for_sequences;				/* Dynamic array of string
+												sequences to be replaced/es-
+												caped in output strings */
+	uchar**		do_sequences;				/* Dynamic array of escape-
+												sequences for the particular
+												string sequence in the above
+												array */
+	int			sequences_count;			/* Number of elements in the
+												above array */
+
+	XML_T		xml;						/* XML root node */
 };
 
 #endif

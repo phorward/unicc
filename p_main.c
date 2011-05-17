@@ -388,7 +388,7 @@ int main( int argc, char** argv )
 				DONE()
 
 				/* Regex anomaly recognition */
-				PROGRESS( "Regex-terminal anomaly detection" )
+				PROGRESS( "Terminal anomaly detection" )
 				if( parser->p_mode == MODE_SENSITIVE )
 				{
 					if( recursions )

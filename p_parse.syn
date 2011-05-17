@@ -151,13 +151,13 @@ static void set_nfa_to_symbol( SYMBOL* s,
 	
 	if( !( nstart = pregex_nfa_create_state(
 			&( s->nfa ), (uchar*)NULL, REGEX_MOD_NONE ) ) )
-		OUT_OF_MEMORY;
+		OUTOFMEM;
 
 	nstart->next = start;
 	end->accept = s->id;
 	
 	if( !( s->nfa.states = list_union( s->nfa.states, nfa_x.states ) ) )
-		OUT_OF_MEMORY;
+		OUTOFMEM;
 		
 	list_free( nfa_x.states );
 	memset( &nfa_x, 0, sizeof( pregex_nfa ) );
@@ -314,24 +314,7 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 																			parser->p_def_action_e = p_strdup( strbuf );
 																}
 				| "end of input"	terminal					{	parser->end_of_input = #2.ptr;				}
-				| "invalid keyword suffix"	ccl					{	/* Ouput a warning, if this definition
-																		is effectless */
-																	if( parser->p_mode != MODE_SENSITIVE )
-																	{
-																		p_error( parser, ERR_NO_EFFECT_IN_MODE,
-																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
-																				parser->filename, line,
-																					"invalid keyword suffix" );
-																	}
-																	else
-																	{
-																		parser->p_invalid_suf = ccl_create( strbuf );
-																		parser->p_neg_inv_suf = #2.negative;
-																		if( #2.negative )
-																			ccl_negate( parser->p_invalid_suf );
-																	}
-																}
-				| "case insensitive keywords"	boolean			{	parser->p_cis_keywords = !(#2.negative);	}
+				| "case insensitive strings"	boolean			{	parser->p_cis_strings = !(#2.negative);	}
 				| "prologue"					code			{	parser->p_header = p_str_append( 
 																		parser->p_header, strbuf, FALSE );		}
 				| "epilogue"					code			{	parser->p_footer = p_str_append( 
@@ -523,7 +506,7 @@ terminal:		ccl												{ 	SYMBOL* s;
 																		&( s->nfa ), strbuf,
 																			REGEX_MOD_NONE, s->id )
 																				!= ERR_OK )
-																		OUT_OF_MEMORY;
+																		OUTOFMEM;
 																	
 																	##.ptr = s;
 																}

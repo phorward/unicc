@@ -63,7 +63,4 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define ERR_NO_TARGET_LANG_SUPPLY	37
 #define ERR_DIRECTIVE_ALREADY_USED	38
 
-#define OUT_OF_MEMORY				p_error( (PARSER*)NULL, ERR_MEMORY_ERROR,\
-										ERRSTYLE_FATAL, __FILE__, __LINE__ ), \
-									exit( EXIT_FAILURE )
 #endif

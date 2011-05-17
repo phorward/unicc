@@ -83,7 +83,6 @@ void p_build_code( PARSER* parser )
 	uchar*			dfa_trans			= (uchar*)NULL;
 	uchar*			dfa_accept			= (uchar*)NULL;
 	uchar*			dfa_accept_row		= (uchar*)NULL;
-	uchar*			kw_invalid_suffix	= (uchar*)NULL;
 	uchar*			type_def			= (uchar*)NULL;
 	uchar*			actions				= (uchar*)NULL;
 	uchar*			scan_actions		= (uchar*)NULL;
@@ -479,6 +478,7 @@ void p_build_code( PARSER* parser )
 	
 	MSG( "Construct map of invalid characters (regex recognition)" );
 	
+#if 0
 	/* Map of invalid keyword suffix characters */
 	for( c = parser->p_invalid_suf; c && c->begin != CCL_MAX; c++ )
 	{
@@ -498,6 +498,7 @@ void p_build_code( PARSER* parser )
 					p_int_to_str( c->end ), TRUE,
 				(uchar*)NULL ), TRUE );
 	}
+#endif
 
 	MSG( "Construct character map" );
 
@@ -774,8 +775,6 @@ void p_build_code( PARSER* parser )
 				p_int_to_str( max_dfa_accept ), TRUE,
 			GEN_WILD_PREFIX "size-of-dfa-characters",
 				p_int_to_str( column ), TRUE, 
-			GEN_WILD_PREFIX "number-of-keyword-invalid-suffixes",
-				p_int_to_str( ccl_size( parser->p_invalid_suf ) ), TRUE,
 			GEN_WILD_PREFIX "number-of-character-map",
 				p_int_to_str( charmap_count ), TRUE,
 			GEN_WILD_PREFIX "action-table", action_table, FALSE,
@@ -797,8 +796,6 @@ void p_build_code( PARSER* parser )
 			GEN_WILD_PREFIX "dfa-char", dfa_char, FALSE,
 			GEN_WILD_PREFIX "dfa-trans", dfa_trans, FALSE,
 			GEN_WILD_PREFIX "dfa-accept", dfa_accept, FALSE,
-			GEN_WILD_PREFIX "keyword-invalid-suffixes",
-				kw_invalid_suffix, FALSE,
 			GEN_WILD_PREFIX "value-type-definition", type_def, FALSE,
 			GEN_WILD_PREFIX "actions", actions, FALSE,
 			GEN_WILD_PREFIX "scan_actions", scan_actions, FALSE,
@@ -901,7 +898,6 @@ void p_build_code( PARSER* parser )
 	p_free( dfa_char );
 	p_free( dfa_trans );
 	p_free( dfa_accept );
-	p_free( kw_invalid_suffix );
 	p_free( type_def );
 	p_free( actions );
 	p_free( scan_actions );
@@ -943,7 +939,7 @@ uchar* p_escape_for_target( GENERATOR* g, uchar* str, BOOLEAN clear )
 	uchar*	tmp;
 
 	if( !( ret = p_strdup( str ) ) )
-		OUT_OF_MEMORY;
+		OUTOFMEM;
 
 	if( clear )
 		p_free( str );
@@ -952,7 +948,7 @@ uchar* p_escape_for_target( GENERATOR* g, uchar* str, BOOLEAN clear )
 	{
 		if( !( tmp = p_tpl_insert( ret, g->for_sequences[ i ],
 				g->do_sequences[ i ], FALSE, (uchar*)NULL ) ) )
-			OUT_OF_MEMORY;
+			OUTOFMEM;
 
 		p_free( ret );
 		ret = tmp;
@@ -1633,7 +1629,6 @@ BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, uchar* genfile )
 	GET_XML_TAB_1D( g->dfa_select, "dfa_select" )
 	GET_XML_TAB_1D( g->dfa_char, "dfa_char" )
 	GET_XML_TAB_1D( g->dfa_trans, "dfa_trans" )
-	GET_XML_TAB_1D( g->kw_invalid_suffix, "kw_invalid_suffix" )
 	GET_XML_BOOLTAB_1D( g->whitespace, "whitespace" )
 
 	GET_XML_TAB_2D( g->acttab, "acttab" )
@@ -1674,14 +1669,14 @@ BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, uchar* genfile )
 					( g->sequences_count + 1 ) * sizeof( uchar* ) );
 
 			if( !( g->for_sequences && g->do_sequences ) )
-				OUT_OF_MEMORY;
+				OUTOFMEM;
 
 			g->for_sequences[ g->sequences_count ] = (uchar*)( att_for );
 			g->do_sequences[ g->sequences_count ] = (uchar*)( att_do );
 
 			if( !( g->for_sequences[ g->sequences_count ]
 				&& g->do_sequences[ g->sequences_count ] ) )
-				OUT_OF_MEMORY;
+				OUTOFMEM;
 
 			g->sequences_count++;
 		}

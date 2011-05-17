@@ -233,7 +233,7 @@ void p_rewrite_grammar( PARSER* parser )
 	sym = p_get_symbol( parser, deriv, SYM_NON_TERMINAL, TRUE );
 	if( !sym )
 	{
-		OUT_OF_MEMORY;
+		OUTOFMEM;
 		return;
 	}
 
@@ -243,7 +243,7 @@ void p_rewrite_grammar( PARSER* parser )
 	p = p_create_production( parser, sym );
 	if( !p )
 	{
-		OUT_OF_MEMORY;
+		OUTOFMEM;
 		return;
 	}
 
@@ -347,7 +347,7 @@ void p_unique_charsets( PARSER* parser )
 					if( parser->p_mode == MODE_INSENSITIVE )
 					{
 						if( !( tmpstr = ccl_to_str( inter, TRUE ) ) )
-							OUT_OF_MEMORY;
+							OUTOFMEM;
 
 						p_error( parser, ERR_CHARCLASS_OVERLAP,
 									ERRSTYLE_FATAL, tmpstr );
@@ -774,7 +774,7 @@ void p_setup_single_goal( PARSER* parser )
 	sym = p_get_symbol( parser, deriv, SYM_NON_TERMINAL, TRUE );
 	if( !sym )
 	{
-		OUT_OF_MEMORY;
+		OUTOFMEM;
 		return;
 	}
 	sym->generated = TRUE;
@@ -784,7 +784,7 @@ void p_setup_single_goal( PARSER* parser )
 	p = p_create_production( parser, sym );
 	if( !p )
 	{
-		OUT_OF_MEMORY;
+		OUTOFMEM;
 		return;
 	}
 
@@ -798,7 +798,7 @@ void p_setup_single_goal( PARSER* parser )
 
 		if( !( parser->end_of_input ) )
 		{
-			OUT_OF_MEMORY;
+			OUTOFMEM;
 			return;
 		}
 
@@ -877,7 +877,7 @@ void p_symbol_order( PARSER* parser )
 					continue;
 
 				if( !( new_order = list_push( new_order, (void*)sym ) ) )
-					OUT_OF_MEMORY;
+					OUTOFMEM;
 
 				/* In case of an NFA-based token, the accepting-IDs
 					of the constructed machine need to be updated */
@@ -941,18 +941,18 @@ void p_charsets_to_nfa( PARSER* parser )
 			*/
 			if( !( begin = pregex_nfa_create_state( &( sym->nfa ),
 						(uchar*)NULL, REGEX_MOD_NONE ) ) )
-				OUT_OF_MEMORY;
+				OUTOFMEM;
 				
 			if( !( begin = begin->next = pregex_nfa_create_state( &( sym->nfa ),
 						(uchar*)NULL, REGEX_MOD_NONE ) ) )
-				OUT_OF_MEMORY;
+				OUTOFMEM;
 
 			if( !( begin->ccl = ccl_dup( sym->ccl ) ) )
-				OUT_OF_MEMORY;
+				OUTOFMEM;
 
 			if( !( begin->next = end = pregex_nfa_create_state( &( sym->nfa ),
 						(uchar*)NULL, REGEX_MOD_NONE ) ) )
-				OUT_OF_MEMORY;
+				OUTOFMEM;
 
 			end->accept = sym->id;
 			/* sym->type = SYM_REGEX_TERMINAL; */
