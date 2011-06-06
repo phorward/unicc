@@ -53,15 +53,17 @@ void p_undef_or_unused( PARSER* parser )
 		if( sym->generated == FALSE && sym->defined == FALSE )
 		{
 			p_error( parser, (sym->type == SYM_NON_TERMINAL ) ?
-				ERR_UNDEFINED_NONTERM : ERR_UNDEFINED_TERM, ERRSTYLE_FATAL,
-					sym->name );
+				ERR_UNDEFINED_NONTERM : ERR_UNDEFINED_TERM,
+					ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
+						parser->filename, sym->line, sym->name );
 		}
 		
 		if( sym->generated == FALSE && sym->used == FALSE )
 		{			
 			p_error( parser, (sym->type == SYM_NON_TERMINAL ) ?
-				ERR_UNUSED_NONTERM : ERR_UNUSED_TERM, ERRSTYLE_WARNING,
-					sym->name );
+				ERR_UNUSED_NONTERM : ERR_UNUSED_TERM,
+					ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
+						parser->filename, sym->line, sym->name );
 		}
 	}
 }
@@ -458,7 +460,7 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 													p_error( parser,
 														ERR_KEYWORD_ANOMALY,
 														ERRSTYLE_WARNING |
-															ERRSTYLE_STATEINFO,
+														ERRSTYLE_STATEINFO,
 														st, ccol->symbol->name,
 															col->symbol->name );
 													
@@ -518,7 +520,8 @@ BOOLEAN p_stupid_productions( PARSER* parser )
 				(SYMBOL*)( p->rhs->pptr ) == p->lhs )
 		{
 			p_error( parser, ERR_CIRCULAR_DEFINITION,
-				ERRSTYLE_WARNING | ERRSTYLE_PRODUCTION, p );
+				ERRSTYLE_WARNING | ERRSTYLE_PRODUCTION | ERRSTYLE_FILEINFO,
+					parser->filename, p->line, p );
 			stupid = TRUE;
 		}
 		else if( p->lhs->nullable )
@@ -541,7 +544,8 @@ BOOLEAN p_stupid_productions( PARSER* parser )
 			if( possible )
 			{
 				p_error( parser, ERR_EMPTY_RECURSION,
-					ERRSTYLE_WARNING | ERRSTYLE_PRODUCTION, p );
+					ERRSTYLE_WARNING | ERRSTYLE_FILEINFO | ERRSTYLE_PRODUCTION,
+						parser->filename, p->line, p );
 				stupid = TRUE;
 			}
 		}
@@ -553,7 +557,8 @@ BOOLEAN p_stupid_productions( PARSER* parser )
 			p_rhs_first( &first_check, p->rhs );
 			if( list_count( first_check ) == 0 )
 				p_error( parser, ERR_USELESS_RULE,
-					ERRSTYLE_WARNING | ERRSTYLE_PRODUCTION, p );
+					ERRSTYLE_WARNING | ERRSTYLE_PRODUCTION | ERRSTYLE_FILEINFO,
+						parser->filename, p->line, p );
 
 			first_check = list_free( first_check );
 		}

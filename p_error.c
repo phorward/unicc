@@ -39,16 +39,16 @@ uchar* error_txt[128] =
 	"Reduce-reduce conflict on lookahead: ",
 	"Shift-reduce conflict on lookahead: ",
 	/* "Nonassociativity conflict on lookahead: ", */
-	"Keyword anomaly at shift on \'%s\' and reduce on \'%s\'",
+	"Terminal anomaly at shift on \'%s\' and reduce on \'%s\'",
 	"Unimplemented target language \'%s\' for code generator",
 	"Undefined value type for \'%s\' in reduction code of rule %d, \'%.*s\'",
 	"No end of input token defined, assuming \'%s\'",
 	"Parameter missing behind \'%s\'",
 	"Unable to open output file \'%s\'",
 	"Unable to open input file \'%s\'",
-	"Generator definition file \'%s\' was not found!",
-	"Can't find tag <%s> in %s",
-	"XML-format errors %s:\n\t%s",
+	"Connot load generator definition file \'%s\'",
+	"Cannot find tag <%s> in %s",
+	"XML parse errors %s:\n\t%s",
 	"In %s: tag <%s> is incomplete, and requires for %s-attribute",
 	"Duplicate escape sequence definition for \'%s\' in %s",
 	"Circular definition",
@@ -150,7 +150,8 @@ void p_error( PARSER* parser, int err_id, int err_style, ... )
 			xml_set_int_attr( errmsg, "line", line );
 		}
 	}
-	else if( err_style & ERRSTYLE_STATEINFO )
+
+	if( err_style & ERRSTYLE_STATEINFO )
 	{
 		state = va_arg( params, STATE* );
 

@@ -218,6 +218,7 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 ----------------------------------------------------------------------------- */
 void p_free_symbol( SYMBOL* sym )
 {
+	p_free( sym->code );
 	p_free( sym->name );
 	p_free( sym->ccl );
 	list_free( sym->first );
@@ -373,6 +374,8 @@ void p_free_production( PROD* prod )
 
 	list_free( prod->rhs_idents );
 	list_free( prod->rhs );
+
+	list_free( prod->all_lhs );
 	
 	/* Semantic right-hand sides */
 	for( li = prod->sem_rhs_idents; li; li = li->next )
@@ -820,6 +823,7 @@ void p_free_parser( PARSER* parser )
 	p_free( parser->p_prefix );
 	p_free( parser->p_header );
 	p_free( parser->p_footer );
+	p_free( parser->p_pcb );
 
 	p_free( parser->p_def_action );
 	p_free( parser->p_def_action_e );

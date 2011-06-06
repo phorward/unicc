@@ -150,8 +150,8 @@ void p_usage( FILE* stream, uchar* progname )
 	fprintf( stream, "usage: %s [options] filename\n\n"
 		"\t-all --all-warnings    Show all warnings\n"
 		"\t-gr  --grammar         Dump final grammar to stderr\n"
-		"\t-h   --help            Print this help\n"
-		"\t-V   --version         Print version and copyright\n"
+		"\t-h   --help            Print this help, then exit\n"
+		"\t-V   --version         Print version and copyright, then exit\n"
 		"\t-no  --no-opt          No state optimization (causes more states)\n"
 		"\t-b   --basename <name> Use basename <name> for output\n"
 		"\t-pr  --productions     Dump final productions to stderr\n"		
@@ -160,7 +160,8 @@ void p_usage( FILE* stream, uchar* progname )
 		"\t-sym --symbols         Dump symbols to stderr\n"
 		"\t-v   --verbose         Print progress messages\n"
 		"\t-w   --warnings        Print warnings\n"
-		"\t-x   --xml             Build XML output (XML code generator)\n",
+		"\t-x   --xml             Build parser description file instead of\n"
+		"\t                       program module (XML code generator)\n",
 
 		progname );
 }
@@ -292,6 +293,8 @@ int main( int argc, char** argv )
 			case 1:
 				p_error( parser, ERR_OPEN_INPUT_FILE,
 					ERRSTYLE_FATAL, filename );
+				p_free_parser( parser );
+
 				return error_count;
 				
 			case ERR_OK:

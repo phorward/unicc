@@ -717,10 +717,8 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 static void p_reduce_item( PARSER* parser, STATE* st, ITEM* it )
 {
 	LIST*		i		= (LIST*)NULL;
-	LIST*		j		= (LIST*)NULL;
 	SYMBOL*		sym		= (SYMBOL*)NULL;
 	TABCOL*		act		= (TABCOL*)NULL;
-	LIST*		newact;
 	int			resolved;
 	
 	if( it->next_symbol == (SYMBOL*)NULL )

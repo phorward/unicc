@@ -73,7 +73,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define GEN_WILD_PREFIX			"@@"
 
 /* Phorward UniCC parser generator version number */
-#define UNICC_VERSION			"0.27.21dev"
+#define UNICC_VERSION			"0.27.22"
 
 /* Default target language */
 #define UNICC_DEFAULT_LNG		"C"

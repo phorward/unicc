@@ -317,7 +317,7 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 									) ) )
 				{
 					OUTOFMEM;
-					RETURN( (uchar*)NULL );
+					VOIDRET;
 				}
 				
 				VARS( "tmp", "%s", tmp );
@@ -359,7 +359,7 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 					if( !( tmp = p_strdup( result[i].begin ) ) )
 					{
 						OUTOFMEM;
-						RETURN( (uchar*)NULL );
+						VOIDRET;
 					}
 				}
 
@@ -566,7 +566,7 @@ static void p_xml_build_scan_action(
 									) ) )
 				{
 					OUTOFMEM;
-					RETURN( (uchar*)NULL );
+					VOIDRET;
 				}
 				
 				VARS( "tmp", "%s", tmp );
@@ -1324,6 +1324,7 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 	if( ( xmlstr = xml_toxml( par ) ) )
 		fprintf( out, "%s", xmlstr );
 	
+	pfree( xmlstr );
 	xml_free( par );
 	
 	if( out )

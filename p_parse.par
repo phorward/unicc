@@ -249,7 +249,6 @@ static void make_semantic_rhs( PROD* p )
 
 static OPT* set_option( HASHTAB* ht, uchar* key, uchar* val, int line )
 {
-	HASHELEM*	he;
 	OPT*		opt;
 
 	if( !( opt = p_create_opt( ht, key, (uchar*)NULL ) ) )
@@ -343,9 +342,11 @@ unfixed_directive	->	'#' directive_parms
 
 @USERDEF<uchar*>	!'\0"\'/ \t\n\r!;'+ 
 					[*
+						#if UNICC_ON_SHIFT
 						@@ = (uchar*)pmalloc( ( ( @< - @> ) + 1 )
 												* sizeof( uchar ) );
 						psprintf( @@, "%.*s", @< - @>, @> );
+						#endif
 					*];
 
 userparam			->	code
@@ -611,7 +612,9 @@ regex_sym<SYMBOL*>	-> identifier
 							if( @@->defined )
 							{
 								p_error( parser, ERR_DOUBLE_TERMINAL_DEF,
-									ERRSTYLE_FATAL, @@->name );
+									ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
+										parser->filename, line, 
+											@@->name );
 							}
 
 							@@->defined = TRUE;
@@ -793,7 +796,7 @@ rhs<PROD*>			->	rhs symbol access_name
 								( *strbuf == '\0' ? (uchar*)NULL :
 											p_strdup( strbuf ) ) );
 									@@ = @1;
-								*]
+						*]
 
 					|	symbol access_name
 					
@@ -844,6 +847,9 @@ sym<SYMBOL*>		-> terminal
 						[*	@@ = p_get_symbol( parser,
 									strbuf, SYM_NON_TERMINAL, TRUE );
 							@@->used = TRUE;
+
+							if( @@->line < 0 )
+								@@->line = line;
 						*]
 						
 					//Embedded productions
@@ -912,6 +918,9 @@ terminal<SYMBOL*>	->	ccl
 									
 							@@->defined = TRUE;
 							@@->used = TRUE;
+
+							if( @@->line < 0 )
+								@@->line = line;
 						*]
 
 					| kw
@@ -930,6 +939,9 @@ terminal<SYMBOL*>	->	ccl
 											REGEX_MOD_NONE, @@->id )
 										!= ERR_OK )
 									OUTOFMEM;
+
+							if( @@->line < 0 )
+								@@->line = line;
 						*]
 
 					| '@' identifier
@@ -940,6 +952,9 @@ terminal<SYMBOL*>	->	ccl
 							/* @@->defined = TRUE; 
 							DO NOT SET DEFINED! */
 							@@->used = TRUE;
+
+							if( @@->line < 0 )
+								@@->line = line;
 						*]
 					;
 
@@ -1276,7 +1291,6 @@ static void p_parse_error( @@prefix_pcb* pcb )
 	uchar**	vptr;
 	uchar**	valid;
 	uchar*	cur;
-	uchar*	bigstr;
 
 	if( !( vptr = valid =
 			(uchar**)p_malloc( ( @@prefix_act[ *( pcb->tos ) ][0] + 1 )

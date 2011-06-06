@@ -340,6 +340,7 @@ void p_unique_charsets( PARSER* parser )
 					if( !ccl_size( diff ) )
 					{
 						ccl_free( diff );
+						ccl_free( inter );
 						continue;
 					}
 
