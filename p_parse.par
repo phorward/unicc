@@ -1300,7 +1300,6 @@ static void p_parse_error( @@prefix_pcb* pcb )
 
 int p_parse( PARSER* p, uchar* src )
 {
-	int err = -1;
 	@@prefix_pcb pcb;
 
 	line = 1;
@@ -1312,19 +1311,17 @@ int p_parse( PARSER* p, uchar* src )
 
 	if( p && src )
 	{
-		err = 0;
-
 		parser = p;
 		strbuf_append( '\0' );
 
 		src_ptr = src;
 
-		err = @@prefix_parse( &pcb );
-
+		@@prefix_parse( &pcb );
+		
 		p_free( strbuf );
 	}
 
-	return err + error_count;
+	return pcb.error_count + error_count;
 }
 
 *];

@@ -87,6 +87,7 @@ void p_build_code( PARSER* parser )
 	uchar*			actions				= (uchar*)NULL;
 	uchar*			scan_actions		= (uchar*)NULL;
 	uchar*			top_value			= (uchar*)NULL;
+	uchar*			goal_value			= (uchar*)NULL;
 	uchar*			act					= (uchar*)NULL;
 	uchar*			filename;
 
@@ -181,6 +182,22 @@ void p_build_code( PARSER* parser )
 	else
 		/* ERROR */
 		;
+		
+	/* Create piece of code for the value that is associated with the
+	 * 	goal symbol, to e.g. return it from the parser function */
+	if( list_count( parser->vtypes ) == 1 )
+		goal_value = p_tpl_insert( gen->action_single,
+			GEN_WILD_PREFIX "offset", p_int_to_str( 0 ), TRUE,
+				(uchar*)NULL );
+	else
+		goal_value = p_tpl_insert( gen->action_union,
+			GEN_WILD_PREFIX "offset", p_int_to_str( 0 ), TRUE,
+				GEN_WILD_PREFIX "attribute",
+					p_tpl_insert( gen->vstack_union_att,
+						GEN_WILD_PREFIX "value-type-id",
+								p_int_to_str( parser->goal->vtype->id ), TRUE,
+									(uchar*)NULL ), TRUE,
+										(uchar*)NULL );
 
 	/* Build action, goto and dfa_select tables */
 	MSG( "Action, Goto and DFA selection table" );
@@ -653,7 +670,7 @@ void p_build_code( PARSER* parser )
 
 		if( act )
 		{
-			if( gen->code_localization )
+			if( gen->code_localization && p->code_at > 0 )
 			{
 				actions = p_str_append( actions,
 					p_tpl_insert( gen->code_localization,
@@ -800,6 +817,8 @@ void p_build_code( PARSER* parser )
 			GEN_WILD_PREFIX "actions", actions, FALSE,
 			GEN_WILD_PREFIX "scan_actions", scan_actions, FALSE,
 			GEN_WILD_PREFIX "top-value", top_value, FALSE,
+			GEN_WILD_PREFIX "goal-value", goal_value, FALSE,
+			GEN_WILD_PREFIX "goal-type", parser->goal->vtype->real_def, FALSE,
 			GEN_WILD_PREFIX "model", p_int_to_str( parser->p_mode ), TRUE,
 			GEN_WILD_PREFIX "mode", p_int_to_str( parser->p_mode ), TRUE,
 			GEN_WILD_PREFIX "error",
@@ -902,6 +921,7 @@ void p_build_code( PARSER* parser )
 	p_free( actions );
 	p_free( scan_actions );
 	p_free( top_value );
+	p_free( goal_value );
 
 	/* Freeing the generator's structure */
 	p_free( gen->for_sequences );
@@ -983,6 +1003,11 @@ uchar* p_escape_for_target( GENERATOR* g, uchar* str, BOOLEAN clear )
 	12.07.2010	Jan Max Meyer	Print warning if code symbol references to un-
 								defined symbol on the semantic rhs!
 	23.04.2011	Jan Max Meyer	Assignment of multiple left-hand sides
+	04.06.2011	Jan Max Meyer	In case of the default action code use, never
+								refer to the semantic right hand side if there
+								is one; This causes compiler warnings in the
+								resulting parser template (and unpredictable
+								results...)
 ----------------------------------------------------------------------------- */
 uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 			uchar* base, BOOLEAN def_code )
@@ -1060,7 +1085,7 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 	
 	VARS( "p->sem_rhs", "%p", p->sem_rhs  );
 	/* Ok, perform replacement operations */
-	if( p->sem_rhs )
+	if( p->sem_rhs && !def_code )
 	{
 		MSG( "Replacing semantic right-hand side" );
 		rhs = p->sem_rhs;
