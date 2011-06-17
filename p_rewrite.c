@@ -739,11 +739,6 @@ void p_setup_single_goal( PARSER* parser )
 					IS_TERMINAL( sym ) && !( parser->end_of_input ) )
 			{
 				parser->end_of_input = sym;
-				/* Pop the end-of-input symbol and add it to the parser as end-of-input! */
-				/* list_pop( p->rhs, (void**)( &( parser->end_of_input ) ) );
-				list_pop( p->rhs_idents, (void**) &tmp );
-				p_free( tmp );
-				*/
 
 				return; /* Nothing to do anymore! */
 			}
@@ -763,6 +758,7 @@ void p_setup_single_goal( PARSER* parser )
 
 				list_push( p->rhs, (void*)parser->end_of_input );
 				list_push( p->rhs_idents, (void*)NULL );
+
 				return; /* Nothing to do anymore! */
 			}
 		}
@@ -772,13 +768,14 @@ void p_setup_single_goal( PARSER* parser )
 	deriv = p_str_append( p_strdup( parser->goal->name ),
 				P_REWRITTEN_TOKEN, FALSE );
 
-	sym = p_get_symbol( parser, deriv, SYM_NON_TERMINAL, TRUE );
-	if( !sym )
+	if( !( sym = p_get_symbol( parser, deriv, SYM_NON_TERMINAL, TRUE ) ) )
 	{
 		OUTOFMEM;
 		return;
 	}
+
 	sym->generated = TRUE;
+	sym->vtype = parser->goal->vtype;
 
 	p_free( deriv );
 
@@ -805,7 +802,8 @@ void p_setup_single_goal( PARSER* parser )
 
 		parser->end_of_input->generated = TRUE;
 
-		p_error( parser, ERR_ASSUMING_DEF_EOF, ERRSTYLE_WARNING, P_DEF_EOF_SYMBOL );
+		p_error( parser, ERR_ASSUMING_DEF_EOF, ERRSTYLE_WARNING,
+					P_DEF_EOF_SYMBOL );
 	}
 
 	p_append_to_production( p, parser->end_of_input, (uchar*)NULL );

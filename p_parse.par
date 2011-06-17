@@ -64,6 +64,8 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #include "p_proto.h"
 #include "p_error.h"
 
+#define UNICC_DEBUG 0
+
 /*
  * Global variables
  */
@@ -1293,12 +1295,12 @@ static void p_parse_error( @@prefix_pcb* pcb )
 	uchar*	cur;
 
 	if( !( vptr = valid =
-			(uchar**)p_malloc( ( @@prefix_act[ *( pcb->tos ) ][0] + 1 )
+			(uchar**)p_malloc( ( @@prefix_act[ pcb->tos->state ][0] + 1 )
 						* sizeof( uchar* ) ) ) )
 		OUTOFMEM;
 
-	for( i = 1; i < @@prefix_act[ *( pcb->tos ) ][0] * 3; i += 3 )
-		*( vptr++ ) = @@prefix_symbol_names[ _act[ *( pcb->tos ) ][i] ];
+	for( i = 1; i < @@prefix_act[ pcb->tos->state ][0] * 3; i += 3 )
+		*( vptr++ ) = @@prefix_symbol_names[ _act[ pcb->tos->state ][i] ];
 
 	*vptr = (uchar*)NULL;
 
