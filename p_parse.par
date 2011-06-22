@@ -697,8 +697,25 @@ definition			->	lhs:primary
 							/* Attach code */
 							if( @code_opt )
 							{
-								primary->code = strbuf;
-								primary->code_at = last_code_begin;
+								/* Copy code for every symbol  */
+								for( l = @alt_regex_sym; l;
+									l = list_next( l ) )
+								{
+									s = (SYMBOL*)list_access( l );
+
+									/*
+										Last symbol gets strbuf-pointer,
+										all other assignments need to be
+										duplicated.
+									*/
+									if( list_next( l ) )
+										s->code = p_strdup( strbuf );
+									else
+										s->code = strbuf;
+
+									primary->code_at = last_code_begin;
+								}
+
 								strbuf = (uchar*)NULL;
 							}
 
