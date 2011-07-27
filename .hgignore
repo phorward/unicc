@@ -1,0 +1,12 @@
+syntax: glob
+
+p_parse.c
+p_parse.h
+p_parse.dbg
+p_lalr1_cc*
+*.xml*
+*.o
+boot_unicc?
+old
+test
+bak

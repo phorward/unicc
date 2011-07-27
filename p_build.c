@@ -469,7 +469,7 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 	
 	Author:			Jan Max Meyer
 	
-	Usage:			<usage>
+	Usage:			Construct the scanner action code from templates.
 					
 	Parameters:		<type>		<identifier>		<description>
 	
@@ -665,7 +665,7 @@ uchar* p_mkproduction_str( PROD* p )
 	LIST*		l;
 	SYMBOL*		sym;
 	
-	sprintf( wtf, "%s -> ", p->lhs->name );
+	sprintf( wtf, "%.*s -> ", sizeof( wtf ) - 5, p->lhs->name );
 	ret = p_strdup( wtf );
 	
 	for( l = p->rhs; l; l = l->next )
@@ -675,21 +675,23 @@ uchar* p_mkproduction_str( PROD* p )
 		switch( sym->type )
 		{
 			case SYM_CCL_TERMINAL:
-				sprintf( wtf, "\'%s\'", sym->name );
+				sprintf( wtf, "\'%.*s\'", sizeof( wtf ) - 4, sym->name );
 				break;
+
 			case SYM_REGEX_TERMINAL:
 				if( sym->keyword )
-					sprintf( wtf, "\"%s\"", sym->name );
+					sprintf( wtf, "\"%.*s\"", sizeof( wtf ) - 4, sym->name );
 				else
-					sprintf( wtf, "@%s", sym->name );
+					sprintf( wtf, "@%.*s", sizeof( wtf ) - 3, sym->name );
 				break;
+
 			case SYM_ERROR_RESYNC:
 				strcpy( wtf, P_ERROR_RESYNC );
 				break;
 				
 			default:
-				strcpy( wtf, sym->name );
-				break;			
+				sprintf( wtf, "%.*s", sizeof( wtf ) - 2, sym->name );
+				break;
 		}
 		
 		if( l->next )
@@ -1362,58 +1364,13 @@ void p_build_code( PARSER* parser )
 	}
 #endif
 
-	MSG( "Construct character map" );
+	MSG( "Construct whitespace and symbol information table" );
 
-	/* Character map */
-/*
-	LISTFOR( parser->symbols, l )
-	{
-		sym = (SYMBOL*)list_access( l );
-
-		if( IS_TERMINAL( sym ) && !( sym->keyword ) )
-		{
-			for( c = sym->ccl; c && c->begin != CCL_MAX; c++ )
-			{
-				if( char_map )
-				{
-					char_map = p_str_append(
-						char_map, gen->charmap.col_sep, FALSE );
-					char_map_sym = p_str_append(
-						char_map_sym, gen->charmap_sym.col_sep, FALSE );
-				}
-
-				char_map = p_str_append( char_map,
-					p_tpl_insert( gen->charmap.col,
-						GEN_WILD_PREFIX "from",
-							p_int_to_str( c->begin ), TRUE,
-						GEN_WILD_PREFIX "to",
-							p_int_to_str( c->end ), TRUE,
-						GEN_WILD_PREFIX "symbol",
-							p_int_to_str( sym->id ), TRUE,
-						(uchar*)NULL ), TRUE );
-						
-				char_map_sym = p_str_append( char_map_sym,
-					p_tpl_insert( gen->charmap_sym.col,
-						GEN_WILD_PREFIX "from",
-							p_int_to_str( c->begin ), TRUE,
-						GEN_WILD_PREFIX "to",
-							p_int_to_str( c->end ), TRUE,
-						GEN_WILD_PREFIX "symbol",
-							p_int_to_str( sym->id ), TRUE,
-						(uchar*)NULL ), TRUE );
-			}
-			
-			charmap_count += ccl_size( sym->ccl );
-		}
-	}
-*/
-
-	/* Whitespace identification table and symbol-name-table */
+	/* Whitespace identification table and symbol-information-table */
 	LISTFOR( parser->symbols, l ) /* Okidoki, now do the generation */
 	{
 		sym = (SYMBOL*)list_access( l );
 
-		/* printf( "sym->name = >%s< at %d\n", sym->name, sym->id ); */
 		if( sym->whitespace )
 			whitespaces = p_str_append( whitespaces,
 				gen->whitespace.col_true, FALSE );
@@ -1423,10 +1380,19 @@ void p_build_code( PARSER* parser )
 
 		symbols = p_str_append( symbols, p_tpl_insert( gen->symbols.col,
 				GEN_WILD_PREFIX "symbol-name",
-						p_escape_for_target( gen, sym->name, FALSE ), TRUE,
-					GEN_WILD_PREFIX "symbol", p_int_to_str( sym->id ), TRUE,
-						GEN_WILD_PREFIX "type", p_int_to_str( sym->type ), TRUE,
-							(char*)NULL ), TRUE );
+					p_escape_for_target( gen, sym->name, FALSE ), TRUE,
+				GEN_WILD_PREFIX "symbol",
+					p_int_to_str( sym->id ), TRUE,
+				GEN_WILD_PREFIX "type",
+					p_int_to_str( sym->type ), TRUE,
+				GEN_WILD_PREFIX "datatype",
+					p_int_to_str( sym->vtype->id ), TRUE,
+				GEN_WILD_PREFIX "lexem",
+					p_int_to_str( sym->lexem ), TRUE,
+				GEN_WILD_PREFIX "whitespace",
+					p_int_to_str( sym->whitespace ), TRUE,
+					
+				(char*)NULL ), TRUE );
 
 		if( max_symbol_name < (int)strlen( sym->name ) )
 			max_symbol_name = (int)strlen( sym->name );
@@ -1533,11 +1499,20 @@ void p_build_code( PARSER* parser )
 			GEN_WILD_PREFIX "production-number", p_int_to_str( p->id ), TRUE,
 				(uchar*)NULL ), TRUE );
 
-		/* Generate production name */
+		/* Generate production information table */
 		productions = p_str_append( productions, p_tpl_insert(
 			gen->productions.col,
-				GEN_WILD_PREFIX "production", p_escape_for_target(
-						gen, p_mkproduction_str( p ), TRUE ), TRUE,
+
+				GEN_WILD_PREFIX "production-number",
+					p_int_to_str( p->id ), TRUE,
+				GEN_WILD_PREFIX "production",
+					p_escape_for_target( gen, p_mkproduction_str( p ), TRUE ),
+						TRUE,
+				GEN_WILD_PREFIX "length",
+					p_int_to_str( list_count( p->rhs ) ), TRUE,
+				GEN_WILD_PREFIX "lhs",
+					p_int_to_str( p->lhs->id ), TRUE,
+
 			(uchar*)NULL ), TRUE );
 			
 		if( l->next )
@@ -1742,7 +1717,8 @@ void p_build_code( PARSER* parser )
 		{
 			if( !( stream = fopen( filename, "wt" ) ) )
 			{
-				p_error( parser, ERR_OPEN_OUTPUT_FILE, ERRSTYLE_WARNING, filename );
+				p_error( parser, ERR_OPEN_OUTPUT_FILE, ERRSTYLE_WARNING,
+					filename );
 				p_free( filename );
 				filename = (char*)NULL;
 			}
