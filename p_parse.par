@@ -28,6 +28,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
  * 2. Don't use embedded productions - insert a new nonterminal for this
  * 3. Don't set precedence to productions
  * 4. Don't use long-string identifiers for symbols
+ * 5. Don't use the multiple left-hand side feature here
  *
  * Some other rules may be inserted here in future versions.
  */
@@ -35,18 +36,18 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 /*
  * Information directives
  */
-#parser			"UniCC Grammar Definition Language";
-#version		"1.5";
-#description	"Parser for UniCC parser definitions";
-#copyright		"Copyright (C) 2008-2011 by Jan Max Meyer, Phorward Software Technologies";
+#parser					"UniCC Grammar Definition Language";
+#version				"1.5";
+#description			"Parser for UniCC parser definitions";
+#copyright				"Copyright (C) 2008-2011 by Jan Max Meyer, Phorward Software Technologies";
 
 /*
  * Parser configuration
  */
-#end of input		'\0';
-#whitespaces 		whitespace;
-#lexeme				terminal identifier modifier code ccl_string kw type;
-#lexeme separation	on;
+#end of input			'\0';
+#whitespaces 			whitespace;
+#lexeme					terminal identifier modifier code ccl_string kw type;
+#lexeme separation		on;
 #default action			[* @@ = @1; *];
 #default epsilon action	[* @@ = 0; *];
 

@@ -761,6 +761,7 @@ PARSER* p_create_parser( void )
 	pptr->p_mode = MODE_SENSITIVE;
 	pptr->p_universe = 255; /*TODO*/
 	pptr->optimize_states = TRUE;
+	pptr->gen_prog = TRUE;
 
 	/* Initialize options table */
 	hashtab_init( &( pptr->options ), BUCKET_COUNT,

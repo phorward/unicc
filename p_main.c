@@ -244,6 +244,11 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 			}
 			else if( !strcmp( opt, "xml" ) || !strcmp( opt, "x" ) )
 				parser->gen_xml = TRUE;
+			else if( !strcmp( opt, "XML" ) || !strcmp( opt, "X" ) )
+			{
+				parser->gen_xml = TRUE;
+				parser->gen_prog = FALSE;
+			}
 		}
 		else if( !( *filename ) )
 			*filename = argv[i];
@@ -435,7 +440,7 @@ int main( int argc, char** argv )
 					def_lang = TRUE;
 				}
 
-				if( !parser->gen_xml )
+				if( parser->gen_prog )
 				{
 					if( parser->verbose )
 						fprintf( stderr, "Code generation target: %s%s\n",
@@ -446,9 +451,10 @@ int main( int argc, char** argv )
 					p_build_code( parser );
 					DONE()
 				}
-				else
+
+				if( parser->gen_xml )
 				{
-					PROGRESS( "Generating parser definition file" )
+					PROGRESS( "Generating parser description file" )
 					p_build_xml( parser, TRUE );
 					DONE()
 				}

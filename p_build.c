@@ -745,16 +745,6 @@ BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, uchar* genfile )
 	else \
 		p_error( parser, ERR_TAG_NOT_FOUND, ERRSTYLE_WARNING, (tagname), genfile );
 
-#define GET_XML_BOOLTAB_1D( target, tagname ) \
-	if( ( tmp = xml_child( g->xml, (tagname) ) ) ) \
-	{ \
-		GET_XML_DEF( tmp, (target).col_true, "col_true" ) \
-		GET_XML_DEF( tmp, (target).col_false, "col_false" ) \
-		GET_XML_DEF( tmp, (target).col_sep, "col_sep" ) \
-	} \
-	else \
-		p_error( parser, ERR_TAG_NOT_FOUND, ERRSTYLE_WARNING, (tagname), genfile );
-
 #define GET_XML_TAB_2D( target, tagname ) \
 	if( ( tmp = xml_child( g->xml, (tagname) ) ) ) \
 	{ \
@@ -805,17 +795,11 @@ BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, uchar* genfile )
 	GET_XML_DEF( g->xml, g->vstack_union_def, "vstack_union_def" );
 	GET_XML_DEF( g->xml, g->vstack_union_att, "vstack_union_att" );
 
-	GET_XML_TAB_1D( g->prodlen, "prodlen" )
-	GET_XML_TAB_1D( g->prodlhs, "prodlhs" )
 	GET_XML_TAB_1D( g->defprod, "defprod" )
-	/*
-	GET_XML_TAB_1D( g->charmap, "charmap" )
-	GET_XML_TAB_1D( g->charmap_sym, "charmap_sym" )
-	*/
+
 	GET_XML_TAB_1D( g->dfa_select, "dfa_select" )
 	GET_XML_TAB_1D( g->dfa_char, "dfa_char" )
 	GET_XML_TAB_1D( g->dfa_trans, "dfa_trans" )
-	GET_XML_BOOLTAB_1D( g->whitespace, "whitespace" )
 
 	GET_XML_TAB_2D( g->acttab, "acttab" )
 	GET_XML_TAB_2D( g->gotab, "gotab" )
@@ -915,12 +899,9 @@ void p_build_code( PARSER* parser )
 	uchar*			action_table_row	= (uchar*)NULL;
 	uchar*			goto_table			= (uchar*)NULL;
 	uchar*			goto_table_row		= (uchar*)NULL;
-	uchar*			prod_rhs_count		= (uchar*)NULL;
-	uchar*			prod_lhs			= (uchar*)NULL;
 	uchar*			def_prod			= (uchar*)NULL;
 	uchar*			char_map			= (uchar*)NULL;
 	uchar*			char_map_sym		= (uchar*)NULL;
-	uchar*			whitespaces			= (uchar*)NULL;
 	uchar*			symbols				= (uchar*)NULL;
 	uchar*			productions			= (uchar*)NULL;
 	uchar*			dfa_select			= (uchar*)NULL;
@@ -970,7 +951,7 @@ void p_build_code( PARSER* parser )
 	gen = &generator;
 	memset( gen, 0, sizeof( GENERATOR ) );
 
-	sprintf( xml_file, "%s.tlt", parser->p_language );
+	sprintf( xml_file, "%s%s", parser->p_language, UNICC_TLT_EXTENSION );
 	VARS( "xml_file", "%s", xml_file );
 
 	if( !pfileexists( xml_file ) && ( tpldir = getenv( "UNICC_TPLDIR" ) ) )
@@ -1170,37 +1151,6 @@ void p_build_code( PARSER* parser )
 			def_prod = p_str_append( def_prod, gen->defprod.col_sep, FALSE );
 	}
 
-	/* Production length and production left-hand side tables */
-	MSG( "Tables for production length and left-hand side association" );
-	for( l = parser->productions, row = 0; l; l = l->next, row++ )
-	{
-		p = (PROD*)l->pptr;
-
-		prod_rhs_count = p_str_append( prod_rhs_count,
-							p_tpl_insert( gen->prodlen.col,
-								GEN_WILD_PREFIX "length-of-rhs",
-									p_int_to_str( list_count( p->rhs ) ), TRUE,
-								GEN_WILD_PREFIX "production-number",
-									p_int_to_str( row ), TRUE,
-								(uchar*)NULL ), TRUE );
-
-		prod_lhs = p_str_append( prod_lhs,
-							p_tpl_insert( gen->prodlhs.col,
-								GEN_WILD_PREFIX "lhs",
-									p_int_to_str( p->lhs->id ), TRUE,
-								GEN_WILD_PREFIX "production-number",
-									p_int_to_str( row ), TRUE,
-								(uchar*)NULL ), TRUE );
-
-		if( l->next )
-		{
-			prod_rhs_count = p_str_append( prod_rhs_count,
-									gen->prodlen.col_sep, FALSE );
-			prod_lhs = p_str_append( prod_lhs,
-									gen->prodlhs.col_sep, FALSE );
-		}
-	}
-
 	/* Lexical recognition machine table composition */
 	MSG( "Lexical recognition machine" );
 	for( l = parser->kw, row = 0, column = 0; l; l = list_next( l ), row++ )
@@ -1364,19 +1314,12 @@ void p_build_code( PARSER* parser )
 	}
 #endif
 
-	MSG( "Construct whitespace and symbol information table" );
+	MSG( "Construct symbol information table" );
 
 	/* Whitespace identification table and symbol-information-table */
 	LISTFOR( parser->symbols, l ) /* Okidoki, now do the generation */
 	{
 		sym = (SYMBOL*)list_access( l );
-
-		if( sym->whitespace )
-			whitespaces = p_str_append( whitespaces,
-				gen->whitespace.col_true, FALSE );
-		else
-			whitespaces = p_str_append( whitespaces,
-				gen->whitespace.col_false, FALSE );
 
 		symbols = p_str_append( symbols, p_tpl_insert( gen->symbols.col,
 				GEN_WILD_PREFIX "symbol-name",
@@ -1399,8 +1342,6 @@ void p_build_code( PARSER* parser )
 
 		if( l->next )
 		{
-			whitespaces = p_str_append( whitespaces,
-				gen->whitespace.col_sep, FALSE );
 			symbols = p_str_append( symbols,
 				gen->symbols.col_sep, FALSE );
 		}
@@ -1628,14 +1569,11 @@ void p_build_code( PARSER* parser )
 				p_int_to_str( charmap_count ), TRUE,
 			GEN_WILD_PREFIX "action-table", action_table, FALSE,
 			GEN_WILD_PREFIX "goto-table", goto_table, FALSE,
-			GEN_WILD_PREFIX "production-lengths", prod_rhs_count, FALSE,
-			GEN_WILD_PREFIX "production-lhs", prod_lhs, FALSE,
 			GEN_WILD_PREFIX "default-productions", def_prod, FALSE,
 			GEN_WILD_PREFIX "character-map-symbols", char_map_sym, FALSE,
 			GEN_WILD_PREFIX "character-map", char_map, FALSE,
 			GEN_WILD_PREFIX "character-universe",
 				p_int_to_str( parser->p_universe ), TRUE,
-			GEN_WILD_PREFIX "whitespaces", whitespaces, FALSE,
 			GEN_WILD_PREFIX "symbols", symbols, FALSE,
 			GEN_WILD_PREFIX "productions", productions, FALSE,
 			GEN_WILD_PREFIX "max-symbol-name-length",
@@ -1743,12 +1681,9 @@ void p_build_code( PARSER* parser )
 	/* Freeing generated content */
 	p_free( action_table );
 	p_free( goto_table );
-	p_free( prod_rhs_count );
-	p_free( prod_lhs );
 	p_free( def_prod );
 	p_free( char_map );
 	p_free( char_map_sym );
-	p_free( whitespaces );
 	p_free( symbols );
 	p_free( productions );
 	p_free( dfa_select );

@@ -1309,7 +1309,8 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 		xml_move( xml_child( parser->err_xml, "messages" ), par, 0 );
 	
 	/* TODO: Write to output file */
-	if( ( outname = pasprintf( "%s.xml", parser->p_basename ) ) )
+	if( ( outname = pasprintf( "%s%s",
+			parser->p_basename, UNICC_XML_EXTENSION ) ) )
 	{
 		if( !( out = fopen( outname, "wb" ) ) )
 			p_error( parser, ERR_OPEN_OUTPUT_FILE, ERRSTYLE_WARNING, outname );

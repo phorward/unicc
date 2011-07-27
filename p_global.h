@@ -73,10 +73,14 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define GEN_WILD_PREFIX			"@@"
 
 /* Phorward UniCC parser generator version number */
-#define UNICC_VERSION			"0.27.24"
+#define UNICC_VERSION			"0.27.25"
 
 /* Default target language */
 #define UNICC_DEFAULT_LNG		"C"
+
+/* File extensions */
+#define UNICC_TLT_EXTENSION		".tlt"
+#define UNICC_XML_EXTENSION		".xml"
 
 /*
  * Macros
@@ -332,6 +336,7 @@ struct _parser
 	BOOLEAN		show_symbols;
 	BOOLEAN		optimize_states;
 	BOOLEAN		all_warnings;
+	BOOLEAN		gen_prog;
 	BOOLEAN		gen_xml;
 
 	/* Debug and maintainance */
@@ -380,29 +385,15 @@ struct _generator
 													the value stack */
 	_2D_TABLE	acttab;						/* Action table */
 	_2D_TABLE	gotab;						/* Goto table */
-	_1D_TABLE	prodlen;					/* Production lengths */
-	_1D_TABLE	prodlhs;					/* Production's left-hand
-												sides */
 	_1D_TABLE	defprod;					/* Default production for
 												each state */
-#if 0
-	_1D_TABLE	charmap;					/* Character-class validation
-												map */
-	_1D_TABLE	charmap_sym;				/* Character-class to symbol
-												association map */
-#endif
+	_1D_TABLE	symbols;					/* Symbol information table */
+	_1D_TABLE	productions;				/* Production information table */
 	_1D_TABLE	dfa_select;					/* DFA machine selection */
 	_2D_TABLE	dfa_idx;					/* DFA state index */
 	_1D_TABLE	dfa_char;					/* DFA transition characters */
 	_1D_TABLE	dfa_trans;					/* DFA transitions */
 	_2D_TABLE	dfa_accept;					/* DFA accepting states */
-	_1D_BOOL_TABLE	whitespace;				/* Whitespace identification
-												table (used by context-free
-													model) */
-	_1D_TABLE	symbols;					/* Symbol name table
-												(for debug) */
-	_1D_TABLE	productions;				/* Production definition table
-												(for debug) */
 
 	uchar*		action_start;				/* Action code start */
 	uchar*		action_end;					/* Action code end */
