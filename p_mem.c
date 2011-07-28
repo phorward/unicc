@@ -759,7 +759,7 @@ PARSER* p_create_parser( void )
 
 	/* Setup defaults */
 	pptr->p_mode = MODE_SENSITIVE;
-	pptr->p_universe = 255; /*TODO*/
+	pptr->p_universe = CCL_MAX;
 	pptr->optimize_states = TRUE;
 	pptr->gen_prog = TRUE;
 

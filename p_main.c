@@ -147,23 +147,25 @@ void p_usage( FILE* stream, uchar* progname )
 	if( !stream )
 		stream = stdout;
 
-	fprintf( stream, "usage: %s [options] filename\n\n"
-		"\t-all --all-warnings    Show all warnings\n"
-		"\t-gr  --grammar         Dump final grammar to stderr\n"
-		"\t-h   --help            Print this help, then exit\n"
-		"\t-V   --version         Print version and copyright, then exit\n"
-		"\t-no  --no-opt          No state optimization (causes more states)\n"
-		"\t-b   --basename <name> Use basename <name> for output\n"
-		"\t-pr  --productions     Dump final productions to stderr\n"		
-		"\t-s   --stats           Print statistics message\n"
-		"\t-st  --states          Dump LALR(1) states to stderr\n"
-		"\t-sym --symbols         Dump symbols to stderr\n"
-		"\t-v   --verbose         Print progress messages\n"
-		"\t-w   --warnings        Print warnings\n"
-		"\t-x   --xml             Build parser description file instead of\n"
-		"\t                       program module (XML code generator)\n",
+	fprintf( stream, "Usage: %s [OPTION]... FILE\n\n"
+		"  -all --all-warnings    Show all warnings\n"
+		"  -gr  --grammar         Dump final grammar to stderr\n"
+		"  -h   --help            Print this help, then exit\n"
+		"  -V   --version         Print version and copyright, then exit\n"
+		"  -no  --no-opt          Disable state optimization\n"
+		"                         (this will cause more states)\n"
+		"  -b   --basename NAME   Use basename NAME for output files\n"
+		"  -pr  --productions     Dump final productions to stderr\n"		
+		"  -s   --stats           Print statistics message\n"
+		"  -st  --states          Dump LALR(1) states to stderr\n"
+		"  -sym --symbols         Dump symbols to stderr\n"
+		"  -v   --verbose         Print progress messages\n"
+		"  -w   --warnings        Print warnings\n"
+		"  -x   --xml             Additionally build parser description file\n"
+		"  -X   --XML             Build parser description file without\n"
+		"                         generating a program-module\n"
 
-		progname );
+		"", progname );
 }
 
 /* -FUNCTION--------------------------------------------------------------------

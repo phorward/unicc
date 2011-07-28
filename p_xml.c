@@ -1253,7 +1253,7 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 
 	if( !xml_set_int_attr( par, "char-min", CCL_MIN ) )
 		OUTOFMEM;
-	if( !xml_set_int_attr( par, "char-max", CCL_MAX - 1 ) )
+	if( !xml_set_int_attr( par, "char-max", parser->p_universe - 1 ) )
 		OUTOFMEM;
 
 	/* Print parser's options */

@@ -80,7 +80,7 @@ all: $(PROGRAM)
 	@echo --- Compilation succeeded! ---
 
 $(TEMPLATE_C):
-	cd ..;  cd Cparser; make ../$(PROJECT)/$@; cd ..; cd $(PROJECT)
+	cd ..;  cd Cparser; make C.tlt; cd ..; cd $(PROJECT)
 
 $(PROG_BOOT1): $(PARSER_BOOT) $(PROTO) $(SRC) $(HEADERS) $(LIBS) $(MISCDEP)
 	$(MIN_LALR1) $(PARSER_BOOT) >$(PARSER) 2>$(PARSER_DBG)
