@@ -890,6 +890,7 @@ void p_build_code( PARSER* parser )
 	XML_T			file;
 	FILE*			stream;
 	
+	uchar*			basename;
 	uchar			xml_file			[ BUFSIZ + 1 ];
 	uchar*			option;
 	uchar*			tpldir;
@@ -1500,6 +1501,9 @@ void p_build_code( PARSER* parser )
 
 	/* Get the goal production */
 	goalprod = (PROD*)( parser->goal->productions->pptr );
+
+	/* Generate basename - parser->p_basename may contain directory path */
+	basename = p_strdup( pbasename( parser->p_basename ) );
 	
 	/* Construct the output files */
 	for( file = xml_child( gen->xml, "file" );
@@ -1508,11 +1512,13 @@ void p_build_code( PARSER* parser )
 		/* Make filename */
 		if( ( filename = (uchar*)xml_attr( file, "filename" ) ) )
 			filename = p_tpl_insert( filename,
+				/* Here we have to submit the original basename to construct
+					the final output filename using the full output path. */
 				GEN_WILD_PREFIX "basename", parser->p_basename, FALSE,
-				GEN_WILD_PREFIX "Cbasename", p_gen_c_identifier(
-							parser->p_basename, FALSE ), TRUE,
-				GEN_WILD_PREFIX "CBASENAME", p_gen_c_identifier(
-							parser->p_basename, TRUE ), TRUE,
+				GEN_WILD_PREFIX "Cbasename",
+						p_gen_c_identifier( parser->p_basename, FALSE ), TRUE,
+				GEN_WILD_PREFIX "CBASENAME",
+						p_gen_c_identifier( parser->p_basename, TRUE ), TRUE,
 				GEN_WILD_PREFIX "prefix", parser->p_prefix, FALSE,
 					(char*)NULL );
 		
@@ -1636,11 +1642,11 @@ void p_build_code( PARSER* parser )
 					GEN_WILD_PREFIX "prefix",
 						parser->p_prefix, FALSE,
 					GEN_WILD_PREFIX "basename",
-						parser->p_basename, FALSE,
-					GEN_WILD_PREFIX "Cbasename", p_gen_c_identifier(
-						parser->p_basename, FALSE ), TRUE,
-					GEN_WILD_PREFIX "CBASENAME", p_gen_c_identifier(
-						parser->p_basename, TRUE ), TRUE,
+						basename, FALSE,
+					GEN_WILD_PREFIX "Cbasename",
+						p_gen_c_identifier( basename, FALSE ), TRUE,
+					GEN_WILD_PREFIX "CBASENAME",
+						p_gen_c_identifier( basename, TRUE ), TRUE,
 					GEN_WILD_PREFIX "filename" LEN_EXT,
 						p_long_to_str(
 							(long)p_strlen( parser->filename ) ), TRUE,
@@ -1677,6 +1683,8 @@ void p_build_code( PARSER* parser )
 	}
 	
 	MSG( "Freeing used memory" );
+
+	p_free( basename );
 
 	/* Freeing generated content */
 	p_free( action_table );
