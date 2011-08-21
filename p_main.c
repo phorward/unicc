@@ -42,7 +42,7 @@ uchar* pmod[] =
  */
 #define PROGRESS( txt )		if( parser->verbose ) \
 							{ \
-								fprintf( stderr, "%s...", (txt ) ); \
+								fprintf( stdout, "%s...", (txt ) ); \
 								first_progress = TRUE; \
 							} \
 							else \
@@ -80,9 +80,9 @@ static void p_status( PARSER* parser, uchar* status, uchar* reason )
 		return;
 		
 	if( first_progress )
-		fprintf( stderr, status, reason );
+		fprintf( stdout, status, reason );
 	else
-		fprintf( stderr, "\n" );
+		fprintf( stdout, "\n" );
 	
 	first_progress = FALSE;
 }
@@ -148,22 +148,25 @@ void p_usage( FILE* stream, uchar* progname )
 		stream = stdout;
 
 	fprintf( stream, "Usage: %s [OPTION]... FILE\n\n"
-		"  -all --all-warnings    Show all warnings\n"
-		"  -gr  --grammar         Dump final grammar to stderr\n"
-		"  -h   --help            Print this help, then exit\n"
-		"  -V   --version         Print version and copyright, then exit\n"
-		"  -no  --no-opt          Disable state optimization\n"
+		"  -a   --all             Print all warnings\n"
+		"  -G   --grammar         Dump final (rewritten) grammar\n"
+		"  -h   --help            Print this help and exit\n"
+		"  -V   --version         Print version and copyright and exit\n"
+		"  -n   --no-opt          Disables state optimization\n"
 		"                         (this will cause more states)\n"
 		"  -b   --basename NAME   Use basename NAME for output files\n"
-		"  -pr  --productions     Dump final productions to stderr\n"		
+		"  -P   --productions     Dump final productions\n"		
 		"  -s   --stats           Print statistics message\n"
-		"  -st  --states          Dump LALR(1) states to stderr\n"
-		"  -sym --symbols         Dump symbols to stderr\n"
+		"  -S   --states          Dump LALR(1) states\n"
+		"  -T   --symbols         Dump symbols\n"
 		"  -v   --verbose         Print progress messages\n"
 		"  -w   --warnings        Print warnings\n"
-		"  -x   --xml             Additionally build parser description file\n"
-		"  -X   --XML             Build parser description file without\n"
+		"  -x   --xml             Build parser description file additionally\n"
+		"  -X   --XML             Build parser description file only, without\n"
 		"                         generating a program-module\n"
+		"\n"
+		"Errors and warnings are printed to stderr, "
+			"everything else to stdout.\n"
 
 		"", progname );
 }
@@ -193,9 +196,11 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 {
 	int		i;
 	uchar*	opt;
+	BOOLEAN	long_opt;
 	
 	progname = *argv;
 
+	/* TODO: This right!! */
 	for( i = 1; i < argc; i++ )
 	{
 		if( *(argv[i]) == '-' )
@@ -219,29 +224,29 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 				parser->stats = TRUE;
 			else if( !strcmp( opt, "warnings" ) || !strcmp( opt, "w" ) )
 				no_warnings = FALSE;
-			else if( !strcmp( opt, "grammar" ) || !strcmp( opt, "gr" ) )
+			else if( !strcmp( opt, "grammar" ) || !strcmp( opt, "G" ) )
 				parser->show_grammar = TRUE;
-			else if( !strcmp( opt, "states" ) || !strcmp( opt, "st" ) )
+			else if( !strcmp( opt, "states" ) || !strcmp( opt, "S" ) )
 				parser->show_states = TRUE;
-			else if( !strcmp( opt, "symbols" ) || !strcmp( opt, "sym" ) )
+			else if( !strcmp( opt, "symbols" ) || !strcmp( opt, "T" ) )
 				parser->show_symbols = TRUE;
-			else if( !strcmp( opt, "productions" ) || !strcmp( opt, "pr" ) )
+			else if( !strcmp( opt, "productions" ) || !strcmp( opt, "p" ) )
 				parser->show_productions = TRUE;
-			else if( !strcmp( opt, "no-opt" ) || !strcmp( opt, "no" ) )
+			else if( !strcmp( opt, "no-opt" ) || !strcmp( opt, "n" ) )
 				parser->optimize_states = FALSE;
-			else if( !strcmp( opt, "all-warnings" ) || !strcmp( opt, "all" ) )
+			else if( !strcmp( opt, "all-warnings" ) || !strcmp( opt, "a" ) )
 			{
 				parser->all_warnings = TRUE;
 				no_warnings = FALSE;
 			}
 			else if( !strcmp( opt, "version" ) || !strcmp( opt, "V" ) )
 			{
-				p_copyright( stderr );
+				p_copyright( stdout );
 				exit( EXIT_SUCCESS );
 			}
 			else if( !strcmp( opt, "help" ) || !strcmp( opt, "h" ) )
 			{
-				p_usage( stderr, *argv );
+				p_usage( stdout, *argv );
 				exit( EXIT_SUCCESS );
 			}
 			else if( !strcmp( opt, "xml" ) || !strcmp( opt, "x" ) )
@@ -323,7 +328,7 @@ int main( int argc, char** argv )
 			parser->p_basename = base_name;
 
 		if( parser->verbose )
-			fprintf( stderr, "UniCC version: %s\n", UNICC_VERSION );
+			fprintf( stdout, "UniCC version: %s\n", UNICC_VERSION );
 
 		PROGRESS( "Parsing grammar" )
 		/* Parse grammar structure */
@@ -332,7 +337,7 @@ int main( int argc, char** argv )
 			DONE()
 
 			if( parser->verbose )
-				fprintf( stderr, "Parser construction mode: %s\n",
+				fprintf( stdout, "Parser construction mode: %s\n",
 					pmod[ parser->p_mode ] );
 
 
@@ -370,106 +375,112 @@ int main( int argc, char** argv )
 				DONE()
 
 				if( parser->show_grammar )
-					p_dump_grammar( stderr, parser );
+					p_dump_grammar( stdout, parser );
 				
 				if( parser->show_symbols )
-					p_dump_symbols( stderr, parser );
+					p_dump_symbols( stdout, parser );
 
 				if( parser->show_productions )
-					p_dump_productions( stderr, parser );
+					p_dump_productions( stdout, parser );
 
 				/* Stupid production recognition */
 				PROGRESS( "Validating rule integrity" )
 
-				p_undef_or_unused( parser );
-					
-				if( p_stupid_productions( parser ) )
-					recursions = TRUE;
-
-				DONE()
-
-				/* Parse table generator */
-				PROGRESS( "Building parse tables" )
-				p_generate_tables( parser );
-
-				if( parser->show_states )
-					p_dump_lalr_states( stderr, parser );
-
-				DONE()
-
-				/* Regex anomaly recognition */
-				PROGRESS( "Terminal anomaly detection" )
-				if( parser->p_mode == MODE_SENSITIVE )
+				if( !p_undef_or_unused( parser ) )
 				{
-					if( recursions )
+					if( p_stupid_productions( parser ) )
+						recursions = TRUE;
+
+					DONE()
+
+					/* Parse table generator */
+					PROGRESS( "Building parse tables" )
+					p_generate_tables( parser );
+
+					if( parser->show_states )
+						p_dump_lalr_states( stdout, parser );
+
+					DONE()
+
+					/* Terminal anomaly detection */
+					PROGRESS( "Terminal anomaly detection" )
+					if( parser->p_mode == MODE_SENSITIVE )
 					{
-						SKIPPED( "Recursions detected" );
-					}
-					else if( parser->p_reserve_regex )
-					{
-						SKIPPED( "Tokens are reserved!" );
+						if( recursions )
+						{
+							SKIPPED( "Recursions detected" );
+						}
+						else if( parser->p_reserve_regex )
+						{
+							SKIPPED( "Tokens are reserved!" );
+						}
+						else
+						{
+							p_regex_anomalies( parser );
+							DONE()
+						}
 					}
 					else
 					{
-						p_regex_anomalies( parser );
+						SKIPPED( "Not required" );
+					}
+
+					/* Lexical analyzer generator */
+					PROGRESS( "Constructing lexical analyzer" )
+
+					if( parser->p_mode == MODE_SENSITIVE )
+						p_keywords_to_dfa( parser );
+					else if( parser->p_mode == MODE_INSENSITIVE )
+						p_single_lexer( parser );
+
+					DONE()
+					
+					/* Default production detection */
+					PROGRESS( "Detecting default rules" )
+					p_detect_default_productions( parser );
+					DONE()
+
+					/* Code generator */
+					if( !( parser->p_language ) )
+					{
+						parser->p_language = p_strdup( UNICC_DEFAULT_LNG );
+						def_lang = TRUE;
+					}
+
+					if( parser->gen_prog )
+					{
+						if( parser->verbose )
+							fprintf( stdout, "Code generation target: %s%s\n",
+								parser->p_language,
+									( def_lang ? " (default)" : "" ) );
+
+						PROGRESS( "Invoking code generator" )
+						p_build_code( parser );
+						DONE()
+					}
+
+					if( parser->gen_xml )
+					{
+						PROGRESS( "Generating parser description file" )
+						p_build_xml( parser, TRUE );
 						DONE()
 					}
 				}
 				else
 				{
-					SKIPPED( "Not required" );
-				}
-
-				/* Lexical analyzer generator */
-				PROGRESS( "Constructing lexical analyzer" )
-
-				if( parser->p_mode == MODE_SENSITIVE )
-					p_keywords_to_dfa( parser );
-				else if( parser->p_mode == MODE_INSENSITIVE )
-					p_single_lexer( parser );
-
-				DONE()
-				
-				/* Default production detection */
-				PROGRESS( "Detecting default rules" )
-				p_detect_default_productions( parser );
-				DONE()
-
-				/* Code generator */
-				if( !( parser->p_language ) )
-				{
-					parser->p_language = p_strdup( UNICC_DEFAULT_LNG );
-					def_lang = TRUE;
-				}
-
-				if( parser->gen_prog )
-				{
-					if( parser->verbose )
-						fprintf( stderr, "Code generation target: %s%s\n",
-							parser->p_language,
-								( def_lang ? " (default)" : "" ) );
-
-					PROGRESS( "Invoking code generator" )
-					p_build_code( parser );
-					DONE()
-				}
-
-				if( parser->gen_xml )
-				{
-					PROGRESS( "Generating parser description file" )
-					p_build_xml( parser, TRUE );
-					DONE()
+					FAIL()
 				}
 			}
 			else
 			{
-				FAIL();
+				FAIL()
 				p_error( parser, ERR_NO_GOAL_SYMBOL, ERRSTYLE_FATAL );
 			}
 		
 			if( parser->stats )
-				fprintf( stderr, "\n%s produced %d states "
+				fprintf( stdout, "%s%s produced %d states "
 							"(%d error%s, %d warning%s)\n",
+					( parser->verbose ? "\n" : "" ),
 					filename, list_count( parser->lalr_states ),
 						error_count, ( error_count == 1 ) ? "" : "s",
 						warning_count, ( warning_count == 1 ) ? "" : "s" );	
@@ -478,17 +489,17 @@ int main( int argc, char** argv )
 		{
 			FAIL()
 			error_count++;
-
-			if( parser->gen_xml )
-				p_build_xml( parser, FALSE );
 		}
+
+		if( error_count && parser->gen_xml )
+			p_build_xml( parser, FALSE );
 
 		p_free_parser( parser );
 	}
 	else
 	{
 		FAIL()
-		p_usage( stderr, *argv );
+		p_usage( stdout, *argv );
 		error_count++;
 	}
 

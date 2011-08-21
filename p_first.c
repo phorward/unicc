@@ -36,9 +36,8 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 	Usage:			Computes the FIRST()-set for all symbols that are within the
 					global table of symbols.
 					
-	Parameters:		LIST*		symbols			List of symbols where the
-												first computation should be done
-												for.
+	Parameters:		LIST*		symbols		List of symbols where the first
+											computation should be done for.
 	
 	Returns:		void
   
@@ -115,21 +114,21 @@ void p_first( LIST* symbols )
 	
 	Author:			Jan Max Meyer
 	
-	Usage:			Performs a right-hand side FIRST()-set seek. This is an indi-
-					vidual FIRST()-set to be created within a LR(1) closure as
-					lookahead set.
+	Usage:			Performs a right-hand side FIRST()-set seek.
+					This is an individual FIRST()-set to be created within a
+					LR(1) closure as lookahead set.
 					
-	Parameters:		LIST*			first			Pointer where the individual
-													FIRST() set is stored to.
+	Parameters:		LIST*			first		Pointer where the individual
+												FIRST() set is stored to.
 													
-					LIST*			rhs				The right-hand side; This can
-													pointer to an element on the
-													right-hand side, and is used
-													as starting point.
+					LIST*			rhs			The right-hand side; This can
+												pointer to an element on the
+												right-hand side, and is used
+												as starting point.
 	
-	Returns:		int								TRUE if the whole right-hand
-													side is possibly nullable,
-													FALSE else.
+	Returns:		int							TRUE if the whole right-hand
+												side is possibly nullable,
+												FALSE else.
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
@@ -159,5 +158,4 @@ int p_rhs_first( LIST** first, LIST* rhs )
 	
 	return sym->nullable;
 }
-
 

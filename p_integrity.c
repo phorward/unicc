@@ -42,10 +42,11 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-void p_undef_or_unused( PARSER* parser )
+BOOLEAN p_undef_or_unused( PARSER* parser )
 {
-	LIST*	l;
-	SYMBOL*	sym;
+	LIST*		l;
+	SYMBOL*		sym;
+	BOOLEAN		ret		= FALSE;
 
 	for( l = parser->symbols; l; l = l->next )
 	{
@@ -56,6 +57,8 @@ void p_undef_or_unused( PARSER* parser )
 				ERR_UNDEFINED_NONTERM : ERR_UNDEFINED_TERM,
 					ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
 						parser->filename, sym->line, sym->name );
+
+			ret = TRUE;
 		}
 		
 		if( sym->generated == FALSE && sym->used == FALSE )
@@ -66,6 +69,8 @@ void p_undef_or_unused( PARSER* parser )
 						parser->filename, sym->line, sym->name );
 		}
 	}
+
+	return ret;
 }
 
 /* -FUNCTION--------------------------------------------------------------------

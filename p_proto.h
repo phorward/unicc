@@ -47,7 +47,7 @@ VTYPE* p_create_vtype( PARSER* p, uchar* name );
 void p_free_vtype( VTYPE* vt );
 
 /* p_integrity.c */
-void p_undef_or_unused( PARSER* parser );
+BOOLEAN p_undef_or_unused( PARSER* parser );
 BOOLEAN p_regex_anomalies( PARSER* parser );
 BOOLEAN p_stupid_productions( PARSER* parser );
 

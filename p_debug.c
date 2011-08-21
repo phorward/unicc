@@ -34,11 +34,11 @@ extern	BOOLEAN		first_progress;
 	
 	Usage:			Prints a single symbol.
 					
-	Parameters:		FILE*		stream				The stream where to dump the
-													grammar to. If this is
-													(FILE*)NULL, output is written
-													to stderr.
-					SYMBOL*		sym					Symbol pointer to be printed.
+	Parameters:		FILE*		stream			The stream where to dump the
+												grammar to. If this is
+												(FILE*)NULL, output is written
+												to stderr.
+					SYMBOL*		sym				Symbol pointer to be printed.
 													
 	Returns:		void
   
@@ -76,12 +76,12 @@ void p_print_symbol( FILE* stream, SYMBOL* sym )
 	Usage:			Dumps the analyzed grammar and all its symbols to a desired
 					file or stream in an ASCII-based view.
 					
-	Parameters:		FILE*		stream				The stream where to dump the
-													grammar to. If this is
-													(FILE*)NULL, output is written
-													to stderr.
-					PARSER*		parser				Parser information structure
-													pointer.
+	Parameters:		FILE*		stream			The stream where to dump the
+												grammar to. If this is
+												(FILE*)NULL, output is written
+												to stderr.
+					PARSER*		parser			Parser information structure
+												pointer.
 													
 	Returns:		void
   
@@ -163,12 +163,12 @@ void p_dump_grammar( FILE* stream, PARSER* parser )
 	
 	Usage:			Dumps the analyzed grammar symbols.
 					
-	Parameters:		FILE*		stream				The stream where to dump the
-													grammar to. If this is
-													(FILE*)NULL, output is written
-													to stderr.
-					PARSER*		parser				Parser information structure
-													pointer.
+	Parameters:		FILE*		stream			The stream where to dump the
+												grammar to. If this is
+												(FILE*)NULL, output is written
+												to stderr.
+					PARSER*		parser			Parser information structure
+												pointer.
 													
 	Returns:		void
   
@@ -250,13 +250,13 @@ void p_dump_symbols( FILE* stream, PARSER* parser )
 	
 	Usage:			Dumps an item set.
 					
-	Parameters:		FILE*		stream				The stream where to dump the
-													grammar to. If this is
-													(FILE*)NULL, output is written
-													to stderr.
-					uchar*		title				The title of the item set.
-					LIST*		list				The item set linked-list
-													itself.
+	Parameters:		FILE*		stream			The stream where to dump the
+												grammar to. If this is
+												(FILE*)NULL, output is written
+												to stderr.
+					uchar*		title			The title of the item set.
+					LIST*		list			The item set linked-list
+												itself.
 
 	Returns:		void
   
@@ -324,49 +324,6 @@ void p_dump_item_set( FILE* stream, uchar* title, LIST* list )
 	first_progress = FALSE;
 }
 
-
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_dump_map()
-	
-	Author:			Jan Max Meyer
-	
-	Usage:			Dumps a bit map.
-					
-	Parameters:		FILE*		stream				The stream where to dump the
-													grammar to. If this is
-													(FILE*)NULL, output is written
-													to stderr.
-					bitset		map					The bit map to be printed.
-					int			map_size			Maximum size of the map.
-
-	Returns:		void
-  
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
-void p_dump_map( FILE* stream, bitset map, int map_size )
-{
-	int i;
-
-	if( !stream )
-		stream = stderr;
-
-	if( first_progress )
-		fprintf( stream, "\n\n" );
-
-	for( i = 0; i < map_size; i++ )
-	{
-		if( i % 10 == 0 )
-			fprintf( stream, "\n" );
-		fprintf( stream, "%03d:%d ", i, ( bitset_get( map, i ) ? 1 : 0 ) );
-	}
-
-	fprintf( stream, "\n" );
-
-	first_progress = FALSE;
-}
-
-
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_dump_lalr_states()
 	
@@ -374,11 +331,11 @@ void p_dump_map( FILE* stream, bitset map, int map_size )
 	
 	Usage:			Dumps the LALR(1) states.
 					
-	Parameters:		FILE*		stream				The stream where to dump the
-													grammar to. If this is
-													(FILE*)NULL, output is written
-													to stdout.
-					PARSER*		parser				Parser information structure.
+	Parameters:		FILE*		stream			The stream where to dump the
+												grammar to. If this is
+												(FILE*)NULL, output is written
+												to stdout.
+					PARSER*		parser			Parser information structure.
 
 	Returns:		void
   
@@ -419,12 +376,12 @@ void p_dump_lalr_states( FILE* stream, PARSER* parser )
 	
 	Usage:			Dumps all productions.
 					
-	Parameters:		FILE*		stream				The stream where to dump the
-													productions to. If this is
-													(FILE*)NULL, output is written
-													to stderr.
-					PARSER*		parser				Parser information structure
-													pointer.
+	Parameters:		FILE*		stream			The stream where to dump the
+												productions to. If this is
+												(FILE*)NULL, output is written
+												to stderr.
+					PARSER*		parser			Parser information structure
+												pointer.
 													
 	Returns:		void
   
@@ -462,16 +419,16 @@ void p_dump_productions( FILE* stream, PARSER* parser )
 	
 	Usage:			Dumps one production.
 					
-	Parameters:		FILE*		stream				The stream where to dump the
-													productions to. If this is
-													(FILE*)NULL, output is written
-													to stderr.
-					PROD*		prod				Pointer to the production
-													to be printed.
-					BOOLEAN		with_lhs			Prints production's lhs and
-													a "->" between rhs
-					BOOLEAN		semantics			If TRUE, production-related
-													semantics are even printed.
+	Parameters:		FILE*		stream			The stream where to dump the
+												productions to. If this is
+												(FILE*)NULL, output is written
+												to stderr.
+					PROD*		prod			Pointer to the production
+												to be printed.
+					BOOLEAN		with_lhs		Prints production's lhs and
+												a "->" between rhs
+					BOOLEAN		semantics		If TRUE, production-related
+												semantics are even printed.
 													
 	Returns:		void
   
@@ -481,6 +438,7 @@ void p_dump_productions( FILE* stream, PARSER* parser )
 void p_dump_production( FILE* stream, PROD* p,
 	BOOLEAN with_lhs, BOOLEAN semantics )
 {
+	LIST*	s;
 	LIST*	l			= p->rhs;
 	LIST*	m			= p->rhs_idents;
 	BOOLEAN	embedded 	= FALSE;
@@ -491,7 +449,17 @@ void p_dump_production( FILE* stream, PROD* p,
 		stream = stderr;
 
 	if( with_lhs )
-		fprintf( stream, "    (%d) %s -> ", p->id, p->lhs->name );
+	{
+		fprintf( stream, "    (%d) ", p->id );
+
+		LISTFOR( p->all_lhs, s )
+		{
+			sym = (SYMBOL*)list_access( s );
+			fprintf( stream, "%s ", sym->name );
+		}
+
+		fprintf( stream, "-> " );
+	}
 		
 	if( semantics && p->sem_rhs )
 	{

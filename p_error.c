@@ -26,7 +26,7 @@ uchar* error_txt[128] =
 	"Memory allocation error (out of memory?) in %s, line %d",
 	"Parse error: Invalid input \'%s\'",
 	"Parse error: Found \'%s\', but expecting %s",
-	"Multiple goal symbol defined; \'%s\' is already the goal symbol",
+	"Multiple goal symbol defined; \'%s\' already defined as goal symbol",
 	"Invalid right-hand side definition for goal symbol",
 	"No goal symbol defined",
 	"Multiple definition for terminal \'%s\'",

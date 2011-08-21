@@ -43,13 +43,19 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 	Date:		Author:			Note:
 	26.03.2008	Jan Max Meyer	Use keyname with special type prefix for hash
 								table access
+	20.08.2011	Jan Max Meyer	Mark productions a rewritten if they are
+								already done, to avoid problems with multiple
+								left-hand sides (they caused a problem that
+								rewritten productions would be rewritten
+								multiple times)
 ----------------------------------------------------------------------------- */
 void p_rewrite_grammar( PARSER* parser )
 {
 	LIST	*	l,
 			*	m,
 			*	stack		= (LIST*)NULL,
-			*	done		= (LIST*)NULL;
+			*	done		= (LIST*)NULL,
+			*	rewritten	= (LIST*)NULL;
 	SYMBOL	*	ws_all		= (SYMBOL*)NULL,
 			*	ws_list,
 			*	ws_optlist,
@@ -146,12 +152,18 @@ void p_rewrite_grammar( PARSER* parser )
 		while( list_count( stack ) )
 		{
 			stack = list_pop( stack, (void**)&sym );
+
 			for( l = sym->productions; l; l = l->next )
 			{
-				p = l->pptr;
+				p = (PROD*)list_access( l );
+
+				/* Don't rewrite a production twice! */
+				if( list_find( rewritten, p ) > -1 )
+					continue;
+
 				for( m = p->rhs; m; m = m->next )
 				{
-					sym = m->pptr;
+					sym = (SYMBOL*)list_access( m );
 
 					if( sym->type == SYM_NON_TERMINAL
 						&& !( sym->lexem ) )
@@ -182,7 +194,7 @@ void p_rewrite_grammar( PARSER* parser )
 										SYM_NON_TERMINAL, FALSE );
 						}
 						while( nsym && nsym->derived_from != sym );
-						
+
 						/* If you already found a symbol, don't do anything! */
 						if( !nsym )
 						{
@@ -199,10 +211,10 @@ void p_rewrite_grammar( PARSER* parser )
 							nsym->prec = sym->prec;
 							nsym->assoc = sym->assoc;
 							nsym->nullable = sym->nullable;
-							nsym->generated = TRUE;
 							nsym->keyword = sym->keyword;
 							nsym->vtype = sym->vtype;
 	
+							nsym->generated = TRUE;
 							nsym->derived_from = sym;
 						}
 						
@@ -213,11 +225,15 @@ void p_rewrite_grammar( PARSER* parser )
 						p_free( deriv );
 					}
 				}
+
+				/* Mark this production as already rewritten! */
+				rewritten = list_push( rewritten, p );
 			}
 		}
 	}
 
 	done = list_free( done );
+	rewritten = list_free( rewritten );
 	stack = (LIST*)NULL;
 
 	/* Build a new goal symbol */
