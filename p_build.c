@@ -725,6 +725,9 @@ uchar* p_mkproduction_str( PROD* p )
 ----------------------------------------------------------------------------- */
 BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, uchar* genfile )
 {
+	uchar*	name;
+	uchar*	version;
+	uchar*	lname;
 	XML_T	tmp;
 	uchar*	att_for;
 	uchar*	att_do;
@@ -858,6 +861,21 @@ BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, uchar* genfile )
 			if( !att_do )
 				p_error( parser, ERR_XML_INCOMPLETE, ERRSTYLE_FATAL,
 					genfile, xml_name( tmp ), "do" );
+		}
+	}
+
+	/* Output some more information */
+	if( parser->verbose )
+	{
+		name = xml_attr( g->xml, "name" );
+		version = xml_attr( g->xml, "version" );
+		if( !( lname = xml_attr( g->xml, "long-name" ) ) )
+			lname = name;
+
+		if( lname && *lname && version && *version )
+		{
+			fprintf( stdout, "[%s, v%s]...", lname, version );
+			fflush( stdout );
 		}
 	}
 

@@ -43,6 +43,7 @@ uchar* pmod[] =
 #define PROGRESS( txt )		if( parser->verbose ) \
 							{ \
 								fprintf( stdout, "%s...", (txt ) ); \
+								fflush( stdout ); \
 								first_progress = TRUE; \
 							} \
 							else \
@@ -151,7 +152,6 @@ void p_usage( FILE* stream, uchar* progname )
 		"  -a   --all             Print all warnings\n"
 		"  -G   --grammar         Dump final (rewritten) grammar\n"
 		"  -h   --help            Print this help and exit\n"
-		"  -V   --version         Print version and copyright and exit\n"
 		"  -n   --no-opt          Disables state optimization\n"
 		"                         (this will cause more states)\n"
 		"  -b   --basename NAME   Use basename NAME for output files\n"
@@ -160,6 +160,7 @@ void p_usage( FILE* stream, uchar* progname )
 		"  -S   --states          Dump LALR(1) states\n"
 		"  -T   --symbols         Dump symbols\n"
 		"  -v   --verbose         Print progress messages\n"
+		"  -V   --version         Print version and copyright and exit\n"
 		"  -w   --warnings        Print warnings\n"
 		"  -x   --xml             Build parser description file additionally\n"
 		"  -X   --XML             Build parser description file only, without\n"
@@ -195,71 +196,71 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 		char** output, PARSER* parser )
 {
 	int		i;
-	uchar*	opt;
-	BOOLEAN	long_opt;
+	int		rc;
+	uchar	opt		[ ONE_LINE + 1 ];
+	uchar*	param;
 	
 	progname = *argv;
 
-	/* TODO: This right!! */
-	for( i = 1; i < argc; i++ )
+	for( i = 0;
+			( rc = pgetopt( opt, &param, argc, argv,
+						"aGhno:b:PsSTvVwxX",
+						"all grammar help no-opt output: basename: productions"
+							"stats states symbols verbose version warnings "
+								"xml XML", i ) ) == ERR_OK; i++ )
 	{
-		if( *(argv[i]) == '-' )
+		if( !strcmp( opt, "output" ) || !strcmp( opt, "o" ) 
+			|| !strcmp( opt, "basename" ) || !strcmp( opt, "b" ) )
 		{
-			opt = argv[i] + 1;
-			if( *opt == '-' )
-				opt++;
-			
-			if( !strcmp( opt, "output" ) || !strcmp( opt, "o" ) 
-				|| !strcmp( opt, "basename" ) || !strcmp( opt, "b" ) )
-			{
-				if( ++i < argc && !( *output ) )
-					*output = argv[i];
-				else
-					p_error( parser, ERR_CMD_LINE, ERRSTYLE_WARNING,
-								argv[ i - 1 ] );
-			}
-			else if( !strcmp( opt, "verbose" ) || !strcmp( opt, "v" ) )
-				parser->verbose = TRUE;
-			else if( !strcmp( opt, "stats" ) || !strcmp( opt, "s" ) )
-				parser->stats = TRUE;
-			else if( !strcmp( opt, "warnings" ) || !strcmp( opt, "w" ) )
-				no_warnings = FALSE;
-			else if( !strcmp( opt, "grammar" ) || !strcmp( opt, "G" ) )
-				parser->show_grammar = TRUE;
-			else if( !strcmp( opt, "states" ) || !strcmp( opt, "S" ) )
-				parser->show_states = TRUE;
-			else if( !strcmp( opt, "symbols" ) || !strcmp( opt, "T" ) )
-				parser->show_symbols = TRUE;
-			else if( !strcmp( opt, "productions" ) || !strcmp( opt, "p" ) )
-				parser->show_productions = TRUE;
-			else if( !strcmp( opt, "no-opt" ) || !strcmp( opt, "n" ) )
-				parser->optimize_states = FALSE;
-			else if( !strcmp( opt, "all-warnings" ) || !strcmp( opt, "a" ) )
-			{
-				parser->all_warnings = TRUE;
-				no_warnings = FALSE;
-			}
-			else if( !strcmp( opt, "version" ) || !strcmp( opt, "V" ) )
-			{
-				p_copyright( stdout );
-				exit( EXIT_SUCCESS );
-			}
-			else if( !strcmp( opt, "help" ) || !strcmp( opt, "h" ) )
-			{
-				p_usage( stdout, *argv );
-				exit( EXIT_SUCCESS );
-			}
-			else if( !strcmp( opt, "xml" ) || !strcmp( opt, "x" ) )
-				parser->gen_xml = TRUE;
-			else if( !strcmp( opt, "XML" ) || !strcmp( opt, "X" ) )
-			{
-				parser->gen_xml = TRUE;
-				parser->gen_prog = FALSE;
-			}
+			if( !param )
+				p_error( parser, ERR_CMD_LINE, ERRSTYLE_WARNING, opt );
+			else
+				*output = param;
 		}
-		else if( !( *filename ) )
-			*filename = argv[i];
+		else if( !strcmp( opt, "verbose" ) || !strcmp( opt, "v" ) )
+			parser->verbose = TRUE;
+		else if( !strcmp( opt, "stats" ) || !strcmp( opt, "s" ) )
+			parser->stats = TRUE;
+		else if( !strcmp( opt, "warnings" ) || !strcmp( opt, "w" ) )
+			no_warnings = FALSE;
+		else if( !strcmp( opt, "grammar" ) || !strcmp( opt, "G" ) )
+			parser->show_grammar = TRUE;
+		else if( !strcmp( opt, "states" ) || !strcmp( opt, "S" ) )
+			parser->show_states = TRUE;
+		else if( !strcmp( opt, "symbols" ) || !strcmp( opt, "T" ) )
+			parser->show_symbols = TRUE;
+		else if( !strcmp( opt, "productions" ) || !strcmp( opt, "p" ) )
+			parser->show_productions = TRUE;
+		else if( !strcmp( opt, "no-opt" ) || !strcmp( opt, "n" ) )
+			parser->optimize_states = FALSE;
+		else if( !strcmp( opt, "all" ) || !strcmp( opt, "a" ) )
+		{
+			parser->all_warnings = TRUE;
+			no_warnings = FALSE;
+		}
+		else if( !strcmp( opt, "version" ) || !strcmp( opt, "V" ) )
+		{
+			p_copyright( stdout );
+			exit( EXIT_SUCCESS );
+		}
+		else if( !strcmp( opt, "help" ) || !strcmp( opt, "h" ) )
+		{
+			p_usage( stdout, *argv );
+			exit( EXIT_SUCCESS );
+		}
+		else if( !strcmp( opt, "xml" ) || !strcmp( opt, "x" ) )
+			parser->gen_xml = TRUE;
+		else if( !strcmp( opt, "XML" ) || !strcmp( opt, "X" ) )
+		{
+			parser->gen_xml = TRUE;
+			parser->gen_prog = FALSE;
+		}
 	}
+
+	if( rc == 1 )
+		*filename = param;
+	else if( rc == ERR_FAILURE && param )
+		p_error( parser, ERR_CMD_OPT, ERRSTYLE_FATAL, param );
 
 	return ( *filename ? TRUE : FALSE );
 }
@@ -496,9 +497,8 @@ int main( int argc, char** argv )
 
 		p_free_parser( parser );
 	}
-	else
+	else if( !error_count )
 	{
-		FAIL()
 		p_usage( stdout, *argv );
 		error_count++;
 	}

@@ -24,6 +24,8 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 uchar* error_txt[128] =
 {
 	"Memory allocation error (out of memory?) in %s, line %d",
+	"Parameter required behind command-line option \'%s\'",
+	"Unknown command-line option \'%s\'",
 	"Parse error: Invalid input \'%s\'",
 	"Parse error: Found \'%s\', but expecting %s",
 	"Multiple goal symbol defined; \'%s\' already defined as goal symbol",
@@ -43,7 +45,6 @@ uchar* error_txt[128] =
 	"Unimplemented target language \'%s\' for code generator",
 	"Undefined value type for \'%s\' in reduction code of rule %d, \'%.*s\'",
 	"No end of input token defined, assuming \'%s\'",
-	"Parameter missing behind \'%s\'",
 	"Unable to open output file \'%s\'",
 	"Unable to open input file \'%s\'",
 	"Connot load generator definition file \'%s\'",
