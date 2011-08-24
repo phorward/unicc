@@ -213,7 +213,7 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 			|| !strcmp( opt, "basename" ) || !strcmp( opt, "b" ) )
 		{
 			if( !param )
-				p_error( parser, ERR_CMD_LINE, ERRSTYLE_WARNING, opt );
+				p_error( parser, ERR_CMD_LINE, ERRSTYLE_FATAL, opt );
 			else
 				*output = param;
 		}

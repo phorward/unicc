@@ -1,9 +1,28 @@
-		       The Artistic License 2.0
+UniCC LALR(1) Parser Generator 
+Copyright (C) 2006-2011 by Phorward Software Technologies, Jan Max Meyer
+http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
+--------------------------------------------------------------------------------
+The UniCC LALR(1) Parser Generator Source Code is provided under the
+Artistic License 2.0, which is included below.
 
-	    Copyright (c) 2000-2006, The Perl Foundation.
+For the avoidance of doubt, the following definitions in the
+license text apply:
 
-     Everyone is permitted to copy and distribute verbatim copies
-      of this license document, but changing it is not allowed.
+"Package" means the UniCC LALR(1) Parser Generator Source Code,
+as provided for download from the UniCC project homepage at
+SourceForge.net or any other, official download mirror provided
+by Phorward Software Technologies.
+
+"Copyright Holder" is Jan Max Meyer, Phorward Software Technologies,
+who is original author and copyright holder of the UniCC LALR(1)
+Parser Generator.
+
+--------------------------------------------------------------------------------
+The Artistic License 2.0
+Copyright (c) 2000-2006, The Perl Foundation.
+
+Everyone is permitted to copy and distribute verbatim copies
+of this license document, but changing it is not allowed.
 
 Preamble
 
