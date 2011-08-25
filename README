@@ -1,0 +1,125 @@
+:: UniCC LALR(1) Parser Generator 
+:: Copyright (C) 2006-2011 by Phorward Software Technologies, Jan Max Meyer
+:: http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
+::
+:: README FILE
+--------------------------------------------------------------------------------
+
+**************
+ INTRODUCTION
+**************
+Welcome to the UniCC LALR(1) Parser Generator!
+
+UniCC, standing as an acronym for "Universal Compiler-Compiler", is a target
+programming language-independent LALR(1) Parser Generator. Its design-goal is
+to serve as an all-round design and build tool for any parsing-related issue,
+including production-quality compiler construction.
+
+UniCC unions an integrated generator for lexical analyzers and a powerful
+LALR(1) parser generator into one single program. The programming interface is
+a rich, extendable and innovative EBNF-based grammar definition language, which
+gives a compiler-developer's allday business much more comfort and simplicity
+in writing grammars than ever before.
+
+UniCC has been developed since 2006 and has its origin at Phorward Software
+Technologies and is initially written and maintained by its 1985 born core
+developer, Jan Max Meyer. Phorward Software Technologies is a software-company
+from Dortmund, Germany, which focuses its business on compiler construction,
+scripting languages and software development tools, both in the area of open
+source and proprietary solutions.
+
+The final release of UniCC has been in August 2011, and is still not finished.
+A user's manual and documentation will be supplied, including a binary
+distribution for various platforms. So currently, this Mercurial source code
+repository is the first, available thing. And more will come within the next
+few weeks. Because UniCC is scheduled as one of Phorward Software Technologies'
+flagship-product, there had already been done a lot of work, but everything is
+still not finished.
+
+From the project view, the UniCC parser generator consists currently of two
+different parts.
+
+These are
+
+- The UniCC LALR(1) Parser Generator, which is an open source project
+  released under the Artistic License, version 2.
+- The UniCC Standard C Parser Template (C.tlt), which is part of the UniCC
+  package, and released under the BSD-license.
+
+This document should serve as an initial developer's note on how to compile
+UniCC and setup its environment.
+
+Please check out http://unicc.phorward-software.com/ from time to time to get
+the latest news, documentation, updates and support on the UniCC LALR(1) Parser
+Generator.
+
+**************
+ REQUIREMENTS
+**************
+UniCC is a product that was entirely established and developed on top of the
+Phorward Foundation Libraries (to be more exactly, many parts of the Phorward
+Foundation Libraries have their origin in earlier development stages of the
+UniCC Parser Generator, but where moved into libraries for usage outside
+UniCC).
+
+The Phorward Foundation Libraries are the development environment of Phorward
+Software Technologies, and provides a build-environment, toolchain and library
+toolkit that will be used by several projects created by Phorward Software
+Technologies.
+
+The Phorward Foundation Libraries are released under the BSD License.
+
+****************
+ BUILDING UNICC
+****************
+Before you can build UniCC, ensure that you have installed the Phorward
+Foundation Libraries in its latest version.
+
+Get the latest sources using Mercurial with
+
+	hg clone http://phorward.hg.sourceforge.net:8000/hgroot/phorward/phorward 
+
+then follow the installation instructions in the README file.
+
+When this is done, move to the $PHOME/src directory of your Phorward Foundation
+Libraries installation by simply typing
+
+	s
+	
+and clone the following repositories
+
+	hg clone http://unicc.hg.sourceforge.net:8000/hgroot/unicc/unicc
+	hg clone http://unicc.hg.sourceforge.net:8000/hgroot/unicc/Cparser
+
+Then, run
+
+	echo "export UNICC_TPLDIR=$PHOME/src/Cparser" >>$PHOME/etc/userenv
+	. $PHOME/etc/userenv
+	
+on the console. This will create a permanent user-defined environment script
+that is applied the next time you setup the Phorward Foundation Libraries
+environment, and also updates the current environment to get the variable
+UNICC_TPLDIR known.
+
+After this, run
+
+	echo "pbasis pregex pstring min_lalr1 Cparser unicc" >makeall-seq
+
+This will create an extended build-sequence for the makeall script, which is
+part of the Phorward Foundation Libraries.
+
+Finally compile all modules by simply typing
+
+	make
+
+After a successful build, UniCC can be invoked with
+
+	unicc
+	
+and is available in $PHOME/run.
+
+
+Enjoy UniCC!
+
+
+... to be continued ...

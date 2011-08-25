@@ -150,11 +150,11 @@ void p_usage( FILE* stream, uchar* progname )
 
 	fprintf( stream, "Usage: %s [OPTION]... FILE\n\n"
 		"  -a   --all             Print all warnings\n"
+		"  -b   --basename NAME   Use basename NAME for output files\n"
 		"  -G   --grammar         Dump final (rewritten) grammar\n"
 		"  -h   --help            Print this help and exit\n"
 		"  -n   --no-opt          Disables state optimization\n"
 		"                         (this will cause more states)\n"
-		"  -b   --basename NAME   Use basename NAME for output files\n"
 		"  -P   --productions     Dump final productions\n"		
 		"  -s   --stats           Print statistics message\n"
 		"  -S   --states          Dump LALR(1) states\n"
@@ -204,7 +204,7 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 
 	for( i = 0;
 			( rc = pgetopt( opt, &param, argc, argv,
-						"aGhno:b:PsSTvVwxX",
+						"ab:Ghno:PsSTvVwxX",
 						"all grammar help no-opt output: basename: productions"
 							"stats states symbols verbose version warnings "
 								"xml XML", i ) ) == ERR_OK; i++ )
