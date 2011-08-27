@@ -1353,6 +1353,8 @@ void p_build_code( PARSER* parser )
 					p_int_to_str( sym->lexem ), TRUE,
 				GEN_WILD_PREFIX "whitespace",
 					p_int_to_str( sym->whitespace ), TRUE,
+				GEN_WILD_PREFIX "greedy",
+					p_int_to_str( sym->greedy ), TRUE,
 					
 				(char*)NULL ), TRUE );
 

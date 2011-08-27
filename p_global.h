@@ -73,7 +73,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define GEN_WILD_PREFIX			"@@"
 
 /* Phorward UniCC parser generator version number */
-#define UNICC_VERSION			"0.27.29"
+#define UNICC_VERSION			"0.27.30"
 
 /* Default target language */
 #define UNICC_DEFAULT_LNG		"C"
@@ -120,7 +120,6 @@ typedef struct _option				OPT;
 typedef struct _parser				PARSER;
 typedef struct _generator			GENERATOR;
 typedef struct _generator_1d_tab	_1D_TABLE;
-typedef struct _generator_1d_btab	_1D_BOOL_TABLE;
 typedef struct _generator_2d_tab	_2D_TABLE;
 
 /*
@@ -162,6 +161,8 @@ struct _symbol
 	BOOLEAN		whitespace;		/* Flags, if it is a whitespace */
 	BOOLEAN		generated;		/* Flags, if automatically generated
 									symbol */
+	BOOLEAN		greedy;			/* Flags if this is a greedy or nongreedy
+									nonterminal */
 									
 	HASHTAB		options;		/* Options hash table */
 
@@ -347,7 +348,6 @@ struct _parser
 	XML_T		err_xml;
 };
 
-
 /* Generator 2D table structure */
 struct _generator_2d_tab
 {
@@ -362,14 +362,6 @@ struct _generator_2d_tab
 struct _generator_1d_tab
 {
 	uchar*		col;
-	uchar*		col_sep;
-};
-
-/* Generator 1D boolean table structur */
-struct _generator_1d_btab
-{
-	uchar*		col_true;
-	uchar*		col_false;
 	uchar*		col_sep;
 };
 

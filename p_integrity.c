@@ -113,7 +113,8 @@ static LIST* p_nfa_transition_on_ccl(
 	if( !res )
 		res = list_push( (LIST*)NULL, list_access( nfa->states ) );
 	
-	res = pregex_nfa_epsilon_closure( nfa, res, accept, (int*)NULL );
+	res = pregex_nfa_epsilon_closure( nfa, res, accept,
+			(BOOLEAN*)NULL, (int*)NULL );
 
 	for( i = check_with; !ccl_end( i ); i++ )
 	{

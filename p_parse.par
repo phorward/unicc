@@ -102,6 +102,7 @@ static int		last_code_begin;	 /* Last code begin */
 static int		embedded_count	= 0;
 static PROD*	current_prod	= (PROD*)NULL;
 static SYMBOL*	current_sym		= (SYMBOL*)NULL;
+static BOOLEAN	greedy			= TRUE;
 
 extern int	error_count;
 
@@ -188,7 +189,7 @@ static void set_assoc_and_prec( LIST* symbols, int assoc )
 
 
 static void set_nfa_to_symbols( SYMBOL* s,
-	pregex_nfa_st* start, pregex_nfa_st* end )
+	pregex_nfa_st* start, pregex_nfa_st* end, BOOLEAN greedy )
 {
 	pregex_nfa_st*	nstart;
 	
@@ -198,9 +199,12 @@ static void set_nfa_to_symbols( SYMBOL* s,
 
 	nstart->next = start;
 	end->accept = s->id;
+	end->greedy = greedy;
 	
 	if( !( s->nfa.states = list_union( s->nfa.states, nfa_m.states ) ) )
 		OUTOFMEM;
+		
+	s->greedy = greedy;
 		
 	list_free( nfa_m.states );
 	memset( &nfa_m, 0, sizeof( pregex_nfa ) );
@@ -693,7 +697,10 @@ definition			->	lhs:primary
 							VTYPE*	vt;
 							
 							primary = (SYMBOL*)list_access( @alt_regex_sym );
-							set_nfa_to_symbols( primary, @4.start, @4.end );
+							set_nfa_to_symbols( primary, @4.start, @4.end,
+													greedy );
+													
+							greedy = TRUE;
 
 							/* Attach code */
 							if( @code_opt )
@@ -1119,6 +1126,8 @@ re_factor<struct @@prefix_nfa>
 
 						@@.end = @@.start->next = pregex_nfa_create_state(
 							&( nfa_m ), (uchar*)NULL, REGEX_MOD_NONE );
+							
+						greedy = FALSE;
 					*]
 
 				| '(' regex ')'

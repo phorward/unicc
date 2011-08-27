@@ -1,3 +1,13 @@
+<!--
+	Hi Folks!
+
+	This file is a relict from a very eary parser template. It was adapted
+	from the beginning of the Standard C Parser Template and was a test for
+	another programming language, in this case JavaScript. This template was
+	not tended in further versions of UniCC, nor was it really tested. 
+	But it could be used as base for a real JavaScript parser template
+	somewhere in the future.
+-->
 <?xml version="1.0" standalone="yes"?>
 <generator name="JavaScript">
 	<vstack_def_type></vstack_def_type>

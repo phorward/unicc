@@ -72,6 +72,8 @@ int	line			= 1; /* Line within source file */
 int auto_regex		= 0; /* Nameless Regex counter */
 BOOLEAN	footer_code	= FALSE; /* Flag for footer code recognition */
 
+BOOLEAN greedy		= TRUE;
+
 extern int	error_count;
 
 uchar*		strbuf	= (uchar*)NULL;
@@ -145,7 +147,7 @@ static void set_assoc_and_prec( LIST* symbols, int assoc )
 }
 
 static void set_nfa_to_symbol( SYMBOL* s,
-	pregex_nfa_st* start, pregex_nfa_st* end )
+	pregex_nfa_st* start, pregex_nfa_st* end, BOOLEAN greedy )
 {
 	pregex_nfa_st*	nstart;
 	
@@ -155,9 +157,12 @@ static void set_nfa_to_symbol( SYMBOL* s,
 
 	nstart->next = start;
 	end->accept = s->id;
+	end->greedy = greedy;
 	
 	if( !( s->nfa.states = list_union( s->nfa.states, nfa_x.states ) ) )
 		OUTOFMEM;
+		
+	s->greedy = greedy;
 		
 	list_free( nfa_x.states );
 	memset( &nfa_x, 0, sizeof( pregex_nfa ) );
@@ -376,7 +381,8 @@ definition:		lhs goal_mark type "->" productions				{
 																	
 																	p_free( #2.str );
 																	
-																	set_nfa_to_symbol( s, #4.nfa.start, #4.nfa.end );
+																	set_nfa_to_symbol( s, #4.nfa.start, #4.nfa.end, greedy );
+																	greedy = TRUE;
 																	
 																	/* Attach code */
 																	if( strbuf && *strbuf )
@@ -629,6 +635,8 @@ re_factor:		ccl												{
 																	##.nfa.end = ##.nfa.start->next
 																		= pregex_nfa_create_state(
 																			&( nfa_x ), (uchar*)NULL, REGEX_MOD_NONE );
+																			
+																	greedy = FALSE;
 																}
 				| '(' regex ')'									{	##.nfa.start = #2.nfa.start;
 																	##.nfa.end = #2.nfa.end;
