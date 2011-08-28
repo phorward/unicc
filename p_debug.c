@@ -217,6 +217,11 @@ void p_dump_symbols( FILE* stream, PARSER* parser )
 					fprintf( stream, "terminal: string" );
 				else
 					fprintf( stream, "terminal: regular expression" );
+					
+				if( s->greedy )
+					fprintf( stream, "(greedy)" );
+				else
+					fprintf( stream, "(non-greedy)" );
 				break;
 
 			case SYM_ERROR_RESYNC:

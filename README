@@ -94,6 +94,7 @@ and clone the following repositories
 Then, run
 
 	echo "export UNICC_TPLDIR=$PHOME/src/Cparser" >>$PHOME/etc/userenv
+	chmod +x $PHOME/etc/userenv
 	. $PHOME/etc/userenv
 	
 on the console. This will create a permanent user-defined environment script

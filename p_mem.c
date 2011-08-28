@@ -146,6 +146,7 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 			sym->type = type;
 			sym->line = -1;
 			sym->nullable = FALSE;
+			sym->greedy = TRUE;
 
 			/* Initialize options table */
 			hashtab_init( &( sym->options ), BUCKET_COUNT,
