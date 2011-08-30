@@ -112,8 +112,8 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 			keych = '!';
 			break;
 
-		case SYM_ERROR_RESYNC:
-			MSG( "type is SYM_ERROR_RESYNC" );
+		case SYM_SYSTEM_TERMINAL:
+			MSG( "type is a system terminal" );
 			keych = '~';
 			break;
 
@@ -179,9 +179,17 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 			/* Insert pointer into symbol list */
 			p->symbols = list_push( p->symbols, sym );
 
-			/* This is the error symbol */
-			if( type == SYM_ERROR_RESYNC )
-				p->error = sym;
+			/* System terminals are linked to the parser object */
+			if( type == SYM_SYSTEM_TERMINAL )
+			{
+				sym->used = TRUE;
+				sym->defined = TRUE;
+
+				if( pstrcmp( sym->name, P_ERROR_RESYNC ) == 0 )
+					p->error = sym;
+				else if( pstrcmp( sym->name, P_END_OF_FILE ) == 0 )
+					p->end_of_input = sym;
+			}
 		}
 		else
 		{
@@ -767,6 +775,9 @@ PARSER* p_create_parser( void )
 	/* Initialize options table */
 	hashtab_init( &( pptr->options ), BUCKET_COUNT,
 		HASHTAB_MOD_LIST | HASHTAB_MOD_EXTKEYS );
+
+	/* End of Input symbol must exist in every parser! */
+	p_get_symbol( pptr, P_END_OF_FILE, SYM_SYSTEM_TERMINAL, TRUE );
 
 	return pptr;
 }

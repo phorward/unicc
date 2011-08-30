@@ -41,7 +41,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define SYM_NON_TERMINAL		0
 #define SYM_CCL_TERMINAL		1
 #define SYM_REGEX_TERMINAL		2
-#define SYM_ERROR_RESYNC		3
+#define SYM_SYSTEM_TERMINAL		3
 
 /* Parser construction modes */
 #define MODE_SENSITIVE			0	/* Sensitive parser construction mode */
@@ -73,7 +73,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define GEN_WILD_PREFIX			"@@"
 
 /* Phorward UniCC parser generator version number */
-#define UNICC_VERSION			"0.27.30"
+#define UNICC_VERSION			"0.27.31"
 
 /* Default target language */
 #define UNICC_DEFAULT_LNG		"C"

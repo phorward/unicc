@@ -15,9 +15,10 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define P_DEFS_H
 
 /* Special symbol names */
-#define P_WHITESPACE			"(whitespace)"
-#define P_ERROR_RESYNC			"(error_resync)"
-#define P_EMBEDDED				"(embedded_%d)"
+#define P_WHITESPACE			"&whitespace"
+#define P_ERROR_RESYNC			"&error"
+#define P_END_OF_FILE			"&eof"
+#define P_EMBEDDED				"&embedded_%d"
 
 /* Characters for virtual nonterminal names */
 #define P_POSITIVE_CLOSURE		'+'

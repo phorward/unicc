@@ -62,8 +62,8 @@ void p_print_symbol( FILE* stream, SYMBOL* sym )
 		fprintf( stream, "\"%s\"", sym->name );
 	else if( sym->type == SYM_REGEX_TERMINAL && !( sym->keyword ) )
 		fprintf( stream, "@%s", sym->name );
-	else if( sym->type == SYM_ERROR_RESYNC )
-		fprintf( stream, P_ERROR_RESYNC );
+	else if( sym->type == SYM_SYSTEM_TERMINAL )
+		fprintf( stream, "%s", sym->name );
 	else
 		fprintf( stream, "%s", sym->name );
 }
@@ -224,10 +224,10 @@ void p_dump_symbols( FILE* stream, PARSER* parser )
 					fprintf( stream, "(non-greedy)" );
 				break;
 
-			case SYM_ERROR_RESYNC:
-				fprintf( stream, "terminal: error resyncronization" );
+			case SYM_SYSTEM_TERMINAL:
+				fprintf( stream, "system terminal" );
 				break;
-				
+
 			default:
 				fprintf( stream, "undefined" );
 				break;

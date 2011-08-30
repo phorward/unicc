@@ -44,7 +44,6 @@ uchar* error_txt[128] =
 	"Terminal anomaly at shift on \'%s\' and reduce on \'%s\'",
 	"Unimplemented target language \'%s\' for code generator",
 	"Undefined value type for \'%s\' in reduction code of rule %d, \'%.*s\'",
-	"No end of input token defined, assuming \'%s\'",
 	"Unable to open output file \'%s\'",
 	"Unable to open input file \'%s\'",
 	"Connot load generator definition file \'%s\'",

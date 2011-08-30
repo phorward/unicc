@@ -44,7 +44,6 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 /*
  * Parser configuration
  */
-#end of input			'\0';
 #whitespaces 			whitespace;
 #lexeme					terminal identifier modifier code ccl_string kw type;
 #lexeme separation		on;
@@ -132,12 +131,12 @@ static int getinput( void )
 		one broken laptop -.- *arghh*)
 	*/
 	if( ( ch = *(src_ptr) ) )
+	{
 		src_ptr++;
+		return ch;
+	}
 
-#if UNICC_DEBUG
-	fprintf( stderr, "ch = %d (%c)\n", ch, (char)ch );
-#endif
-	return ch;
+	return -1;
 }
 
 /* Append character to current string */
@@ -508,17 +507,6 @@ directive_parms		-> "whitespaces" 	symbol_list
 							p_free( @type );
 						*]
 
-					| "end of input"	terminal
-						[*	
-							if( !( parser->end_of_input ) )
-								parser->end_of_input = @2;
-							else
-								p_error( parser, ERR_DIRECTIVE_ALREADY_USED,
-									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
-										parser->filename, line,
-											"end of input" );
-						*]
-
 					| "lexeme separation" boolean_opt
 						[*	/* Ouput a warning, if this definition
 								is effectless */
@@ -873,10 +861,15 @@ symbol<SYMBOL*>		->	sym modifier
 					|	"&error"
 
 						[*	@@ = p_get_symbol( parser,
-									P_ERROR_RESYNC, SYM_ERROR_RESYNC,
+									P_ERROR_RESYNC, SYM_SYSTEM_TERMINAL,
 										TRUE );
-							@@->used = TRUE;
-							@@->defined = TRUE;
+						*]
+
+					|	"&eof"
+
+						[*	@@ = p_get_symbol( parser,
+									P_END_OF_FILE, SYM_SYSTEM_TERMINAL,
+										TRUE );
 						*]
 					;
 

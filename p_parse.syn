@@ -318,7 +318,6 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 				| "default epsilon action"		code			{	if( !( parser->p_def_action_e ) )
 																			parser->p_def_action_e = p_strdup( strbuf );
 																}
-				| "end of input"	terminal					{	parser->end_of_input = #2.ptr;				}
 				| "case insensitive strings"	boolean			{	parser->p_cis_strings = !(#2.negative);	}
 				| "prologue"					code			{	parser->p_header = p_str_append( 
 																		parser->p_header, strbuf, FALSE );		}
@@ -463,11 +462,15 @@ symbol:			sym modifier 									{
 																}
 				|	"&error"									{	SYMBOL* sym;
 																	sym = p_get_symbol( parser,
-																			P_ERROR_RESYNC, SYM_ERROR_RESYNC,
+																			P_ERROR_RESYNC, SYM_SYSTEM_TERMINAL,
 																				TRUE );
-																	sym->used = TRUE;
-																	sym->defined = TRUE;
-																	
+																	##.ptr = sym;
+																}
+																
+				|	"&eof"										{	SYMBOL* sym;
+																	sym = p_get_symbol( parser,
+																			P_END_OF_FILE, SYM_SYSTEM_TERMINAL,
+																				TRUE );
 																	##.ptr = sym;
 																}
 				;

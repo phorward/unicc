@@ -685,10 +685,10 @@ uchar* p_mkproduction_str( PROD* p )
 					sprintf( wtf, "@%.*s", sizeof( wtf ) - 3, sym->name );
 				break;
 
-			case SYM_ERROR_RESYNC:
-				strcpy( wtf, P_ERROR_RESYNC );
+			case SYM_SYSTEM_TERMINAL:
+				sprintf( wtf, "~%s", sym->name );
 				break;
-				
+
 			default:
 				sprintf( wtf, "%.*s", sizeof( wtf ) - 2, sym->name );
 				break;

@@ -766,8 +766,8 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 						pregex_dfa_free( &tmp_dfa );
 					}
 					break;
-				case SYM_ERROR_RESYNC:
-					tmp = "error-resynchronization";
+				case SYM_SYSTEM_TERMINAL:
+					tmp = "system";
 					break;
 					
 				default:
@@ -1308,7 +1308,7 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 	if( parser->err_xml )
 		xml_move( xml_child( parser->err_xml, "messages" ), par, 0 );
 	
-	/* TODO: Write to output file */
+	/* Write to output file */
 	if( ( outname = pasprintf( "%s%s",
 			parser->p_basename, UNICC_XML_EXTENSION ) ) )
 	{

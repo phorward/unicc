@@ -177,9 +177,8 @@ void p_rewrite_grammar( PARSER* parser )
 					else if( ( sym->type == SYM_NON_TERMINAL && sym->lexem )
 							|| IS_TERMINAL( sym ) )
 					{
-						/* Do not rewrite the eof and error resync symbol! */
-						if( sym == parser->end_of_input
-							|| sym->type == SYM_ERROR_RESYNC )
+						/* Do not rewrite system terminals! */
+						if( sym->type == SYM_SYSTEM_TERMINAL )
 							continue;
 
 						/* Construct derivative symbol name */
@@ -747,31 +746,12 @@ void p_setup_single_goal( PARSER* parser )
 	{
 		p = ((PROD*)(parser->goal->productions->pptr));
 		
-		if( list_count( p->rhs ) <= 2 )
+		if( list_count( p->rhs ) == 1 )
 		{
 			sym = (SYMBOL*)list_getptr( p->rhs, list_count( p->rhs ) - 1 );
 
-			if( list_count( p->rhs ) == 2 &&
-					IS_TERMINAL( sym ) && !( parser->end_of_input ) )
+			if( sym->type == SYM_NON_TERMINAL )
 			{
-				parser->end_of_input = sym;
-
-				return; /* Nothing to do anymore! */
-			}
-			else if( list_count( p->rhs ) == 1 &&
-					sym->type == SYM_NON_TERMINAL )
-			{
-				if( !( parser->end_of_input ) )
-				{
-					parser->end_of_input = p_get_symbol( parser,
-						ccl_create( P_DEF_EOF_SYMBOL ),
-							SYM_CCL_TERMINAL, TRUE );
-					parser->end_of_input->generated = TRUE;
-
-					p_error( parser, ERR_ASSUMING_DEF_EOF,
-							ERRSTYLE_WARNING, P_DEF_EOF_SYMBOL );
-				}
-
 				list_push( p->rhs, (void*)parser->end_of_input );
 				list_push( p->rhs_idents, (void*)NULL );
 
@@ -795,34 +775,16 @@ void p_setup_single_goal( PARSER* parser )
 
 	p_free( deriv );
 
-	p = p_create_production( parser, sym );
-	if( !p )
+	if( !( p = p_create_production( parser, sym ) ) )
 	{
 		OUTOFMEM;
 		return;
 	}
 
 	p_append_to_production( p, parser->goal, (uchar*)NULL );
-	parser->goal = sym;
-
-	if( !( parser->end_of_input ) )
-	{
-		parser->end_of_input = p_get_symbol( parser,
-			(void*)ccl_create( P_DEF_EOF_SYMBOL ), SYM_CCL_TERMINAL, TRUE );
-
-		if( !( parser->end_of_input ) )
-		{
-			OUTOFMEM;
-			return;
-		}
-
-		parser->end_of_input->generated = TRUE;
-
-		p_error( parser, ERR_ASSUMING_DEF_EOF, ERRSTYLE_WARNING,
-					P_DEF_EOF_SYMBOL );
-	}
-
 	p_append_to_production( p, parser->end_of_input, (uchar*)NULL );
+
+	parser->goal = sym;
 }
 
 /* -FUNCTION--------------------------------------------------------------------
@@ -847,7 +809,7 @@ void p_setup_single_goal( PARSER* parser )
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
-	17.01.2010	Jan Max Meyer	Sort keyword regex terminals before any
+	17.01.2011	Jan Max Meyer	Sort keyword regex terminals before any
 								other kind of terminal... hmm ... in the past,
 								keywords where of type SYM_KW_TERMINAL, now
 								they are SYM_REGEX_TERMINAL, so this must be
@@ -870,7 +832,7 @@ void p_symbol_order( PARSER* parser )
 											SYM_REGEX_TERMINAL,
 											SYM_REGEX_TERMINAL,
 											SYM_CCL_TERMINAL,
-											SYM_ERROR_RESYNC,
+											SYM_SYSTEM_TERMINAL,
 											SYM_NON_TERMINAL
 										};
 	int				i;
