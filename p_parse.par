@@ -136,7 +136,7 @@ static int getinput( void )
 		return ch;
 	}
 
-	return -1;
+	return 0;
 }
 
 /* Append character to current string */
