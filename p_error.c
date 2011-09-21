@@ -215,7 +215,6 @@ void p_error( PARSER* parser, int err_id, int err_style, ... )
 		{
 			p_dump_item_set( stderr, (char*)NULL, state->kernel );
 			p_dump_item_set( stderr, (char*)NULL, state->epsilon );
-			fprintf( stderr, "\n" );
 		}
 		else if( err_style & ERRSTYLE_PRODUCTION )
 		{
