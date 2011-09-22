@@ -229,7 +229,7 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 			parser->show_states = TRUE;
 		else if( !strcmp( opt, "symbols" ) || !strcmp( opt, "T" ) )
 			parser->show_symbols = TRUE;
-		else if( !strcmp( opt, "productions" ) || !strcmp( opt, "p" ) )
+		else if( !strcmp( opt, "productions" ) || !strcmp( opt, "P" ) )
 			parser->show_productions = TRUE;
 		else if( !strcmp( opt, "no-opt" ) || !strcmp( opt, "n" ) )
 			parser->optimize_states = FALSE;
