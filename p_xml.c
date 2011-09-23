@@ -3,10 +3,9 @@ UniCC LALR(1) Parser Generator
 Copyright (C) 2006-2011 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
-File:	p_build.c
+File:	p_xml.c
 Author:	Jan Max Meyer
-Usage:	Builds the target parser based on configurations from a
-		parser definition file.
+Usage:	The XML-based Parser Definition code-generator.
 		
 You may use, modify and distribute this software under the terms and conditions
 of the Artistic License, version 2. Please see LICENSE for more information.
