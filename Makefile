@@ -74,7 +74,6 @@ MISCDEP		=	$(TEMPLATE_C) \
 
 #-------------------------------------------------------------------------------
 
-#all: $(PROG_BOOT1)
 all: $(PROGRAM)
 	@echo
 	@echo --- Compilation succeeded! ---
@@ -114,11 +113,9 @@ $(PROGRAM): $(PROG_BOOT3) $(PARSER_SRC) $(PROTO) $(SRC) $(HEADERS) $(LIBS) $(MIS
 	@echo -- Final bootstrap complete --
 	@echo
 	
-#$(PROTO): $(SRC) $(PARSER) $(HEADERS)
-#	cproto_all "$(SRC) $(PARSER)" $(INCLUDE_DIR) $@
-
 clean: clean_obj
 	-@$(RM) $(PROGRAM)
+	-@$(RM) unicc.man
 
 clean_obj:
 	-@$(RM) $(PROG_BOOT1)
@@ -137,3 +134,7 @@ backup:	clean
 sourcelist: clean_obj
 	@ls p_*.c p_*.h p_*.par p_*.syn
 
+manpage: unicc.man
+
+unicc.man: unicc.t2t
+	txt2tags -t man $?
