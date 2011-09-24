@@ -42,12 +42,14 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 	Parameters:		PARSER*		p					Parser information structure
 					void*		dfn					Symbol definition; in case
 													of a charclass terminal,
-													this is a pointer to the ccl,
-													else an identifying name.
+													this is a pointer to the
+													ccl, else an identifying
+													name.
 
 					int			type				Symbol type
 					int			atts				Symbol attributes
-					BOOLEAN		create				Create symbol if it does not exist!
+					BOOLEAN		create				Create symbol if it does
+													not exist!
 	
 	Returns:		SYMBOL*							Pointer to the SYMBOL
 													structure representing the
@@ -250,10 +252,10 @@ void p_free_symbol( SYMBOL* sym )
 					inserts it into the global list of productions.
 					
 	Parameters:		PARSER*			p				Parser information structure
-					SYMBOL*			lhs				Pointer to the left-hand side
-													the production belongs to.
-													(SYMBOL*)NULL avoids a creation
-													of a production.
+					SYMBOL*			lhs				Pointer to the left-hand
+													side the production belongs
+													to. (SYMBOL*)NULL avoids a
+													creation of a production.
 	
 	Returns:		PROD*							Pointer to the production,
 													(PROD*)NULL in error case.
@@ -318,10 +320,12 @@ PROD* p_create_production( PARSER* p, SYMBOL* lhs )
 					right-hand side of a production.
 					
 	Parameters:		PROD*			p				Production
-					SYMBOL*			sym				Symbol to append to production
+					SYMBOL*			sym				Symbol to append to
+					 								production
 					uchar*			name			Optional semantic identifier
-													for the symbol on the right-hand
-													side, can be (uchar*)NULL.
+													for the symbol on the
+													right-hand side, can be
+													(uchar*)NULL.
 	
 	Returns:		void
 
@@ -478,9 +482,9 @@ void p_free_item( ITEM* it )
 	
 	Usage:			Creates a new state.
 					
-	Parameters:		PARSER*			p				Parser information structure,
-													where the new state is added
-													to.
+	Parameters:		PARSER*			p				Parser information
+													structure where the new
+													state is added to.
 	
 	Returns:		STATE*							Pointer to the newly created
 													state, (STATE*)NULL in error
@@ -519,8 +523,8 @@ STATE* p_create_state( PARSER* p )
 	
 	Usage:			Frees a state structure and all its members.
 					
-	Parameters:		STATE*		st					Pointer to state structure to
-													be freed.
+	Parameters:		STATE*		st					Pointer to state structure
+													to be freed.
 	
 	Returns:		void
 
@@ -560,15 +564,17 @@ void p_free_state( STATE* st )
 					or action-table row.
 					
 	Parameters:		SYMBOL*		sym						Pointer to the symbol on
-														which the desired action/
-														goto is performed on
-					int			action					The action to be performed
-														in context of the symbol.
-					int			idx						The index for the action.
-														At SHIFT, this is the next
-														state, at REDUCE and
-														SHIFT_REDUCE the index of
-														the rule to be reduced.
+														which the desired action
+														or goto is performed on
+					int			action					The action to be
+														performed in context of
+														the symbol.
+					int			idx						The index for the
+														action. At SHIFT, this
+														is the next state, at
+														REDUCE and SHIFT_REDUCE
+														the index of the rule
+														to be reduced.
 					ITEM*		item					The item, which caused
 														the tab entry. This is
 														only required for
@@ -576,7 +582,8 @@ void p_free_state( STATE* st )
 	
 	Returns:		TABCOL*								Pointer to the new
 														action item. On error,
-														(TABCOL*)NULL is returned.
+														(TABCOL*)NULL is
+														returned.
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
@@ -608,8 +615,8 @@ TABCOL* p_create_tabcol( SYMBOL* sym, short action, int idx, ITEM* item )
 	
 	Usage:			Frees an TABCOL-structure and all its members.
 					
-	Parameters:		TABCOL*		act						Pointer to action element
-														to be freed.
+	Parameters:		TABCOL*		act						Pointer to action
+														element to be freed.
 	
 	Returns:		void
   
@@ -626,19 +633,22 @@ void p_free_tabcol( TABCOL* act )
 	
 	Author:			Jan Max Meyer
 	
-	Usage:			Tries to find the entry for a specified symbol within a state's
-					action- or goto-table row.
+	Usage:			Tries to find the entry for a specified symbol within
+					a state's action- or goto-table row.
 					
 	Parameters:		LIST*		row						The row where the entry
 														should be found in.
-					SYMBOL*		sym						Pointer to the symbol; if
-														there is an entry on this
-														symbol, it will be returned.
+					SYMBOL*		sym						Pointer to the symbol;
+														if there is an entry on
+														this symbol, it will be
+														returned.
 	
-	Returns:		TABCOL*								Pointer to the action item.
-														If no action item was found
-														when searching on the row,
-														(TABCOL*)NULL is returned.
+	Returns:		TABCOL*								Pointer to the action
+														item. If no action item
+														was found when searching
+														on the row,
+														(TABCOL*)NULL is
+														returned.
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
@@ -860,10 +870,10 @@ void p_free_parser( PARSER* parser )
 	Parameters:		PARSER*		p					Parser information structure
 					uchar*		name				Value type name
 	
-	Returns:		VTYPE*							Pointer to the VTYPE structure
-													representing the value type,
-													if a matching type has been
-													found.
+	Returns:		VTYPE*							Pointer to the VTYPE
+													structure representing the
+													value type, if a matching
+													type has been found.
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
@@ -905,8 +915,9 @@ VTYPE* p_find_vtype( PARSER* p, uchar* name )
 	Parameters:		PARSER*		p					Parser information structure
 					uchar*		name				Value type name
 	
-	Returns:		VTYPE*							Pointer to the VTYPE structure
-													representing the value type.
+	Returns:		VTYPE*							Pointer to the VTYPE
+													structure representing the
+													value type.
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:

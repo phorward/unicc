@@ -100,7 +100,8 @@ static int p_same_kernel( LIST* kernel1, LIST* kernel2 )
 	Returns:		STATE*								Pointer to the next
 														state item, if no more
 														undone states are found,
-														(STATE*)NULL is returned.
+														(STATE*)NULL is
+														returned.
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:

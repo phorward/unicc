@@ -37,8 +37,9 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 	Parameters:		PARSER*		parser				Parser information structure
 					SYMBOL*		base				Base symbol
 	
-	Returns:		SYMBOL*							Pointer to symbol representing
-													the closure nonterminal.
+	Returns:		SYMBOL*							Pointer to symbol
+													representing the closure
+													nonterminal.
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
@@ -54,9 +55,11 @@ SYMBOL* p_positive_closure( PARSER* parser, SYMBOL* base )
 	{
 		deriv_str = p_derivation_name( base->name, P_POSITIVE_CLOSURE );
 
-		if( !( s = p_get_symbol( parser, deriv_str, SYM_NON_TERMINAL, FALSE ) ) )
+		if( !( s = p_get_symbol( parser, deriv_str,
+						SYM_NON_TERMINAL, FALSE ) ) )
 		{
-			s = p_get_symbol( parser, deriv_str, SYM_NON_TERMINAL, TRUE );
+			s = p_get_symbol( parser, deriv_str,
+					SYM_NON_TERMINAL, TRUE );
 			s->generated = TRUE;
 			s->used = TRUE;
 			s->defined = TRUE;
@@ -88,8 +91,9 @@ SYMBOL* p_positive_closure( PARSER* parser, SYMBOL* base )
 	Parameters:		PARSER*		parser				Parser information structure
 					SYMBOL*		base				Base symbol
 	
-	Returns:		SYMBOL*							Pointer to symbol representing
-													the closure nonterminal.
+	Returns:		SYMBOL*							Pointer to symbol
+													representing the closure
+													nonterminal.
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
@@ -118,9 +122,11 @@ SYMBOL* p_kleene_closure( PARSER* parser, SYMBOL* base )
 
 		deriv_str = p_derivation_name( base->name, P_KLEENE_CLOSURE );
 
-		if( !( s = p_get_symbol( parser, deriv_str, SYM_NON_TERMINAL, FALSE ) ) )
+		if( !( s = p_get_symbol( parser, deriv_str,
+					SYM_NON_TERMINAL, FALSE ) ) )
 		{
-			s = p_get_symbol( parser, deriv_str, SYM_NON_TERMINAL, TRUE );
+			s = p_get_symbol( parser, deriv_str,
+					SYM_NON_TERMINAL, TRUE );
 			s->generated = TRUE;
 			s->used = TRUE;
 			s->defined = TRUE;
@@ -152,8 +158,9 @@ SYMBOL* p_kleene_closure( PARSER* parser, SYMBOL* base )
 	Parameters:		PARSER*		parser				Parser information structure
 					SYMBOL*		base				Base symbol
 	
-	Returns:		SYMBOL*							Pointer to symbol representing
-													the closure nonterminal.
+	Returns:		SYMBOL*							Pointer to symbol
+													representing the closure
+													nonterminal.
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
@@ -169,9 +176,11 @@ SYMBOL* p_optional_closure( PARSER* parser, SYMBOL* base )
 	{
 		deriv_str = p_derivation_name( base->name, P_OPTIONAL_CLOSURE );
 
-		if( !(s = p_get_symbol( parser, deriv_str, SYM_NON_TERMINAL, FALSE ) ) )
+		if( !(s = p_get_symbol( parser, deriv_str,
+					SYM_NON_TERMINAL, FALSE ) ) )
 		{
-			s = p_get_symbol( parser, deriv_str, SYM_NON_TERMINAL, TRUE );
+			s = p_get_symbol( parser, deriv_str,
+					SYM_NON_TERMINAL, TRUE );
 			s->generated = TRUE;
 			s->used = TRUE;
 			s->defined = TRUE;

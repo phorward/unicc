@@ -97,7 +97,8 @@ void p_dump_item_set( FILE* stream, uchar* title, LIST* list );
 void p_dump_map( FILE* stream, bitset map, int map_size );
 void p_dump_lalr_states( FILE* stream, PARSER* parser );
 void p_dump_productions( FILE* stream, PARSER* parser );
-void p_dump_production( FILE* stream, PROD* prod, BOOLEAN with_lhs, BOOLEAN semantics );
+void p_dump_production( FILE* stream, PROD* prod,
+		BOOLEAN with_lhs, BOOLEAN semantics );
 
 /* p_parse.c / p_parse.syn */
 int p_parse( PARSER* p, uchar* src );
@@ -110,7 +111,8 @@ void p_symbol_to_nfa( PARSER* parser, pregex_nfa* nfa, SYMBOL* sym );
 
 /* p_build.c */
 void p_build_code( PARSER* parser );
-uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p, uchar* base, BOOLEAN def_code );
+uchar* p_build_action( PARSER* parser, GENERATOR* g,
+			PROD* p, uchar* base, BOOLEAN def_code );
 uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 			uchar* base );
 uchar* p_escape_for_target( GENERATOR* g, uchar* str, BOOLEAN clear );

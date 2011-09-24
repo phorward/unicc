@@ -10,16 +10,34 @@
 **************
 Welcome to the UniCC LALR(1) Parser Generator!
 
-UniCC, standing as an acronym for "Universal Compiler-Compiler", is a target
-programming language-independent LALR(1) Parser Generator. Its design-goal is
-to serve as an all-round design and build tool for any parsing-related issue,
-including production-quality compiler construction.
+UniCC, standing as an acronym for Universal Compiler-Compiler, is a powerful
+LALR(1) Parser Generator and Development System for computer professionals.
+Its design-goal is to serve as an all-round design and build tool for any
+parsing-related issue, including production-quality compiler construction and
+the implementation of domains specific languages.
 
 UniCC unions an integrated generator for lexical analyzers and a powerful
-LALR(1) parser generator into one single program. The programming interface is
-a rich, extendable and innovative EBNF-based grammar definition language, which
-gives a compiler-developer's allday business much more comfort and simplicity
-in writing grammars than ever before.
+LALR(1) parser generator into one software solution.
+The programming interface is a rich, extendable and innovative EBNF-based
+grammar definition language, which gives any compiler-developer's task much
+more comfort and simplicity in implementing parsers than ever before. It comes
+with useful features for both grammar prototyping and design, parser
+optimization, semantic augmentation and parser programming. Lexical symbols can
+be directly defined within productions, right-hand side items can be referenced
+by meaningful names within semantic actions, instead of only their offsets.
+Features like virtual- and embedded-productions finally help to rapidly build-up
+iterative and optional grammatical structures.
+
+Standard features like automatic conflict resolution, terminal and production
+precedence association, state compression as well as parser trace and behavior
+modification trough semantic actions round up the whole system.
+
+UniCC is technically a target language independent parser generator, which
+means that it is not bound to a special programming language. Currently, only
+support of the C programming language is given due the UniCC Standard C Parser
+Template. More standard templates for other languages like C++ and Java will be
+developed and released in future by Phorward Software Technologies, but are not
+available for now; Any help and support on this area is appreciated.
 
 UniCC has been developed since 2006 and has its origin at Phorward Software
 Technologies and is initially written and maintained by its 1985 born core
@@ -27,14 +45,6 @@ developer, Jan Max Meyer. Phorward Software Technologies is a software-company
 from Dortmund, Germany, which focuses its business on compiler construction,
 scripting languages and software development tools, both in the area of open
 source and proprietary solutions.
-
-The final release of UniCC has been in August 2011, and is still not finished.
-A user's manual and documentation will be supplied, including a binary
-distribution for various platforms. So currently, this Mercurial source code
-repository is the first, available thing. And more will come within the next
-few weeks. Because UniCC is scheduled as one of Phorward Software Technologies'
-flagship-product, there had already been done a lot of work, but everything is
-still not finished.
 
 From the project view, the UniCC parser generator consists currently of two
 different parts.
@@ -47,7 +57,9 @@ These are
   package, and released under the BSD-license.
 
 This document should serve as an initial developer's note on how to compile
-UniCC and setup its environment.
+UniCC and set up its environment. There is also additional documentation in
+form of a User's Manual available, which can be obtained via the Phorward
+Software Technologies website.
 
 Please check out http://unicc.phorward-software.com/ from time to time to get
 the latest news, documentation, updates and support on the UniCC LALR(1) Parser
@@ -86,10 +98,13 @@ Libraries installation by simply typing
 
 	s
 	
-and clone the following repositories
+and clone the following repositories. They provide the UniCC LALR(1) Parser
+Generator, the UniCC Standard C Parser Template and XPL, a demonstration of
+a tiny programming language implementation written with UniCC.
 
 	hg clone http://unicc.hg.sourceforge.net:8000/hgroot/unicc/unicc
 	hg clone http://unicc.hg.sourceforge.net:8000/hgroot/unicc/Cparser
+	hg clone http://unicc.hg.sourceforge.net:8000/hgroot/unicc/xpl
 
 Then, run
 
@@ -104,7 +119,7 @@ UNICC_TPLDIR known.
 
 After this, run
 
-	echo "pbasis pregex pstring min_lalr1 Cparser unicc" >makeall-seq
+	echo "pbasis pregex pstring min_lalr1 Cparser unicc xpl" >makeall-seq
 
 This will create an extended build-sequence for the makeall script, which is
 part of the Phorward Foundation Libraries.
@@ -119,8 +134,4 @@ After a successful build, UniCC can be invoked with
 	
 and is available in $PHOME/run.
 
-
-Enjoy UniCC!
-
-
-... to be continued ...
+Have fun with UniCC!

@@ -737,7 +737,8 @@ BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, uchar* genfile )
 	if( xml_child( (source), (tagname) ) ) \
 		(target) = (uchar*)( xml_txt( xml_child( (source), (tagname) ) ) ); \
 	else \
-		p_error( parser, ERR_TAG_NOT_FOUND, ERRSTYLE_WARNING, (tagname), genfile );
+		p_error( parser, ERR_TAG_NOT_FOUND, ERRSTYLE_WARNING, \
+			(tagname), genfile );
 
 #define GET_XML_TAB_1D( target, tagname ) \
 	if( ( tmp = xml_child( g->xml, (tagname) ) ) ) \
@@ -746,7 +747,8 @@ BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, uchar* genfile )
 		GET_XML_DEF( tmp, (target).col_sep, "col_sep" ) \
 	} \
 	else \
-		p_error( parser, ERR_TAG_NOT_FOUND, ERRSTYLE_WARNING, (tagname), genfile );
+		p_error( parser, ERR_TAG_NOT_FOUND, ERRSTYLE_WARNING, \
+			(tagname), genfile );
 
 #define GET_XML_TAB_2D( target, tagname ) \
 	if( ( tmp = xml_child( g->xml, (tagname) ) ) ) \
@@ -758,7 +760,8 @@ BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, uchar* genfile )
 		GET_XML_DEF( tmp, (target).col_sep, "col_sep" ) \
 	} \
 	else \
-		p_error( parser, ERR_TAG_NOT_FOUND, ERRSTYLE_WARNING, (tagname), genfile ); 
+		p_error( parser, ERR_TAG_NOT_FOUND, ERRSTYLE_WARNING, \
+			(tagname), genfile ); 
 
 	if( !( g->xml = xml_parse_file( genfile ) ) )
 	{
@@ -768,7 +771,8 @@ BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, uchar* genfile )
 
 	if( *xml_error( g->xml ) )
 	{
-		p_error( parser, ERR_XML_ERROR, ERRSTYLE_FATAL, genfile, xml_error( g->xml ) );
+		p_error( parser, ERR_XML_ERROR, ERRSTYLE_FATAL,
+			genfile, xml_error( g->xml ) );
 		return FALSE;
 	}
 
@@ -786,7 +790,8 @@ BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, uchar* genfile )
 
 	GET_XML_DEF( g->xml, g->scan_action_start, "scan_action_start" );
 	GET_XML_DEF( g->xml, g->scan_action_end, "scan_action_end" );
-	GET_XML_DEF( g->xml, g->scan_action_begin_offset, "scan_action_begin_offset" );
+	GET_XML_DEF( g->xml, g->scan_action_begin_offset,
+					"scan_action_begin_offset" );
 	GET_XML_DEF( g->xml, g->scan_action_end_offset, "scan_action_end_offset" );
 	GET_XML_DEF( g->xml, g->scan_action_ret_single, "scan_action_ret_single" );
 	GET_XML_DEF( g->xml, g->scan_action_ret_union, "scan_action_ret_union" );

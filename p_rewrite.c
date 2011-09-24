@@ -565,7 +565,10 @@ void p_fix_precedences( PARSER* parser )
 	BOOLEAN	found;
 	SYMBOL*	sym;
 
-	/* If nonterminal symbol has a precedence, attach it to all its productions! */
+	/* 
+	 * If nonterminal symbol has a precedence,
+	 * attach it to all its productions!
+	 */
 	for( l = parser->symbols; l; l = l->next )
 	{
 		sym = (SYMBOL*)l->pptr;
@@ -635,9 +638,10 @@ void p_fix_precedences( PARSER* parser )
 	Usage:			Inherits the fixiation definitions once done with "fixate"
 					parser directive.
 					
-	Parameters:		PARSER*		parser				Pointer to parser information
-													structure; This huge shit of
-													data, holding everything :)
+	Parameters:		PARSER*		parser				Pointer to parser 
+													information structure;
+													This huge shit of data,
+													holding everything :)
 	
 	Returns:		void
   
