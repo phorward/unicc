@@ -5,16 +5,17 @@
 :: LICENSE AGREEMENTS
 --------------------------------------------------------------------------------
 
-The UniCC LALR(1) Parser Generator Source Code is provided under the
+The UniCC LALR(1) Parser Generator is provided under the
 Artistic License 2.0, which is included below.
 
 For the avoidance of doubt, the following definitions in the
 license text apply:
 
-"Package" means the UniCC LALR(1) Parser Generator Source Code,
-as provided for download from the UniCC project homepage at
-SourceForge.net or any other, official download mirror provided
-by Phorward Software Technologies.
+"Package" means the UniCC LALR(1) Parser Generator Source Code
+or the UniCC LALR(1) Parser Generator Binary Package, as provided
+for download from the UniCC project homepage at SourceForge.net
+or any other, official download mirror provided by Phorward
+Software Technologies.
 
 "Copyright Holder" is Jan Max Meyer, Phorward Software Technologies,
 who is original author and copyright holder of the UniCC LALR(1)
