@@ -213,7 +213,8 @@ hg clone http://unicc.hg.sourceforge.net:8000/hgroot/unicc/xpl
 Then, run
 
 ```
-echo "export UNICC_TPLDIR=$PHOME/src/Cparser" >>$PHOME/etc/userenv
+test ! -x "$PHOME/etc/userenv" && echo '#!/bin/sh' >$PHOME/etc/userenv
+echo 'export UNICC_TPLDIR=$PHOME/src/Cparser' >>$PHOME/etc/userenv
 chmod +x $PHOME/etc/userenv
 . $PHOME/etc/userenv
 ```
@@ -223,12 +224,12 @@ that is applied the next time you setup the Phorward Foundation Libraries
 environment, and also updates the current environment to get the variable
 UNICC_TPLDIR known.
 
-After this, run
+After this
 
 ``` echo "pbasis pregex pstring min_lalr1 Cparser unicc xpl" >makeall-seq
 
-This will create an extended build-sequence for the makeall script, which is
-part of the Phorward Foundation Libraries.
+will create an extended build-sequence for the makeall script, which is part
+of the Phorward Foundation Libraries.
 
 Finally compile all modules by simply typing
 
@@ -238,7 +239,8 @@ After a successful build, UniCC can be invoked with
 
 ``` unicc
 	
-and is available in $PHOME/run.
+and will be made available in $PHOME/run. The UniCC Standard C Parser Template
+will be build into $PHOME/src/Cparser/C.tlt.
 
 = AUTHOR =
 
