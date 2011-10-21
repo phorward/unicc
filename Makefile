@@ -66,8 +66,7 @@ HEADERS		=	p_global.h \
 				
 TEMPLATE_C	=	../Cparser/C.tlt
 				
-LIBS		=	$(PREGEX_LIB) \
-				$(PBASIS_LIB)
+LIBS		=	$(LIBPHORWARD_LIB)
 
 MISCDEP		=	$(TEMPLATE_C) \
 				Makefile
@@ -141,6 +140,7 @@ doc: manpage README
 manpage: unicc.man
 
 README: unicc.t2t
+	-$(RM) $@
 	txt2tags -t txt -H -o - $? | sed -E -n '1h;1!H;$${;g;s/ +([-A-Z ]+)\n +(=+)/\2==\n \1 \n\2==/g;p;}' | sed -e "/^=/s/=/*/g;1,15d" >$@.tmp
 	$(CAT) unicc.hdr $@.tmp >>$@
 	$(RM) $@.tmp

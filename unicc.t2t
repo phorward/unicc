@@ -226,7 +226,7 @@ UNICC_TPLDIR known.
 
 After this
 
-``` echo "pbasis pregex pstring min_lalr1 Cparser unicc xpl" >makeall-seq
+``` echo "phorward min_lalr1 Cparser unicc xpl" >makeall-seq
 
 will create an extended build-sequence for the makeall script, which is part
 of the Phorward Foundation Libraries.

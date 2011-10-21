@@ -23,8 +23,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
  */
 
 /* Standard Includes */
-#include <pbasis.h>
-#include <pregex.h>
+#include <phorward.h>
 
 #undef uchar
 #define uchar char

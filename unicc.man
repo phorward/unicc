@@ -337,7 +337,7 @@ UNICC_TPLDIR known.
 After this
 
 .nf
-echo "pbasis pregex pstring min_lalr1 Cparser unicc xpl" >makeall-seq
+echo "phorward min_lalr1 Cparser unicc xpl" >makeall-seq
 .fi
 
 
