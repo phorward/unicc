@@ -378,7 +378,7 @@ Copyright (C) 2006\-2011 by Phorward Software Technologies, Jan Max Meyer
 
 .P
 You may use, modify and distribute this software under the terms and conditions
-of the Artistic License, version 2. Please see LICENSE for more information.
+of the Artistic License, version 2.
 
 .P
 The full license terms can be obtained from the file LICENSE, provided

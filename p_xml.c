@@ -1322,7 +1322,12 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 	}
 	
 	if( ( xmlstr = xml_toxml( par ) ) )
+	{
+		fprintf( out, "<?xml version=\"1.0\" stand-alone=\"yes\" ?>\n" );
 		fprintf( out, "%s", xmlstr );
+	}
+	else
+		OUTOFMEM;
 	
 	pfree( xmlstr );
 	xml_free( par );
