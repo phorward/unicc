@@ -750,7 +750,7 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 					break;
 				case SYM_REGEX_TERMINAL:
 					if( sym->keyword )
-						tmp = "keyword";
+						tmp = "string";
 					else
 					{
 						tmp = "regular-expression";
@@ -1323,7 +1323,8 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 	
 	if( ( xmlstr = xml_toxml( par ) ) )
 	{
-		fprintf( out, "<?xml version=\"1.0\" stand-alone=\"yes\" ?>\n" );
+		fprintf( out, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" );
+		fprintf( out, "<!DOCTYPE parser SYSTEM \"unicc.dtd\">\n" );
 		fprintf( out, "%s", xmlstr );
 	}
 	else
