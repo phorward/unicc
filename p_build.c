@@ -29,6 +29,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 /*
  * Global variables
  */
+extern FILE*	status;
 
 /*
  * Functions
@@ -879,8 +880,8 @@ BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, uchar* genfile )
 
 		if( lname && *lname && version && *version )
 		{
-			fprintf( stdout, "[%s, v%s]...", lname, version );
-			fflush( stdout );
+			fprintf( status, "[%s, v%s]...", lname, version );
+			fflush( status );
 		}
 	}
 
@@ -941,7 +942,7 @@ void p_build_code( PARSER* parser )
 	uchar*			top_value			= (uchar*)NULL;
 	uchar*			goal_value			= (uchar*)NULL;
 	uchar*			act					= (uchar*)NULL;
-	uchar*			filename;
+	uchar*			filename			= (uchar*)NULL;
 
 	int				max_action			= 0;
 	int				max_goto			= 0;
@@ -1535,17 +1536,23 @@ void p_build_code( PARSER* parser )
 			file; file = xml_next( file ) )
 	{
 		/* Make filename */
-		if( ( filename = (uchar*)xml_attr( file, "filename" ) ) )
-			filename = p_tpl_insert( filename,
-				/* Here we have to submit the original basename to construct
-					the final output filename using the full output path. */
-				GEN_WILD_PREFIX "basename", parser->p_basename, FALSE,
-				GEN_WILD_PREFIX "Cbasename",
-						p_gen_c_identifier( parser->p_basename, FALSE ), TRUE,
-				GEN_WILD_PREFIX "CBASENAME",
-						p_gen_c_identifier( parser->p_basename, TRUE ), TRUE,
-				GEN_WILD_PREFIX "prefix", parser->p_prefix, FALSE,
-					(char*)NULL );
+		if( !parser->to_stdout )
+		{
+			if( ( filename = (uchar*)xml_attr( file, "filename" ) ) )
+				filename = p_tpl_insert( filename,
+					/*
+						Here we have to submit the original basename
+						to construct the final output filename using the
+						full output path.
+					*/
+					GEN_WILD_PREFIX "basename", parser->p_basename, FALSE,
+					GEN_WILD_PREFIX "Cbasename", p_gen_c_identifier(
+						parser->p_basename, FALSE ), TRUE,
+					GEN_WILD_PREFIX "CBASENAME", p_gen_c_identifier(
+						parser->p_basename, TRUE ), TRUE,
+					GEN_WILD_PREFIX "prefix", parser->p_prefix, FALSE,
+						(char*)NULL );
+		}
 		
 		/* Assembling all together - Warning, this is
 			ONE single function call! */
@@ -1686,17 +1693,23 @@ void p_build_code( PARSER* parser )
 		{
 			if( !( stream = fopen( filename, "wt" ) ) )
 			{
-				p_error( parser, ERR_OPEN_OUTPUT_FILE, ERRSTYLE_WARNING,
-					filename );
+				p_error( parser, ERR_OPEN_OUTPUT_FILE,
+					ERRSTYLE_FATAL, filename );
+
 				p_free( filename );
-				filename = (char*)NULL;
+				filename = (uchar*)NULL;
 			}
 		}
-		
-		/* No 'else' here! */
+
 		if( !filename )
+		{
 			stream = stdout;
 
+			if( parser->files_count > 0 )
+				fprintf( stdout, "%c", EOF );
+		}
+
+		parser->files_count++;
 		fprintf( stream, "%s", complete );
 		p_free( complete );
 		

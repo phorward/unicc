@@ -338,6 +338,8 @@ struct _parser
 	BOOLEAN		all_warnings;
 	BOOLEAN		gen_prog;
 	BOOLEAN		gen_xml;
+	BOOLEAN		to_stdout;
+	int			files_count;
 
 	/* Debug and maintainance */
 	uchar*		filename;

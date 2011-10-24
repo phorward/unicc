@@ -30,7 +30,6 @@ of the Artistic License, version 2. Please see LICENSE for more information.
  * Global variables
  */
 extern uchar*	pmod[];
-extern BOOLEAN	first_progress;
 
 /*
  * Functions
@@ -1186,8 +1185,8 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 	XML_T			code;
 	XML_T			attrib;
 
-	FILE* 			out					= (FILE*)NULL;
-	uchar*			outname;
+	FILE* 			out					= stdout;
+	uchar*			outname				= (uchar*)NULL;
 
 	uchar*			xmlstr;
 
@@ -1308,32 +1307,42 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 		xml_move( xml_child( parser->err_xml, "messages" ), par, 0 );
 	
 	/* Write to output file */
-	if( ( outname = pasprintf( "%s%s",
-			parser->p_basename, UNICC_XML_EXTENSION ) ) )
+	if( !parser->to_stdout )
 	{
-		if( !( out = fopen( outname, "wb" ) ) )
-			p_error( parser, ERR_OPEN_OUTPUT_FILE, ERRSTYLE_WARNING, outname );
+		if( ( outname = pasprintf( "%s%s",
+				parser->p_basename, UNICC_XML_EXTENSION ) ) )
+		{
+			if( !( out = fopen( outname, "wb" ) ) )
+			{
+				p_error( parser, ERR_OPEN_OUTPUT_FILE,
+					ERRSTYLE_WARNING, outname );
+
+				out = stdout;
+			}
+		}
 	}
-	
-	if( !out )
-	{	
-		out = stdout;
-		first_progress = FALSE;
+
+	if( out == stdout )
+	{
+		if( parser->files_count > 0 )
+			fprintf( stdout, "%c", EOF );
 	}
-	
+
 	if( ( xmlstr = xml_toxml( par ) ) )
 	{
 		fprintf( out, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" );
 		fprintf( out, "<!DOCTYPE parser SYSTEM \"unicc.dtd\">\n" );
+
+		parser->files_count++;
 		fprintf( out, "%s", xmlstr );
 	}
 	else
 		OUTOFMEM;
-	
+
 	pfree( xmlstr );
 	xml_free( par );
-	
-	if( out )
+
+	if( out != stdout )
 		fclose( out );
 
 	if( outname )

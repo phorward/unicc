@@ -21,13 +21,15 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 /*
  * Global variables
  */
-BOOLEAN	first_progress		= FALSE;
-BOOLEAN no_warnings			= TRUE;
-extern int error_count;
-extern int warning_count;
-extern uchar* progname;
+FILE*			status;
+BOOLEAN			first_progress		= FALSE;
+BOOLEAN 		no_warnings			= TRUE;
 
-uchar* pmod[] = 
+extern int		error_count;
+extern int		warning_count;
+extern uchar*	progname;
+
+uchar* 			pmod[] = 
 {
 	"sensitive",
 	"insensitive"
@@ -42,8 +44,8 @@ uchar* pmod[] =
  */
 #define PROGRESS( txt )		if( parser->verbose ) \
 							{ \
-								fprintf( stdout, "%s...", (txt ) ); \
-								fflush( stdout ); \
+								fprintf( status, "%s...", (txt) ); \
+								fflush( status ); \
 								first_progress = TRUE; \
 							} \
 							else \
@@ -65,7 +67,7 @@ uchar* pmod[] =
 	Usage:			Internal function to print verbose status messages.
 					
 	Parameters:		PARSER* 		parser			Parser info struct
-					uchar*			status			Status info/Format string
+					uchar*			status_msg		Status info/Format string
 					uchar*			reason			One parameter to be inserted
 													by the fprintf( status ... )
 													have fun!
@@ -75,15 +77,15 @@ uchar* pmod[] =
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-static void p_status( PARSER* parser, uchar* status, uchar* reason )
+static void p_status( PARSER* parser, uchar* status_msg, uchar* reason )
 {
 	if( !parser->verbose )
 		return;
 		
 	if( first_progress )
-		fprintf( stdout, status, reason );
+		fprintf( status, status_msg, reason );
 	else
-		fprintf( stdout, "\n" );
+		fprintf( status, "\n" );
 	
 	first_progress = FALSE;
 }
@@ -158,6 +160,7 @@ void p_usage( FILE* stream, uchar* progname )
 		"  -P   --productions     Dump final productions\n"		
 		"  -s   --stats           Print statistics message\n"
 		"  -S   --states          Dump LALR(1) states\n"
+		"  -t   --stdout          Print output to stdout instead of files\n"
 		"  -T   --symbols         Dump symbols\n"
 		"  -v   --verbose         Print progress messages\n"
 		"  -V   --version         Print version and copyright and exit\n"
@@ -204,10 +207,10 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 
 	for( i = 0;
 			( rc = pgetopt( opt, &param, argc, argv,
-						"ab:Ghno:PsSTvVwxX",
+						"ab:Ghno:PsStTvVwxX",
 						"all grammar help no-opt output: basename: productions"
-							"stats states symbols verbose version warnings "
-								"xml XML", i ) ) == ERR_OK; i++ )
+							"stats states stdout symbols verbose version "
+								"warnings xml XML", i ) ) == ERR_OK; i++ )
 	{
 		if( !strcmp( opt, "output" ) || !strcmp( opt, "o" ) 
 			|| !strcmp( opt, "basename" ) || !strcmp( opt, "b" ) )
@@ -229,6 +232,11 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 			parser->show_states = TRUE;
 		else if( !strcmp( opt, "symbols" ) || !strcmp( opt, "T" ) )
 			parser->show_symbols = TRUE;
+		else if( !strcmp( opt, "stdout" ) || !strcmp( opt, "t" ) )
+		{
+			parser->to_stdout = TRUE;
+			status = stderr;
+		}
 		else if( !strcmp( opt, "productions" ) || !strcmp( opt, "P" ) )
 			parser->show_productions = TRUE;
 		else if( !strcmp( opt, "no-opt" ) || !strcmp( opt, "n" ) )
@@ -290,6 +298,7 @@ int main( int argc, char** argv )
 	BOOLEAN	recursions	= FALSE;
 	BOOLEAN	def_lang	= FALSE;
 
+	status = stdout;
 	parser = p_create_parser();
 
 #ifdef UNICC_BOOTSTRAP
@@ -329,7 +338,7 @@ int main( int argc, char** argv )
 			parser->p_basename = base_name;
 
 		if( parser->verbose )
-			fprintf( stdout, "UniCC version: %s\n", UNICC_VERSION );
+			fprintf( status, "UniCC version: %s\n", UNICC_VERSION );
 
 		PROGRESS( "Parsing grammar" )
 		/* Parse grammar structure */
@@ -338,7 +347,7 @@ int main( int argc, char** argv )
 			DONE()
 
 			if( parser->verbose )
-				fprintf( stdout, "Parser construction mode: %s\n",
+				fprintf( status, "Parser construction mode: %s\n",
 					pmod[ parser->p_mode ] );
 
 
@@ -376,13 +385,13 @@ int main( int argc, char** argv )
 				DONE()
 
 				if( parser->show_grammar )
-					p_dump_grammar( stdout, parser );
+					p_dump_grammar( status, parser );
 				
 				if( parser->show_symbols )
-					p_dump_symbols( stdout, parser );
+					p_dump_symbols( status, parser );
 
 				if( parser->show_productions )
-					p_dump_productions( stdout, parser );
+					p_dump_productions( status, parser );
 
 				/* Stupid production recognition */
 				PROGRESS( "Validating rule integrity" )
@@ -399,7 +408,7 @@ int main( int argc, char** argv )
 					p_generate_tables( parser );
 
 					if( parser->show_states )
-						p_dump_lalr_states( stdout, parser );
+						p_dump_lalr_states( status, parser );
 
 					DONE()
 
@@ -451,7 +460,7 @@ int main( int argc, char** argv )
 					if( parser->gen_prog )
 					{
 						if( parser->verbose )
-							fprintf( stdout, "Code generation target: %s%s\n",
+							fprintf( status, "Code generation target: %s%s\n",
 								parser->p_language,
 									( def_lang ? " (default)" : "" ) );
 
@@ -479,12 +488,14 @@ int main( int argc, char** argv )
 			}
 		
 			if( parser->stats )
-				fprintf( stdout, "%s%s produced %d states "
-							"(%d error%s, %d warning%s)\n",
+				fprintf( status, "%s%s produced %d states "
+							"(%d error%s, %d warning%s), %d file%s\n",
 					( parser->verbose ? "\n" : "" ),
 					filename, list_count( parser->lalr_states ),
 						error_count, ( error_count == 1 ) ? "" : "s",
-						warning_count, ( warning_count == 1 ) ? "" : "s" );	
+						warning_count, ( warning_count == 1 ) ? "" : "s",
+						parser->files_count,
+							( parser->files_count == 1 ) ? "" : "s" );	
 		}
 		else
 		{
@@ -499,7 +510,7 @@ int main( int argc, char** argv )
 	}
 	else if( !error_count )
 	{
-		p_usage( stdout, *argv );
+		p_usage( status, *argv );
 		error_count++;
 	}
 
