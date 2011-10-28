@@ -75,6 +75,8 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 
 <!ELEMENT raw ( #PCDATA ) >
 
+<!ELEMENT regex ( #PCDATA ) >
+
 <!ELEMENT return-value EMPTY >
 <!ATTLIST return-value value-type CDATA #REQUIRED >
 <!ATTLIST return-value value-type-id NMTOKEN #REQUIRED >
@@ -109,7 +111,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 
 <!ELEMENT states ( state+ ) >
 
-<!ELEMENT symbol ( character-class | code | dfa )* >
+<!ELEMENT symbol ( character-class | code | dfa | regex )* >
 <!ATTLIST symbol defined-at NMTOKEN #IMPLIED >
 <!ATTLIST symbol derived-from NMTOKEN #IMPLIED >
 <!ATTLIST symbol id NMTOKEN #REQUIRED >

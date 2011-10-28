@@ -71,8 +71,11 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 /* Generator insertion wildcards */
 #define GEN_WILD_PREFIX			"@@"
 
-/* Phorward UniCC parser generator version number */
-#define UNICC_VERSION			"1.0rc1"
+/* UniCC version number */
+#define UNICC_VER_MAJOR			1
+#define UNICC_VER_MINOR			0
+#define UNICC_VER_PATCH			0
+#define UNICC_VER_EXTSTR		"rc2"
 
 /* Default target language */
 #define UNICC_DEFAULT_LNG		"C"

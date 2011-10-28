@@ -197,6 +197,8 @@ static void set_nfa_to_symbols( SYMBOL* s,
 		OUTOFMEM;
 
 	nstart->next = start;
+	nstart->operator = '|';
+
 	end->accept = s->id;
 	end->greedy = greedy;
 	
@@ -1010,7 +1012,6 @@ access_name			->	':' identifier
 regex<struct @@prefix_nfa>
 
 					->	re_alt
-
 					;
 
 re_alt<struct @@prefix_nfa>
@@ -1026,6 +1027,8 @@ re_alt<struct @@prefix_nfa>
 
 							@@.start->next = @1.start;
 							@@.start->next2 = @3.start;
+
+							@@.start->operator = '|';
 
 							@1.end->next = @@.end;
 							@3.end->next = @@.end;
@@ -1053,21 +1056,27 @@ re_modifier<struct @@prefix_nfa>
 					
 						[*	@@.start = pregex_nfa_create_state(
 								&nfa_m, (uchar*)NULL, REGEX_MOD_NONE );
-							@@.end = pregex_nfa_create_state(
-								&nfa_m, (uchar*)NULL, REGEX_MOD_NONE );
+							@@.end = @1.end;
 
 							@@.start->next = @1.start;
 							@@.start->next2 = @@.end;
 							@@.end->next2 = @@.start;
 
 							@1.end->next = @@.end;
+
+							@@.start->operator = '*';
 						*]
 
 					| re_factor '+'	
 
-						[*	@@.start = @1.start;
+						[*	@@.start = pregex_nfa_create_state(
+								&nfa_m, (uchar*)NULL, REGEX_MOD_NONE );
+
+							@@.start->next = @1.start;
 							@@.end = @1.end;
 							@@.end->next2 = @@.start;
+
+							@@.start->operator = '+';
 						*]
 
 					| re_factor '?'
@@ -1078,6 +1087,8 @@ re_modifier<struct @@prefix_nfa>
 							@@.start->next = @1.start;
 							@@.start->next2 = @1.end;
 							@@.end = @1.end;
+
+							@@.start->operator = '?';
 						*]
 
 					| re_factor
@@ -1136,6 +1147,9 @@ re_factor<struct @@prefix_nfa>
 
 					[*	@@.start = @2.start;
 						@@.end = @2.end;
+
+						@@.start->op_br = '(';
+						@@.end->cl_br = ')';
 					*]
 				;
 
@@ -1334,7 +1348,7 @@ static void p_parse_error( @@prefix_pcb* pcb )
 	*vptr = (uchar*)NULL;
 
 	if( pcb->sym == -1 )
-		cur = pcb->buf;
+		cur = pcb->lexem;
 	else
 		cur = @@prefix_symbols[ pcb->sym ].name;
 

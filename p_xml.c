@@ -720,6 +720,8 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 	XML_T			symbol;
 	XML_T			code;
 	XML_T			lex;
+	XML_T			regex;
+	uchar*			regex_str;
 
 	PROC( "p_xml_print_symbols" );
 	MSG( "Printing symbol table" );
@@ -754,6 +756,23 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 					{
 						tmp = "regular-expression";
 
+						/* Rebuild the regular expression string */
+						pregex_nfa_print( &( sym->nfa ) );
+						if( ( regex_str = pregex_nfa_to_regex(
+								&( sym->nfa ) ) ) )
+						{
+							if( !( regex = xml_add_child(
+									symbol, "regex", 0 ) ) )
+								OUTOFMEM;
+
+							xml_set_txt_d( regex, regex_str );
+							pfree( regex_str );
+						}
+
+						/* 
+							Compile the NFA into a minimized DFA and
+							output it as XML lexer structure
+						*/
 						pregex_dfa_from_nfa( &tmp_dfa, &( sym->nfa ) );
 						pregex_dfa_minimize( &tmp_dfa );
 
@@ -762,6 +781,7 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 
 						p_build_dfa( lex, &tmp_dfa );
 						pregex_dfa_free( &tmp_dfa );
+
 					}
 					break;
 				case SYM_SYSTEM_TERMINAL:
@@ -780,7 +800,7 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 			if( sym->whitespace )
 				xml_set_attr( symbol, "is-whitespace", XML_YES );
 			
-			/* Code (in case of regex/keyword terminals */
+			/* Code (in case of regex terminals */
 			if( sym->code && *( sym->code ) )
 			{
 				if( !( code = xml_add_child( symbol, "code", 0 ) ) )
@@ -1199,7 +1219,7 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 		OUTOFMEM;
 
 	/* UniCC version */
-	xml_set_attr( par, "unicc-version", UNICC_VERSION );
+	xml_set_attr( par, "unicc-version", p_version() );
 
 	/* Parser model */
 	xml_set_attr( par, "mode", pmod[ parser->p_mode ] );

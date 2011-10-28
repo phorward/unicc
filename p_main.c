@@ -91,6 +91,34 @@ static void p_status( PARSER* parser, uchar* status_msg, uchar* reason )
 }
 
 /* -FUNCTION--------------------------------------------------------------------
+	Function:		p_version()
+	
+	Author:			Jan Max Meyer
+	
+	Usage:			Generates and returns the UniCC version number string.
+					
+	Parameters:		void
+
+	Returns:		void
+  
+	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	Date:		Author:			Note:
+----------------------------------------------------------------------------- */
+uchar* p_version( void )
+{
+	static char	version [ ONE_LINE + 1 ];
+
+	if( *version )
+		return version;
+
+	psprintf( version, "%d.%d.%d%s",
+				UNICC_VER_MAJOR, UNICC_VER_MINOR, UNICC_VER_PATCH,
+					UNICC_VER_EXTSTR );
+
+	return version;
+}
+
+/* -FUNCTION--------------------------------------------------------------------
 	Function:		p_copyright()
 	
 	Author:			Jan Max Meyer
@@ -114,7 +142,7 @@ void p_copyright( FILE* stream )
 		stream = stdout;
 
 	fprintf( stream, "UniCC LALR(1) Parser Generator v%s [build %s %s]\n",
-			UNICC_VERSION, __DATE__, __TIME__ );
+			p_version(), __DATE__, __TIME__ );
 	fprintf( stream, "Copyright (C) 2006-2011 by "
 						"Phorward Software Technologies, Jan Max Meyer\n" );
 	fprintf( stream, "http://www.phorward-software.com ++ "
@@ -338,7 +366,7 @@ int main( int argc, char** argv )
 			parser->p_basename = base_name;
 
 		if( parser->verbose )
-			fprintf( status, "UniCC version: %s\n", UNICC_VERSION );
+			fprintf( status, "UniCC version: %s\n", p_version() );
 
 		PROGRESS( "Parsing grammar" )
 		/* Parse grammar structure */

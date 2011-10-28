@@ -89,6 +89,9 @@ SYMBOL* p_positive_closure( PARSER* parser, SYMBOL* base );
 SYMBOL* p_kleene_closure( PARSER* parser, SYMBOL* base );
 SYMBOL* p_optional_closure( PARSER* parser, SYMBOL* base );
 
+/* p_main.c */
+uchar* p_version( void );
+
 /* p_debug.c */
 void p_print_symbol( FILE* stream, SYMBOL* sym );
 void p_dump_grammar( FILE* stream, PARSER* parser );
