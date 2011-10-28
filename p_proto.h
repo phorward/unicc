@@ -90,7 +90,7 @@ SYMBOL* p_kleene_closure( PARSER* parser, SYMBOL* base );
 SYMBOL* p_optional_closure( PARSER* parser, SYMBOL* base );
 
 /* p_main.c */
-uchar* p_version( void );
+uchar* p_version( BOOLEAN long_version );
 
 /* p_debug.c */
 void p_print_symbol( FILE* stream, SYMBOL* sym );

@@ -270,7 +270,7 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 				if( !l )
 				{
 					p_error( parser, ERR_UNDEFINED_SYMREF, ERRSTYLE_WARNING,
-						result[i].begin + 1 );
+										result[i].len, result[i].begin  );
 					off = 0;
 					
 					tmp = p_strdup( result[i].begin );
@@ -757,7 +757,7 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 						tmp = "regular-expression";
 
 						/* Rebuild the regular expression string */
-						pregex_nfa_print( &( sym->nfa ) );
+#ifndef UNICC_BOOTSTRAP
 						if( ( regex_str = pregex_nfa_to_regex(
 								&( sym->nfa ) ) ) )
 						{
@@ -768,6 +768,7 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 							xml_set_txt_d( regex, regex_str );
 							pfree( regex_str );
 						}
+#endif
 
 						/* 
 							Compile the NFA into a minimized DFA and
@@ -1219,7 +1220,7 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 		OUTOFMEM;
 
 	/* UniCC version */
-	xml_set_attr( par, "unicc-version", p_version() );
+	xml_set_attr( par, "unicc-version", p_version( TRUE ) );
 
 	/* Parser model */
 	xml_set_attr( par, "mode", pmod[ parser->p_mode ] );

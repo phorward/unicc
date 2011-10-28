@@ -97,23 +97,26 @@ static void p_status( PARSER* parser, uchar* status_msg, uchar* reason )
 	
 	Usage:			Generates and returns the UniCC version number string.
 					
-	Parameters:		void
+	Parameters:		BOOLEAN		long_version		If TRUE, prints a long
+													version string with
+													patchlevel information.
 
 	Returns:		void
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-uchar* p_version( void )
+uchar* p_version( BOOLEAN long_version )
 {
 	static char	version [ ONE_LINE + 1 ];
 
-	if( *version )
-		return version;
-
-	psprintf( version, "%d.%d.%d%s",
+	if( long_version )
+		psprintf( version, "%d.%d.%d%s",
 				UNICC_VER_MAJOR, UNICC_VER_MINOR, UNICC_VER_PATCH,
 					UNICC_VER_EXTSTR );
+	else
+		psprintf( version, "%d.%d%s",
+				UNICC_VER_MAJOR, UNICC_VER_MINOR, UNICC_VER_EXTSTR );
 
 	return version;
 }
@@ -142,7 +145,7 @@ void p_copyright( FILE* stream )
 		stream = stdout;
 
 	fprintf( stream, "UniCC LALR(1) Parser Generator v%s [build %s %s]\n",
-			p_version(), __DATE__, __TIME__ );
+			p_version( TRUE ), __DATE__, __TIME__ );
 	fprintf( stream, "Copyright (C) 2006-2011 by "
 						"Phorward Software Technologies, Jan Max Meyer\n" );
 	fprintf( stream, "http://www.phorward-software.com ++ "
@@ -357,8 +360,7 @@ int main( int argc, char** argv )
 		/* Basename */
 		if( !base_name )
 		{
-			parser->p_basename = mbase_name = p_strdup(
-												pbasename( filename ) );
+			parser->p_basename = mbase_name = p_strdup( pbasename( filename ) );
 			if( ( base_name = strrchr( parser->p_basename, '.' ) ) )
 				*base_name = '\0';
 		}
@@ -366,9 +368,10 @@ int main( int argc, char** argv )
 			parser->p_basename = base_name;
 
 		if( parser->verbose )
-			fprintf( status, "UniCC version: %s\n", p_version() );
+			fprintf( status, "UniCC version: %s\n", p_version( FALSE ) );
 
 		PROGRESS( "Parsing grammar" )
+
 		/* Parse grammar structure */
 		if( p_parse( parser, parser->source ) == 0 )
 		{

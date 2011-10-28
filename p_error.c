@@ -59,7 +59,7 @@ uchar* error_txt[128] =
 	"Nonterminal whitespace \'%s\' is not allowed in insensitive mode",
 	"Invalid value for character universe",
 	"Character-class overlap in insensitive mode with \'%s\'",
-	"Action references to undefined right-hand side symbol '%s'",
+	"Action references to undefined right-hand side symbol '%.*s'",
 	"Left-hand side '%s' not known",
 	"Terminal '%s' not known",
 	"Semantic code will be ignored: No target language specified.",

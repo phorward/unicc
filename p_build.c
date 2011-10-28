@@ -301,7 +301,7 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 				if( !l )
 				{
 					p_error( parser, ERR_UNDEFINED_SYMREF, ERRSTYLE_WARNING,
-						result[i].begin + 1 );
+										result[i].len, result[i].begin );
 					off = 0;
 					
 					tmp = p_strdup( result[i].begin );
