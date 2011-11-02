@@ -182,12 +182,12 @@ void p_rewrite_grammar( PARSER* parser )
 							continue;
 
 						/* Construct derivative symbol name */
-						deriv = p_strdup( sym->name );
+						deriv = pstrdup( sym->name );
 						
 						/* Create unique symbol name */
 						do
 						{
-							deriv = p_str_append( deriv,
+							deriv = pstr_append_str( deriv,
 										P_REWRITTEN_TOKEN, FALSE );
 							nsym = p_get_symbol( parser, deriv,
 										SYM_NON_TERMINAL, FALSE );
@@ -221,7 +221,7 @@ void p_rewrite_grammar( PARSER* parser )
 						  		production's symbol! */						
 						m->pptr = nsym;
 
-						p_free( deriv );
+						pfree( deriv );
 					}
 				}
 
@@ -236,11 +236,11 @@ void p_rewrite_grammar( PARSER* parser )
 	stack = (LIST*)NULL;
 
 	/* Build a new goal symbol */
-	deriv = p_strdup( parser->goal->name );
+	deriv = pstrdup( parser->goal->name );
 
 	do
 	{
-		deriv = p_str_append( deriv, P_REWRITTEN_TOKEN, FALSE );
+		deriv = pstr_append_str( deriv, P_REWRITTEN_TOKEN, FALSE );
 		sym = p_get_symbol( parser, deriv, SYM_NON_TERMINAL, FALSE );							
 	}
 	while( sym && sym->derived_from != parser->goal );
@@ -253,7 +253,7 @@ void p_rewrite_grammar( PARSER* parser )
 	}
 
 	sym->generated = TRUE;
-	p_free( deriv );
+	pfree( deriv );
 
 	p = p_create_production( parser, sym );
 	if( !p )
@@ -391,7 +391,7 @@ void p_unique_charsets( PARSER* parser )
 
 					/* Re-configure symbol */	
 					ccl_free( tsym->ccl );
-					tsym->name = p_str_append( tsym->name,
+					tsym->name = pstr_append_str( tsym->name,
 									P_REWRITTEN_CCL, FALSE );
 					tsym->type = SYM_NON_TERMINAL;
 					tsym->first = list_free( tsym->first );
@@ -446,7 +446,7 @@ void p_unique_charsets( PARSER* parser )
 					/* Re-configure symbol to be a non-terminal, append
 						P_REWRITTEN_CCL to its name */
 					ccl_free( sym->ccl );
-					sym->name = p_str_append( sym->name,
+					sym->name = pstr_append_str( sym->name,
 									P_REWRITTEN_CCL, FALSE );
 					sym->type = SYM_NON_TERMINAL;
 					sym->first = list_free( sym->first );
@@ -765,7 +765,7 @@ void p_setup_single_goal( PARSER* parser )
 	}
 
 	/* Setup a new goal symbol */
-	deriv = p_str_append( p_strdup( parser->goal->name ),
+	deriv = pstr_append_str( pstrdup( parser->goal->name ),
 				P_REWRITTEN_TOKEN, FALSE );
 
 	if( !( sym = p_get_symbol( parser, deriv, SYM_NON_TERMINAL, TRUE ) ) )
@@ -777,7 +777,7 @@ void p_setup_single_goal( PARSER* parser )
 	sym->generated = TRUE;
 	sym->vtype = parser->goal->vtype;
 
-	p_free( deriv );
+	pfree( deriv );
 
 	if( !( p = p_create_production( parser, sym ) ) )
 	{

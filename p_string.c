@@ -45,7 +45,7 @@ uchar* p_int_to_str( int val )
 {
 	uchar*	ret;
 
-	ret = (uchar*)p_malloc( 64 * sizeof( uchar ) );
+	ret = (uchar*)pmalloc( 64 * sizeof( uchar ) );
 	sprintf( ret, "%d", val );
 
 	return ret;
@@ -70,7 +70,7 @@ uchar* p_chr_to_str( int val )
 {
 	uchar*	ret;
 
-	ret = (uchar*)p_malloc( (1+1) * sizeof( uchar ) );
+	ret = (uchar*)pmalloc( (1+1) * sizeof( uchar ) );
 	sprintf( ret, "%c", val );
 
 	return ret;
@@ -96,7 +96,7 @@ uchar* p_long_to_str( long val )
 {
 	uchar*	ret;
 
-	ret = (uchar*)p_malloc( 128 * sizeof( uchar ) );
+	ret = (uchar*)pmalloc( 128 * sizeof( uchar ) );
 	sprintf( ret, "%ld", val );
 
 	return ret;
@@ -123,9 +123,9 @@ uchar* p_str_to_str( uchar* val )
 	uchar*	ret;
 
 	if( val )
-		ret = p_strdup( val );
+		ret = pstrdup( val );
 	else
-		ret = p_strdup( "" );
+		ret = pstrdup( "" );
 
 	return ret;
 }
@@ -153,9 +153,9 @@ uchar* p_str_to_xml( uchar* str )
 	uchar*	ret;
 
 	if( !str )
-		return p_strdup( "" );
+		return pstrdup( "" );
 
-	ret = p_tpl_insert( str, 7,
+	ret = pstr_render( str, 7,
 				"<", "&lt;", FALSE,
 				">", "&gt;", FALSE,
 				"&", "&amp;", FALSE,
@@ -165,7 +165,7 @@ uchar* p_str_to_xml( uchar* str )
 				"\t", "&#x09;", FALSE
 			);
 
-	p_free( str );
+	pfree( str );
 
 	return ret;
 }
@@ -192,8 +192,8 @@ int p_strcmp( uchar* str1, uchar* str2, int insensitive )
 	int		cmp_ret;
 	if( insensitive )
 	{
-		str1 = p_strdup( str1 );
-		str2 = p_strdup( str2 );
+		str1 = pstrdup( str1 );
+		str2 = pstrdup( str2 );
 
 		p_strupr( str1 );
 		p_strupr( str2 );
@@ -203,8 +203,8 @@ int p_strcmp( uchar* str1, uchar* str2, int insensitive )
 
 	if( insensitive )
 	{
-		p_free( str1 );
-		p_free( str2 );
+		pfree( str1 );
+		pfree( str2 );
 	}
 
 	return cmp_ret;

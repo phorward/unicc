@@ -273,7 +273,7 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 										result[i].len, result[i].begin  );
 					off = 0;
 					
-					tmp = p_strdup( result[i].begin );
+					tmp = pstrdup( result[i].begin );
 				}
 				
 				VARS( "off", "%d", off );
@@ -329,7 +329,7 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 					{
 						MSG( "Found a matching symbol!" );
 
-						p_free( tmp );
+						pfree( tmp );
 						tmp = (uchar*)NULL;
 
 						if( !( code = xml_add_child( code_xml,
@@ -352,9 +352,9 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 					MSG( "No match found..." );
 
 					p_error( parser, ERR_UNDEFINED_LHS, ERRSTYLE_WARNING, tmp );
-					p_free( tmp );
+					pfree( tmp );
 					
-					if( !( tmp = p_strdup( result[i].begin ) ) )
+					if( !( tmp = pstrdup( result[i].begin ) ) )
 					{
 						OUTOFMEM;
 						VOIDRET;
@@ -600,7 +600,7 @@ static void p_xml_build_scan_action(
 								ERRSTYLE_WARNING, tmp );
 				}
 				
-				p_free( tmp );
+				pfree( tmp );
 				break;
 				
 			default:
@@ -757,6 +757,7 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 						tmp = "regular-expression";
 
 						/* Rebuild the regular expression string */
+/*
 #ifndef UNICC_BOOTSTRAP
 						if( ( regex_str = pregex_nfa_to_regex(
 								&( sym->nfa ) ) ) )
@@ -769,6 +770,7 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 							pfree( regex_str );
 						}
 #endif
+*/
 
 						/* 
 							Compile the NFA into a minimized DFA and

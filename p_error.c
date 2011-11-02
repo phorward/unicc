@@ -235,7 +235,7 @@ void p_error( PARSER* parser, int err_id, int err_style, ... )
 		/* Unfortunatelly, this must be done this ugly way... */
 		pvasprintf( &tmp, error_txt[ err_id ], params );
 		xml_set_txt_d( errmsg, tmp );
-		p_free( tmp );
+		pfree( tmp );
 	}
 
 	va_end( params );

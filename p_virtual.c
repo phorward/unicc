@@ -75,7 +75,7 @@ SYMBOL* p_positive_closure( PARSER* parser, SYMBOL* base )
 			p_append_to_production( p, base, (uchar*)NULL );
 		}
 
-		p_free( deriv_str );
+		pfree( deriv_str );
 	}
 
 	return s;
@@ -142,7 +142,7 @@ SYMBOL* p_kleene_closure( PARSER* parser, SYMBOL* base )
 			p = p_create_production( parser, s );
 		}
 
-		p_free( deriv_str );
+		pfree( deriv_str );
 	}
 
 	return s;
@@ -194,7 +194,7 @@ SYMBOL* p_optional_closure( PARSER* parser, SYMBOL* base )
 			p = p_create_production( parser, s );
 		}
 
-		p_free( deriv_str );
+		pfree( deriv_str );
 	}
 
 	return s;

@@ -86,7 +86,11 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 
 /*
  * Macros
- */ 
+ */
+#ifdef OUTOFMEM
+#undef OUTOFMEM
+#endif
+
 #define OUTOFMEM				fprintf( stderr, \
 									"%s, %d: Memory allocation failure; " \
 										"UniCC possibly ran out of memory!\n", \
@@ -97,16 +101,6 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 									
 #define MISS_MSG( txt )			fprintf( stderr, "%s, %d: %s\n", \
 										__FILE__, __LINE__, txt )
-
-/* Now uses pbasis library */
-#define p_malloc( size )		pmalloc( size )
-#define p_realloc( ptr, size )	prealloc( ptr, size )
-#define p_free( ptr )			pfree( ptr )
-#define p_strdup( ptr )			pstrdup( ptr )
-#define p_strlen( ptr )			pstrlen( ptr )
-#define p_strzero( ptr )		pstrzero( ptr )
-#define p_tpl_insert			pstr_render
-#define p_str_append			pstr_append_str
 
 /*
  * Type definitions

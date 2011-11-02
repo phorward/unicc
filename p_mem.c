@@ -124,7 +124,7 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 			RETURN( (SYMBOL*)NULL );
 	}
 
-	if( !( keyname = (uchar*)p_malloc(
+	if( !( keyname = (uchar*)pmalloc(
 			( pstrlen( name ) + 1 + 1 )
 				* sizeof( uchar ) ) ) )
 	{
@@ -139,7 +139,7 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 	{
 		MSG( "Hash table not found - going to create entry" );
 
-		if( ( sym = (SYMBOL*)p_malloc( sizeof( SYMBOL ) ) ) )
+		if( ( sym = (SYMBOL*)pmalloc( sizeof( SYMBOL ) ) ) )
 		{
 			memset( sym, 0, sizeof( SYMBOL ) );
 
@@ -204,10 +204,10 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 		sym = (SYMBOL*)( he->data );
 
 		if( type == SYM_CCL_TERMINAL )
-			p_free( name );
+			pfree( name );
 	}
 
-	p_free( keyname );
+	pfree( keyname );
 	RETURN( sym );
 }
 
@@ -229,9 +229,9 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 ----------------------------------------------------------------------------- */
 void p_free_symbol( SYMBOL* sym )
 {
-	p_free( sym->code );
-	p_free( sym->name );
-	p_free( sym->ccl );
+	pfree( sym->code );
+	pfree( sym->name );
+	pfree( sym->ccl );
 	list_free( sym->first );
 	list_free( sym->productions );
 	list_free( sym->all_sym );
@@ -240,7 +240,7 @@ void p_free_symbol( SYMBOL* sym )
 
 	hashtab_free( &( sym->options ), (HASHTAB_CALLBACK)p_free_opt );
 
-	p_free( sym );
+	pfree( sym );
 }
 
 /* -FUNCTION--------------------------------------------------------------------
@@ -269,7 +269,7 @@ PROD* p_create_production( PARSER* p, SYMBOL* lhs )
 	
 	if( p )
 	{
-		if( ( prod = (PROD*)p_malloc( sizeof( PROD ) ) ) )
+		if( ( prod = (PROD*)pmalloc( sizeof( PROD ) ) ) )
 		{
 			memset( prod, 0, sizeof( PROD ) );
 
@@ -279,7 +279,7 @@ PROD* p_create_production( PARSER* p, SYMBOL* lhs )
 			if( !( p->productions = list_push( p->productions, prod ) ) )
 			{
 				OUTOFMEM;
-				p_free( prod );
+				pfree( prod );
 				return (PROD*)NULL;
 			}
 
@@ -299,7 +299,7 @@ PROD* p_create_production( PARSER* p, SYMBOL* lhs )
 				if( !( lhs->productions ) )
 				{
 					OUTOFMEM;
-					p_free( prod );
+					pfree( prod );
 					return (PROD*)NULL;
 				}
 			}
@@ -352,7 +352,7 @@ void p_append_to_production( PROD* p, SYMBOL* sym, uchar* name )
 					( sym->type == SYM_NON_TERMINAL
 						|| sym->type == SYM_REGEX_TERMINAL ) )
 			{
-				if( !( name = p_strdup( sym->name ) ) )
+				if( !( name = pstrdup( sym->name ) ) )
 					OUTOFMEM;
 			}
 		}
@@ -383,7 +383,7 @@ void p_free_production( PROD* prod )
 	
 	/* Real right-hand sides */
 	for( li = prod->rhs_idents; li; li = li->next )
-		p_free( li->pptr );
+		pfree( li->pptr );
 
 	list_free( prod->rhs_idents );
 	list_free( prod->rhs );
@@ -392,16 +392,16 @@ void p_free_production( PROD* prod )
 	
 	/* Semantic right-hand sides */
 	for( li = prod->sem_rhs_idents; li; li = li->next )
-		p_free( li->pptr );
+		pfree( li->pptr );
 
 	list_free( prod->sem_rhs );
 	list_free( prod->sem_rhs_idents );
 
-	p_free( prod->code );
+	pfree( prod->code );
 
 	hashtab_free( &( prod->options ), (HASHTAB_CALLBACK)p_free_opt );
 
-	p_free( prod );
+	pfree( prod );
 }
 
 /* -FUNCTION--------------------------------------------------------------------
@@ -432,7 +432,7 @@ ITEM* p_create_item( STATE* st, PROD* p, LIST* lookahead )
 {
 	ITEM*		i		= (ITEM*)NULL;
 	
-	i = (ITEM*)p_malloc( sizeof( ITEM ) );
+	i = (ITEM*)pmalloc( sizeof( ITEM ) );
 	if( i )
 	{
 		memset( i, 0, sizeof( ITEM ) );
@@ -472,7 +472,7 @@ ITEM* p_create_item( STATE* st, PROD* p, LIST* lookahead )
 void p_free_item( ITEM* it )
 {
 	list_free( it->lookahead );
-	p_free( it );
+	pfree( it );
 }
 
 /* -FUNCTION--------------------------------------------------------------------
@@ -499,7 +499,7 @@ STATE* p_create_state( PARSER* p )
 	
 	if( p )
 	{
-		st = (STATE*)p_malloc( sizeof( STATE ) );
+		st = (STATE*)pmalloc( sizeof( STATE ) );
 		if( st )
 		{
 			memset( st, 0, sizeof( STATE ) );
@@ -552,7 +552,7 @@ void p_free_state( STATE* st )
 	list_free( st->actions );
 	list_free( st->gotos );
 
-	p_free( st );
+	pfree( st );
 }
 
 /* -FUNCTION--------------------------------------------------------------------
@@ -592,7 +592,7 @@ TABCOL* p_create_tabcol( SYMBOL* sym, short action, int idx, ITEM* item )
 {
 	TABCOL*		act		= (TABCOL*)NULL;
 	
-	act = (TABCOL*)p_malloc( sizeof( TABCOL ) );
+	act = (TABCOL*)pmalloc( sizeof( TABCOL ) );
 	if( act )
 	{
 		memset( act, 0, sizeof( TABCOL ) );
@@ -625,7 +625,7 @@ TABCOL* p_create_tabcol( SYMBOL* sym, short action, int idx, ITEM* item )
 ----------------------------------------------------------------------------- */	
 void p_free_tabcol( TABCOL* act )
 {
-	p_free( act );
+	pfree( act );
 }
 
 /* -FUNCTION--------------------------------------------------------------------
@@ -694,7 +694,7 @@ OPT* p_create_opt( HASHTAB* ht, uchar* opt, uchar* def )
 {
 	OPT*		option;
 
-	if( !( option = (OPT*)p_malloc( sizeof( OPT ) ) ) )
+	if( !( option = (OPT*)pmalloc( sizeof( OPT ) ) ) )
 	{
 		OUTOFMEM;
 		return (OPT*)NULL;
@@ -702,15 +702,15 @@ OPT* p_create_opt( HASHTAB* ht, uchar* opt, uchar* def )
 
 	memset( option, 0, sizeof( OPT ) );
 
-	if( !( option->opt = p_strdup( opt ) ) )
+	if( !( option->opt = pstrdup( opt ) ) )
 	{
-		p_free( option );
+		pfree( option );
 
 		OUTOFMEM;
 		return (OPT*)NULL;
 	}
 
-	option->def = p_strdup( def );
+	option->def = pstrdup( def );
 
 	if( ht && !hashtab_insert( ht, option->opt, (void*)option ) )
 	{
@@ -739,10 +739,10 @@ OPT* p_create_opt( HASHTAB* ht, uchar* opt, uchar* def )
 ----------------------------------------------------------------------------- */
 void p_free_opt( OPT* option )
 {
-	p_free( option->opt );
-	p_free( option->def );
+	pfree( option->opt );
+	pfree( option->def );
 
-	p_free( option );
+	pfree( option );
 }
 
 /* -FUNCTION--------------------------------------------------------------------
@@ -765,7 +765,7 @@ PARSER* p_create_parser( void )
 {
 	PARSER*		pptr	= (PARSER*)NULL;
 
-	if( !( pptr = p_malloc( sizeof( PARSER ) ) ) )
+	if( !( pptr = pmalloc( sizeof( PARSER ) ) ) )
 	{
 		OUTOFMEM;
 		return (PARSER*)NULL;
@@ -829,7 +829,7 @@ void p_free_parser( PARSER* parser )
 	{
 		dfa = (pregex_dfa*)list_access( it );
 		pregex_dfa_free( dfa );
-		p_free( dfa );
+		pfree( dfa );
 	}
 
 	list_free( parser->symbols );
@@ -838,26 +838,26 @@ void p_free_parser( PARSER* parser )
 	list_free( parser->vtypes );
 	list_free( parser->kw );
 
-	p_free( parser->p_name );
-	p_free( parser->p_desc );
-	p_free( parser->p_language );
-	p_free( parser->p_copyright );
-	p_free( parser->p_version );
-	p_free( parser->p_prefix );
-	p_free( parser->p_header );
-	p_free( parser->p_footer );
-	p_free( parser->p_pcb );
+	pfree( parser->p_name );
+	pfree( parser->p_desc );
+	pfree( parser->p_language );
+	pfree( parser->p_copyright );
+	pfree( parser->p_version );
+	pfree( parser->p_prefix );
+	pfree( parser->p_header );
+	pfree( parser->p_footer );
+	pfree( parser->p_pcb );
 
-	p_free( parser->p_def_action );
-	p_free( parser->p_def_action_e );
+	pfree( parser->p_def_action );
+	pfree( parser->p_def_action_e );
 	
-	p_free( parser->source );
+	pfree( parser->source );
 
 	hashtab_free( &( parser->options ), (HASHTAB_CALLBACK)p_free_opt );
 
 	xml_free( parser->err_xml );
 
-	p_free( parser );
+	pfree( parser );
 }
 
 /* -FUNCTION--------------------------------------------------------------------
@@ -884,7 +884,7 @@ VTYPE* p_find_vtype( PARSER* p, uchar* name )
 	LIST*	l;
 	uchar*	test_name;
 
-	test_name = p_strdup( name );
+	test_name = pstrdup( name );
 	if( !test_name )
 		OUTOFMEM;
 
@@ -895,12 +895,12 @@ VTYPE* p_find_vtype( PARSER* p, uchar* name )
 		vt = (VTYPE*)(l->pptr);
 		if( !strcmp( vt->int_name, test_name ) )
 		{
-			p_free( test_name );
+			pfree( test_name );
 			return vt;
 		}
 	}
 
-	p_free( test_name );
+	pfree( test_name );
 	return (VTYPE*)NULL;
 }
 
@@ -928,19 +928,19 @@ VTYPE* p_create_vtype( PARSER* p, uchar* name )
 
 	if( !( vt = p_find_vtype( p, name ) ) )
 	{
-		vt = (VTYPE*)p_malloc( sizeof( VTYPE ) );
+		vt = (VTYPE*)pmalloc( sizeof( VTYPE ) );
 		if( !vt )
 			OUTOFMEM;
 
 		vt->id = list_count( p->vtypes );
 		
-		vt->int_name = p_strdup( name );
+		vt->int_name = pstrdup( name );
 		if( !( vt->int_name ) )
 			OUTOFMEM;
 
 		p_str_no_whitespace( vt->int_name );
 
-		vt->real_def = p_strdup( name );
+		vt->real_def = pstrdup( name );
 		if( !( vt->real_def ) )
 			OUTOFMEM;
 
@@ -971,8 +971,8 @@ VTYPE* p_create_vtype( PARSER* p, uchar* name )
 ----------------------------------------------------------------------------- */
 void p_free_vtype( VTYPE* vt )
 {
-	p_free( vt->int_name );
-	p_free( vt->real_def );
-	p_free( vt );
+	pfree( vt->int_name );
+	pfree( vt->real_def );
+	pfree( vt );
 }
 

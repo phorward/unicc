@@ -360,7 +360,7 @@ int main( int argc, char** argv )
 		/* Basename */
 		if( !base_name )
 		{
-			parser->p_basename = mbase_name = p_strdup( pbasename( filename ) );
+			parser->p_basename = mbase_name = pstrdup( pbasename( filename ) );
 			if( ( base_name = strrchr( parser->p_basename, '.' ) ) )
 				*base_name = '\0';
 		}
@@ -484,7 +484,7 @@ int main( int argc, char** argv )
 					/* Code generator */
 					if( !( parser->p_language ) )
 					{
-						parser->p_language = p_strdup( UNICC_DEFAULT_LNG );
+						parser->p_language = pstrdup( UNICC_DEFAULT_LNG );
 						def_lang = TRUE;
 					}
 
@@ -545,7 +545,7 @@ int main( int argc, char** argv )
 		error_count++;
 	}
 
-	p_free( mbase_name );
+	pfree( mbase_name );
 
 	return error_count;
 }

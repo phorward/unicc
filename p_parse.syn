@@ -91,9 +91,9 @@ static void strbuf_append( uchar ch )
 	len = strbuf ? (int)strlen( strbuf ) : 0;
 
 	if( !strbuf )
-		strbuf = (uchar*)p_malloc( ( MALLOC_STEP + 2 ) * sizeof( uchar ) );
+		strbuf = (uchar*)pmalloc( ( MALLOC_STEP + 2 ) * sizeof( uchar ) );
 	else if( len % MALLOC_STEP == 0 )
-		strbuf = (uchar*)p_realloc( (uchar*)strbuf, ( len + MALLOC_STEP + 2 )
+		strbuf = (uchar*)prealloc( (uchar*)strbuf, ( len + MALLOC_STEP + 2 )
 			* sizeof( uchar ) );
 
 	strbuf[len] = ch;
@@ -108,14 +108,14 @@ static void strbuf_prefix( uchar ch )
 	len = strbuf ? (int)strlen( strbuf ) : 0;
 
 	if( !strbuf )
-		strbuf = (uchar*)p_malloc( ( MALLOC_STEP + 2 ) * sizeof( uchar ) );
+		strbuf = (uchar*)pmalloc( ( MALLOC_STEP + 2 ) * sizeof( uchar ) );
 	else if( len % MALLOC_STEP == 0 )
-		strbuf = (uchar*)p_realloc( (uchar*)strbuf, ( len + MALLOC_STEP + 2 )
+		strbuf = (uchar*)prealloc( (uchar*)strbuf, ( len + MALLOC_STEP + 2 )
 			* sizeof( uchar ) );
 
-	tmp = p_strdup( strbuf );
+	tmp = pstrdup( strbuf );
 	sprintf( strbuf, "%c%s%c", ch, tmp, '\0' );
-	p_free( tmp );
+	pfree( tmp );
 }
 
 /* Create a new string */
@@ -191,7 +191,7 @@ fixed_directive: "mode"					mode_type
 				| "model"				mode_type
 				| "language"			string					{	if( parser->p_language )
 																		pfree( parser->p_language );
-																	parser->p_language = p_strdup( strbuf );
+																	parser->p_language = pstrdup( strbuf );
 																}
 				| "character universe"	integer					{	int universe = atoi( strbuf );
 				
@@ -302,26 +302,26 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 				| "right"			symbol_list					{	set_assoc_and_prec( #2.ptr, ASSOC_RIGHT ); 	}
 				| "nonassoc"		symbol_list					{	set_assoc_and_prec( #2.ptr, ASSOC_NOASSOC ); 	}
 				| "parser"			string						{	if( !( parser->p_name ) )
-																		parser->p_name = p_strdup( strbuf );	}
+																		parser->p_name = pstrdup( strbuf );	}
 				| "description"		string						{	if( !( parser->p_desc ) )
-																		parser->p_desc = p_strdup( strbuf );	}
+																		parser->p_desc = pstrdup( strbuf );	}
 				| "copyright"		string						{	if( !( parser->p_copyright ) )
-																		parser->p_copyright = p_strdup( strbuf );
+																		parser->p_copyright = pstrdup( strbuf );
 																}
 				| "version"			string						{	if( !( parser->p_version ) )
-																		parser->p_version= p_strdup( strbuf );	}
+																		parser->p_version= pstrdup( strbuf );	}
 				| "prefix"			string						{	if( !( parser->p_prefix ) )
-																		parser->p_prefix = p_strdup( strbuf );	}
+																		parser->p_prefix = pstrdup( strbuf );	}
 				| "default action"	code						{	if( !( parser->p_def_action ) )
-																			parser->p_def_action = p_strdup( strbuf );
+																			parser->p_def_action = pstrdup( strbuf );
 																}
 				| "default epsilon action"		code			{	if( !( parser->p_def_action_e ) )
-																			parser->p_def_action_e = p_strdup( strbuf );
+																			parser->p_def_action_e = pstrdup( strbuf );
 																}
 				| "case insensitive strings"	boolean			{	parser->p_cis_strings = !(#2.negative);	}
-				| "prologue"					code			{	parser->p_header = p_str_append( 
+				| "prologue"					code			{	parser->p_header = pstr_append_str( 
 																		parser->p_header, strbuf, FALSE );		}
-				| "epilogue"					code			{	parser->p_footer = p_str_append( 
+				| "epilogue"					code			{	parser->p_footer = pstr_append_str( 
 																		parser->p_footer, strbuf, FALSE );		}
 				;
 
@@ -371,14 +371,14 @@ definition:		lhs goal_mark type "->" productions				{
 																				(uchar*)(#3.ptr) );
 																		((SYMBOL*)(#1.ptr))->vtype = vt;
 																		
-																		p_free( #3.ptr );
+																		pfree( #3.ptr );
 																	}
 																}
 				| '@' identifier_copy type regex code_opt		{	SYMBOL* s;
 																	s = p_get_symbol( parser,
 																			#2.str, SYM_REGEX_TERMINAL, TRUE );
 																	
-																	p_free( #2.str );
+																	pfree( #2.str );
 																	
 																	set_nfa_to_symbol( s, #4.nfa.start, #4.nfa.end, greedy );
 																	greedy = TRUE;
@@ -398,7 +398,7 @@ definition:		lhs goal_mark type "->" productions				{
 																		vt = p_create_vtype( parser,
 																				(uchar*)(#3.ptr) );
 																		s->vtype = vt;
-																		p_free( #3.ptr );
+																		pfree( #3.ptr );
 																	}
 
 																	/* re_dbg_print_nfa( s->nfa_def,
@@ -420,12 +420,12 @@ goal_mark:		'$'												{	##.ch = '$'; }
 				;
 				
 productions:	productions '|' rhs code_opt					{	if( *strbuf != '\0' )
-																		((PROD*)(#3.ptr))->code = p_strdup( strbuf );
+																		((PROD*)(#3.ptr))->code = pstrdup( strbuf );
 
 																	##.ptr = list_push( #1.ptr, #3.ptr );
 																}
 				| rhs code_opt									{	if( *strbuf != '\0' )
-																		((PROD*)(#1.ptr))->code = p_strdup( strbuf );
+																		((PROD*)(#1.ptr))->code = pstrdup( strbuf );
 
 																	##.ptr = list_push( (LIST*)NULL, #1.ptr );
 																}
@@ -433,7 +433,7 @@ productions:	productions '|' rhs code_opt					{	if( *strbuf != '\0' )
 
 rhs:			rhs symbol access_name							{	p_append_to_production( #1.ptr, #2.ptr, 
 																		( *strbuf == '\0' ? (uchar*)NULL :
-																			p_strdup( strbuf ) ) );
+																			pstrdup( strbuf ) ) );
 																	##.ptr = #1.ptr;
 																}
 				|												{	##.ptr = p_create_production( parser,
@@ -671,7 +671,7 @@ kw_str:		kw_str '^\"'										{ 	strbuf_append( (uchar)#2.ch ); }
 			|													{ 	reset_strbuf(); }
 			;
 			
-type:		'<' type_str '>'									{	##.ptr = p_strdup( strbuf );	}
+type:		'<' type_str '>'									{	##.ptr = pstrdup( strbuf );	}
 			|													{	##.ptr = (void*)NULL; }
 			;
 	
@@ -781,7 +781,7 @@ int p_parse( PARSER* p, uchar* src )
 		#endif
 		err = parse( s );
 		
-		p_free( strbuf );
+		pfree( strbuf );
 	}
 		
 	return err + error_count;

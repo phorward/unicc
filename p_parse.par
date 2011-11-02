@@ -147,9 +147,9 @@ static void strbuf_append( uchar ch )
 	len = pstrlen( strbuf );
 
 	if( !strbuf )
-		strbuf = (uchar*)p_malloc( ( MALLOC_STEP + 2 ) * sizeof( uchar ) );
+		strbuf = (uchar*)pmalloc( ( MALLOC_STEP + 2 ) * sizeof( uchar ) );
 	else if( len % MALLOC_STEP == 0 )
-		strbuf = (uchar*)p_realloc( (uchar*)strbuf, ( len + MALLOC_STEP + 2 )
+		strbuf = (uchar*)prealloc( (uchar*)strbuf, ( len + MALLOC_STEP + 2 )
 			* sizeof( uchar ) );
 
 	strbuf[len] = ch;
@@ -197,7 +197,6 @@ static void set_nfa_to_symbols( SYMBOL* s,
 		OUTOFMEM;
 
 	nstart->next = start;
-	nstart->operator = '|';
 
 	end->accept = s->id;
 	end->greedy = greedy;
@@ -245,7 +244,7 @@ static void make_semantic_rhs( PROD* p )
 			dup = (uchar*)list_access( l );
 			if( dup )
 			{
-				if( !( dup = p_strdup( dup ) ) )
+				if( !( dup = pstrdup( dup ) ) )
 					OUTOFMEM;
 			}
 				
@@ -302,7 +301,7 @@ fixed_directive		-> "mode"				mode_type
 					| "language"		string
 						[*	
 							if( !( parser->p_language ) )
-								parser->p_language = p_strdup( strbuf );
+								parser->p_language = pstrdup( strbuf );
 							else
 								p_error( parser, ERR_DIRECTIVE_ALREADY_USED,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
@@ -474,7 +473,7 @@ directive_parms		-> "whitespaces" 	symbol_list
 
 					| "default action"	code_opt
 						[*	if( !( parser->p_def_action ) )
-								parser->p_def_action = p_strdup( strbuf );
+								parser->p_def_action = pstrdup( strbuf );
 							else
 								p_error( parser, ERR_DIRECTIVE_ALREADY_USED,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
@@ -484,7 +483,7 @@ directive_parms		-> "whitespaces" 	symbol_list
 
 					| "default epsilon action"		code_opt
 						[*	if( !( parser->p_def_action_e ) )
-								parser->p_def_action_e = p_strdup( strbuf );
+								parser->p_def_action_e = pstrdup( strbuf );
 							else
 								p_error( parser, ERR_DIRECTIVE_ALREADY_USED,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
@@ -502,7 +501,7 @@ directive_parms		-> "whitespaces" 	symbol_list
 										parser->filename, line,
 											"default value type" );
 
-							p_free( @type );
+							pfree( @type );
 						*]
 
 					| "lexeme separation" boolean_opt
@@ -526,14 +525,14 @@ directive_parms		-> "whitespaces" 	symbol_list
 						[*	parser->p_reserve_regex = !@2;		*]
 
 					| "prologue"					code
-						[*	parser->p_header = p_str_append(
+						[*	parser->p_header = pstr_append_str(
 								parser->p_header, strbuf, FALSE );	*]
 
 					| "epilogue"					code
-						[*	parser->p_footer = p_str_append(
+						[*	parser->p_footer = pstr_append_str(
 								parser->p_footer, strbuf, FALSE );	*]
 					| "pcb"							code
-						[*	parser->p_pcb = p_str_append(
+						[*	parser->p_pcb = pstr_append_str(
 								parser->p_pcb, strbuf, FALSE );	*]
 
 					| "option"? line_number @USERDEF:key userparam
@@ -634,7 +633,7 @@ definition			->	lhs:primary
 								vt = p_create_vtype( parser,
 										(uchar*)@type );
 
-								p_free( @type );
+								pfree( @type );
 							}
 
 							/* Connect left-hand sides */
@@ -703,7 +702,7 @@ definition			->	lhs:primary
 										duplicated.
 									*/
 									if( list_next( l ) )
-										s->code = p_strdup( strbuf );
+										s->code = pstrdup( strbuf );
 									else
 										s->code = strbuf;
 
@@ -725,7 +724,7 @@ definition			->	lhs:primary
 									s->vtype = vt;
 								}
 
-								p_free( @type );
+								pfree( @type );
 							}
 
 							/* re_dbg_print_nfa( s->nfa_def,
@@ -820,7 +819,7 @@ rhs<PROD*>			->	rhs symbol access_name
 
 						[*	p_append_to_production( @1, @2,
 								( *strbuf == '\0' ? (uchar*)NULL :
-											p_strdup( strbuf ) ) );
+											pstrdup( strbuf ) ) );
 									@@ = @1;
 						*]
 
@@ -832,7 +831,7 @@ rhs<PROD*>			->	rhs symbol access_name
 
 							p_append_to_production( @@, @1,
 								( *strbuf == '\0' ? (uchar*)NULL :
-									p_strdup( strbuf ) ) );
+									pstrdup( strbuf ) ) );
 						*]
 					;
 
@@ -910,7 +909,7 @@ sym<SYMBOL*>		-> terminal
 										(uchar*)@type );
 								@@->vtype = vt;
 
-								p_free( @type );
+								pfree( @type );
 							}
 							
 							/* Associate the productions */
@@ -1028,8 +1027,6 @@ re_alt<struct @@prefix_nfa>
 							@@.start->next = @1.start;
 							@@.start->next2 = @3.start;
 
-							@@.start->operator = '|';
-
 							@1.end->next = @@.end;
 							@3.end->next = @@.end;
 						*]
@@ -1063,8 +1060,6 @@ re_modifier<struct @@prefix_nfa>
 							@@.end->next2 = @@.start;
 
 							@1.end->next = @@.end;
-
-							@@.start->operator = '*';
 						*]
 
 					| re_factor '+'	
@@ -1075,8 +1070,6 @@ re_modifier<struct @@prefix_nfa>
 							@@.start->next = @1.start;
 							@@.end = @1.end;
 							@@.end->next2 = @@.start;
-
-							@@.start->operator = '+';
 						*]
 
 					| re_factor '?'
@@ -1087,8 +1080,6 @@ re_modifier<struct @@prefix_nfa>
 							@@.start->next = @1.start;
 							@@.start->next2 = @1.end;
 							@@.end = @1.end;
-
-							@@.start->operator = '?';
 						*]
 
 					| re_factor
@@ -1147,9 +1138,6 @@ re_factor<struct @@prefix_nfa>
 
 					[*	@@.start = @2.start;
 						@@.end = @2.end;
-
-						@@.start->op_br = '(';
-						@@.end->cl_br = ')';
 					*]
 				;
 
@@ -1204,7 +1192,7 @@ kw_char			->	!'\\"'
 				;
 
 type<uchar*>	->	'<' type_str '>'
-					[*	@@ = p_strdup( strbuf ); *]
+					[*	@@ = pstrdup( strbuf ); *]
 				|	[*	@@ = (uchar*)NULL; *]
 				;
 
@@ -1253,7 +1241,7 @@ integer			->	integer '0-9'
 code_opt_dup<uchar*>
 				->	code_opt
 					
-					[* 	@@ = p_strdup( @code_opt );
+					[* 	@@ = pstrdup( @code_opt );
 						reset_strbuf();
 					*]
 				;
@@ -1338,7 +1326,7 @@ static void p_parse_error( @@prefix_pcb* pcb )
 	uchar*	cur;
 
 	if( !( vptr = valid =
-			(uchar**)p_malloc( ( @@prefix_act[ pcb->tos->state ][0] + 1 )
+			(uchar**)pmalloc( ( @@prefix_act[ pcb->tos->state ][0] + 1 )
 						* sizeof( uchar* ) ) ) )
 		OUTOFMEM;
 
@@ -1377,7 +1365,7 @@ int p_parse( PARSER* p, uchar* src )
 
 		@@prefix_parse( &pcb );
 		
-		p_free( strbuf );
+		pfree( strbuf );
 	}
 
 	return pcb.error_count + error_count;

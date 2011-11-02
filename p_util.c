@@ -50,7 +50,7 @@ uchar* p_derivation_name( uchar* name, uchar append_char )
 	uchar*		ret;
 	size_t		len;
 
-	ret = (uchar*)p_malloc( ( strlen( name ) + 1 + 1 ) * sizeof( uchar ) );
+	ret = (uchar*)pmalloc( ( strlen( name ) + 1 + 1 ) * sizeof( uchar ) );
 	strcpy( ret, name );
 	
 	len = strlen( ret );
