@@ -125,11 +125,11 @@ void p_build_code_localizations( uchar** str, GENERATOR* g )
 	line = 1;
 	genstr = g->code_localization;
 
-	pregex_comp_init( &preg );
-	pregex_comp_compile( &preg, "\n", 0 );
-	pregex_comp_compile( &preg, "@@line", 1 );
+	pregex_init( &preg );
+	pregex_compile( &preg, "\n", 0 );
+	pregex_compile( &preg, "@@line", 1 );
 
-	pregex_comp_replace( 
+	pregex_replace( 
 
 
 	line = 0;
@@ -197,34 +197,34 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 	PARMS( "def_code", "%s", BOOLEAN_STR( def_code ) );
 	
 	/* Prepare regular expression engine */
-	pregex_comp_init( &replacer, REGEX_MOD_GLOBAL );
+	pregex_init( &replacer, REGEX_MOD_GLOBAL );
 
-	if( pregex_comp_compile( &replacer, "@'([^']|\\')*'", 0 ) != ERR_OK )
+	if( pregex_compile( &replacer, "@'([^']|\\')*'", 0 ) != ERR_OK )
 		RETURN( (uchar*)NULL );
 
-	if( pregex_comp_compile( &replacer, "@\"([^\"]|\\\")*\"", 0 ) != ERR_OK )
+	if( pregex_compile( &replacer, "@\"([^\"]|\\\")*\"", 0 ) != ERR_OK )
 		RETURN( (uchar*)NULL );
 
-	if( pregex_comp_compile( &replacer, "@[A-Za-z_][A-Za-z0-9_]*", 1 )
+	if( pregex_compile( &replacer, "@[A-Za-z_][A-Za-z0-9_]*", 1 )
 			!= ERR_OK )
 		RETURN( (uchar*)NULL );
 
-	if( pregex_comp_compile( &replacer, "@[0-9]+", 2 ) != ERR_OK )
+	if( pregex_compile( &replacer, "@[0-9]+", 2 ) != ERR_OK )
 		RETURN( (uchar*)NULL );
 
-	if( pregex_comp_compile( &replacer, "@@", 3 ) != ERR_OK )
+	if( pregex_compile( &replacer, "@@", 3 ) != ERR_OK )
 		RETURN( (uchar*)NULL );
 		
 	/* 
 	 * Hmm ... this way looks "cooler" for future versions, maybe
 	 * this would be a nice extension: @<command>:<parameters>
 	 */
-	if( pregex_comp_compile( &replacer,
+	if( pregex_compile( &replacer,
 			"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 4 ) != ERR_OK )
 		RETURN( (uchar*)NULL );
 	
 	/* Run regular expression */
-	if( ( result_cnt = pregex_comp_match( &replacer, base,
+	if( ( result_cnt = pregex_match( &replacer, base,
 							REGEX_NO_CALLBACK, &result ) ) < 0 )
 	{
 		MSG( "Error occured" );
@@ -241,7 +241,7 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 	
 	/* Free the regular expression facilities - we have everything we 
 		need from here! */
-	pregex_comp_free( &replacer );
+	pregex_free( &replacer );
 	
 	VARS( "p->sem_rhs", "%p", p->sem_rhs  );
 	/* Ok, perform replacement operations */
@@ -500,26 +500,26 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 	PARMS( "base", "%s", base );
 	
 	/* Prepare regular expression engine */
-	pregex_comp_init( &replacer, REGEX_MOD_GLOBAL | REGEX_MOD_NO_ANCHORS );
+	pregex_init( &replacer, REGEX_MOD_GLOBAL | REGEX_MOD_NO_ANCHORS );
 	
-	if( pregex_comp_compile( &replacer, "@>", 0 )
+	if( pregex_compile( &replacer, "@>", 0 )
 			!= ERR_OK )
 		RETURN( (uchar*)NULL );
 
-	if( pregex_comp_compile( &replacer, "@<", 1 )
+	if( pregex_compile( &replacer, "@<", 1 )
 			!= ERR_OK )
 		RETURN( (uchar*)NULL );
 
-	if( pregex_comp_compile( &replacer, "@@", 2 )
+	if( pregex_compile( &replacer, "@@", 2 )
 			!= ERR_OK )
 		RETURN( (uchar*)NULL );
 		
-	if( pregex_comp_compile( &replacer,
+	if( pregex_compile( &replacer,
 			"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 3 ) != ERR_OK )
 		RETURN( (uchar*)NULL );
 
 	/* Run regular expression */
-	if( ( result_cnt = pregex_comp_match( &replacer, base,
+	if( ( result_cnt = pregex_match( &replacer, base,
 							REGEX_NO_CALLBACK, &result ) ) < 0 )
 	{
 		MSG( "Error occured" );
@@ -536,7 +536,7 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 	
 	/* Free the regular expression facilities - we have everything we 
 		need from here! */
-	pregex_comp_free( &replacer );
+	pregex_free( &replacer );
 	
 	MSG( "Iterating trough result array" );	
 	for( i = 0, last = base; i < result_cnt; i++ )
@@ -1224,7 +1224,7 @@ void p_build_code( PARSER* parser )
 			dfa_accept_row = pstr_append_str( dfa_accept_row,
 				pstr_render( gen->dfa_accept.col,
 					GEN_WILD_PREFIX "accept",
-						p_int_to_str( dfa_st->accept ), TRUE,
+						p_int_to_str( dfa_st->accept.accept ), TRUE,
 					(uchar*)NULL ), TRUE );
 
 			/* Iterate trough all transitions */
@@ -1242,7 +1242,7 @@ void p_build_code( PARSER* parser )
 								GEN_WILD_PREFIX "to",
 									p_int_to_str( c->end ), TRUE,
 								GEN_WILD_PREFIX "goto",
-									p_int_to_str( dfa_st->accept ), TRUE,
+									p_int_to_str( dfa_st->accept.accept ), TRUE,
 								(uchar*)NULL ), TRUE );
 
 					dfa_trans = pstr_append_str( dfa_trans,

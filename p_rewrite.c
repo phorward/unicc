@@ -866,9 +866,9 @@ void p_symbol_order( PARSER* parser )
 				{
 					n_st = (pregex_nfa_st*)list_access( m );
 
-					if( n_st->accept != REGEX_ACCEPT_NONE &&
-							n_st->accept == sym->id )
-						n_st->accept = id;
+					if( n_st->accept.accept != REGEX_ACCEPT_NONE &&
+							n_st->accept.accept == sym->id )
+						n_st->accept.accept = id;
 				}
 
 				/* Re-assign new ID! */
@@ -935,7 +935,7 @@ void p_charsets_to_nfa( PARSER* parser )
 						(uchar*)NULL, REGEX_MOD_NONE ) ) )
 				OUTOFMEM;
 
-			end->accept = sym->id;
+			end->accept.accept = sym->id;
 			/* sym->type = SYM_REGEX_TERMINAL; */
 		}
 	}

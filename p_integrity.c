@@ -105,16 +105,20 @@ BOOLEAN p_undef_or_unused( PARSER* parser )
 static LIST* p_nfa_transition_on_ccl(
 	pregex_nfa* nfa, LIST* res, int* accept, CCL check_with )
 {
-	CCL		i;
-	pchar	ch;
-	LIST*	tr;
-	LIST*	ret_res	= (LIST*)NULL;
+	pregex_accept	acc;
+	CCL				i;
+	pchar			ch;
+	LIST*			tr;
+	LIST*			ret_res	= (LIST*)NULL;
 
 	if( !res )
 		res = list_push( (LIST*)NULL, list_access( nfa->states ) );
+
+	pregex_accept_init( &acc );
 	
-	res = pregex_nfa_epsilon_closure( nfa, res, accept,
-			(BOOLEAN*)NULL, (int*)NULL );
+	res = pregex_nfa_epsilon_closure( nfa, res, &acc );
+
+	*accept = acc.accept;
 
 	for( i = check_with; !ccl_end( i ); i++ )
 	{

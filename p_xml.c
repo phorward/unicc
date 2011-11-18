@@ -168,31 +168,31 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 	PARMS( "def_code", "%s", BOOLEAN_STR( def_code ) );
 	
 	/* Prepare regular expression engine */
-	pregex_comp_init( &replacer, REGEX_MOD_GLOBAL );
+	pregex_init( &replacer, REGEX_MOD_GLOBAL );
 
-	if( pregex_comp_compile( &replacer, "@'([^']|\\')*'", 0 ) != ERR_OK )
+	if( pregex_compile( &replacer, "@'([^']|\\')*'", 0 ) != ERR_OK )
 		VOIDRET;
 
-	if( pregex_comp_compile( &replacer, "@\"([^\"]|\\\")*\"", 0 ) != ERR_OK )
+	if( pregex_compile( &replacer, "@\"([^\"]|\\\")*\"", 0 ) != ERR_OK )
 		VOIDRET;
 
-	if( pregex_comp_compile( &replacer, "@[A-Za-z_][A-Za-z0-9_]*", 1 )
+	if( pregex_compile( &replacer, "@[A-Za-z_][A-Za-z0-9_]*", 1 )
 			!= ERR_OK )
 		VOIDRET;
 
-	if( pregex_comp_compile( &replacer, "@[0-9]+", 2 ) != ERR_OK )
+	if( pregex_compile( &replacer, "@[0-9]+", 2 ) != ERR_OK )
 		VOIDRET;
 
-	if( pregex_comp_compile( &replacer, "@@", 3 ) != ERR_OK )
+	if( pregex_compile( &replacer, "@@", 3 ) != ERR_OK )
 		VOIDRET;
 		
-	if( pregex_comp_compile( &replacer,
+	if( pregex_compile( &replacer,
 			"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 4 ) != ERR_OK )
 		VOIDRET;
 		
 	/* Run regular expression */
-	if( ( result_cnt = pregex_comp_match( &replacer, base,
-							REGEX_NO_CALLBACK, &result ) ) < 0 )
+	if( ( result_cnt = pregex_match( &replacer, base,
+			REGEX_NO_CALLBACK, &result ) ) < 0 )
 	{
 		MSG( "Error occured" );
 		VARS( "result_cnt", "%d", result_cnt );
@@ -209,7 +209,7 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 	
 	/* Free the regular expression facilities - we have everything we 
 		need from here! */
-	pregex_comp_free( &replacer );
+	pregex_free( &replacer );
 	
 	VARS( "p->sem_rhs", "%p", p->sem_rhs  );
 	/* Ok, perform replacement operations */
@@ -458,27 +458,27 @@ static void p_xml_build_scan_action(
 	PARMS( "base", "%s", base );
 	
 	/* Prepare regular expression engine */
-	pregex_comp_init( &replacer, REGEX_MOD_GLOBAL | REGEX_MOD_NO_ANCHORS );
+	pregex_init( &replacer, REGEX_MOD_GLOBAL | REGEX_MOD_NO_ANCHORS );
 	
-	if( pregex_comp_compile( &replacer, "@>", 0 )
+	if( pregex_compile( &replacer, "@>", 0 )
 			!= ERR_OK )
 		VOIDRET;
 
-	if( pregex_comp_compile( &replacer, "@<", 1 )
+	if( pregex_compile( &replacer, "@<", 1 )
 			!= ERR_OK )
 		VOIDRET;
 
-	if( pregex_comp_compile( &replacer, "@@", 2 )
+	if( pregex_compile( &replacer, "@@", 2 )
 			!= ERR_OK )
 		VOIDRET;
 		
-	if( pregex_comp_compile( &replacer,
+	if( pregex_compile( &replacer,
 			"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 3 ) != ERR_OK )
 		VOIDRET;
 		
 	/* Run regular expression */
-	if( ( result_cnt = pregex_comp_match( &replacer, base,
-							REGEX_NO_CALLBACK, &result ) ) < 0 )
+	if( ( result_cnt = pregex_match( &replacer, base,
+			REGEX_NO_CALLBACK, &result ) ) < 0 )
 	{
 		MSG( "Error occured" );
 		VARS( "result_cnt", "%d", result_cnt );
@@ -495,7 +495,7 @@ static void p_xml_build_scan_action(
 	
 	/* Free the regular expression facilities - we have everything we 
 		need from here! */
-	pregex_comp_free( &replacer );
+	pregex_free( &replacer );
 	
 	MSG( "Iterating trough result array" );	
 	for( i = 0, last = base; i < result_cnt; i++ )
@@ -654,8 +654,8 @@ static void p_build_dfa( XML_T parent, pregex_dfa* dfa )
 		if( !( xml_set_int_attr( state, "id", i ) ) )
 				OUTOFMEM;
 
-		if( st->accept > REGEX_ACCEPT_NONE &&
-			!( xml_set_int_attr( state, "accept", st->accept ) ) )
+		if( st->accept.accept > REGEX_ACCEPT_NONE &&
+			!( xml_set_int_attr( state, "accept", st->accept.accept ) ) )
 				OUTOFMEM;
 
 		if( st->def_trans )

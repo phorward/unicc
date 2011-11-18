@@ -198,8 +198,8 @@ static void set_nfa_to_symbols( SYMBOL* s,
 
 	nstart->next = start;
 
-	end->accept = s->id;
-	end->greedy = greedy;
+	end->accept.accept = s->id;
+	end->accept.greedy = greedy;
 	
 	if( !( s->nfa.states = list_union( s->nfa.states, nfa_m.states ) ) )
 		OUTOFMEM;

@@ -252,7 +252,7 @@ pregex_dfa* p_find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
 			dfa_st[0] = (pregex_dfa_st*)list_access( m );
 			dfa_st[1] = (pregex_dfa_st*)list_access( n );
 
-			if( !( dfa_st[0]->accept == dfa_st[1]->accept
+			if( !( dfa_st[0]->accept.accept == dfa_st[1]->accept.accept
 					&& list_count( dfa_st[0]->trans )
 							== list_count( dfa_st[1]->trans ) ) )
 			{
