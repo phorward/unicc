@@ -13,6 +13,17 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
 
 /*
+	A note on history:
+	Until UniCC v0.24, the keyword-only feature has been extended to
+	entrie regular expressions. Later on in UniCC 0.27, the term
+	"keyword" was renamed to "string", and the classification of the
+	various terminals was not that strong anymore than before. So this
+	is the reason why everything in here is still called "keyword",
+	altought it means any terminal in general. All terminals are now
+	put into one lexical analysis part, since UniCC 0.27.
+*/
+
+/*
  * Includes
  */
 #include "p_global.h"
@@ -47,16 +58,6 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
 void p_keywords_to_dfa( PARSER* parser )
 {
-/*
-	A note on history:
-	Until UniCC v0.24, the keyword-only feature has been extended to
-	entrie regular expressions. Later on in UniCC 0.27, the term
-	"keyword" was renamed to "string", and the classification of the
-	various terminals was not that strong anymore than before. So this
-	is the reason why everything in here is still called "keyword",
-	altought it means any terminal in general. All terminals are now
-	put into one lexical analysis part, since UniCC 0.27.
-*/
 	pregex_nfa	nfa;
 	pregex_dfa	dfa;
 	pregex_dfa*	ex_dfa;
@@ -203,7 +204,7 @@ void p_single_lexer( PARSER* parser )
 					the same states than a one already defined in the parser.
 					
 	Parameters:		PARSER*		parser				The parser information
-													structure
+													structure.
 					pregex_dfa*	ndfa				Pointer to DFA that is
 													compared with the other
 													machine already integrated
@@ -295,24 +296,25 @@ pregex_dfa* p_find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
 	
 	Author:			Jan Max Meyer
 	
-	Usage:			Merges one NFA state machine with another one; States are
-					copied to the new state machine.
+	Usage:			Convers a symbol's regular expression pattern defininition
+					into a NFA state machine.
 					
-	Parameters:		PARSER*		parser				Pointer to parser informa-
-													tion structure
+	Parameters:		PARSER*		parser				Pointer to parser
+													information structure.
 					pregex_nfa*	nfa					Pointer to NFA structure,
 													that is extended by this
 													function.
 					SYMBOL*		sym					Symbol which is associated
-													with this NFA
+													with this NFA.
 	
-	Returns:		
+	Returns:		void
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
 void p_symbol_to_nfa( PARSER* parser, pregex_nfa* nfa, SYMBOL* sym )
 {
+	pregex_accept	acc;
 	pregex_nfa		tmp_nfa;
 	pregex_nfa_st*	nfa_ptr;
 	pregex_nfa_st*	nfa_cpy;
@@ -333,77 +335,13 @@ void p_symbol_to_nfa( PARSER* parser, pregex_nfa* nfa, SYMBOL* sym )
 	TODO: Maybe later, check terminal types here according to config
 	*/
 
-	memset( &tmp_nfa, 0, sizeof( pregex_nfa ) );
-
-	MSG( "Copying pointers" );
-	/* First of all, copy all pointers */
-	LISTFOR( sym->nfa.states, l )
+	if( sym->ptn )
 	{
-		nfa_ptr = (pregex_nfa_st*)list_access( l );
+		pregex_accept_init( &acc );
+		acc.accept = sym->id;
 
-		if( !( nfa_cpy = pregex_nfa_create_state(
-				&tmp_nfa, (uchar*)NULL, REGEX_MOD_NONE ) ) )
-			OUTOFMEM;
-		memcpy( nfa_cpy, nfa_ptr, sizeof( pregex_nfa_st ) );
-
-		if( nfa_ptr->ccl )
-		{
-			if( !( nfa_cpy->ccl = ccl_dup( nfa_ptr->ccl ) ) )
-				OUTOFMEM;
-		}
-
-		if( nfa_ptr->next )
-		{
-			VARS( "(1) nfa_cpy->next", "%p", nfa_cpy->next );
-			nfa_cpy->next = (pregex_nfa_st*)list_find(
-								sym->nfa.states, (void*)nfa_ptr->next );
-			VARS( "(2) nfa_cpy->next", "%p", nfa_cpy->next );
-		}
-
-		if( nfa_ptr->next2 )
-		{
-			VARS( "(1) nfa_cpy->next2", "%p", nfa_cpy->next2 );
-			nfa_cpy->next2 = (pregex_nfa_st*)list_find(
-								sym->nfa.states, (void*)nfa_ptr->next2 );
-			VARS( "(2) nfa_cpy->next2", "%p", nfa_cpy->next2 );
-		}
+		pregex_ptn_to_nfa( nfa, sym->ptn, &acc );
 	}
-
-	/* Then, restore the pointers */
-	MSG( "Restoring pointers" );
-	LISTFOR( tmp_nfa.states, l )
-	{
-		nfa_ptr = (pregex_nfa_st*)list_access( l );
-		
-		if( nfa_ptr->next )
-			nfa_ptr->next = (pregex_nfa_st*)list_getptr(
-								tmp_nfa.states, (int)nfa_ptr->next );
-		if( nfa_ptr->next2 )
-			nfa_ptr->next2 = (pregex_nfa_st*)list_getptr(
-								tmp_nfa.states, (int)nfa_ptr->next2 );
-	}
-
-	/* Extend NFA, if not existing yet */
-	if( !list_count( nfa->states ) )
-	{
-		MSG( "Copying temporary nfa into nfa" );
-		memcpy( nfa, &tmp_nfa, sizeof( pregex_nfa ) );
-	}
-	else
-	{
-		MSG( "Extendind existing nfa with temporary nfa" );
-		if( !( nfa->states = list_union( nfa->states, tmp_nfa.states ) ) )
-			OUTOFMEM;
-
-		nfa_ptr = (pregex_nfa_st*)list_access( nfa->states );
-		while( nfa_ptr->next2 )
-			nfa_ptr = nfa_ptr->next2;
-
-		nfa_ptr->next2 = (pregex_nfa_st*)list_access( tmp_nfa.states );
-		list_free( tmp_nfa.states );
-	}
-	
-	/* pregex_nfa_print( &( sym->nfa ) ); */
 
 	VOIDRET;
 }

@@ -218,25 +218,26 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 	
 	Usage:			p_frees a symbol structure and all its members.
 					
-	Parameters:		SYMBOL*			sym				Symbol to be p_freed.
+	Parameters:		SYMBOL*			sym				Symbol to be freed.
 	
 	Returns:		void
 
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
-	11.11.2009	Jan Max Meyer	Free charclass
-	16.11.2009	Jan Max Meyer	Free NFA from new regex lib :)
 ----------------------------------------------------------------------------- */
 void p_free_symbol( SYMBOL* sym )
 {
 	pfree( sym->code );
 	pfree( sym->name );
-	pfree( sym->ccl );
+
+	if( sym->ptn )
+		pregex_ptn_free( sym->ptn );
+	else
+		ccl_free( sym->ccl );
+	
 	list_free( sym->first );
 	list_free( sym->productions );
 	list_free( sym->all_sym );
-
-	pregex_nfa_free( &( sym->nfa ) );
 
 	hashtab_free( &( sym->options ), (HASHTAB_CALLBACK)p_free_opt );
 
@@ -370,7 +371,7 @@ void p_append_to_production( PROD* p, SYMBOL* sym, uchar* name )
 	
 	Usage:			p_frees a production structure and all its members.
 					
-	Parameters:		PROD*			prod			Production to be p_freed.
+	Parameters:		PROD*			prod			Production to be freed.
 	
 	Returns:		void
 

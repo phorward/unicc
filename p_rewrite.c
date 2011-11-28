@@ -418,125 +418,6 @@ void p_unique_charsets( PARSER* parser )
 		*/
 	}
 	while( old_prod_cnt != list_count( parser->productions ) );
-	
-	
-#if 0			
-			MSG( "Revision of base" );
-			VARS( "ccl_size( inter )", "%d", ccl_size( inter ) );
-			
-			/* Rewrite base */
-			if( ccl_size( inter ) )
-			{
-				MSG( "Rewriting character class" );
-				VARS( "sym->name", "%s", sym->name );
-
-				base = ccl_diff( sym->ccl, inter );
-
-				fprintf( stderr, "base: %d\n", ccl_size( base ) );
-				ccl_print( stderr, base, 1 );
-				fprintf( stderr, "inter: %d\n", ccl_size( inter ) );
-				ccl_print( stderr, inter, 1 );
-				fprintf( stderr, "sym->ccl: %d\n", ccl_size( sym->ccl ) );
-				ccl_print( stderr, sym->ccl, 1 );
-
-				/* Create first production from 'base' */
-				VARS( "ccl_size( base )", "%d", ccl_size( base ) );
-				if( ccl_size( base ) )
-				{
-					/* Re-configure symbol to be a non-terminal, append
-						P_REWRITTEN_CCL to its name */
-					ccl_free( sym->ccl );
-					sym->name = pstr_append_str( sym->name,
-									P_REWRITTEN_CCL, FALSE );
-					sym->type = SYM_NON_TERMINAL;
-					sym->first = list_free( sym->first );
-				
-					VARS( "sym->name", "%s", sym->name );
-
-					tsym = p_get_symbol( parser, (void*)base,
-							SYM_CCL_TERMINAL, TRUE );
-					tsym->used = TRUE;
-					tsym->defined = TRUE;
-				
-					VARS( "sym", "%p", sym );
-					VARS( "tsym", "%p", tsym );
-				
-					MSG( "Appending tsym to sym" );
-					p = p_create_production( parser, sym );
-					p_append_to_production( p, tsym, (uchar*)NULL );
-					
-				
-					/* Create second production from 'intersect' */
-					tsym = p_get_symbol( parser, (void*)intersect,
-							SYM_CCL_TERMINAL, TRUE );
-					tsym->used = TRUE;
-					tsym->defined = TRUE;
-		
-					VARS( "sym", "%p", sym );
-					VARS( "tsym", "%p", tsym );
-		
-					MSG( "Appending tsym to sym" );
-					p = p_create_production( parser, sym );
-					p_append_to_production( p, tsym, (uchar*)NULL );
-					
-					tsym = sym;
-				}
-				
-				ccl_free( base );
-
-				
-				/* Now, create productions to intersecting symbols */
-				LISTFOR( parser->symbols, m )
-				{
-					tsym = (SYMBOL*)list_access( m );
-					if( tsym->type != SYM_CCL_TERMINAL )
-						continue;
-
-					tinter = ccl_intersect( tsym->ccl, inter );
-					VARS( "ccl_size( tinter )", "%d", ccl_size( tinter ) );
-					if( ccl_size( tinter ) )
-					{
-						MSG( "Having intersection with tsym - revision!" );
-						VARS( "tsym->name", "%s", tsym->name );
-
-						csym = p_get_symbol( parser, (void*)tinter,
-									SYM_CCL_TERMINAL, TRUE );
-
-						csym->used = TRUE;
-						csym->defined = TRUE;
-						
-						
-						p = p_create_production( parser, sym );
-						p_append_to_production( p, tsym, (uchar*)NULL );
-
-						tmp = ccl_diff( inter, tinter );
-						ccl_free( inter );
-						inter = tmp;
-					}
-					else
-						ccl_free( tinter );
-				}
-
-				if( ccl_size( inter ) )
-				{
-					MSG( "Obtaining symbol" );
-					tsym = p_get_symbol( parser, (void*)inter,
-							SYM_CCL_TERMINAL, TRUE );
-					tsym->used = TRUE;
-					tsym->defined = TRUE;
-
-					p = p_create_production( parser, sym );
-					p_append_to_production( p, tsym, (uchar*)NULL );
-				}
-			}
-			else
-			{
-				MSG( "No revision required - no intersections!" );
-			}
-			
-			ccl_free( inter );
-		}
-#endif
 
 	VOIDRET;
 }
@@ -860,17 +741,6 @@ void p_symbol_order( PARSER* parser )
 				if( !( new_order = list_push( new_order, (void*)sym ) ) )
 					OUTOFMEM;
 
-				/* In case of an NFA-based token, the accepting-IDs
-					of the constructed machine need to be updated */
-				LISTFOR( sym->nfa.states, m )
-				{
-					n_st = (pregex_nfa_st*)list_access( m );
-
-					if( n_st->accept.accept != REGEX_ACCEPT_NONE &&
-							n_st->accept.accept == sym->id )
-						n_st->accept.accept = id;
-				}
-
 				/* Re-assign new ID! */
 				sym->id = id++;
 			}
@@ -883,14 +753,14 @@ void p_symbol_order( PARSER* parser )
 }
 
 /* -FUNCTION--------------------------------------------------------------------
-	Function:		p_charclass_to_nfa()
+	Function:		p_charsets_to_ptn()
 	
 	Author:			Jan Max Meyer
 	
-	Usage:			Turns character-classes into NFAs, to be later integrated
-					into lexical analyzers. This step can only be done after
-					all grammar-related revisions are done, and no more
-					character classes are added.
+	Usage:			Turns character-classes into patterns, to be later
+					integrated into lexical analyzers. This step can only be
+					done after all grammar-related revisions had been finished,
+					and no more character classes are added.
 
 	Parameters:		PARSER*		parser			Pointer to the parser
 												information structure.
@@ -900,7 +770,7 @@ void p_symbol_order( PARSER* parser )
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-void p_charsets_to_nfa( PARSER* parser )
+void p_charsets_to_ptn( PARSER* parser )
 {
 	SYMBOL*			sym;
 	LIST*			l;
@@ -908,7 +778,7 @@ void p_charsets_to_nfa( PARSER* parser )
 	pregex_nfa_st*	begin;
 	pregex_nfa_st*	end;
 
-	PROC( "p_charsets_to_nfa" );
+	PROC( "p_charsets_to_ptn" );
 	PARMS( "parser", "%p", parser );
 
 	LISTFOR( parser->symbols, l )
@@ -916,28 +786,7 @@ void p_charsets_to_nfa( PARSER* parser )
 		sym = (SYMBOL*)list_access( l );
 
 		if( sym->type == SYM_CCL_TERMINAL )
-		{
-			/*
-				Make a very tiny NFA with simply one transition
-			*/
-			if( !( begin = pregex_nfa_create_state( &( sym->nfa ),
-						(uchar*)NULL, REGEX_MOD_NONE ) ) )
-				OUTOFMEM;
-				
-			if( !( begin = begin->next = pregex_nfa_create_state( &( sym->nfa ),
-						(uchar*)NULL, REGEX_MOD_NONE ) ) )
-				OUTOFMEM;
-
-			if( !( begin->ccl = ccl_dup( sym->ccl ) ) )
-				OUTOFMEM;
-
-			if( !( begin->next = end = pregex_nfa_create_state( &( sym->nfa ),
-						(uchar*)NULL, REGEX_MOD_NONE ) ) )
-				OUTOFMEM;
-
-			end->accept.accept = sym->id;
-			/* sym->type = SYM_REGEX_TERMINAL; */
-		}
+			sym->ptn = pregex_ptn_create_char( sym->ccl );
 	}
 
 	VOIDRET;

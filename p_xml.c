@@ -714,7 +714,9 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 	LIST*			l;
 	SYMBOL*			sym;
 	uchar*			tmp;
+	pregex_nfa		tmp_nfa;
 	pregex_dfa		tmp_dfa;
+	pregex_accept	acc;
 
 	XML_T			sym_tab;
 	XML_T			symbol;
@@ -773,18 +775,23 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 */
 
 						/* 
-							Compile the NFA into a minimized DFA and
-							output it as XML lexer structure
+							Convert regular pattern into DFA state machine
 						*/
-						pregex_dfa_from_nfa( &tmp_dfa, &( sym->nfa ) );
+						memset( &tmp_nfa, 0, sizeof( pregex_nfa ) );
+						pregex_accept_init( &acc );
+						acc.accept = sym->id;
+						
+						pregex_ptn_to_nfa( &tmp_nfa, sym->ptn, &acc );
+						
+						pregex_dfa_from_nfa( &tmp_dfa, &tmp_nfa );
 						pregex_dfa_minimize( &tmp_dfa );
 
 						if( !( lex = xml_add_child( symbol, "dfa", 0 ) ) )
 							OUTOFMEM;
 
 						p_build_dfa( lex, &tmp_dfa );
+						pregex_nfa_free( &tmp_nfa );
 						pregex_dfa_free( &tmp_dfa );
-
 					}
 					break;
 				case SYM_SYSTEM_TERMINAL:

@@ -335,23 +335,24 @@ static BOOLEAN p_nfa_matches_parser(
 ----------------------------------------------------------------------------- */
 BOOLEAN p_regex_anomalies( PARSER* parser )
 {
-	STATE*		st;
-	LIST*		l;
-	LIST*		m;
-	LIST*		n;
-	LIST*		o;
-	LIST*		q;
-	PROD*		p;
-	SYMBOL*		lhs;
-	SYMBOL*		sym;
-	TABCOL*		col;
-	TABCOL*		ccol;
-	int			cnt;
-	BOOLEAN		found;
+	STATE*			st;
+	LIST*			l;
+	LIST*			m;
+	LIST*			n;
+	LIST*			o;
+	LIST*			q;
+	PROD*			p;
+	SYMBOL*			lhs;
+	SYMBOL*			sym;
+	TABCOL*			col;
+	TABCOL*			ccol;
+	int				cnt;
+	BOOLEAN			found;
 
-	LIST*		res			= (LIST*)NULL;
-	pregex_nfa*	nfa;
-	int			accept;
+	LIST*			res			= (LIST*)NULL;
+	pregex_nfa		nfa;
+	pregex_accept	acc;
+	int				accept;
 
 	/*
 		For every keyword, try to find a character class beginning with the
@@ -387,7 +388,14 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 						col->derived_from ) >= 0 )
 					continue;
 
-				nfa = &( col->symbol->nfa );
+				/*
+					Generate NFA from pattern
+				*/
+				memset( &nfa, 0, sizeof( pregex_nfa ) );
+				pregex_accept_init( &acc );
+				acc.accept = col->symbol->id;
+
+				pregex_ptn_to_nfa( &nfa, col->symbol->ptn, &acc );
 
 				/*
 					p_nfa_matches_parser() can either be called here;
@@ -413,7 +421,7 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 							one reduce, but if there are more, output a warning!
 						*/
 						if( ( res = p_nfa_transition_on_ccl(
-									nfa, (LIST*)NULL, &accept,
+									&nfa, (LIST*)NULL, &accept,
 										ccol->symbol->ccl ) ) )
 						{
 							/*
@@ -422,7 +430,7 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 							p_dump_item_set( stderr, (char*)NULL, st->epsilon );
 							getchar();
 							*/
-							if( p_nfa_matches_parser( parser, nfa, res,
+							if( p_nfa_matches_parser( parser, &nfa, res,
 									st->state_id ) && cnt > 1 )
 							{
 								/*
@@ -486,6 +494,8 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 						}
 					}
 				}
+
+				pregex_nfa_free( &nfa );
 			}
 		}
 	} /* This is stupid... */

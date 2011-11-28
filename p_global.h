@@ -22,7 +22,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
  * Includes
  */
 
-/* Standard Includes */
+/* Including the Phorward Foundation Library */
 #include <phorward.h>
 
 #undef uchar
@@ -142,7 +142,7 @@ struct _symbol
 									primary symbol.
 								*/
 
-	pregex_nfa	nfa;			/* Regular expression-based terminal */
+	pregex_ptn*	ptn;			/* Regular expression pattern */
 
 	BOOLEAN		fixated;		/* Flags, if fixated symbols
 									(do always shift!) */
@@ -290,7 +290,7 @@ struct _parser
 	LIST*		kw;				/* Keyword recognition machines */
 	LIST*		vtypes;			/* Value stack types */
 
-	short		p_mode;		/* Parser model */
+	short		p_mode;			/* Parser model */
 	uchar*		p_name;			/* Parser name */
 	uchar*		p_desc;			/* Parser description */
 	uchar*		p_language;		/* Parser target programming language */

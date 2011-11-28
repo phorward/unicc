@@ -82,7 +82,7 @@ void p_inherit_fixiations( PARSER* parser );
 void p_inherit_vtypes( PARSER* parser );
 void p_setup_single_goal( PARSER* parser );
 void p_symbol_order( PARSER* parser );
-void p_charsets_to_nfa( PARSER* parser );
+void p_charsets_to_ptn( PARSER* parser );
 
 /* p_virtual.c */
 SYMBOL* p_positive_closure( PARSER* parser, SYMBOL* base );

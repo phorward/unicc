@@ -70,12 +70,6 @@ of the Artistic License, version 2. Please see LICENSE for more information.
  * Global variables
  */
  
-struct @@prefix_nfa
-{
-	pregex_nfa_st*	start;
-	pregex_nfa_st*	end;
-};
-
 struct @@prefix_rhs_item
 {
 	SYMBOL*	sym;
@@ -107,7 +101,6 @@ extern int	error_count;
 
 uchar*		strbuf			= (uchar*)NULL;
 uchar*		regex			= (uchar*)NULL;
-pregex_nfa	nfa_m;
 
 /*
  * Functions
@@ -187,29 +180,6 @@ static void set_assoc_and_prec( LIST* symbols, int assoc )
 }
 
 
-static void set_nfa_to_symbols( SYMBOL* s,
-	pregex_nfa_st* start, pregex_nfa_st* end, BOOLEAN greedy )
-{
-	pregex_nfa_st*	nstart;
-	
-	if( !( nstart = pregex_nfa_create_state(
-			&( s->nfa ), (uchar*)NULL, REGEX_MOD_NONE ) ) )
-		OUTOFMEM;
-
-	nstart->next = start;
-
-	end->accept.accept = s->id;
-	end->accept.greedy = greedy;
-	
-	if( !( s->nfa.states = list_union( s->nfa.states, nfa_m.states ) ) )
-		OUTOFMEM;
-		
-	s->greedy = greedy;
-		
-	list_free( nfa_m.states );
-	memset( &nfa_m, 0, sizeof( pregex_nfa ) );
-}
-
 static void make_semantic_rhs( PROD* p )
 {
 	int		i;
@@ -279,7 +249,6 @@ static OPT* set_option( HASHTAB* ht, uchar* key, uchar* val, int line )
 		OUTOFMEM;
 	*/
 }
-
 
 static void p_parse_error();
 
@@ -682,9 +651,10 @@ definition			->	lhs:primary
 							VTYPE*	vt;
 							
 							primary = (SYMBOL*)list_access( @alt_regex_sym );
-							set_nfa_to_symbols( primary, @4.start, @4.end,
-													greedy );
-													
+
+							primary->ptn = @4;
+							primary->greedy = greedy;
+							
 							greedy = TRUE;
 
 							/* Attach code */
@@ -962,13 +932,8 @@ terminal<SYMBOL*>	->	ccl
 							@@->defined = TRUE;
 							@@->keyword = TRUE;
 							
-							if( pregex_nfa_from_string(
-								&( @@->nfa ), strbuf,
-									parser->p_cis_strings ?
-										REGEX_MOD_INSENSITIVE :
-											REGEX_MOD_NONE, @@->id )
-										!= ERR_OK )
-									OUTOFMEM;
+							@@->ptn = pregex_ptn_create_string(
+											strbuf, REGEX_MOD_NONE );
 
 							if( @@->line < 0 )
 								@@->line = line;
@@ -1008,136 +973,85 @@ access_name			->	':' identifier
 					;
 
 /* Regular Expression parser and NFA generator */
-regex<struct @@prefix_nfa>
-
-					->	re_alt
+regex<pregex_ptn*>	->	re_alt
 					;
 
-re_alt<struct @@prefix_nfa>
+re_alt<pregex_ptn*>	->	re_alt '|' re_expr	
 
-					->	re_alt '|' re_expr	
-
-						[*	@@.start = pregex_nfa_create_state
-									( &nfa_m, (uchar*)NULL,
-										REGEX_MOD_NONE );
-							@@.end = pregex_nfa_create_state
-									( &nfa_m, (uchar*)NULL,
-										REGEX_MOD_NONE );
-
-							@@.start->next = @1.start;
-							@@.start->next2 = @3.start;
-
-							@1.end->next = @@.end;
-							@3.end->next = @@.end;
+						[*	@@ = pregex_ptn_create_alt( @1, @3 );
 						*]
 
 					| re_expr
 
 					;
 
-re_expr<struct @@prefix_nfa>
+re_expr<pregex_ptn*>
 
 					->	re_expr re_modifier
 
-						[*	@@.start = @1.start;
-							@@.end = @2.end;
-							@1.end->next = @2.start;
+						[*
+							@@ = pregex_ptn_create_seq( @1, @2 );
 						*]
 
 					| re_modifier
 
 					;
 
-re_modifier<struct @@prefix_nfa>	
+re_modifier<pregex_ptn*>	
 					->	re_factor '*'
 					
-						[*	@@.start = pregex_nfa_create_state(
-								&nfa_m, (uchar*)NULL, REGEX_MOD_NONE );
-							@@.end = @1.end;
-
-							@@.start->next = @1.start;
-							@@.start->next2 = @@.end;
-							@@.end->next2 = @@.start;
-
-							@1.end->next = @@.end;
+						[*
+							@@ = pregex_ptn_create_kle( @1 );
 						*]
 
 					| re_factor '+'	
 
-						[*	@@.start = pregex_nfa_create_state(
-								&nfa_m, (uchar*)NULL, REGEX_MOD_NONE );
-
-							@@.start->next = @1.start;
-							@@.end = @1.end;
-							@@.end->next2 = @@.start;
+						[*
+							@@ = pregex_ptn_create_pos( @1 );
 						*]
 
 					| re_factor '?'
 					
-						[*	@@.start = pregex_nfa_create_state(
-								&nfa_m, (uchar*)NULL, REGEX_MOD_NONE );
-
-							@@.start->next = @1.start;
-							@@.start->next2 = @1.end;
-							@@.end = @1.end;
+						[*
+							@@ = pregex_ptn_create_opt( @1 );
 						*]
 
 					| re_factor
 				;
 
-re_factor<struct @@prefix_nfa>		
+re_factor<pregex_ptn*>		
 				->	ccl
 				
-					[*	@@.start = pregex_nfa_create_state(
-									&nfa_m, strbuf, REGEX_MOD_NONE );
-							@@.end = @@.start->next
-								= pregex_nfa_create_state(
-									&nfa_m, (uchar*)NULL, REGEX_MOD_NONE );
+					[*
+						CCL		ccl;
 
-							if( @1 )
-								ccl_negate( @@.start->ccl );
+						ccl = ccl_create( strbuf );
+						if( @1 )
+							ccl = ccl_negate( ccl );
+
+						@@ = pregex_ptn_create_char( ccl );
 					*]
 
 				| kw
 				
-					[*		uchar*	ch;
-							
-							if( *strbuf )
-							{
-								@@.end = @@.start =
-									pregex_nfa_create_state(
-										&nfa_m, (uchar*)NULL, REGEX_MOD_NONE );
-
-								for( ch = strbuf; *ch; ch += u8_seqlen( ch ) )
-								{
-									@@.end->ccl =
-										ccl_addrange( (CCL)NULL,
-											u8_char( ch ), u8_char( ch ) );
-
-									@@.end = @@.end->next =
-									pregex_nfa_create_state(
-										&nfa_m, (uchar*)NULL, REGEX_MOD_NONE );
-								}
-							}
+					[*
+						@@ = pregex_ptn_create_string(
+									strbuf, REGEX_MOD_NONE );
 					*]
 
 				| '.'
 					
-					[*	@@.start = pregex_nfa_create_state(
-							&( nfa_m ), (uchar*)NULL, REGEX_MOD_NONE );
-						@@.start->ccl = ccl_addrange( (CCL)NULL,
-							CCL_MIN, CCL_MAX - 1 );	
-
-						@@.end = @@.start->next = pregex_nfa_create_state(
-							&( nfa_m ), (uchar*)NULL, REGEX_MOD_NONE );
-							
+					[*
 						greedy = FALSE;
+
+						@@ = pregex_ptn_create_char( ccl_addrange(
+									(CCL)NULL, CCL_MIN, CCL_MAX - 1 ) );
 					*]
 
 				| '(' regex ')'
 
-					[*	@@.start = @2.start;
-						@@.end = @2.end;
+					[*
+						@@ = pregex_ptn_create_sub( @2 );
 					*]
 				;
 

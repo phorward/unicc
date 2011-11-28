@@ -38,17 +38,21 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 
 union _stack_val
 {
-	uchar*	str;
-	uchar	ch;
-	int		num;
-	void*	ptr;
-	BOOLEAN	negative;
-	
+	uchar*			str;
+	uchar			ch;
+	int				num;
+	void*			ptr;
+	BOOLEAN			negative;
+
+	/*
 	struct
 	{
 		pregex_nfa_st*	start;
 		pregex_nfa_st*	end;
 	} nfa;
+	*/
+
+	pregex_ptn*		ptn;
 };
 
 #define PDEBUG 0
@@ -77,8 +81,6 @@ BOOLEAN greedy		= TRUE;
 extern int	error_count;
 
 uchar*		strbuf	= (uchar*)NULL;
-pregex_nfa	nfa_x;
-
 
 /*
  * Functions
@@ -144,28 +146,6 @@ static void set_assoc_and_prec( LIST* symbols, int assoc )
 	
 	list_free( symbols );
 	prec_cnt++;
-}
-
-static void set_nfa_to_symbol( SYMBOL* s,
-	pregex_nfa_st* start, pregex_nfa_st* end, BOOLEAN greedy )
-{
-	pregex_nfa_st*	nstart;
-	
-	if( !( nstart = pregex_nfa_create_state(
-			&( s->nfa ), (uchar*)NULL, REGEX_MOD_NONE ) ) )
-		OUTOFMEM;
-
-	nstart->next = start;
-	end->accept.accept = s->id;
-	end->accept.greedy = greedy;
-	
-	if( !( s->nfa.states = list_union( s->nfa.states, nfa_x.states ) ) )
-		OUTOFMEM;
-		
-	s->greedy = greedy;
-		
-	list_free( nfa_x.states );
-	memset( &nfa_x, 0, sizeof( pregex_nfa ) );
 }
 
 /*
@@ -379,8 +359,9 @@ definition:		lhs goal_mark type "->" productions				{
 																			#2.str, SYM_REGEX_TERMINAL, TRUE );
 																	
 																	pfree( #2.str );
-																	
-																	set_nfa_to_symbol( s, #4.nfa.start, #4.nfa.end, greedy );
+
+																	s->greedy = greedy;
+																	s->ptn = #4.ptn;
 																	greedy = TRUE;
 																	
 																	/* Attach code */
@@ -511,11 +492,8 @@ terminal:		ccl												{ 	SYMBOL* s;
 																	s->defined = TRUE;
 																	s->keyword = TRUE;
 																	
-																	if( pregex_nfa_from_string(
-																		&( s->nfa ), strbuf,
-																			REGEX_MOD_NONE, s->id )
-																				!= ERR_OK )
-																		OUTOFMEM;
+																	s->ptn = pregex_ptn_create_string(
+																				strbuf, REGEX_MOD_NONE );
 																	
 																	##.ptr = s;
 																}
@@ -550,100 +528,81 @@ access_name:	':' identifier
 regex:			re_alt
 				;
 
-re_alt:			re_alt '|' re_expr								{	
-																	##.nfa.start = pregex_nfa_create_state
-																			( &nfa_x, (uchar*)NULL, REGEX_MOD_NONE );
-																	##.nfa.end = pregex_nfa_create_state
-																			( &nfa_x, (uchar*)NULL, REGEX_MOD_NONE );
-																	
-																	##.nfa.start->next = #1.nfa.start;
-																	##.nfa.start->next2 = #3.nfa.start;
-																	
-																	#1.nfa.end->next = ##.nfa.end;
-																	#3.nfa.end->next = ##.nfa.end;
-																}
+re_alt:			re_alt '|' re_expr
+
+					{	
+						##.ptn = pregex_ptn_create_alt(
+									#1.ptn, #3.ptn, (pregex_ptn*)NULL );
+					}
+
 				| re_expr
 				;
 
-re_expr:		re_expr re_modifier								{	##.nfa.start = #1.nfa.start;
-																	##.nfa.end = #2.nfa.end;
-																	#1.nfa.end->next = #2.nfa.start;
-																}
+re_expr:		re_expr re_modifier
+
+					{
+						##.ptn = pregex_ptn_create_seq(
+									#1.ptn, #2.ptn, (pregex_ptn*)NULL );
+					}
+					
 				| re_modifier
 				;
 				
-re_modifier:	re_factor '*'									{	##.nfa.start = pregex_nfa_create_state
-																			( &nfa_x, (uchar*)NULL, REGEX_MOD_NONE );
-																	##.nfa.end = pregex_nfa_create_state
-																			( &nfa_x, (uchar*)NULL, REGEX_MOD_NONE );
-																	
-																	##.nfa.start->next = #1.nfa.start;
-																	##.nfa.start->next2 = ##.nfa.end;
-																	##.nfa.end->next2 = ##.nfa.start;
-																	
-																	#1.nfa.end->next = ##.nfa.end;
-																}
-				| re_factor '+'									{	##.nfa.start = #1.nfa.start;
-																	##.nfa.end = #1.nfa.end;
-																	##.nfa.end->next2 = ##.nfa.start;
-																}
-				| re_factor '?'									{	##.nfa.start = pregex_nfa_create_state
-																			( &nfa_x, (uchar*)NULL, REGEX_MOD_NONE );
-																		
-																	##.nfa.start->next = #1.nfa.start;
-																	##.nfa.start->next2 = #1.nfa.end;
-																	##.nfa.end = #1.nfa.end;
-																}
+re_modifier:	re_factor '*'
+
+					{
+						##.ptn = pregex_ptn_create_kle( #1.ptn );
+					}
+
+				| re_factor '+'
+
+					{
+						##.ptn = pregex_ptn_create_pos( #1.ptn );
+					}
+
+				| re_factor '?'
+
+					{
+						##.ptn = pregex_ptn_create_opt( #1.ptn );
+					}
+
 				| re_factor
 				;
 
-re_factor:		ccl												{
-																	##.nfa.start = pregex_nfa_create_state(
-																			&nfa_x, strbuf, REGEX_MOD_NONE );
-																	##.nfa.end = ##.nfa.start->next
-																		= pregex_nfa_create_state(
-																			&nfa_x, (uchar*)NULL, REGEX_MOD_NONE );
+re_factor:		ccl
 
-																	if( #1.negative )
-																		ccl_negate( ##.nfa.start->ccl );
-																}
-				| kw											{	uchar*	ch;
-																	pregex_nfa_st*	st;
-																	
-																	if( *strbuf )
-																	{
-																		##.nfa.end = ##.nfa.start =
-																			pregex_nfa_create_state(
-																				&nfa_x, (uchar*)NULL, REGEX_MOD_NONE );
+					{
+						CCL		ccl;
 
-																		for( ch = strbuf; *ch; ch += u8_seqlen( ch ) )
-																		{
-																			##.nfa.end->ccl =
-																				ccl_addrange( (CCL)NULL,
-																					u8_char( pstr ),
-																						u8_char( pstr ) );
+						ccl = ccl_create( strbuf );
+						if( #1.negative )
+							ccl_negate( ccl );
 
-																			##.nfa.end = ##.nfa.end->next
-																				= pregex_nfa_create_state(
-																					&nfa_x, (uchar*)NULL, REGEX_MOD_NONE );
-																		}
-																	}
-																}
-				| '.'											{	##.nfa.start = pregex_nfa_create_state(
-																		&( nfa_x ), (uchar*)NULL, REGEX_MOD_NONE );
-																	##.nfa.start->ccl =
-																				ccl_addrange( (CCL)NULL,
-																					CCL_MIN, CCL_MAX - 1 );	
-																	
-																	##.nfa.end = ##.nfa.start->next
-																		= pregex_nfa_create_state(
-																			&( nfa_x ), (uchar*)NULL, REGEX_MOD_NONE );
-																			
-																	greedy = FALSE;
-																}
-				| '(' regex ')'									{	##.nfa.start = #2.nfa.start;
-																	##.nfa.end = #2.nfa.end;
-																}
+						##.ptn = pregex_ptn_create_char( ccl );
+					}
+
+				| kw
+
+					{
+						##.ptn = pregex_ptn_create_string(
+									strbuf, REGEX_MOD_NONE );
+					}
+					
+				| '.'
+
+					{
+						greedy = FALSE;
+
+						##.ptn = pregex_ptn_create_char(
+									ccl_addrange( (CCL)NULL,
+											CCL_MIN, CCL_MAX - 1 ) );
+					}
+					
+				| '(' regex ')'
+
+					{
+						##.ptn = pregex_ptn_create_sub( #2.ptn );
+					}
 				;
 
 /* General parsing objects */

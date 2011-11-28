@@ -399,7 +399,7 @@ int main( int argc, char** argv )
 
 				p_unique_charsets( parser );
 				p_symbol_order( parser );
-				p_charsets_to_nfa( parser );
+				p_charsets_to_ptn( parser );
 				
 				if( parser->p_mode == MODE_SENSITIVE )
 					p_inherit_fixiations( parser );
