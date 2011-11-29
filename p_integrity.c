@@ -37,7 +37,8 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 	Parameters:		PARSER*		parser		Pointer to the parser information
 											structure.
 	
-	Returns:		void
+	Returns:		BOOLEAN					TRUE if undefined or unused
+											symbols are found, else FALSE.
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
@@ -123,7 +124,6 @@ static LIST* p_nfa_transition_on_ccl(
 	for( i = check_with; !ccl_end( i ); i++ )
 	{
 		/*
-			TODO:
 			This may be the source for large run time latency.
 			The way chosen by pregex/dfa.c should be used if necessary
 			somewhere in future.
@@ -330,8 +330,10 @@ static BOOLEAN p_nfa_matches_parser(
 								functions, which can handle entire sets of
 								characters from 0x0 - 0xFFFF.
 	31.01.2011	Jan Max Meyer	Renamed the function to p_regex_anomalies()
-								because not only keywords are tested now, even
+								because not only keywords are tested now, also
 								entire regular expressions.
+	29.11.2011	Jan Max Meyer	Changed to new regular expression handling with
+								the pregex_ptn-structure.
 ----------------------------------------------------------------------------- */
 BOOLEAN p_regex_anomalies( PARSER* parser )
 {
@@ -441,7 +443,7 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 									if there is no keyword to shift in the
 									FIRST-sets of following symbols, report
 									this anomaly!
-								*/								
+								*/
 								p = (PROD*)list_getptr(
 										parser->productions, col->index );
 								lhs = p->lhs;

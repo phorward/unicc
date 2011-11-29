@@ -759,10 +759,8 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 						tmp = "regular-expression";
 
 						/* Rebuild the regular expression string */
-/*
-#ifndef UNICC_BOOTSTRAP
-						if( ( regex_str = pregex_nfa_to_regex(
-								&( sym->nfa ) ) ) )
+						if( pregex_ptn_to_regex( &regex_str, sym->ptn )
+								== ERR_OK )
 						{
 							if( !( regex = xml_add_child(
 									symbol, "regex", 0 ) ) )
@@ -771,8 +769,6 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 							xml_set_txt_d( regex, regex_str );
 							pfree( regex_str );
 						}
-#endif
-*/
 
 						/* 
 							Convert regular pattern into DFA state machine
