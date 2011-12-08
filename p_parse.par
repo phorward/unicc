@@ -64,7 +64,11 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #include "p_proto.h"
 #include "p_error.h"
 
-#define UNICC_DEBUG 0
+/*
+#ifndef UNICC_BOOTSTRAP
+#define UNICC_DEBUG 1
+#endif
+*/
 
 /*
  * Global variables
@@ -978,7 +982,9 @@ regex<pregex_ptn*>	->	re_alt
 
 re_alt<pregex_ptn*>	->	re_alt '|' re_expr	
 
-						[*	@@ = pregex_ptn_create_alt( @1, @3 );
+						[*	
+							@@ = pregex_ptn_create_alt(
+									@1, @3, (pregex_ptn*)NULL );
 						*]
 
 					| re_expr
@@ -990,7 +996,8 @@ re_expr<pregex_ptn*>
 					->	re_expr re_modifier
 
 						[*
-							@@ = pregex_ptn_create_seq( @1, @2 );
+							@@ = pregex_ptn_create_seq(
+									@1, @2, (pregex_ptn*)NULL );
 						*]
 
 					| re_modifier
