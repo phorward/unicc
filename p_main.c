@@ -252,7 +252,10 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 				*output = param;
 		}
 		else if( !strcmp( opt, "verbose" ) || !strcmp( opt, "v" ) )
+		{
 			parser->verbose = TRUE;
+			parser->stats = TRUE;
+		}
 		else if( !strcmp( opt, "stats" ) || !strcmp( opt, "s" ) )
 			parser->stats = TRUE;
 		else if( !strcmp( opt, "warnings" ) || !strcmp( opt, "w" ) )

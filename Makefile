@@ -66,7 +66,7 @@ HEADERS		=	p_global.h \
 				
 TEMPLATE_C	=	../Cparser/C.tlt
 				
-LIBS		=	$(LIBPHORWARD_LIB)
+LIBS		=	$(LIBPHORWARD_LIB) -lrt
 
 MISCDEP		=	$(TEMPLATE_C) \
 				Makefile

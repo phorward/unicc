@@ -122,10 +122,6 @@ further tasks.
 
 	Prints a short overview about the command-line options and exists.
 
--V, --version
-
-	Prints copyright and version information and exits.
-
 -n, --no-opt
 
 	Disables state optimization; By default, the resulting LALR(1) parse
@@ -144,7 +140,8 @@ further tasks.
 -s, --stats
 
 	Prints a statistics message to stderr when parser generation has
-	entirely been finished.
+	entirely been finished. This will automatically switched on when
+	using the verbose option.
 
 -S, --states
 
@@ -158,7 +155,11 @@ further tasks.
 -v, --verbose
 
 	Prints process messages about the specific tasks during parser generation
-	process. 
+	process. Automatically switches on the stats option for statistics output.
+
+-V, --version
+
+	Prints copyright and version information and exits.
 
 -w, --warnings
 
