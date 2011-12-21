@@ -233,7 +233,7 @@ void p_free_symbol( SYMBOL* sym )
 	if( sym->ptn )
 		pregex_ptn_free( sym->ptn );
 	else
-		ccl_free( sym->ccl );
+		sym->ccl = ccl_free( sym->ccl );
 	
 	list_free( sym->first );
 	list_free( sym->productions );

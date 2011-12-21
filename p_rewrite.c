@@ -354,8 +354,8 @@ void p_unique_charsets( PARSER* parser )
 					diff = ccl_diff( tsym->ccl, inter );
 					if( !ccl_size( diff ) )
 					{
-						ccl_free( diff );
-						ccl_free( inter );
+						diff = ccl_free( diff );
+						inter = ccl_free( inter );
 						continue;
 					}
 
@@ -382,7 +382,7 @@ void p_unique_charsets( PARSER* parser )
 						nsym->defined = TRUE;
 					}
 					else
-						ccl_free( inter );
+						inter = ccl_free( inter );
 
 					rsym = p_get_symbol( parser, (void*)diff,
 									SYM_CCL_TERMINAL, TRUE );
@@ -390,7 +390,7 @@ void p_unique_charsets( PARSER* parser )
 					rsym->defined = TRUE;
 
 					/* Re-configure symbol */	
-					ccl_free( tsym->ccl );
+					tsym->ccl = ccl_free( tsym->ccl );
 					tsym->name = pstr_append_str( tsym->name,
 									P_REWRITTEN_CCL, FALSE );
 					tsym->type = SYM_NON_TERMINAL;
@@ -406,7 +406,7 @@ void p_unique_charsets( PARSER* parser )
 				else
 				{
 					MSG( "Has no intersections, next" );
-					ccl_free( inter );
+					inter = ccl_free( inter );
 				}
 			}
 		}

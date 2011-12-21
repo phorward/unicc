@@ -66,7 +66,7 @@ uchar* p_escape_for_target( GENERATOR* g, uchar* str, BOOLEAN clear )
 		OUTOFMEM;
 
 	if( clear )
-		pfree( str );
+		str = pfree( str );
 
 	for( i = 0; i < g->sequences_count; i++ )
 	{
