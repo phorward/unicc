@@ -231,13 +231,14 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 {
 	int		i;
 	int		rc;
+	int		next;
 	uchar	opt		[ ONE_LINE + 1 ];
 	uchar*	param;
 	
 	progname = *argv;
 
 	for( i = 0;
-			( rc = pgetopt( opt, &param, argc, argv,
+			( rc = pgetopt( opt, &param, &next, argc, argv,
 						"ab:Ghno:PsStTvVwxX",
 						"all grammar help no-opt output: basename: productions"
 							"stats states stdout symbols verbose version "
