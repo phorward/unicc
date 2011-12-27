@@ -112,7 +112,8 @@ void p_keywords_to_dfa( PARSER* parser )
 			else
 			{
 				MSG( "This DFA does not exist in pool yet - integrating!" );
-				if( !( ex_dfa = memdup( &dfa, sizeof( pregex_dfa ) ) ) )
+				if( !( ex_dfa = (pregex_dfa*)pmemdup(
+									&dfa, sizeof( pregex_dfa ) ) ) )
 					OUTOFMEM;
 
 				if( !( parser->kw = list_push( parser->kw, (void*)ex_dfa ) ) )
@@ -184,7 +185,7 @@ void p_single_lexer( PARSER* parser )
 		VARS( "list_count( dfa.states )", "%d",
 				list_count( dfa.states ) );
 
-		if( !( pdfa = memdup( &dfa, sizeof( pregex_dfa ) ) ) )
+		if( !( pdfa = (pregex_dfa*)pmemdup( &dfa, sizeof( pregex_dfa ) ) ) )
 			OUTOFMEM;
 
 		if( !( parser->kw = list_push( parser->kw, (void*)pdfa ) ) )
