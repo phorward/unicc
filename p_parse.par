@@ -936,8 +936,10 @@ terminal<SYMBOL*>	->	ccl
 							@@->defined = TRUE;
 							@@->keyword = TRUE;
 							
-							@@->ptn = pregex_ptn_create_string(
-											strbuf, REGEX_MOD_NONE );
+							@@->ptn = pregex_ptn_create_string( strbuf,
+										parser->p_cis_strings ?
+											REGEX_MOD_INSENSITIVE :
+												REGEX_MOD_NONE );
 
 							if( @@->line < 0 )
 								@@->line = line;
