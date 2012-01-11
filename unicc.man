@@ -1,4 +1,4 @@
-.TH "UniCC" 1 "September 2011" "UniCC 1.0"
+.TH "UniCC" 1 "January 2012" "UniCC 1.0rc2"
 
 
 .SH NAME
@@ -375,7 +375,7 @@ written and maintained by Jan Max Meyer, Phorward Software Technologies.
 .SH COPYRIGHT
 
 .P
-Copyright (C) 2006\-2011 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006\-2012 by Phorward Software Technologies, Jan Max Meyer
 
 .P
 You may use, modify and distribute this software under the terms and conditions

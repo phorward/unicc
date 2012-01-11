@@ -1,6 +1,6 @@
 UniCC
-UniCC 1.0
-September 2011
+UniCC 1.0rc2
+January 2012
 
 = NAME =
 
@@ -250,7 +250,7 @@ written and maintained by Jan Max Meyer, Phorward Software Technologies.
 
 = COPYRIGHT =
 
-Copyright (C) 2006-2011 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2012 by Phorward Software Technologies, Jan Max Meyer
 		
 You may use, modify and distribute this software under the terms and conditions
 of the Artistic License, version 2.

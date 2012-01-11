@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------
 # UniCC LALR(1) Parser Generator
-# Copyright (C) 2006-2011 by Phorward Software Technologies, Jan Max Meyer
+# Copyright (C) 2006-2012 by Phorward Software Technologies, Jan Max Meyer
 # http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 #
 # Make-File:	Makefile
@@ -113,9 +113,9 @@ $(PROGRAM): $(PROG_BOOT3) $(PARSER_SRC) $(PROTO) $(SRC) $(HEADERS) $(LIBS) $(MIS
 	@echo
 	
 clean: clean_obj
-	-@$(RM) $(PROGRAM)
-	-@$(RM) unicc.man
-	-@$(RM) README
+	-$(RM) $(PROGRAM)
+	-$(RM) unicc.man
+	-$(RM) README
 
 clean_obj:
 	-@$(RM) $(PROG_BOOT1)
