@@ -148,6 +148,10 @@ further tasks.
 	Dumps the generated LALR(1) states that had been generated during the
 	parse table generation process. 
 
+-t, --stdout
+
+	Print all code generator output to stdout instead as files.
+
 -T, --symbols
 
 	Dumps an overview of all used symbols. 
