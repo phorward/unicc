@@ -11,9 +11,17 @@
 # mation.
 #-------------------------------------------------------------------------------
 
-include		../../include/Make.inc
+UNICC		=	unicc
 
-PROGRAM		=	$(RUN_DIR)$(PATH_SEP)$(UNICC)$(EXEEXT)
+OBJEXT		=	.o
+EXEEXT		=
+
+UNICC_TPLDIR ?=	../Cparser
+UNICC_ENV	=	UNICC_TPLDIR="$(UNICC_TPLDIR)"
+
+CFLAGS		+=	-funsigned-char -DUNICODE -DUTF8
+
+PROGRAM		=	$(UNICC)$(EXEEXT)
 PROG_BOOT1	=	boot_unicc1$(EXEEXT)
 PROG_BOOT2	=	boot_unicc2$(EXEEXT)
 PROG_BOOT3	=	boot_unicc3$(EXEEXT)
@@ -66,7 +74,7 @@ HEADERS		=	p_global.h \
 				
 TEMPLATE_C	=	../Cparser/C.tlt
 				
-LIBS		=	$(LIBPHORWARD_LIB) -lrt
+LIBS		=	-lphorward -lrt
 
 MISCDEP		=	$(TEMPLATE_C) \
 				Makefile
@@ -81,33 +89,29 @@ $(TEMPLATE_C):
 	cd ..;  cd Cparser; make C.tlt; cd ..; cd $(PROJECT)
 
 $(PROG_BOOT1): $(PARSER_BOOT) $(PROTO) $(SRC) $(HEADERS) $(LIBS) $(MISCDEP)
-	$(MIN_LALR1) $(PARSER_BOOT) >$(PARSER) 2>$(PARSER_DBG)
-	$(CC) $(CEXEOPTS) $(DEBUG) -DUNICC_BOOTSTRAP=1 $(SRC) $(PARSER)
-	$(LLINK) $(LINKOPTS)$@ $(OBJ) $(PARSER_OBJ) $(LIBS)
+	min_lalr1 $(PARSER_BOOT) >$(PARSER) 2>$(PARSER_DBG)
+	$(CC) $(CFLAGS) -o $@ $(DEBUG) -DUNICC_BOOTSTRAP=1 $(SRC) $(PARSER) $(LIBS)
 	@echo
 	@echo -- First bootstrap stage OK --
 	@echo
 
 $(PROG_BOOT2): $(PROG_BOOT1) $(PARSER_SRC) $(PROTO) $(SRC) $(HEADERS) $(LIBS) $(MISCDEP)
-	$(PROG_BOOT1) -svwb $(PARSER_OUT) $(PARSER_SRC)
-	$(CC) $(CEXEOPTS) $(DEBUG) -DUNICC_BOOTSTRAP=2 $(SRC) $(PARSER)
-	$(LLINK) $(LINKOPTS)$@ $(OBJ) $(PARSER_OBJ) $(LIBS)
+	$(UNICC_ENV) ./$(PROG_BOOT1) -svwb $(PARSER_OUT) $(PARSER_SRC)
+	$(CC) $(CFLAGS) -o $@ $(DEBUG) -DUNICC_BOOTSTRAP=2 $(SRC) $(PARSER) $(LIBS)
 	@echo
 	@echo -- Second bootstrap stage OK --
 	@echo
 
 $(PROG_BOOT3): $(PROG_BOOT2) $(PARSER_SRC) $(PROTO) $(SRC) $(HEADERS) $(LIBS) $(MISCDEP)
-	$(PROG_BOOT2) -svwb $(PARSER_OUT) $(PARSER_SRC)
-	$(CC) $(CEXEOPTS) $(DEBUG) -DUNICC_BOOTSTRAP=3 $(SRC) $(PARSER)
-	$(LLINK) $(LINKOPTS)$@ $(OBJ) $(PARSER_OBJ) $(LIBS)
+	$(UNICC_ENV) ./$(PROG_BOOT2) -svwb $(PARSER_OUT) $(PARSER_SRC)
+	$(CC) $(CFLAGS) -o $@ $(DEBUG) -DUNICC_BOOTSTRAP=3 $(SRC) $(PARSER) $(LIBS)
 	@echo
 	@echo -- Third bootstrap stage OK --
 	@echo
 
 $(PROGRAM): $(PROG_BOOT3) $(PARSER_SRC) $(PROTO) $(SRC) $(HEADERS) $(LIBS) $(MISCDEP)
-	$(PROG_BOOT3) -svwb $(PARSER_OUT) $(PARSER_SRC)
-	$(CC) $(CEXEOPTS) $(DEBUG) $(SRC) $(PARSER)
-	$(LLINK) $(LINKOPTS)$@ $(OBJ) $(PARSER_OBJ) $(LIBS)
+	$(UNICC_ENV) ./$(PROG_BOOT3) -svwb $(PARSER_OUT) $(PARSER_SRC)
+	$(CC) $(CFLAGS) -o $@ $(DEBUG) $(SRC) $(PARSER) $(LIBS)
 	@echo
 	@echo -- Final bootstrap complete --
 	@echo
@@ -148,4 +152,32 @@ README: unicc.t2t
 
 unicc.man: unicc.t2t
 	txt2tags -t man $?
+
+# Install
+
+INSTPATH ?= /usr
+INSTPATH_BIN ?= $(INSTPATH)/bin
+INSTPATH_MAN ?= $(INSTPATH)/share/man/man1
+INSTPATH_SHR ?= $(INSTPATH)/share/unicc
+INSTPATH_TLT ?= $(INSTPATH)/share/unicc/tlt
+
+$(INSTPATH):
+	test -d $(INSTPATH) || mkdir -p $(INSTPATH)
+
+$(INSTPATH_BIN): $(INSTPATH)
+	test -d $(INSTPATH_BIN) || mkdir -p $(INSTPATH_BIN)
+
+$(INSTPATH_MAN): $(INSTPATH)
+	test -d $(INSTPATH_MAN) || mkdir -p $(INSTPATH_MAN)
+
+$(INSTPATH_SHR): $(INSTPATH)
+	test -d $(INSTPATH_SHR) || mkdir -p $(INSTPATH_SHR)
+
+$(INSTPATH_TLT): $(INSTPATH_SHR)
+	test -d $(INSTPATH_TLT) || mkdir -p $(INSTPATH_TLT)
+
+install: $(UNICC) unicc.man $(INSTPATH_BIN) $(INSTPATH_MAN) $(INSTPATH_TLT)
+	cp $(UNICC) $(INSTPATH_BIN)
+	gzip -c unicc.man >$(INSTPATH_MAN)/unicc.1.gz
+	test -f $(UNICC_TPLDIR)/C.tlt && cp $(UNICC_TPLDIR)/C.tlt $(INSTPATH_TLT)
 

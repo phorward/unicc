@@ -1,4 +1,4 @@
-.TH "UniCC" 1 "January 2012" "UniCC 1.0rc2"
+.TH "UniCC" 1 "January 2012" "UniCC 1.0"
 
 
 .SH NAME
