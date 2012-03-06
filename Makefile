@@ -88,28 +88,28 @@ all: $(PROGRAM)
 $(TEMPLATE_C):
 	cd ..;  cd Cparser; make C.tlt; cd ..; cd $(PROJECT)
 
-$(PROG_BOOT1): $(PARSER_BOOT) $(PROTO) $(SRC) $(HEADERS) $(LIBS) $(MISCDEP)
+$(PROG_BOOT1): $(PARSER_BOOT) $(PROTO) $(SRC) $(HEADERS) $(MISCDEP)
 	min_lalr1 $(PARSER_BOOT) >$(PARSER) 2>$(PARSER_DBG)
 	$(CC) $(CFLAGS) -o $@ $(DEBUG) -DUNICC_BOOTSTRAP=1 $(SRC) $(PARSER) $(LIBS)
 	@echo
 	@echo -- First bootstrap stage OK --
 	@echo
 
-$(PROG_BOOT2): $(PROG_BOOT1) $(PARSER_SRC) $(PROTO) $(SRC) $(HEADERS) $(LIBS) $(MISCDEP)
+$(PROG_BOOT2): $(PROG_BOOT1) $(PARSER_SRC) $(PROTO) $(SRC) $(HEADERS) $(MISCDEP)
 	$(UNICC_ENV) ./$(PROG_BOOT1) -svwb $(PARSER_OUT) $(PARSER_SRC)
 	$(CC) $(CFLAGS) -o $@ $(DEBUG) -DUNICC_BOOTSTRAP=2 $(SRC) $(PARSER) $(LIBS)
 	@echo
 	@echo -- Second bootstrap stage OK --
 	@echo
 
-$(PROG_BOOT3): $(PROG_BOOT2) $(PARSER_SRC) $(PROTO) $(SRC) $(HEADERS) $(LIBS) $(MISCDEP)
+$(PROG_BOOT3): $(PROG_BOOT2) $(PARSER_SRC) $(PROTO) $(SRC) $(HEADERS) $(MISCDEP)
 	$(UNICC_ENV) ./$(PROG_BOOT2) -svwb $(PARSER_OUT) $(PARSER_SRC)
 	$(CC) $(CFLAGS) -o $@ $(DEBUG) -DUNICC_BOOTSTRAP=3 $(SRC) $(PARSER) $(LIBS)
 	@echo
 	@echo -- Third bootstrap stage OK --
 	@echo
 
-$(PROGRAM): $(PROG_BOOT3) $(PARSER_SRC) $(PROTO) $(SRC) $(HEADERS) $(LIBS) $(MISCDEP)
+$(PROGRAM): $(PROG_BOOT3) $(PARSER_SRC) $(PROTO) $(SRC) $(HEADERS) $(MISCDEP)
 	$(UNICC_ENV) ./$(PROG_BOOT3) -svwb $(PARSER_OUT) $(PARSER_SRC)
 	$(CC) $(CFLAGS) -o $@ $(DEBUG) $(SRC) $(PARSER) $(LIBS)
 	@echo

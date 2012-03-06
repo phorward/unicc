@@ -513,7 +513,6 @@ directive_parms		-> "whitespaces" 	symbol_list
 							set_option( &( parser->options ),
 								@key, strbuf, @line_number );
 
-							pfree( @key );
 							strbuf = (char*)NULL;
 						*]
 
@@ -732,7 +731,6 @@ sym_option			->	'#' "greedy"
 											strbuf, @line_number );
 
 							strbuf = (uchar*)NULL;
-							pfree( @key );
 						*]
 					;
 
@@ -784,7 +782,6 @@ prod_directives<int>
 								@key, strbuf, @line_number );
 
 							strbuf = (uchar*)NULL;
-							pfree( @key );
 						*]
 					
 					;
