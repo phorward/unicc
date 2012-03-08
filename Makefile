@@ -76,8 +76,7 @@ TEMPLATE_C	=	../Cparser/C.tlt
 				
 LIBS		=	-lphorward -lrt
 
-MISCDEP		=	$(TEMPLATE_C) \
-				Makefile
+MISCDEP		=	$(TEMPLATE_C)
 
 #-------------------------------------------------------------------------------
 
@@ -117,19 +116,19 @@ $(PROGRAM): $(PROG_BOOT3) $(PARSER_SRC) $(PROTO) $(SRC) $(HEADERS) $(MISCDEP)
 	@echo
 	
 clean: clean_obj
-	-$(RM) $(PROGRAM)
-	-$(RM) unicc.man
-	-$(RM) README
+	-rm -f $(PROGRAM)
+	-rm -f unicc.man
+	-rm -f README
 
 clean_obj:
-	-@$(RM) $(PROG_BOOT1)
-	-@$(RM) $(PROG_BOOT2)
-	-@$(RM) $(PROG_BOOT3)
-	-@$(RM) $(PARSER)
-	-@$(RM) $(PARSER_H)
-	-@$(RM) $(PARSER_DBG)
-	-@$(RM) $(PARSER_OBJ)
-	-@$(RM) $(OBJ)
+	-@rm -f $(PROG_BOOT1)
+	-@rm -f $(PROG_BOOT2)
+	-@rm -f $(PROG_BOOT3)
+	-@rm -f $(PARSER)
+	-@rm -f $(PARSER_H)
+	-@rm -f $(PARSER_DBG)
+	-@rm -f $(PARSER_OBJ)
+	-@rm -f $(OBJ)
 
 backup:	clean
 	-@$(RM) ../p_lalr1_cc.tar
@@ -144,10 +143,10 @@ doc: manpage README
 manpage: unicc.man
 
 README: unicc.t2t
-	-$(RM) $@
+	-rm -f $@
 	txt2tags -t txt -H -o - $? | sed -E -n '1h;1!H;$${;g;s/ +([-A-Z ]+)\n +(=+)/\2==\n \1 \n\2==/g;p;}' | sed -e "/^=/s/=/*/g;1,15d" >$@.tmp
-	$(CAT) unicc.hdr $@.tmp >>$@
-	$(RM) $@.tmp
+	cat unicc.hdr $@.tmp >>$@
+	rm -f $@.tmp
 
 
 unicc.man: unicc.t2t
@@ -176,7 +175,7 @@ $(INSTPATH_SHR): $(INSTPATH)
 $(INSTPATH_TLT): $(INSTPATH_SHR)
 	test -d $(INSTPATH_TLT) || mkdir -p $(INSTPATH_TLT)
 
-install: $(UNICC) unicc.man $(INSTPATH_BIN) $(INSTPATH_MAN) $(INSTPATH_TLT)
+install: $(UNICC) $(INSTPATH_BIN) $(INSTPATH_MAN) $(INSTPATH_TLT)
 	cp $(UNICC) $(INSTPATH_BIN)
 	gzip -c unicc.man >$(INSTPATH_MAN)/unicc.1.gz
 	test -f $(UNICC_TPLDIR)/C.tlt && cp $(UNICC_TPLDIR)/C.tlt $(INSTPATH_TLT)
