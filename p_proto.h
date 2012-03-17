@@ -52,9 +52,6 @@ BOOLEAN p_regex_anomalies( PARSER* parser );
 BOOLEAN p_stupid_productions( PARSER* parser );
 
 /* p_string.c */
-#define pstr_render pstr_render
-#define pstr_append_str pstr_append_str
-
 uchar* p_int_to_str( int val );
 uchar* p_chr_to_str( int val );
 uchar* p_long_to_str( long val );
