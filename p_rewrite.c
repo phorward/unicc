@@ -1,5 +1,5 @@
 /* -MODULE----------------------------------------------------------------------
-UniCC LALR(1) Parser Generator 
+UniCC LALR(1) Parser Generator
 Copyright (C) 2006-2012 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
@@ -28,17 +28,17 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_rewrite_grammar()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Rewrites the grammar. The revision is done to simulate
 					tokens which are separated by whitespaces.
-					
+
 	Parameters:		PARSER*		parser				Pointer to parser informa-
 													tion structure
-	
+
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 	26.03.2008	Jan Max Meyer	Use keyname with special type prefix for hash
@@ -90,7 +90,7 @@ void p_rewrite_grammar( PARSER* parser )
 	ws_all->whitespace = TRUE;
 
 	ws_list = p_positive_closure( parser, ws_all );
-	ws_list->lexem = TRUE;	
+	ws_list->lexem = TRUE;
 	ws_list->whitespace = TRUE;
 
 	ws_optlist = p_optional_closure( parser, ws_list );
@@ -183,11 +183,11 @@ void p_rewrite_grammar( PARSER* parser )
 
 						/* Construct derivative symbol name */
 						deriv = pstrdup( sym->name );
-						
+
 						/* Create unique symbol name */
 						do
 						{
-							deriv = pstr_append_str( deriv,
+							deriv = pstrcatstr( deriv,
 										P_REWRITTEN_TOKEN, FALSE );
 							nsym = p_get_symbol( parser, deriv,
 										SYM_NON_TERMINAL, FALSE );
@@ -204,21 +204,21 @@ void p_rewrite_grammar( PARSER* parser )
 							p_append_to_production( p, sym, (uchar*)NULL );
 							p_append_to_production( p, ws_optlist,
 															(uchar*)NULL );
-							
+
 							/* p_dump_production( stdout, p, TRUE, FALSE ); */
-	
+
 							nsym->prec = sym->prec;
 							nsym->assoc = sym->assoc;
 							nsym->nullable = sym->nullable;
 							nsym->keyword = sym->keyword;
 							nsym->vtype = sym->vtype;
-	
+
 							nsym->generated = TRUE;
 							nsym->derived_from = sym;
 						}
-						
+
 						/* Replace the rewritten symbol with the
-						  		production's symbol! */						
+						  		production's symbol! */
 						m->pptr = nsym;
 
 						pfree( deriv );
@@ -240,8 +240,8 @@ void p_rewrite_grammar( PARSER* parser )
 
 	do
 	{
-		deriv = pstr_append_str( deriv, P_REWRITTEN_TOKEN, FALSE );
-		sym = p_get_symbol( parser, deriv, SYM_NON_TERMINAL, FALSE );							
+		deriv = pstrcatstr( deriv, P_REWRITTEN_TOKEN, FALSE );
+		sym = p_get_symbol( parser, deriv, SYM_NON_TERMINAL, FALSE );
 	}
 	while( sym && sym->derived_from != parser->goal );
 
@@ -269,18 +269,18 @@ void p_rewrite_grammar( PARSER* parser )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_unique_charsets()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Rewrites the grammar to work with uniquely identifyable
 					character sets instead of overlapping ones. This function
 					was completely rewritten in Nov 2009.
-					
+
 	Parameters:		PARSER*		parser			Pointer to parser to be
 												rewritten
-	
+
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 	11.11.2009	Jan Max Meyer	Redesign of function, to work with full
@@ -312,10 +312,10 @@ void p_unique_charsets( PARSER* parser )
 			sym = (SYMBOL*)list_access( l );
 			if( sym->type != SYM_CCL_TERMINAL )
 				continue;
-				
+
 			MSG( "NEXT SYMBOL FOR REVISION" );
 			VARS( "sym->name", "%s", sym->name );
-			
+
 			/*
 			fprintf( stderr, "sym->ccl: %d\n", ccl_size( sym->ccl ) );
 			ccl_print( stderr, sym->ccl, 1 );
@@ -337,20 +337,20 @@ void p_unique_charsets( PARSER* parser )
 				VARS( "tsym->name", "%s", tsym->name );
 
 				inter = ccl_intersect( sym->ccl, tsym->ccl );
-				
+
 				/*
 				fprintf( stderr, "inter: %d\n", ccl_size( inter ) );
 				ccl_print( stderr, inter, 1 );
 				fprintf( stderr, "tsym->ccl: %d\n", ccl_size( tsym->ccl ) );
 				ccl_print( stderr, tsym->ccl, 1 );
 				*/
-				
+
 				VARS( "ccl_size( inter )", "%d", ccl_size( inter ) );
 				if( ccl_size( inter ) )
 				{
 					MSG( "Intersections found with tsym" );
 
-					/* Create charclass-symbol for remaining symbols */					
+					/* Create charclass-symbol for remaining symbols */
 					diff = ccl_diff( tsym->ccl, inter );
 					if( !ccl_size( diff ) )
 					{
@@ -371,13 +371,13 @@ void p_unique_charsets( PARSER* parser )
 						pfree( tmpstr );
 						continue;
 					}
-					
-					/* Create charclass-symbol for intersecting symbols */										
+
+					/* Create charclass-symbol for intersecting symbols */
 					if( !( nsym = p_get_symbol( parser, (void*)inter,
 									SYM_CCL_TERMINAL, FALSE ) ) )
 					{
 						nsym = p_get_symbol( parser, (void*)inter,
-										SYM_CCL_TERMINAL, TRUE );					
+										SYM_CCL_TERMINAL, TRUE );
 						nsym->used = TRUE;
 						nsym->defined = TRUE;
 					}
@@ -389,13 +389,13 @@ void p_unique_charsets( PARSER* parser )
 					rsym->used = TRUE;
 					rsym->defined = TRUE;
 
-					/* Re-configure symbol */	
+					/* Re-configure symbol */
 					tsym->ccl = ccl_free( tsym->ccl );
-					tsym->name = pstr_append_str( tsym->name,
+					tsym->name = pstrcatstr( tsym->name,
 									P_REWRITTEN_CCL, FALSE );
 					tsym->type = SYM_NON_TERMINAL;
 					tsym->first = list_free( tsym->first );
-					
+
 					/* Create & append productions */
 					p = p_create_production( parser, tsym );
 					p_append_to_production( p, nsym, (uchar*)NULL );
@@ -410,7 +410,7 @@ void p_unique_charsets( PARSER* parser )
 				}
 			}
 		}
-		
+
 		/*
 		fprintf( stderr, "-----\nCURRENT GRAMMAR:\n" );
 		p_dump_grammar( stderr, parser );
@@ -424,16 +424,16 @@ void p_unique_charsets( PARSER* parser )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_fix_precedences()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Fixes the precedence and associativity information of the
 					current grammar to be prepared for LALR(1) table generation.
-					
+
 	Parameters:		<type>		<identifier>		<description>
-	
+
 	Returns:		<type>							<description>
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -446,7 +446,7 @@ void p_fix_precedences( PARSER* parser )
 	BOOLEAN	found;
 	SYMBOL*	sym;
 
-	/* 
+	/*
 	 * If nonterminal symbol has a precedence,
 	 * attach it to all its productions!
 	 */
@@ -492,7 +492,7 @@ void p_fix_precedences( PARSER* parser )
 				break;
 			}
 		}
-		
+
 		/*
 			If there is no terminal, use rightmost
 			non-terminal with a precedence
@@ -513,19 +513,19 @@ void p_fix_precedences( PARSER* parser )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_inherit_fixiations()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Inherits the fixiation definitions once done with "fixate"
 					parser directive.
-					
-	Parameters:		PARSER*		parser				Pointer to parser 
+
+	Parameters:		PARSER*		parser				Pointer to parser
 													information structure;
 													This huge shit of data,
 													holding everything :)
-	
+
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -578,18 +578,18 @@ void p_inherit_fixiations( PARSER* parser )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_inherit_vtypes()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Inherits value types of rewritten symbols from their
 					base. This is required for symbols that where generated
 					before their definition in the code - where a possible
 					value type is still unknown.
-					
+
 	Parameters:		<type>		<identifier>		<description>
-	
+
 	Returns:		<type>							<description>
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -597,11 +597,11 @@ void p_inherit_vtypes( PARSER* parser )
 {
 	SYMBOL*	sym;
 	LIST*	l;
-	
+
 	for( l = parser->symbols; l; l = list_next( l ) )
 	{
 		sym = (SYMBOL*)list_access( l );
-		
+
 		if( !sym->vtype && sym->derived_from )
 			sym->vtype = sym->derived_from->vtype;
 	}
@@ -609,15 +609,15 @@ void p_inherit_vtypes( PARSER* parser )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_setup_single_goal()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Sets up a single goal symbol, if necessary.
-					
+
 	Parameters:		<type>		<identifier>		<description>
-	
+
 	Returns:		<type>							<description>
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -630,7 +630,7 @@ void p_setup_single_goal( PARSER* parser )
 	if( list_count( parser->goal->productions ) == 1 )
 	{
 		p = ((PROD*)(parser->goal->productions->pptr));
-		
+
 		if( list_count( p->rhs ) == 1 )
 		{
 			sym = (SYMBOL*)list_getptr( p->rhs, list_count( p->rhs ) - 1 );
@@ -646,7 +646,7 @@ void p_setup_single_goal( PARSER* parser )
 	}
 
 	/* Setup a new goal symbol */
-	deriv = pstr_append_str( pstrdup( parser->goal->name ),
+	deriv = pstrcatstr( pstrdup( parser->goal->name ),
 				P_REWRITTEN_TOKEN, FALSE );
 
 	if( !( sym = p_get_symbol( parser, deriv, SYM_NON_TERMINAL, TRUE ) ) )
@@ -674,9 +674,9 @@ void p_setup_single_goal( PARSER* parser )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_symbol_order()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Re-orders all parser symbols after all parsing and revision
 					steps are done according to the following order:
 
@@ -686,12 +686,12 @@ void p_setup_single_goal( PARSER* parser )
 					- Nonterminals
 
 					After this, id's are re-assigned.
-					
+
 	Parameters:		PARSER*		parser			Pointer to the parser
 												information structure.
-	
+
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 	17.01.2011	Jan Max Meyer	Sort keyword regex terminals before any
@@ -754,9 +754,9 @@ void p_symbol_order( PARSER* parser )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_charsets_to_ptn()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Turns character-classes into patterns, to be later
 					integrated into lexical analyzers. This step can only be
 					done after all grammar-related revisions had been finished,
@@ -764,9 +764,9 @@ void p_symbol_order( PARSER* parser )
 
 	Parameters:		PARSER*		parser			Pointer to the parser
 												information structure.
-	
+
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */

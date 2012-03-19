@@ -1,5 +1,5 @@
 /* -MODULE----------------------------------------------------------------------
-UniCC LALR(1) Parser Generator 
+UniCC LALR(1) Parser Generator
 Copyright (C) 2006-2012 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
@@ -8,7 +8,7 @@ Author:	Jan Max Meyer
 Usage:	The dynamic program module generator of the UniCC parser generator,
 		to construct a parser program module in a specific programming language
 		using a template.
-		
+
 You may use, modify and distribute this software under the terms and conditions
 of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
@@ -37,22 +37,22 @@ extern FILE*	status;
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_escape_for_target()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Escapes the input-string according to the parser template's
 					escaping-sequence definitions. This function is used to
 					print identifiers and character-class definitions to the
 					target parser without getting trouble with the target
 					language's escape characters (e.g. as in C - I love C!!!).
-					
-	Parameters:		GENERATOR*	g					Generator template structure			
+
+	Parameters:		GENERATOR*	g					Generator template structure
 					uchar*		str					Source string
 					BOOLEAN		clear				If TRUE, str will be free'd,
 													else not
-	
+
 	Returns:		uchar*							The final (escaped) string
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -70,7 +70,7 @@ uchar* p_escape_for_target( GENERATOR* g, uchar* str, BOOLEAN clear )
 
 	for( i = 0; i < g->sequences_count; i++ )
 	{
-		if( !( tmp = pstr_render( ret, g->for_sequences[ i ],
+		if( !( tmp = pstrrender( ret, g->for_sequences[ i ],
 				g->do_sequences[ i ], FALSE, (uchar*)NULL ) ) )
 			OUTOFMEM;
 
@@ -84,17 +84,17 @@ uchar* p_escape_for_target( GENERATOR* g, uchar* str, BOOLEAN clear )
 #if 0
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_build_code_localizations()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Expands all @@line macros to fullfill line number
 					counting.
-					
+
 	Parameters:		uchar**		str					Target string to perform
 													replacement on.
-					GENERATOR*	g					Generator template structure			
+					GENERATOR*	g					Generator template structure
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -109,7 +109,7 @@ static int replace_lines( pregex_result* res )
 	{
 
 	}
-	
+
 	return -1;
 }
 
@@ -117,7 +117,7 @@ void p_build_code_localizations( uchar** str, GENERATOR* g )
 {
 	uchar*		result	= (uchar*)NULL;
 	pregex		preg;
-	
+
 
 	if( line > 0 )
 		return;
@@ -129,7 +129,7 @@ void p_build_code_localizations( uchar** str, GENERATOR* g )
 	pregex_compile( &preg, "\n", 0 );
 	pregex_compile( &preg, "@@line", 1 );
 
-	pregex_replace( 
+	pregex_replace(
 
 
 	line = 0;
@@ -139,12 +139,12 @@ void p_build_code_localizations( uchar** str, GENERATOR* g )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_build_action()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Constructs target language code for production reduction
 					code blocks.
-					
+
 	Parameters:		PARSER*		parser				Parser information structure
 					GENERATOR*	g					Generator template structure
 					PROD*		p					Production
@@ -153,11 +153,11 @@ void p_build_code_localizations( uchar** str, GENERATOR* g )
 					BOOLEAN		def_code			Defines if the base-pointer
 													is a default-code block or
 													an individually coded one.
-	
+
 	Returns:		uchar*							Pointer to the generated
 													code - must be freed by
 													caller.
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 	12.07.2010	Jan Max Meyer	Print warning if code symbol references to un-
@@ -188,14 +188,14 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 	LIST*			rhs_idents	= p->rhs_idents;
 	BOOLEAN			on_error	= FALSE;
 	SYMBOL*			sym;
-	
+
 	PROC( "p_build_action" );
 	PARMS( "parser", "%p", parser );
 	PARMS( "g", "%p", g );
 	PARMS( "p", "%p", p );
 	PARMS( "base", "%s", base );
 	PARMS( "def_code", "%s", BOOLEAN_STR( def_code ) );
-	
+
 	/* Prepare regular expression engine */
 	pregex_init( &replacer, REGEX_MOD_GLOBAL );
 
@@ -214,15 +214,15 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 
 	if( pregex_compile( &replacer, "@@", 3 ) != ERR_OK )
 		RETURN( (uchar*)NULL );
-		
-	/* 
+
+	/*
 	 * Hmm ... this way looks "cooler" for future versions, maybe
 	 * this would be a nice extension: @<command>:<parameters>
 	 */
 	if( pregex_compile( &replacer,
 			"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 4 ) != ERR_OK )
 		RETURN( (uchar*)NULL );
-	
+
 	/* Run regular expression */
 	if( ( result_cnt = pregex_match( &replacer, base,
 							REGEX_NO_CALLBACK, &result ) ) < 0 )
@@ -236,13 +236,13 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 		MSG( "Nothing to do at all" );
 		RETURN( pstrdup( base ) );
 	}
-	
+
 	VARS( "result_cnt", "%d", result_cnt );
-	
-	/* Free the regular expression facilities - we have everything we 
+
+	/* Free the regular expression facilities - we have everything we
 		need from here! */
 	pregex_free( &replacer );
-	
+
 	VARS( "p->sem_rhs", "%p", p->sem_rhs  );
 	/* Ok, perform replacement operations */
 	if( p->sem_rhs && !def_code )
@@ -251,8 +251,8 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 		rhs = p->sem_rhs;
 		rhs_idents = p->sem_rhs_idents;
 	}
-	
-	MSG( "Iterating through the results array" );	
+
+	MSG( "Iterating through the results array" );
 	for( i = 0, last = base; i < result_cnt && !on_error; i++ )
 	{
 		VARS( "i", "%d", i );
@@ -261,15 +261,15 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 
 		if( last < result[i].begin )
 		{
-			if( !( ret = pstr_append_nchar(
+			if( !( ret = pstrncatstr(
 					ret, last, result[i].begin - last ) ) )
 				OUTOFMEM;
-				
+
 			VARS( "ret", "%s", ret );
 
 			last = result[i].end;
 		}
-		
+
 		VARS( "result[i].accept", "%d", result[i].accept );
 		switch( result[i].accept )
 		{
@@ -284,7 +284,7 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 				{
 					chk = (uchar*)list_access( l );
 					VARS( "chk", "%s", chk ? chk : "(NULL)" );
-					
+
 					/*
 					printf( "check >%.*s< with >%.*s<\n",
 						result[i].len - 1, chk,
@@ -297,16 +297,16 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 						break;
 					}
 				}
-				
+
 				if( !l )
 				{
 					p_error( parser, ERR_UNDEFINED_SYMREF, ERRSTYLE_WARNING,
 										result[i].len, result[i].begin );
 					off = 0;
-					
+
 					tmp = pstrdup( result[i].begin );
 				}
-				
+
 				VARS( "off", "%d", off );
 				break;
 
@@ -318,17 +318,17 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 			case 3:
 				MSG( "Left-hand side" );
 				if( p->lhs->vtype && list_count( parser->vtypes ) > 1 )
-					ret = pstr_append_str( ret,
-							pstr_render( g->action_lhs_union,
+					ret = pstrcatstr( ret,
+							pstrrender( g->action_lhs_union,
 								GEN_WILD_PREFIX "attribute",
-									pstr_render( g->vstack_union_att,
+									pstrrender( g->vstack_union_att,
 										GEN_WILD_PREFIX "value-type-id",
 											p_int_to_str( p->lhs->vtype->id ),
 												TRUE,
 										(uchar*)NULL ), TRUE,
 								(uchar*)NULL ), TRUE );
 				else
-					ret = pstr_append_str( ret, g->action_lhs_single, FALSE );					
+					ret = pstrcatstr( ret, g->action_lhs_single, FALSE );
 
 				VARS( "ret", "%s", ret );
 				break;
@@ -336,23 +336,23 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 			case 4:
 				MSG( "Assign left-hand side symbol" );
 				off = 0;
-				
+
 				if( !( tmp = pasprintf( "%.*s",
 								result[i].len - ( pstrlen( SYMBOL_VAR ) + 3 ),
-								result[i].begin + ( pstrlen( SYMBOL_VAR ) + 3 ) 
+								result[i].begin + ( pstrlen( SYMBOL_VAR ) + 3 )
 									) ) )
 				{
 					OUTOFMEM;
 					RETURN( (uchar*)NULL );
 				}
-				
+
 				VARS( "tmp", "%s", tmp );
 
 				/* Go through all possible left-hand side symbols */
 				for( l = p->all_lhs; l; l = list_next( l ) )
 				{
 					sym = (SYMBOL*)list_access( l );
-					
+
 					if( !pstrcmp( sym->name, tmp ) )
 					{
 						MSG( "Found a matching symbol!" );
@@ -360,15 +360,15 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 						pfree( tmp );
 						tmp = (uchar*)NULL;
 
-						ret = pstr_append_str( ret,
-								pstr_render( g->action_set_lhs,
+						ret = pstrcatstr( ret,
+								pstrrender( g->action_set_lhs,
 									GEN_WILD_PREFIX "sym",
 										p_int_to_str( sym->id ), TRUE,
 											(uchar*)NULL ), TRUE );
 						break;
 					}
 				}
-				
+
 				if( !l )
 				{
 					MSG( "No match found..." );
@@ -376,7 +376,7 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 					p_error( parser, ERR_UNDEFINED_LHS,
 								ERRSTYLE_WARNING, tmp );
 					pfree( tmp );
-					
+
 					if( !( tmp = pstrdup( result[i].begin ) ) )
 					{
 						OUTOFMEM;
@@ -390,7 +390,7 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 				MSG( "Uncaught regular expression match!" );
 				break;
 		}
-		
+
 		VARS( "off", "%d", off );
 		if( off > 0 )
 		{
@@ -398,12 +398,12 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 			sym = (SYMBOL*)list_getptr( rhs, off - 1 );
 
 			if( !( sym->keyword ) )
-			{				
+			{
 				if( list_count( parser->vtypes ) > 1 )
 				{
 					if( sym->vtype )
 					{
-						att  = pstr_render( g->vstack_union_att,
+						att  = pstrrender( g->vstack_union_att,
 							GEN_WILD_PREFIX "value-type-id",
 								p_int_to_str( sym->vtype->id ), TRUE,
 							(uchar*)NULL );
@@ -413,19 +413,19 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 						p_error( parser, ERR_NO_VALUE_TYPE, ERRSTYLE_FATAL,
 								sym->name, p->id, result[i].len + 1,
 									result[i].begin );
-					
+
 						att = (uchar*)NULL;
 						on_error = TRUE;
 					}
 
-					tmp = pstr_render( g->action_union,
+					tmp = pstrrender( g->action_union,
 						GEN_WILD_PREFIX "offset",
 							p_int_to_str( list_count( rhs ) - off ), TRUE,
 						GEN_WILD_PREFIX "attribute", att, TRUE,
 						(uchar*)NULL );
 				}
 				else
-					tmp = pstr_render( g->action_single,
+					tmp = pstrrender( g->action_single,
 						GEN_WILD_PREFIX "offset",
 							p_int_to_str( list_count( rhs ) - off ), TRUE,
 						(uchar*)NULL );
@@ -442,20 +442,20 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 				on_error = TRUE;
 			}
 		}
-		
+
 		if( tmp )
-			ret = pstr_append_str( ret, tmp, TRUE );
+			ret = pstrcatstr( ret, tmp, TRUE );
 	}
-		
+
 	if( last && *last )
-		ret = pstr_append_str( ret, last, FALSE );
-	
+		ret = pstrcatstr( ret, last, FALSE );
+
 	MSG( "Free result array" );
 	pfree( result );
-		
+
 	VARS( "ret", "%s", ret );
 	VARS( "on_error", "%s", BOOLEAN_STR( on_error ) );
-		
+
 	if( on_error && ret )
 	{
 		MSG( "Okay, on error, everything will be deleted!" );
@@ -468,15 +468,15 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_build_scan_action()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Construct the scanner action code from templates.
-					
+
 	Parameters:		<type>		<identifier>		<description>
-	
+
 	Returns:		<type>							<description>
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -492,16 +492,16 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 	LIST*			l;
 	SYMBOL*		sym;
 	int				i;
-	
+
 	PROC( "p_build_scan_action" );
 	PARMS( "parser", "%p", parser );
 	PARMS( "g", "%p", g );
 	PARMS( "s", "%p", s );
 	PARMS( "base", "%s", base );
-	
+
 	/* Prepare regular expression engine */
 	pregex_init( &replacer, REGEX_MOD_GLOBAL | REGEX_MOD_NO_ANCHORS );
-	
+
 	if( pregex_compile( &replacer, "@>", 0 )
 			!= ERR_OK )
 		RETURN( (uchar*)NULL );
@@ -513,7 +513,7 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 	if( pregex_compile( &replacer, "@@", 2 )
 			!= ERR_OK )
 		RETURN( (uchar*)NULL );
-		
+
 	if( pregex_compile( &replacer,
 			"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 3 ) != ERR_OK )
 		RETURN( (uchar*)NULL );
@@ -531,41 +531,41 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 		MSG( "Nothing to do at all" );
 		RETURN( pstrdup( base ) );
 	}
-	
+
 	VARS( "result_cnt", "%d", result_cnt );
-	
-	/* Free the regular expression facilities - we have everything we 
+
+	/* Free the regular expression facilities - we have everything we
 		need from here! */
 	pregex_free( &replacer );
-	
-	MSG( "Iterating trough result array" );	
+
+	MSG( "Iterating trough result array" );
 	for( i = 0, last = base; i < result_cnt; i++ )
 	{
 		VARS( "i", "%d", i );
 
 		if( last < result[i].begin )
 		{
-			if( !( ret = pstr_append_nchar(
+			if( !( ret = pstrncatstr(
 					ret, last, result[i].begin - last ) ) )
 				OUTOFMEM;
-				
+
 			VARS( "ret", "%s", ret );
 		}
 
 		last = result[i].end;
-		
+
 		VARS( "result[i].accept", "%d", result[i].accept );
 		switch( result[i].accept )
 		{
 			case 0:
 				MSG( "@>" );
-				ret = pstr_append_str( ret,
+				ret = pstrcatstr( ret,
 					g->scan_action_begin_offset, FALSE );
 				break;
 
 			case 1:
 				MSG( "@<" );
-				ret = pstr_append_str( ret,
+				ret = pstrcatstr( ret,
 					g->scan_action_end_offset, FALSE );
 
 				break;
@@ -573,43 +573,43 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 			case 2:
 				MSG( "@@" );
 				if( s->vtype && list_count( parser->vtypes ) > 1 )
-					ret = pstr_append_str( ret,
-							pstr_render( g->scan_action_ret_union,
+					ret = pstrcatstr( ret,
+							pstrrender( g->scan_action_ret_union,
 								GEN_WILD_PREFIX "attribute",
-									pstr_render( g->vstack_union_att,
+									pstrrender( g->vstack_union_att,
 										GEN_WILD_PREFIX "value-type-id",
 											p_int_to_str( s->vtype->id ), TRUE,
 										(uchar*)NULL ), TRUE,
 								(uchar*)NULL ), TRUE );
 				else
-					ret = pstr_append_str( ret,
+					ret = pstrcatstr( ret,
 							g->scan_action_ret_single, FALSE );
 				break;
-				
+
 			case 3:
 				MSG( "Set terminal symbol" );
 
 				if( !( tmp = pasprintf( "%.*s",
 								result[i].len - ( pstrlen( SYMBOL_VAR ) + 3 ),
-								result[i].begin + ( pstrlen( SYMBOL_VAR ) + 3 ) 
+								result[i].begin + ( pstrlen( SYMBOL_VAR ) + 3 )
 									) ) )
 				{
 					OUTOFMEM;
 					RETURN( (uchar*)NULL );
 				}
-				
+
 				VARS( "tmp", "%s", tmp );
 
 				/* Go through all possible terminal symbols */
 				for( l = s->all_sym; l; l = list_next( l ) )
 				{
 					sym = (SYMBOL*)list_access( l );
-					
+
 					if( !pstrcmp( sym->name, tmp ) )
 					{
 						MSG( "Found a matching symbol!" );
-						ret = pstr_append_str( ret,
-								pstr_render( g->scan_action_set_symbol,
+						ret = pstrcatstr( ret,
+								pstrrender( g->scan_action_set_symbol,
 									GEN_WILD_PREFIX "sym",
 										p_int_to_str( sym->id ), TRUE,
 											(uchar*)NULL ), TRUE );
@@ -624,39 +624,39 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 					p_error( parser, ERR_UNDEFINED_TERMINAL,
 								ERRSTYLE_WARNING, tmp );
 				}
-				
+
 				pfree( tmp );
 				break;
-				
+
 			default:
 				MSG( "Uncaught regular expression match!" );
 				break;
 		}
-		
+
 		VARS( "ret", "%s", ret );
 	}
-		
+
 	if( last && *last )
-		ret = pstr_append_str( ret, last, FALSE );
-	
+		ret = pstrcatstr( ret, last, FALSE );
+
 	MSG( "Free result array" );
 	pfree( result );
-		
+
 	VARS( "ret", "%s", ret );
 	RETURN( ret );
 }
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_mkproduction_str()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Converts a production into a dynamic string.
-					
+
 	Parameters:		PROD*		p					Production pointer
-	
+
 	Returns:		uchar*							Generated string
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -666,14 +666,14 @@ uchar* p_mkproduction_str( PROD* p )
 	uchar		wtf		[ 512 ];
 	LIST*		l;
 	SYMBOL*		sym;
-	
+
 	sprintf( wtf, "%.*s -> ", sizeof( wtf ) - 5, p->lhs->name );
 	ret = pstrdup( wtf );
-	
+
 	for( l = p->rhs; l; l = l->next )
 	{
 		sym = (SYMBOL*)( l->pptr );
-		
+
 		switch( sym->type )
 		{
 			case SYM_CCL_TERMINAL:
@@ -695,33 +695,33 @@ uchar* p_mkproduction_str( PROD* p )
 				sprintf( wtf, "%.*s", sizeof( wtf ) - 2, sym->name );
 				break;
 		}
-		
+
 		if( l->next )
 			strcat( wtf, " " );
-		
-		ret = pstr_append_str( ret, wtf, FALSE );
+
+		ret = pstrcatstr( ret, wtf, FALSE );
 	}
-	
+
 	return ret;
 }
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_load_generator()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Loads a XML-defined code generator into an adequate
 					GENERATOR structure. Pointers are only set to the
 					values mapped to the XML-structure, so no memory is
 					wasted.
-					
+
 	Parameters:		PARSER*			parser			Parser information structure
 					GENERATOR*		g				The target generator
 					uchar*			genfile			Path to generator file
-	
+
 	Returns:		BOOLEAN			TRUE			on success
 									FALSE			on error.
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -763,7 +763,7 @@ BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, uchar* genfile )
 	} \
 	else \
 		p_error( parser, ERR_TAG_NOT_FOUND, ERRSTYLE_WARNING, \
-			(tagname), genfile ); 
+			(tagname), genfile );
 
 	if( !( g->xml = xml_parse_file( genfile ) ) )
 	{
@@ -818,7 +818,7 @@ BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, uchar* genfile )
 
 	GET_XML_TAB_1D( g->symbols, "symbols" )
 	GET_XML_TAB_1D( g->productions, "productions" )
-	
+
 	GET_XML_DEF( g->xml, g->code_localization, "code_localization" );
 
 	/* Escape sequence definitions */
@@ -827,7 +827,7 @@ BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, uchar* genfile )
 	{
 		att_for = (uchar*)xml_attr( tmp, "for" );
 		att_do = (uchar*)xml_attr( tmp, "do" );
-		
+
 		if( att_for && att_do )
 		{
 			for( i = 0; i < g->sequences_count; i++ )
@@ -892,19 +892,19 @@ BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, uchar* genfile )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_build_code()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			This is the main function for the code-generator.
 					It first reads a target language generator, and then
 					constructs code segments, which are finally pasted into
 					the parser template (which is defined within the
 					<driver>-tag of the generator file).
-					
+
 	Parameters:		PARSER*		parser			Parser information structure
-	
+
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -914,7 +914,7 @@ void p_build_code( PARSER* parser )
 	GENERATOR*		gen					= (GENERATOR*)NULL;
 	XML_T			file;
 	FILE*			stream;
-	
+
 	uchar*			basename;
 	uchar			xml_file			[ BUFSIZ + 1 ];
 	uchar*			option;
@@ -968,7 +968,7 @@ void p_build_code( PARSER* parser )
 	CCL				c;
 	int				i;
 	BOOLEAN			is_default_code;
-	
+
 	HASHELEM*		he;
 
 	PROC( "p_build_code" );
@@ -985,27 +985,27 @@ void p_build_code( PARSER* parser )
 		MSG( "File not found, trying to get it from UNICC_TPLDIR" );
 
 		sprintf( xml_file, "%s%c%s.tlt",
-			tpldir, 
+			tpldir,
 				( ( tpldir[ pstrlen( tpldir ) ] == PPATHSEP )
 					? '\0' : PPATHSEP ), parser->p_language );
 
 		VARS( "xml_file", "%s", xml_file );
 	}
-	
+
 	VARS( "xml_file", "%s", xml_file );
-	
+
 	MSG( "Loading generator" );
 	if( !p_load_generator( parser, gen, xml_file ) )
 		VOIDRET;
 
 	/* Now that we have the generator, do some code generation-related
 		integrity preparatories on the grammar */
-	
+
 	MSG( "Performing code generation-related integrity preparatories" );
 	for( l = parser->symbols; l; l = l->next )
 	{
 		sym = (SYMBOL*)( l->pptr );
-		
+
 		if( !( sym->vtype ) )
 			sym->vtype = parser->p_def_type;
 
@@ -1021,14 +1021,14 @@ void p_build_code( PARSER* parser )
 	/* Create piece of code for the value at the top of the value stack
 		(e.g. used to store the next terminal character onto the value stack) */
 	if( list_count( parser->vtypes ) == 1 )
-		top_value = pstr_render( gen->action_single,
+		top_value = pstrrender( gen->action_single,
 			GEN_WILD_PREFIX "offset", p_int_to_str( 0 ), TRUE,
 				(uchar*)NULL );
 	else if( ( vt = p_find_vtype( parser, gen->vstack_term_type ) ) )
-			top_value = pstr_render( gen->action_union,
+			top_value = pstrrender( gen->action_union,
 				GEN_WILD_PREFIX "offset", p_int_to_str( 0 ), TRUE,
 					GEN_WILD_PREFIX "attribute",
-						pstr_render( gen->vstack_union_att,
+						pstrrender( gen->vstack_union_att,
 							GEN_WILD_PREFIX "value-type-id",
 									p_int_to_str( vt->id ), TRUE,
 										(uchar*)NULL ), TRUE,
@@ -1036,18 +1036,18 @@ void p_build_code( PARSER* parser )
 	else
 		/* ERROR */
 		;
-		
+
 	/* Create piece of code for the value that is associated with the
 	 * 	goal symbol, to e.g. return it from the parser function */
 	if( list_count( parser->vtypes ) == 1 )
-		goal_value = pstr_render( gen->action_single,
+		goal_value = pstrrender( gen->action_single,
 			GEN_WILD_PREFIX "offset", p_int_to_str( 0 ), TRUE,
 				(uchar*)NULL );
 	else
-		goal_value = pstr_render( gen->action_union,
+		goal_value = pstrrender( gen->action_union,
 			GEN_WILD_PREFIX "offset", p_int_to_str( 0 ), TRUE,
 				GEN_WILD_PREFIX "attribute",
-					pstr_render( gen->vstack_union_att,
+					pstrrender( gen->vstack_union_att,
 						GEN_WILD_PREFIX "value-type-id",
 								p_int_to_str( parser->goal->vtype->id ), TRUE,
 									(uchar*)NULL ), TRUE,
@@ -1058,9 +1058,9 @@ void p_build_code( PARSER* parser )
 	for( l = parser->lalr_states, i = 0; l; l = l->next, i++ )
 	{
 		st = (STATE*)(l->pptr);
-		
+
 		/* Action table */
-		action_table_row = pstr_render( gen->acttab.row_start,
+		action_table_row = pstrrender( gen->acttab.row_start,
 				GEN_WILD_PREFIX "number-of-columns",
 					p_int_to_str( list_count( st->actions ) ), TRUE,
 				GEN_WILD_PREFIX "state-number",
@@ -1074,8 +1074,8 @@ void p_build_code( PARSER* parser )
 		{
 			col = (TABCOL*)(m->pptr);
 
-			action_table_row = pstr_append_str( action_table_row,
-				pstr_render( gen->acttab.col,
+			action_table_row = pstrcatstr( action_table_row,
+				pstrrender( gen->acttab.col,
 					GEN_WILD_PREFIX "symbol",
 							p_int_to_str( col->symbol->id ), TRUE,
 					GEN_WILD_PREFIX "action", p_int_to_str( col->action ), TRUE,
@@ -1084,12 +1084,12 @@ void p_build_code( PARSER* parser )
 						(uchar*)NULL ), TRUE );
 
 			if( m->next )
-				action_table_row = pstr_append_str( action_table_row,
+				action_table_row = pstrcatstr( action_table_row,
 					gen->acttab.col_sep, FALSE );
 		}
 
-		action_table_row = pstr_append_str( action_table_row,
-				pstr_render( gen->acttab.row_end,
+		action_table_row = pstrcatstr( action_table_row,
+				pstrrender( gen->acttab.row_end,
 					GEN_WILD_PREFIX "number-of-columns",
 						p_int_to_str( list_count( st->actions ) ), TRUE,
 					GEN_WILD_PREFIX "state-number",
@@ -1097,13 +1097,13 @@ void p_build_code( PARSER* parser )
 							(uchar*)NULL ), TRUE );
 
 		if( l->next )
-			action_table_row = pstr_append_str( action_table_row,
+			action_table_row = pstrcatstr( action_table_row,
 				gen->acttab.row_sep, FALSE );
 
-		action_table = pstr_append_str( action_table, action_table_row, TRUE );
+		action_table = pstrcatstr( action_table, action_table_row, TRUE );
 
 		/* Goto table */
-		goto_table_row = pstr_render( gen->gotab.row_start,
+		goto_table_row = pstrrender( gen->gotab.row_start,
 				GEN_WILD_PREFIX "number-of-columns",
 					p_int_to_str( list_count( st->gotos ) ), TRUE,
 				GEN_WILD_PREFIX "state-number",
@@ -1117,8 +1117,8 @@ void p_build_code( PARSER* parser )
 		{
 			col = (TABCOL*)(m->pptr);
 
-			goto_table_row = pstr_append_str( goto_table_row,
-				pstr_render( gen->gotab.col,
+			goto_table_row = pstrcatstr( goto_table_row,
+				pstrrender( gen->gotab.col,
 					GEN_WILD_PREFIX "symbol",
 						p_int_to_str( col->symbol->id ), TRUE,
 					GEN_WILD_PREFIX "action",
@@ -1130,12 +1130,12 @@ void p_build_code( PARSER* parser )
 					(uchar*)NULL ), TRUE );
 
 			if( m->next )
-				goto_table_row = pstr_append_str( goto_table_row,
+				goto_table_row = pstrcatstr( goto_table_row,
 					gen->gotab.col_sep, FALSE );
 		}
 
-		goto_table_row = pstr_append_str( goto_table_row,
-				pstr_render( gen->gotab.row_end,
+		goto_table_row = pstrcatstr( goto_table_row,
+				pstrrender( gen->gotab.row_end,
 					GEN_WILD_PREFIX "number-of-columns",
 						p_int_to_str( list_count( st->actions ) ), TRUE,
 					GEN_WILD_PREFIX "state-number",
@@ -1143,29 +1143,29 @@ void p_build_code( PARSER* parser )
 					(uchar*)NULL ), TRUE );
 
 		if( l->next )
-			goto_table_row = pstr_append_str( goto_table_row,
+			goto_table_row = pstrcatstr( goto_table_row,
 				gen->gotab.row_sep, FALSE );
 
-		goto_table = pstr_append_str( goto_table, goto_table_row, TRUE );
+		goto_table = pstrcatstr( goto_table, goto_table_row, TRUE );
 
 		/* Only in context-sensitive model */
 		if( parser->p_mode == MODE_SENSITIVE )
 		{
 			/* dfa machine selection */
-			dfa_select = pstr_append_str( dfa_select,
-				pstr_render( gen->dfa_select.col,
+			dfa_select = pstrcatstr( dfa_select,
+				pstrrender( gen->dfa_select.col,
 					GEN_WILD_PREFIX "machine",
 						p_int_to_str( list_find( parser->kw, st->dfa ) ), TRUE,
 							(char*)NULL ), TRUE );
 
 			if( l->next )
-				dfa_select = pstr_append_str( dfa_select,
+				dfa_select = pstrcatstr( dfa_select,
 								gen->dfa_select.col_sep, FALSE );
 		}
-		
+
 		/* Default production table */
-		def_prod = pstr_append_str( def_prod,
-				pstr_render( gen->defprod.col,
+		def_prod = pstrcatstr( def_prod,
+				pstrrender( gen->defprod.col,
 					GEN_WILD_PREFIX "state-number",
 						p_int_to_str( st->state_id ), TRUE,
 					GEN_WILD_PREFIX "production-number",
@@ -1174,7 +1174,7 @@ void p_build_code( PARSER* parser )
 								TRUE, (uchar*)NULL ), TRUE );
 
 		if( l->next )
-			def_prod = pstr_append_str( def_prod, gen->defprod.col_sep, FALSE );
+			def_prod = pstrcatstr( def_prod, gen->defprod.col_sep, FALSE );
 	}
 
 	/* Lexical recognition machine table composition */
@@ -1184,14 +1184,14 @@ void p_build_code( PARSER* parser )
 		dfa = (pregex_dfa*)list_access( l );
 
 		/* Row start */
-		dfa_idx_row = pstr_render( gen->dfa_idx.row_start,
+		dfa_idx_row = pstrrender( gen->dfa_idx.row_start,
 				GEN_WILD_PREFIX "number-of-columns",
 					p_int_to_str( list_count( dfa->states ) ), TRUE,
 				GEN_WILD_PREFIX "row",
 					p_int_to_str( row ), TRUE,
 				(uchar*)NULL );
 
-		dfa_accept_row = pstr_render( gen->dfa_accept.row_start,
+		dfa_accept_row = pstrrender( gen->dfa_accept.row_start,
 				GEN_WILD_PREFIX "number-of-columns",
 					p_int_to_str( list_count( dfa->states ) ), TRUE,
 				GEN_WILD_PREFIX "row",
@@ -1209,20 +1209,20 @@ void p_build_code( PARSER* parser )
 
 			if( dfa_char && dfa_trans )
 			{
-				dfa_char = pstr_append_str( dfa_char,
+				dfa_char = pstrcatstr( dfa_char,
 						gen->dfa_char.col_sep, FALSE );
-				dfa_trans = pstr_append_str( dfa_trans,
+				dfa_trans = pstrcatstr( dfa_trans,
 						gen->dfa_trans.col_sep, FALSE );
 			}
 
-			dfa_idx_row = pstr_append_str( dfa_idx_row,
-				pstr_render( gen->dfa_idx.col,
+			dfa_idx_row = pstrcatstr( dfa_idx_row,
+				pstrrender( gen->dfa_idx.col,
 					GEN_WILD_PREFIX "index",
 						p_int_to_str( column ), TRUE,
 					(uchar*)NULL ), TRUE );
 
-			dfa_accept_row = pstr_append_str( dfa_accept_row,
-				pstr_render( gen->dfa_accept.col,
+			dfa_accept_row = pstrcatstr( dfa_accept_row,
+				pstrrender( gen->dfa_accept.col,
 					GEN_WILD_PREFIX "accept",
 						p_int_to_str( dfa_st->accept.accept ), TRUE,
 					(uchar*)NULL ), TRUE );
@@ -1235,8 +1235,8 @@ void p_build_code( PARSER* parser )
 
 				for( c = dfa_ent->ccl; c && c->begin != CCL_MAX; c++ )
 				{
-					dfa_char = pstr_append_str( dfa_char,
-								pstr_render( gen->dfa_char.col,
+					dfa_char = pstrcatstr( dfa_char,
+								pstrrender( gen->dfa_char.col,
 								GEN_WILD_PREFIX "from",
 									p_int_to_str( c->begin ), TRUE,
 								GEN_WILD_PREFIX "to",
@@ -1245,25 +1245,25 @@ void p_build_code( PARSER* parser )
 									p_int_to_str( dfa_st->accept.accept ), TRUE,
 								(uchar*)NULL ), TRUE );
 
-					dfa_trans = pstr_append_str( dfa_trans,
-								pstr_render( gen->dfa_trans.col,
+					dfa_trans = pstrcatstr( dfa_trans,
+								pstrrender( gen->dfa_trans.col,
 									GEN_WILD_PREFIX "goto",
 									p_int_to_str( dfa_ent->go_to ), TRUE,
 								(uchar*)NULL ), TRUE );
 
 
-					dfa_char = pstr_append_str( dfa_char,
+					dfa_char = pstrcatstr( dfa_char,
 									gen->dfa_char.col_sep, FALSE );
-					dfa_trans = pstr_append_str( dfa_trans,
+					dfa_trans = pstrcatstr( dfa_trans,
 									gen->dfa_trans.col_sep, FALSE );
-									
+
 					column++;
 				}
 			}
 
 			/* DFA transition end marker */
-			dfa_char = pstr_append_str( dfa_char,
-					pstr_render( gen->dfa_char.col,
+			dfa_char = pstrcatstr( dfa_char,
+					pstrrender( gen->dfa_char.col,
 						GEN_WILD_PREFIX "from",
 							p_int_to_str( -1 ), TRUE,
 						GEN_WILD_PREFIX "to",
@@ -1271,8 +1271,8 @@ void p_build_code( PARSER* parser )
 						(uchar*)NULL ), TRUE );
 
 			/* DFA transition */
-			dfa_trans = pstr_append_str( dfa_trans,
-					pstr_render( gen->dfa_trans.col,
+			dfa_trans = pstrcatstr( dfa_trans,
+					pstrrender( gen->dfa_trans.col,
 						GEN_WILD_PREFIX "goto",
 							p_int_to_str( -1 ),
 					TRUE, (uchar*)NULL ), TRUE );
@@ -1281,24 +1281,24 @@ void p_build_code( PARSER* parser )
 
 			if( list_next( m ) )
 			{
-				dfa_idx_row = pstr_append_str( dfa_idx_row,
+				dfa_idx_row = pstrcatstr( dfa_idx_row,
 						gen->dfa_idx.col_sep, FALSE );
-				dfa_accept_row = pstr_append_str( dfa_accept_row,
+				dfa_accept_row = pstrcatstr( dfa_accept_row,
 						gen->dfa_accept.col_sep, FALSE );
 			}
 		}
 
 		/* Row end */
-		dfa_idx_row = pstr_append_str( dfa_idx_row,
-				pstr_render( gen->dfa_idx.row_end,
+		dfa_idx_row = pstrcatstr( dfa_idx_row,
+				pstrrender( gen->dfa_idx.row_end,
 					GEN_WILD_PREFIX "number-of-columns",
 						p_int_to_str( list_count( dfa->states ) ), TRUE,
 					GEN_WILD_PREFIX "row",
 						p_int_to_str( row ), TRUE,
 					(uchar*)NULL ), TRUE );
 
-		dfa_accept_row = pstr_append_str( dfa_accept_row,
-				pstr_render( gen->dfa_accept.row_end,
+		dfa_accept_row = pstrcatstr( dfa_accept_row,
+				pstrrender( gen->dfa_accept.row_end,
 					GEN_WILD_PREFIX "number-of-columns",
 						p_int_to_str( list_count( dfa->states ) ), TRUE,
 					GEN_WILD_PREFIX "row", p_int_to_str( row ), TRUE,
@@ -1306,32 +1306,32 @@ void p_build_code( PARSER* parser )
 
 		if( list_next( l ) )
 		{
-			dfa_idx_row = pstr_append_str( dfa_idx_row,
+			dfa_idx_row = pstrcatstr( dfa_idx_row,
 				gen->dfa_idx.row_sep, FALSE );
-			dfa_accept_row = pstr_append_str( dfa_accept_row,
+			dfa_accept_row = pstrcatstr( dfa_accept_row,
 				gen->dfa_accept.row_sep, FALSE );
 		}
 
-		dfa_idx = pstr_append_str( dfa_idx, dfa_idx_row, TRUE );
-		dfa_accept = pstr_append_str( dfa_accept, dfa_accept_row, TRUE );
+		dfa_idx = pstrcatstr( dfa_idx, dfa_idx_row, TRUE );
+		dfa_accept = pstrcatstr( dfa_accept, dfa_accept_row, TRUE );
 	}
-	
+
 	MSG( "Construct map of invalid characters (regex recognition)" );
-	
+
 #if 0
 	/* Map of invalid keyword suffix characters */
 	for( c = parser->p_invalid_suf; c && c->begin != CCL_MAX; c++ )
 	{
 		VARS( "c->begin", "%d", c->begin );
 		VARS( "c->end", "%d", c->end );
-		
+
 		if( kw_invalid_suffix )
-			kw_invalid_suffix = pstr_append_str(
+			kw_invalid_suffix = pstrcatstr(
 				kw_invalid_suffix, gen->kw_invalid_suffix.col_sep,
 					FALSE );
-		
-		kw_invalid_suffix = pstr_append_str( kw_invalid_suffix,
-			pstr_render( gen->kw_invalid_suffix.col,
+
+		kw_invalid_suffix = pstrcatstr( kw_invalid_suffix,
+			pstrrender( gen->kw_invalid_suffix.col,
 				GEN_WILD_PREFIX "from",
 					p_int_to_str( c->begin ), TRUE,
 				GEN_WILD_PREFIX "to",
@@ -1347,7 +1347,7 @@ void p_build_code( PARSER* parser )
 	{
 		sym = (SYMBOL*)list_access( l );
 
-		symbols = pstr_append_str( symbols, pstr_render( gen->symbols.col,
+		symbols = pstrcatstr( symbols, pstrrender( gen->symbols.col,
 				GEN_WILD_PREFIX "symbol-name",
 					p_escape_for_target( gen, sym->name, FALSE ), TRUE,
 				GEN_WILD_PREFIX "symbol",
@@ -1362,7 +1362,7 @@ void p_build_code( PARSER* parser )
 					p_int_to_str( sym->whitespace ), TRUE,
 				GEN_WILD_PREFIX "greedy",
 					p_int_to_str( sym->greedy ), TRUE,
-					
+
 				(char*)NULL ), TRUE );
 
 		if( max_symbol_name < (int)strlen( sym->name ) )
@@ -1370,7 +1370,7 @@ void p_build_code( PARSER* parser )
 
 		if( l->next )
 		{
-			symbols = pstr_append_str( symbols,
+			symbols = pstrcatstr( symbols,
 				gen->symbols.col_sep, FALSE );
 		}
 	}
@@ -1379,13 +1379,13 @@ void p_build_code( PARSER* parser )
 	if( list_count( parser->vtypes ) == 1 )
 	{
 		vt = (VTYPE*)( parser->vtypes->pptr );
-		type_def = pstr_render( gen->vstack_single,
+		type_def = pstrrender( gen->vstack_single,
 				GEN_WILD_PREFIX "value-type", vt->real_def, FALSE,
 					(uchar*)NULL );
 	}
 	else
 	{
-		type_def = pstr_render( gen->vstack_union_start,
+		type_def = pstrrender( gen->vstack_union_start,
 				GEN_WILD_PREFIX "number-of-value-types",
 					p_int_to_str( list_count( parser->vtypes ) ),
 						TRUE, (uchar*)NULL );
@@ -1394,11 +1394,11 @@ void p_build_code( PARSER* parser )
 		{
 			vt = (VTYPE*)(l->pptr);
 
-			type_def = pstr_append_str( type_def,
-				pstr_render( gen->vstack_union_def,
+			type_def = pstrcatstr( type_def,
+				pstrrender( gen->vstack_union_def,
 					GEN_WILD_PREFIX "value-type", vt->real_def, FALSE,
 						GEN_WILD_PREFIX "attribute",
-								pstr_render( gen->vstack_union_att,
+								pstrrender( gen->vstack_union_att,
 									GEN_WILD_PREFIX "value-type-id",
 											p_int_to_str( vt->id ), TRUE,
 												(uchar*)NULL ), TRUE,
@@ -1407,8 +1407,8 @@ void p_build_code( PARSER* parser )
 						(uchar*)NULL ), TRUE );
 		}
 
-		type_def = pstr_append_str( type_def,
-					pstr_render( gen->vstack_union_end,
+		type_def = pstrcatstr( type_def,
+					pstrrender( gen->vstack_union_end,
 						GEN_WILD_PREFIX "number-of-value-types",
 							p_int_to_str( list_count( parser->vtypes ) ),
 								TRUE, (uchar*)NULL ), TRUE );
@@ -1419,7 +1419,7 @@ void p_build_code( PARSER* parser )
 	{
 		p = (PROD*)( l->pptr );
 
-		actions = pstr_append_str( actions, pstr_render( gen->action_start, 
+		actions = pstrcatstr( actions, pstrrender( gen->action_start,
 			GEN_WILD_PREFIX "production-number", p_int_to_str( p->id ), TRUE,
 				(uchar*)NULL ), TRUE );
 
@@ -1440,7 +1440,7 @@ void p_build_code( PARSER* parser )
 			act = parser->p_def_action;
 			is_default_code = TRUE;
 		}
-		
+
 		if( is_default_code &&
 			( p->lhs->whitespace ||
 				list_find( p->rhs, parser->error ) > -1 ) )
@@ -1452,24 +1452,24 @@ void p_build_code( PARSER* parser )
 		{
 			if( gen->code_localization && p->code_at > 0 )
 			{
-				actions = pstr_append_str( actions,
-					pstr_render( gen->code_localization,
+				actions = pstrcatstr( actions,
+					pstrrender( gen->code_localization,
 						GEN_WILD_PREFIX "line",
-							p_int_to_str( p->code_at ), TRUE,	
+							p_int_to_str( p->code_at ), TRUE,
 						(uchar*)NULL ),
 					TRUE );
 			}
 
 			act = p_build_action( parser, gen, p, act, is_default_code );
-			actions = pstr_append_str( actions, act, TRUE );
+			actions = pstrcatstr( actions, act, TRUE );
 		}
 
-		actions = pstr_append_str( actions, pstr_render( gen->action_end, 
+		actions = pstrcatstr( actions, pstrrender( gen->action_end,
 			GEN_WILD_PREFIX "production-number", p_int_to_str( p->id ), TRUE,
 				(uchar*)NULL ), TRUE );
 
 		/* Generate production information table */
-		productions = pstr_append_str( productions, pstr_render(
+		productions = pstrcatstr( productions, pstrrender(
 			gen->productions.col,
 
 				GEN_WILD_PREFIX "production-number",
@@ -1483,9 +1483,9 @@ void p_build_code( PARSER* parser )
 					p_int_to_str( p->lhs->id ), TRUE,
 
 			(uchar*)NULL ), TRUE );
-			
+
 		if( l->next )
-			productions = pstr_append_str( productions,
+			productions = pstrcatstr( productions,
 				gen->productions.col_sep, FALSE );
 	}
 
@@ -1502,24 +1502,24 @@ void p_build_code( PARSER* parser )
 			/* Code localization features */
 			if( gen->code_localization && sym->code_at > 0 )
 			{
-				scan_actions = pstr_append_str( scan_actions,
-					pstr_render( gen->code_localization,
+				scan_actions = pstrcatstr( scan_actions,
+					pstrrender( gen->code_localization,
 						GEN_WILD_PREFIX "line",
-							p_int_to_str( sym->code_at ), TRUE,	
+							p_int_to_str( sym->code_at ), TRUE,
 								(uchar*)NULL ), TRUE );
 			}
 
-			scan_actions = pstr_append_str( scan_actions,
-				pstr_render( gen->scan_action_start,
+			scan_actions = pstrcatstr( scan_actions,
+				pstrrender( gen->scan_action_start,
 					GEN_WILD_PREFIX "symbol-number",
 							p_int_to_str( sym->id ), TRUE,
-								(uchar*)NULL ), TRUE );			
+								(uchar*)NULL ), TRUE );
 
 			act = p_build_scan_action( parser, gen, sym, act );
-			scan_actions = pstr_append_str( scan_actions, act, TRUE );
+			scan_actions = pstrcatstr( scan_actions, act, TRUE );
 
-			scan_actions = pstr_append_str( scan_actions,
-				pstr_render( gen->scan_action_end, 
+			scan_actions = pstrcatstr( scan_actions,
+				pstrrender( gen->scan_action_end,
 					GEN_WILD_PREFIX "symbol-number",
 						p_int_to_str( sym->id ), TRUE,
 							(uchar*)NULL ), TRUE );
@@ -1531,7 +1531,7 @@ void p_build_code( PARSER* parser )
 
 	/* Generate basename - parser->p_basename may contain directory path */
 	basename = pstrdup( pbasename( parser->p_basename ) );
-	
+
 	/* Construct the output files */
 	for( file = xml_child( gen->xml, "file" );
 			file; file = xml_next( file ) )
@@ -1540,7 +1540,7 @@ void p_build_code( PARSER* parser )
 		if( !parser->to_stdout )
 		{
 			if( ( filename = (uchar*)xml_attr( file, "filename" ) ) )
-				filename = pstr_render( filename,
+				filename = pstrrender( filename,
 					/*
 						Here we have to submit the original basename
 						to construct the final output filename using the
@@ -1554,12 +1554,12 @@ void p_build_code( PARSER* parser )
 					GEN_WILD_PREFIX "prefix", parser->p_prefix, FALSE,
 						(char*)NULL );
 		}
-		
+
 		/* Assembling all together - Warning, this is
 			ONE single function call! */
 
-		all = pstr_render( xml_txt( file ),
-		
+		all = pstrrender( xml_txt( file ),
+
 			/* Lengths of names and Prologue/Epilogue codes */
 			GEN_WILD_PREFIX "name" LEN_EXT,
 				p_long_to_str( (long)pstrlen( parser->p_name ) ), TRUE,
@@ -1575,7 +1575,7 @@ void p_build_code( PARSER* parser )
 				p_long_to_str( (long)pstrlen( parser->p_footer ) ), TRUE,
 			GEN_WILD_PREFIX "pcb" LEN_EXT,
 				p_long_to_str( (long)pstrlen( parser->p_pcb ) ), TRUE,
-	
+
 			/* Names and Prologue/Epilogue codes */
 			GEN_WILD_PREFIX "name", parser->p_name, FALSE,
 			GEN_WILD_PREFIX "copyright", parser->p_copyright, FALSE,
@@ -1584,7 +1584,7 @@ void p_build_code( PARSER* parser )
 			GEN_WILD_PREFIX "prologue", parser->p_header, FALSE,
 			GEN_WILD_PREFIX "epilogue", parser->p_footer, FALSE,
 			GEN_WILD_PREFIX "pcb", parser->p_pcb, FALSE,
-	
+
 			/* Limits and sizes, parse tables */
 			GEN_WILD_PREFIX "number-of-symbols",
 				p_int_to_str( list_count( parser->symbols ) ), TRUE,
@@ -1593,7 +1593,7 @@ void p_build_code( PARSER* parser )
 			GEN_WILD_PREFIX "number-of-productions",
 				p_int_to_str( list_count( parser->productions ) ), TRUE,
 			GEN_WILD_PREFIX "number-of-dfa-machines",
-				p_int_to_str( list_count( parser->kw ) ), TRUE, 
+				p_int_to_str( list_count( parser->kw ) ), TRUE,
 			GEN_WILD_PREFIX "deepest-action-row",
 				p_int_to_str( max_action ), TRUE,
 			GEN_WILD_PREFIX "deepest-goto-row",
@@ -1603,7 +1603,7 @@ void p_build_code( PARSER* parser )
 			GEN_WILD_PREFIX "deepest-dfa-accept-row",
 				p_int_to_str( max_dfa_accept ), TRUE,
 			GEN_WILD_PREFIX "size-of-dfa-characters",
-				p_int_to_str( column ), TRUE, 
+				p_int_to_str( column ), TRUE,
 			GEN_WILD_PREFIX "number-of-character-map",
 				p_int_to_str( charmap_count ), TRUE,
 			GEN_WILD_PREFIX "action-table", action_table, FALSE,
@@ -1634,31 +1634,31 @@ void p_build_code( PARSER* parser )
 				( parser->error ? p_int_to_str( parser->error->id ) :
 							p_int_to_str( -1 ) ), TRUE,
 			GEN_WILD_PREFIX "eof",
-				( parser->end_of_input ? 
+				( parser->end_of_input ?
 					p_int_to_str( parser->end_of_input->id ) :
 						p_int_to_str( -1 ) ), TRUE,
 			GEN_WILD_PREFIX "goal-production",
 				p_int_to_str( goalprod->id ), TRUE,
 			GEN_WILD_PREFIX "goal",
 				p_int_to_str( parser->goal->id ), TRUE,
-	
+
 			(uchar*)NULL
 		);
-		
+
 		/* Replace all top-level options */
 		for( l = hashtab_list( &( parser->options ) ); l; l = list_next( l ) )
 		{
 			he = (HASHELEM*)list_access( l );
-			
+
 			if( !( option = pasprintf( "%s%s",
 					GEN_WILD_PREFIX, hashelem_key( he ) ) ) )
 				OUTOFMEM;
-				
-			if( !( complete = pstr_render( all,
+
+			if( !( complete = pstrrender( all,
 								option, (uchar*)hashelem_access( he ), FALSE,
 								(uchar*)NULL ) ) )
 				OUTOFMEM;
-				
+
 			pfree( all );
 			pfree( option );
 			all = complete;
@@ -1669,9 +1669,9 @@ void p_build_code( PARSER* parser )
 		if( gen->code_localization )
 			p_build_code_localizations( &all, gen );
 		*/
-		
+
 		/* Now replace all prefixes */
-		complete = pstr_render( all,
+		complete = pstrrender( all,
 					GEN_WILD_PREFIX "prefix",
 						parser->p_prefix, FALSE,
 					GEN_WILD_PREFIX "basename",
@@ -1688,7 +1688,7 @@ void p_build_code( PARSER* parser )
 					(uchar*)NULL );
 
 		pfree( all );
-		
+
 		/* Open output file */
 		if( filename )
 		{
@@ -1713,14 +1713,14 @@ void p_build_code( PARSER* parser )
 		parser->files_count++;
 		fprintf( stream, "%s", complete );
 		pfree( complete );
-		
+
 		if( filename )
 		{
 			fclose( stream );
 			pfree( filename );
 		}
 	}
-	
+
 	MSG( "Freeing used memory" );
 
 	pfree( basename );

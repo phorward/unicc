@@ -1,5 +1,5 @@
 /* -PARSER----------------------------------------------------------------------
-UniCC LALR(1) Parser Generator 
+UniCC LALR(1) Parser Generator
 Copyright (C) 2006-2012 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
@@ -73,7 +73,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 /*
  * Global variables
  */
- 
+
 struct @@prefix_rhs_item
 {
 	SYMBOL*	sym;
@@ -114,7 +114,7 @@ uchar*		regex			= (uchar*)NULL;
 static int getinput( void )
 {
 	int ch;
-	
+
 	/*
 		IMPORTANT:
 		We have to watch out for the zero-terminator;
@@ -189,13 +189,13 @@ static void make_semantic_rhs( PROD* p )
 	int		i;
 	LIST*	l		= (LIST*)NULL;
 	uchar*	dup;
-	
+
 	if( current_prod && current_prod->rhs )
 	{
 		p->sem_rhs = list_dup( current_prod->rhs );
 		for( l = p->sem_rhs; list_next( l ); l = list_next( l ) )
 			;
-			
+
 		l->next = list_dup( p->rhs );
 	}
 	else
@@ -221,7 +221,7 @@ static void make_semantic_rhs( PROD* p )
 				if( !( dup = pstrdup( dup ) ) )
 					OUTOFMEM;
 			}
-				
+
 			p->sem_rhs_idents = list_push(
 				p->sem_rhs_idents, (void*)dup );
 		}
@@ -243,7 +243,7 @@ static OPT* set_option( HASHTAB* ht, uchar* key, uchar* val, int line )
 	/*
 	if( ( he = hashtab_get( ht, key ) ) )
 	{
-		if( !( val = pstr_append_str(
+		if( !( val = pstrcatstr(
 				(uchar*)hashelem_access( he ), val, TRUE ) ) )
 			OUTOFMEM;
 
@@ -272,19 +272,19 @@ fixed_directive_def	-> "#!" fixed_directive ';'
 fixed_directive		-> "mode"				mode_type
 					|  "model"				mode_type
 					| "language"		string
-						[*	
+						[*
 							if( !( parser->p_language ) )
 								parser->p_language = pstrdup( strbuf );
 							else
 								p_error( parser, ERR_DIRECTIVE_ALREADY_USED,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
-										parser->filename, line, 
+										parser->filename, line,
 											"!language" );
 						*]
 
 					//TODO: Must be reworked!
-					| "character universe"	integer				
-					
+					| "character universe"	integer
+
 						[*	int universe = atoi( strbuf );
 
 							if( universe > 0 )
@@ -320,7 +320,7 @@ unfixed_directive	->	'#' directive_parms
 					*/
 					;
 
-@USERDEF<uchar*>	!'\0"\'/ \t\n\r!;'+ 
+@USERDEF<uchar*>	!'\0"\'/ \t\n\r!;'+
 					[*
 						@@ = @>;
 					*];
@@ -337,7 +337,7 @@ userparam			->	code
 					|	[*	reset_strbuf(); *]
 					;
 
-directive_parms		-> "whitespaces" 	symbol_list				
+directive_parms		-> "whitespaces" 	symbol_list
 						[*	LIST* l;
 							SYMBOL* s;
 
@@ -388,7 +388,7 @@ directive_parms		-> "whitespaces" 	symbol_list
 							list_free( @2 );
 						*]
 
-					| "fixate" 			symbol_list	
+					| "fixate" 			symbol_list
 						[*	LIST* l;
 							SYMBOL* s;
 
@@ -413,7 +413,7 @@ directive_parms		-> "whitespaces" 	symbol_list
 
 						*]
 
-					| "left"			symbol_list	
+					| "left"			symbol_list
 						[*	set_assoc_and_prec( @2, ASSOC_LEFT ); 	*]
 
 
@@ -425,23 +425,23 @@ directive_parms		-> "whitespaces" 	symbol_list
 						[*	set_assoc_and_prec( @2, ASSOC_NOASSOC ); *]
 
 					| "parser"			string
-						[*	parser->p_name = pstr_append_str( 
+						[*	parser->p_name = pstrcatstr(
 								parser->p_name, strbuf, FALSE );	*]
 
-					| "description"		string		
-						[*	parser->p_desc = pstr_append_str( 
+					| "description"		string
+						[*	parser->p_desc = pstrcatstr(
 								parser->p_desc, strbuf, FALSE );	*]
 
 					| "copyright"		string
-						[*	parser->p_copyright = pstr_append_str( 
+						[*	parser->p_copyright = pstrcatstr(
 								parser->p_copyright, strbuf, FALSE );	*]
 
-					| "version"			string					
-						[*	parser->p_version = pstr_append_str( 
+					| "version"			string
+						[*	parser->p_version = pstrcatstr(
 								parser->p_version, strbuf, FALSE );	*]
 
 					| "prefix"			string
-						[*	parser->p_prefix = pstr_append_str( 
+						[*	parser->p_prefix = pstrcatstr(
 								parser->p_prefix, strbuf, FALSE );	*]
 
 					| "default action"	code_opt
@@ -498,14 +498,14 @@ directive_parms		-> "whitespaces" 	symbol_list
 						[*	parser->p_reserve_regex = !@2;		*]
 
 					| "prologue"					code
-						[*	parser->p_header = pstr_append_str(
+						[*	parser->p_header = pstrcatstr(
 								parser->p_header, strbuf, FALSE );	*]
 
 					| "epilogue"					code
-						[*	parser->p_footer = pstr_append_str(
+						[*	parser->p_footer = pstrcatstr(
 								parser->p_footer, strbuf, FALSE );	*]
 					| "pcb"							code
-						[*	parser->p_pcb = pstr_append_str(
+						[*	parser->p_pcb = pstrcatstr(
 								parser->p_pcb, strbuf, FALSE );	*]
 
 					| "option"? line_number @USERDEF:key userparam
@@ -540,7 +540,7 @@ lhs<SYMBOL*>		->	identifier
 							@@->line = line;
 						*]
 					;
-					
+
 alt_lhs_list<LIST*>	-> alt_lhs_list lhs
 
 						[*	@@ = list_push( @1, (void*)@2 ); *]
@@ -549,12 +549,12 @@ alt_lhs_list<LIST*>	-> alt_lhs_list lhs
 
 						[*	@@ = list_push( (LIST*)NULL, (void*)@1 ); *]
 					;
-					
+
 alt_regex_sym<LIST*>
 					-> alt_regex_sym regex_sym
 
 						[*	@@ = list_push( @alt_regex_sym,
-									(void*)@regex_sym ); 
+									(void*)@regex_sym );
 							@regex_sym->derived_from =
 								(SYMBOL*)list_access( @alt_regex_sym );
 						*]
@@ -567,17 +567,17 @@ alt_regex_sym<LIST*>
 							current_sym = @regex_sym;
 						*]
 					;
-					
+
 regex_sym<SYMBOL*>	-> identifier
 						[*	@@ = p_get_symbol( parser,
 									strbuf, SYM_REGEX_TERMINAL, TRUE );
 
-										
+
 							if( @@->defined )
 							{
 								p_error( parser, ERR_DOUBLE_TERMINAL_DEF,
 									ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
-										parser->filename, line, 
+										parser->filename, line,
 											@@->name );
 							}
 
@@ -590,13 +590,13 @@ definition			->	lhs:primary
 						goal_mark:is_goal
 						alt_lhs_list?:all type
 						"->" productions
-						
+
 						[*
 							LIST* 	l;
 							PROD* 	p;
 							SYMBOL*	lhs;
 							VTYPE*	vt		= (VTYPE*)NULL;
-							
+
 							@all = list_push( @all, (void*)@primary );
 
 							/* Value type */
@@ -615,19 +615,19 @@ definition			->	lhs:primary
 								lhs->productions = list_dup( @productions );
 								lhs->vtype = vt;
 							}
-							
+
 							/* Link productions with this left-hand sides */
 							for( l = @productions; l; l = l->next )
 							{
 								p = (PROD*)list_access( l );
-								
+
 								p->lhs = @primary;
 								p->all_lhs = list_dup( @all );
 							}
 
 							list_free( @productions );
 							list_free( @all );
-							
+
 							/* Goal primary defined? */
 							if( @is_goal )
 							{
@@ -645,19 +645,19 @@ definition			->	lhs:primary
 							}
 						*]
 
-					| '@' alt_regex_sym type regex code_opt sym_option* 
-					
+					| '@' alt_regex_sym type regex code_opt sym_option*
+
 						[*
 							SYMBOL*	primary;
 							SYMBOL* s;
 							LIST* l;
 							VTYPE*	vt;
-							
+
 							primary = (SYMBOL*)list_access( @alt_regex_sym );
 
 							primary->ptn = @4;
 							primary->greedy = greedy;
-							
+
 							greedy = TRUE;
 
 							/* Attach code */
@@ -702,7 +702,7 @@ definition			->	lhs:primary
 
 							/* re_dbg_print_nfa( s->nfa_def,
 								parser->p_universe ); */
-							
+
 							/* Assign the list of all possible symbols to
 								the primary symbol */
 							primary->all_sym = @alt_regex_sym;
@@ -722,7 +722,7 @@ sym_option			->	'#' "greedy"
 						[*
 							greedy = FALSE;
 						*]
-						
+
 					|
 						'#' "option"? line_number @USERDEF:key userparam
 
@@ -746,7 +746,7 @@ productions<LIST*>	->	productions '|' production
 					| production
 						[*	@@ = list_push( (LIST*)NULL, @1 ); *]
 					;
-					
+
 production<PROD*>	->	line_number rhs_opt:rhs code_opt_dup:act
 							prod_directives*
 						[*
@@ -759,7 +759,7 @@ production<PROD*>	->	line_number rhs_opt:rhs code_opt_dup:act
 							}
 
 							@@ = @rhs;
-							
+
 							current_prod = (PROD*)NULL;
 						*]
 					;
@@ -770,7 +770,7 @@ rhs_opt<PROD*>		->	rhs
 								(SYMBOL*)NULL );
 						*]
 					;
-					
+
 prod_directives<int>
 					-> 	'#' "precedence" terminal
 
@@ -783,7 +783,7 @@ prod_directives<int>
 
 							strbuf = (uchar*)NULL;
 						*]
-					
+
 					;
 
 rhs<PROD*>			->	rhs symbol access_name
@@ -795,7 +795,7 @@ rhs<PROD*>			->	rhs symbol access_name
 						*]
 
 					|	symbol access_name
-					
+
 						[*	@@ = current_prod =
 								p_create_production( parser,
 									(SYMBOL*)NULL );
@@ -806,7 +806,7 @@ rhs<PROD*>			->	rhs symbol access_name
 						*]
 					;
 
-symbol<SYMBOL*>		->	sym modifier	
+symbol<SYMBOL*>		->	sym modifier
 
 						[*
 							switch( @2 )
@@ -844,7 +844,7 @@ symbol<SYMBOL*>		->	sym modifier
 sym<SYMBOL*>		-> terminal
 
 					| identifier
-					
+
 						[*	@@ = p_get_symbol( parser,
 									strbuf, SYM_NON_TERMINAL, TRUE );
 							@@->used = TRUE;
@@ -852,18 +852,18 @@ sym<SYMBOL*>		-> terminal
 							if( @@->line < 0 )
 								@@->line = line;
 						*]
-						
+
 					//Embedded productions
 					| type '('  stack_cur_prod productions ')'
-							
+
 						[*
 							uchar	temp_nonterm[ ONE_LINE + 1 ];
 							PROD*	prod;
 							LIST*	l;
-							
+
 							sprintf( temp_nonterm, P_EMBEDDED,
 									embedded_count++ );
-							
+
 							@@ = p_get_symbol( parser,
 									temp_nonterm, SYM_NON_TERMINAL,
 										TRUE );
@@ -882,7 +882,7 @@ sym<SYMBOL*>		-> terminal
 
 								pfree( @type );
 							}
-							
+
 							/* Associate the productions */
 							@@->productions = @productions;
 							current_prod = @stack_cur_prod;
@@ -898,14 +898,14 @@ sym<SYMBOL*>		-> terminal
 							}
 						*]
 					;
-					
+
 stack_cur_prod<PROD*>
 					->	[* 	@@ = current_prod;
 							current_prod = (PROD*)NULL;
 						*]
 					;
 
-terminal<SYMBOL*>	->	ccl				
+terminal<SYMBOL*>	->	ccl
 
 						[*	CCL		ccl;
 
@@ -916,7 +916,7 @@ terminal<SYMBOL*>	->	ccl
 							@@ = p_get_symbol( parser,
 									(void*)ccl,
 										SYM_CCL_TERMINAL, TRUE );
-									
+
 							@@->defined = TRUE;
 							@@->used = TRUE;
 
@@ -925,14 +925,14 @@ terminal<SYMBOL*>	->	ccl
 						*]
 
 					| kw
-					
+
 						[*	@@ = p_get_symbol( parser,
 									strbuf, SYM_REGEX_TERMINAL, TRUE );
 
 							@@->used = TRUE;
 							@@->defined = TRUE;
 							@@->keyword = TRUE;
-							
+
 							@@->ptn = pregex_ptn_create_string( strbuf,
 										parser->p_cis_strings ?
 											REGEX_MOD_INSENSITIVE :
@@ -943,11 +943,11 @@ terminal<SYMBOL*>	->	ccl
 						*]
 
 					| '@' identifier
-					
+
 						[*	@@ = p_get_symbol( parser,
 									strbuf, SYM_REGEX_TERMINAL, TRUE );
 
-							/* @@->defined = TRUE; 
+							/* @@->defined = TRUE;
 							DO NOT SET DEFINED! */
 							@@->used = TRUE;
 
@@ -979,9 +979,9 @@ access_name			->	':' identifier
 regex<pregex_ptn*>	->	re_alt
 					;
 
-re_alt<pregex_ptn*>	->	re_alt '|' re_expr	
+re_alt<pregex_ptn*>	->	re_alt '|' re_expr
 
-						[*	
+						[*
 							@@ = pregex_ptn_create_alt(
 									@1, @3, (pregex_ptn*)NULL );
 						*]
@@ -1003,21 +1003,21 @@ re_expr<pregex_ptn*>
 
 					;
 
-re_modifier<pregex_ptn*>	
+re_modifier<pregex_ptn*>
 					->	re_factor '*'
-					
+
 						[*
 							@@ = pregex_ptn_create_kle( @1 );
 						*]
 
-					| re_factor '+'	
+					| re_factor '+'
 
 						[*
 							@@ = pregex_ptn_create_pos( @1 );
 						*]
 
 					| re_factor '?'
-					
+
 						[*
 							@@ = pregex_ptn_create_opt( @1 );
 						*]
@@ -1025,9 +1025,9 @@ re_modifier<pregex_ptn*>
 					| re_factor
 				;
 
-re_factor<pregex_ptn*>		
+re_factor<pregex_ptn*>
 				->	ccl
-				
+
 					[*
 						CCL		ccl;
 
@@ -1039,14 +1039,14 @@ re_factor<pregex_ptn*>
 					*]
 
 				| kw
-				
+
 					[*
 						@@ = pregex_ptn_create_string(
 									strbuf, REGEX_MOD_NONE );
 					*]
 
 				| '.'
-					
+
 					[*
 						greedy = FALSE;
 
@@ -1086,10 +1086,10 @@ ccl_str			->	ccl_str ccl_char
 					[*	reset_strbuf(); *]
 				;
 
-ccl_char		->	!'\\\''	
+ccl_char		->	!'\\\''
 					[*	strbuf_append( @1 ); *]
 
-				| '\\' !'\0'					
+				| '\\' !'\0'
 					[* 	strbuf_append( (uchar)'\\' );
 						strbuf_append( @2 ); 	  *]
 				;
@@ -1101,13 +1101,13 @@ kw_str			->	kw_str kw_char
 					[* 	strbuf_append( @2 ); *]
 				|	[*	reset_strbuf(); *]
 				;
-				
+
 kw_char			->	!'\\"'
 					[* 	strbuf_append( @1 ); *]
 
 				| '\\' !'\0'
 					[* 	strbuf_append( (uchar)'\\' );
-						strbuf_append( @2 ); 
+						strbuf_append( @2 );
 					*]
 				;
 
@@ -1146,7 +1146,7 @@ identifier_follow
 					[*	strbuf_append( @2 );  *]
 				|
 				;
-				
+
 /* ------------------------------------- TODO: ...until here --- */
 
 integer			->	integer '0-9'
@@ -1160,7 +1160,7 @@ integer			->	integer '0-9'
 
 code_opt_dup<uchar*>
 				->	code_opt
-					
+
 					[* 	@@ = pstrdup( @code_opt );
 						reset_strbuf();
 					*]
@@ -1172,7 +1172,7 @@ code_opt<uchar*>->	code
 						@@ = (uchar*)NULL; *]
 				;
 
-code			->	code_begin inner_code_opt "*]"				
+code			->	code_begin inner_code_opt "*]"
 					[*
 						if( !parser->p_language )
 						{
@@ -1180,12 +1180,12 @@ code			->	code_begin inner_code_opt "*]"
 								ERR_NO_TARGET_LANG_SUPPLY,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 										parser->filename, last_code_begin );
-								
+
 							reset_strbuf();
 						}
 					*]
 				;
-				
+
 code_begin		->	"[*"
 
 					[* last_code_begin = line; *]
@@ -1219,8 +1219,8 @@ whitespace		-> ' '
 comment			->	comment anychar
 				|	anychar
 				;
-				
-anychar			->	!'\0'										
+
+anychar			->	!'\0'
 					[*	if( @1 == '\n' )
 							line++;
 						@@ = @1;
@@ -1284,7 +1284,7 @@ int p_parse( PARSER* p, uchar* src )
 		src_ptr = src;
 
 		@@prefix_parse( &pcb );
-		
+
 		pfree( strbuf );
 	}
 

@@ -1,5 +1,5 @@
 /* -MODULE----------------------------------------------------------------------
-UniCC LALR(1) Parser Generator 
+UniCC LALR(1) Parser Generator
 Copyright (C) 2006-2012 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
@@ -28,16 +28,16 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_int_to_str()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Returns an allocated string which contains the string-repre-
 					sentation of an int value, for code generation purposes.
 
 	Parameters:		int		val					Value to be converted
-					
+
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -53,16 +53,16 @@ uchar* p_int_to_str( int val )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_chr_to_str()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Returns an allocated string which contains the character-
 					representation of an int value, for code generation purposes.
 
 	Parameters:		int		val					Value to be converted
-					
+
 	Returns:		uchar*						Pointer to allocated string
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -79,16 +79,16 @@ uchar* p_chr_to_str( int val )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_long_to_str()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Returns an allocated string which contains the string-repre-
 					sentation of a long value, for code generation purposes.
 
 	Parameters:		long	val					Value to be converted
-					
+
 	Returns:		uchar*						Pointer to allocated string
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -104,17 +104,17 @@ uchar* p_long_to_str( long val )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_str_to_str()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Returns an allocated string which contains the string-repre-
 					sentation of a string or empty string if it is (uchar*)NULL.
 
 	Parameters:		uchar*		val				The string that should be
 												validated.
-					
+
 	Returns:		uchar*						Pointer to allocated string
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -132,9 +132,9 @@ uchar* p_str_to_str( uchar* val )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_str_to_xml()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Modifies a string for XML-compliance. Frees the string
 					parameter it gets and returns a allocated pointer that
 					has to be freed manually later.
@@ -142,9 +142,9 @@ uchar* p_str_to_str( uchar* val )
 	Parameters:		uchar*		str				The string to be made
 												XML compliant. Will be freed
 												by p_str_to_xml().
-					
+
 	Returns:		uchar*						Pointer to allocated string
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -155,7 +155,7 @@ uchar* p_str_to_xml( uchar* str )
 	if( !str )
 		return pstrdup( "" );
 
-	ret = pstr_render( str, 7,
+	ret = pstrrender( str, 7,
 				"<", "&lt;", FALSE,
 				">", "&gt;", FALSE,
 				"&", "&amp;", FALSE,
@@ -172,18 +172,18 @@ uchar* p_str_to_xml( uchar* str )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_strcmp()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Compares two strings.
 
 	Parameters:		uchar*		str1			First string to be compared.
 					uchar*		str2			Second string to be compared.
 					int			insensitive		TRUE: Check case insensitive
 												FALSE: Check case sensitive
-					
+
 	Returns:		int							Same values as strcmp()
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -212,15 +212,15 @@ int p_strcmp( uchar* str1, uchar* str2, int insensitive )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_strupr()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Serves a platform-independent strupr-function.
 
 	Parameters:		uchar*	str				Acts both as input and output-string.
-					
+
 	Returns:		Pointer to the input string.
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -240,15 +240,15 @@ uchar* p_strupr( uchar* str )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_unescape_str()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Unescapes a string.
 
 	Parameters:		uchar*	str				Acts both as input and output-string.
-					
+
 	Returns:		Pointer to the input string.
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -266,7 +266,7 @@ uchar* p_unescape_str( uchar* str )
 				case 'n':
 					*ptr++ = '\n';
 					break;
-				case 'r':					
+				case 'r':
 					*ptr++ = '\r';
 					break;
 				case 't':
@@ -295,16 +295,16 @@ uchar* p_unescape_str( uchar* str )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_str_no_whitespace()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Removes all whitespaces from a string (including inline ones!)
 					and returns the resulting string.
 
 	Parameters:		uchar*	str				Acts both as input and output-string.
-					
+
 	Returns:		Pointer to the input string.
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */

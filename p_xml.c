@@ -1,12 +1,12 @@
 /* -MODULE----------------------------------------------------------------------
-UniCC LALR(1) Parser Generator 
+UniCC LALR(1) Parser Generator
 Copyright (C) 2006-2012 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_xml.c
 Author:	Jan Max Meyer
 Usage:	The XML-based Parser Definition code-generator.
-		
+
 You may use, modify and distribute this software under the terms and conditions
 of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
@@ -37,18 +37,18 @@ extern uchar*	pmod[];
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_xml_ccl()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Dumps a character-class definition into an XML-structure.
-					
+
 	Parameters:		XML_T		parent_xml			Parent element where the
 													character-class block will
 													be attached to.
 					CCL			ccl					The character-class.
-	
+
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -57,16 +57,16 @@ static void p_xml_ccl( XML_T parent_xml, CCL ccl )
 	CCL		i;
 	XML_T	ccl_xml;
 	XML_T	range_xml;
-	
+
 	PROC( "p_xml_ccl" );
 	PARMS( "parent_xml", "%p", parent_xml );
 	PARMS( "ccl", "%p", ccl );
-	
+
 	if( !( ccl_xml = xml_add_child( parent_xml, "character-class", 0 ) ) )
 		OUTOFMEM;
-		
+
 	xml_set_int_attr( ccl_xml, "count", ccl_count( ccl ) );
-	
+
 	for( i = ccl; i->begin != CCL_MAX; i++ )
 	{
 		if( !( range_xml = xml_add_child( ccl_xml, "range", 0 ) ) )
@@ -75,54 +75,54 @@ static void p_xml_ccl( XML_T parent_xml, CCL ccl )
 		xml_set_int_attr( range_xml, "from", i->begin );
 		xml_set_int_attr( range_xml, "to", i->end );
 	}
-	
+
 	VOIDRET;
 }
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_xml_raw_code()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Utility function that generates a raw-code-tag from a
 					string.
-					
+
 	Parameters:		XML_T		code_xml			Parent element where the
-													raw-code block will be 
+													raw-code block will be
 													attached to.
 					uchar*		code				The content of the raw
 													code block.
-	
+
 	Returns:		XML_T							Raw-code tag.
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
 static XML_T p_xml_raw_code( XML_T code_xml, uchar* code )
 {
 	XML_T	raw_code;
-	
+
 	if( !code )
 		OUTOFMEM;
-	
+
 	if( !( raw_code = xml_add_child( code_xml, "raw", 0 ) ) )
 		OUTOFMEM;
-		
+
 	xml_set_txt_f( raw_code, code );
-	
+
 	return raw_code;
 }
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_xml_build_action()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Constructs a XML-structure for a production's semantic
 					action code, by splitting the original program code into
 					XML-blocks, which can later be easier translated into the
 					particular parser program.
-					
+
 	Parameters:		XML_T		code_xml			Code-XML-node where elements
 													will be attached to.
 					PARSER*		parser				Parser information structure
@@ -132,9 +132,9 @@ static XML_T p_xml_raw_code( XML_T code_xml, uchar* code )
 					BOOLEAN		def_code			Defines if the base-pointer
 													is a default-code block or
 													an individually coded one.
-	
+
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 	12.07.2010	Jan Max Meyer	Print warning if code symbol references to un-
@@ -159,14 +159,14 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 	SYMBOL*			sym;
 	uchar*			raw;
 	XML_T			code;
-	
+
 	PROC( "p_xml_build_action" );
 	PARMS( "xml_code", "%p", xml_code );
 	PARMS( "parser", "%p", parser );
 	PARMS( "p", "%p", p );
 	PARMS( "base", "%s", base );
 	PARMS( "def_code", "%s", BOOLEAN_STR( def_code ) );
-	
+
 	/* Prepare regular expression engine */
 	pregex_init( &replacer, REGEX_MOD_GLOBAL );
 
@@ -185,11 +185,11 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 
 	if( pregex_compile( &replacer, "@@", 3 ) != ERR_OK )
 		VOIDRET;
-		
+
 	if( pregex_compile( &replacer,
 			"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 4 ) != ERR_OK )
 		VOIDRET;
-		
+
 	/* Run regular expression */
 	if( ( result_cnt = pregex_match( &replacer, base,
 			REGEX_NO_CALLBACK, &result ) ) < 0 )
@@ -204,13 +204,13 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 		p_xml_raw_code( code_xml, pstrdup( base ) );
 		VOIDRET;
 	}
-	
+
 	VARS( "result_cnt", "%d", result_cnt );
-	
-	/* Free the regular expression facilities - we have everything we 
+
+	/* Free the regular expression facilities - we have everything we
 		need from here! */
 	pregex_free( &replacer );
-	
+
 	VARS( "p->sem_rhs", "%p", p->sem_rhs  );
 	/* Ok, perform replacement operations */
 	if( p->sem_rhs )
@@ -219,27 +219,27 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 		rhs = p->sem_rhs;
 		rhs_idents = p->sem_rhs_idents;
 	}
-	
-	MSG( "Iterating trough result array" );	
+
+	MSG( "Iterating trough result array" );
 	for( i = 0, last = base; i < result_cnt && !on_error; i++ )
 	{
 		VARS( "i", "%d", i );
 		off = 0;
 		tmp = (uchar*)NULL;
-		
+
 		/* Copy raw part of code into its own tag */
 		if( last < result[i].begin )
 		{
-			if( !( raw = pstr_append_nchar(
+			if( !( raw = pstrncatstr(
 					(uchar*)NULL, last, result[i].begin - last ) ) )
 				OUTOFMEM;
-				
+
 			p_xml_raw_code( code_xml, raw );
-				
+
 			VARS( "ret", "%s", ret );
 			last = result[i].end;
 		}
-		
+
 		VARS( "result[i].accept", "%d", result[i].accept );
 		switch( result[i].accept )
 		{
@@ -254,7 +254,7 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 				{
 					chk = (uchar*)list_access( l );
 					VARS( "chk", "%s", chk ? chk : "(NULL)" );
-					
+
 					/*
 					printf( "check >%s< with >%.*s<\n",
 						chk, result[i].len - 1, result[i].begin + 1 );
@@ -266,16 +266,16 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 						break;
 					}
 				}
-				
+
 				if( !l )
 				{
 					p_error( parser, ERR_UNDEFINED_SYMREF, ERRSTYLE_WARNING,
 										result[i].len, result[i].begin  );
 					off = 0;
-					
+
 					tmp = pstrdup( result[i].begin );
 				}
-				
+
 				VARS( "off", "%d", off );
 				break;
 
@@ -286,7 +286,7 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 
 			case 3:
 				MSG( "Left-hand side" );
-								
+
 				if( !( code = xml_add_child( code_xml, "variable", 0 ) ) )
 					OUTOFMEM;
 
@@ -305,26 +305,26 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 				}
 
 				break;
-				
+
 			case 4:
 				MSG( "Assign left-hand side symbol" );
-				
+
 				if( !( tmp = pasprintf( "%.*s",
 								result[i].len - ( pstrlen( SYMBOL_VAR ) + 3 ),
-								result[i].begin + ( pstrlen( SYMBOL_VAR ) + 3 ) 
+								result[i].begin + ( pstrlen( SYMBOL_VAR ) + 3 )
 									) ) )
 				{
 					OUTOFMEM;
 					VOIDRET;
 				}
-				
+
 				VARS( "tmp", "%s", tmp );
 
 				/* Go through all possible left-hand side symbols */
 				for( l = p->all_lhs; l; l = list_next( l ) )
 				{
 					sym = (SYMBOL*)list_access( l );
-					
+
 					if( !pstrcmp( sym->name, tmp ) )
 					{
 						MSG( "Found a matching symbol!" );
@@ -339,21 +339,21 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 						if( !( xml_set_attr( code,
 								"action", "set-symbol" ) ) )
 							OUTOFMEM;
-							
+
 						if( !( xml_set_int_attr( code, "symbol", sym->id ) ) )
 							OUTOFMEM;
 
 						break;
 					}
 				}
-				
+
 				if( !l )
 				{
 					MSG( "No match found..." );
 
 					p_error( parser, ERR_UNDEFINED_LHS, ERRSTYLE_WARNING, tmp );
 					pfree( tmp );
-					
+
 					if( !( tmp = pstrdup( result[i].begin ) ) )
 					{
 						OUTOFMEM;
@@ -362,12 +362,12 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 				}
 
 				break;
-				
+
 			default:
 				MSG( "Uncaught regular expression match!" );
 				break;
 		}
-		
+
 		VARS( "off", "%d", off );
 		if( off > 0 )
 		{
@@ -381,21 +381,21 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 
 				if( !( xml_set_attr( code, "target", "right-hand-side" ) ) )
 					OUTOFMEM;
-					
+
 				if( !( xml_set_int_attr( code, "offset",
 						list_count( rhs ) - off ) ) )
 					OUTOFMEM;
-				
+
 				if( sym->vtype )
 				{
 					if( !( xml_set_attr( code, "value-type",
 							sym->vtype->real_def ) ) )
 						OUTOFMEM;
-					
+
 					if( !( xml_set_int_attr( code, "value-type-id",
 							sym->vtype->id ) ) )
 						OUTOFMEM;
-				}					
+				}
 			}
 			else
 			{
@@ -409,14 +409,14 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 				on_error = TRUE;
 			}
 		}
-		
+
 		if( tmp )
 			p_xml_raw_code( code_xml, tmp );
 	}
-		
-	if( last && *last )				
+
+	if( last && *last )
 		p_xml_raw_code( code_xml, pstrdup( last ) );
-	
+
 	MSG( "Free result array" );
 	pfree( result );
 
@@ -425,15 +425,15 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_build_scan_action()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			<usage>
-					
+
 	Parameters:		<type>		<identifier>		<description>
-	
+
 	Returns:		<type>							<description>
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -450,16 +450,16 @@ static void p_xml_build_scan_action(
 	uchar*			tmp;
 	SYMBOL*		sym;
 	LIST*			l;
-	
+
 	PROC( "p_build_scan_action" );
 	PARMS( "code_xml", "%p", code_xml );
 	PARMS( "parser", "%p", parser );
 	PARMS( "s", "%p", s );
 	PARMS( "base", "%s", base );
-	
+
 	/* Prepare regular expression engine */
 	pregex_init( &replacer, REGEX_MOD_GLOBAL | REGEX_MOD_NO_ANCHORS );
-	
+
 	if( pregex_compile( &replacer, "@>", 0 )
 			!= ERR_OK )
 		VOIDRET;
@@ -471,11 +471,11 @@ static void p_xml_build_scan_action(
 	if( pregex_compile( &replacer, "@@", 2 )
 			!= ERR_OK )
 		VOIDRET;
-		
+
 	if( pregex_compile( &replacer,
 			"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 3 ) != ERR_OK )
 		VOIDRET;
-		
+
 	/* Run regular expression */
 	if( ( result_cnt = pregex_match( &replacer, base,
 			REGEX_NO_CALLBACK, &result ) ) < 0 )
@@ -490,31 +490,31 @@ static void p_xml_build_scan_action(
 		p_xml_raw_code( code_xml, pstrdup( base ) );
 		VOIDRET;
 	}
-	
+
 	VARS( "result_cnt", "%d", result_cnt );
-	
-	/* Free the regular expression facilities - we have everything we 
+
+	/* Free the regular expression facilities - we have everything we
 		need from here! */
 	pregex_free( &replacer );
-	
-	MSG( "Iterating trough result array" );	
+
+	MSG( "Iterating trough result array" );
 	for( i = 0, last = base; i < result_cnt; i++ )
 	{
 		VARS( "i", "%d", i );
 
 		if( last < result[i].begin )
 		{
-			if( !( raw = pstr_append_nchar(
+			if( !( raw = pstrncatstr(
 					(uchar*)NULL, last, result[i].begin - last ) ) )
 				OUTOFMEM;
-				
+
 			p_xml_raw_code( code_xml, raw );
-				
+
 			VARS( "ret", "%s", ret );
 		}
 
 		last = result[i].end;
-		
+
 		VARS( "result[i].accept", "%d", result[i].accept );
 		switch( result[i].accept )
 		{
@@ -538,42 +538,42 @@ static void p_xml_build_scan_action(
 
 			case 2:
 				MSG( "@@" );
-				
+
 				if( !( code = xml_add_child( code_xml,
 						"return-value", 0 ) ) )
 					OUTOFMEM;
-				
+
 				if( s->vtype && list_count( parser->vtypes ) > 1 )
 				{
 					if( !( xml_set_attr( code, "value-type",
 								s->vtype->real_def ) ) )
 						OUTOFMEM;
-					
+
 					if( !( xml_set_int_attr( code, "value-type-id",
 							s->vtype->id ) ) )
-						OUTOFMEM;					
+						OUTOFMEM;
 				}
 				break;
-				
+
 			case 3:
 				MSG( "Set terminal symbol" );
 
 				if( !( tmp = pasprintf( "%.*s",
 								result[i].len - ( pstrlen( SYMBOL_VAR ) + 3 ),
-								result[i].begin + ( pstrlen( SYMBOL_VAR ) + 3 ) 
+								result[i].begin + ( pstrlen( SYMBOL_VAR ) + 3 )
 									) ) )
 				{
 					OUTOFMEM;
 					VOIDRET;
 				}
-				
+
 				VARS( "tmp", "%s", tmp );
 
 				/* Go through all possible terminal symbols */
 				for( l = s->all_sym; l; l = list_next( l ) )
 				{
 					sym = (SYMBOL*)list_access( l );
-					
+
 					if( !pstrcmp( sym->name, tmp ) )
 					{
 						MSG( "Found a matching symbol!" );
@@ -585,7 +585,7 @@ static void p_xml_build_scan_action(
 						if( !( xml_set_attr( code,
 								"action", "set-symbol" ) ) )
 							OUTOFMEM;
-							
+
 						if( !( xml_set_int_attr( code, "symbol", sym->id ) ) )
 							OUTOFMEM;
 						break;
@@ -599,36 +599,36 @@ static void p_xml_build_scan_action(
 					p_error( parser, ERR_UNDEFINED_TERMINAL,
 								ERRSTYLE_WARNING, tmp );
 				}
-				
+
 				pfree( tmp );
 				break;
-				
+
 			default:
 				MSG( "Uncaught regular expression match!" );
 				break;
 		}
 	}
-		
+
 	if( last && *last )
 		p_xml_raw_code( code_xml, pstrdup( last ) );
-	
+
 	MSG( "Free result array" );
 	pfree( result );
-		
+
 	VOIDRET;
 }
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_build_dfa()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			<usage>
-					
+
 	Parameters:		<type>		<identifier>		<description>
-	
+
 	Returns:		<type>							<description>
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -647,7 +647,7 @@ static void p_build_dfa( XML_T parent, pregex_dfa* dfa )
 	for( l = dfa->states, i = 0; l; l = list_next( l ), i++ )
 	{
 		st = (pregex_dfa_st*)list_access( l );
-		
+
 		if( !( state = xml_add_child( parent, "state", 0 ) ) )
 			OUTOFMEM;
 
@@ -662,14 +662,14 @@ static void p_build_dfa( XML_T parent, pregex_dfa* dfa )
 			if( !( xml_set_int_attr( state, "default-transition",
 					st->def_trans->go_to ) ) )
 				OUTOFMEM;
-		
+
 		LISTFOR( st->trans, m )
 		{
 			tr = (pregex_dfa_tr*)list_access( m );
 
 			if( !( trans = xml_add_child( state, "transition", 0 ) ) )
 				OUTOFMEM;
-				
+
 			if( !( xml_set_int_attr( trans, "goto", tr->go_to ) ) )
 				OUTOFMEM;
 
@@ -702,7 +702,7 @@ static void p_xml_print_options( HASHTAB* ht, XML_T append_to )
 
 		if( !xml_set_int_attr( option, "line", opt->line ) )
 			OUTOFMEM;
-		
+
 		if( !( xml_set_txt( option, opt->def ) ) )
 			OUTOFMEM;
 	}
@@ -727,22 +727,22 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 
 	PROC( "p_xml_print_symbols" );
 	MSG( "Printing symbol table" );
-	
+
 	if( !( sym_tab = xml_add_child( par, "symbols", 0 ) ) )
 		OUTOFMEM;
-	
+
 	for( l = parser->symbols; l; l = list_next( l ) )
 	{
 		sym = (SYMBOL*)list_access( l );
-		
+
 		if( !( symbol = xml_add_child( sym_tab, "symbol", 0 ) ) )
 			OUTOFMEM;
-			
+
 		xml_set_attr_d( symbol, "type",
 			IS_TERMINAL( sym ) ? "terminal" : "non-terminal" );
 		xml_set_int_attr( symbol, "id", sym->id );
 		xml_set_attr( symbol, "name", sym->name );
-		
+
 		if( IS_TERMINAL( sym ) )
 		{
 			switch( sym->type )
@@ -770,15 +770,15 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 							pfree( regex_str );
 						}
 
-						/* 
+						/*
 							Convert regular pattern into DFA state machine
 						*/
 						memset( &tmp_nfa, 0, sizeof( pregex_nfa ) );
 						pregex_accept_init( &acc );
 						acc.accept = sym->id;
-						
+
 						pregex_ptn_to_nfa( &tmp_nfa, sym->ptn, &acc );
-						
+
 						pregex_dfa_from_nfa( &tmp_dfa, &tmp_nfa );
 						pregex_dfa_minimize( &tmp_dfa );
 
@@ -793,19 +793,19 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 				case SYM_SYSTEM_TERMINAL:
 					tmp = "system";
 					break;
-					
+
 				default:
 					tmp = "!!!UNDEFINED!!!";
 					MISS_MSG( "Unhandled terminal type in "
 								"XML code generator" );
 					break;
 			}
-			
+
 			xml_set_attr_d( symbol, "terminal-type", tmp );
-			
+
 			if( sym->whitespace )
 				xml_set_attr( symbol, "is-whitespace", XML_YES );
-			
+
 			/* Code (in case of regex terminals */
 			if( sym->code && *( sym->code ) )
 			{
@@ -814,16 +814,16 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 
 				if( sym->code_at > 0 )
 					xml_set_int_attr( code, "defined-at", sym->code_at );
-			
+
 				p_xml_build_scan_action( code, parser, sym, sym->code );
 			}
 		}
 		else
-		{		
+		{
 			/* Goal symbol TODO */
 			if( sym->goal )
 				xml_set_attr( symbol, "is-goal", XML_YES );
-		
+
 			/* Derived-from */
 			if( sym->generated && sym->derived_from )
 				xml_set_int_attr( symbol, "derived-from",
@@ -836,15 +836,15 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 			if( !( xml_set_attr( symbol, "value-type",
 						sym->vtype->real_def ) ) )
 				OUTOFMEM;
-			
+
 			if( !( xml_set_int_attr( symbol, "value-type-id",
 					sym->vtype->id ) ) )
 				OUTOFMEM;
 		}
-			
+
 		if( sym->line > 0 )
 			xml_set_int_attr( symbol, "defined-at", sym->line );
-	
+
 		/* Set symbol options */
 		p_xml_print_options( &( sym->options ), symbol );
 	}
@@ -872,23 +872,23 @@ static void p_xml_print_productions( PARSER* parser, XML_T par )
 
 	PROC( "p_xml_print_productions" );
 	MSG( "Printing production table" );
-	
+
 	if( !( prod_tab = xml_add_child( par, "productions", 0 ) ) )
 		OUTOFMEM;
-		
+
 	for( l = parser->productions; l; l = list_next( l ) )
 	{
 		p = (PROD*)list_access( l );
-		
+
 		if( !( prod = xml_add_child( prod_tab, "production", 0 ) ) )
 			OUTOFMEM;
-		
+
 		/* Production id */
 		xml_set_int_attr( prod, "id", p->id );
 		xml_set_int_attr( prod, "length", list_count( p->rhs ) );
 		if( p->line > 0 )
 			xml_set_int_attr( prod, "defined-at", p->line );
-		
+
 		/* Print all left-hand sides */
 		for( m = p->all_lhs, i = 0; m; m = list_next( m ), i++ )
 		{
@@ -896,7 +896,7 @@ static void p_xml_print_productions( PARSER* parser, XML_T par )
 
 			if( !( lhs = xml_add_child( prod, "left-hand-side", 0 ) ) )
 				OUTOFMEM;
-			
+
 			xml_set_int_attr( lhs, "symbol-id", sym->id );
 			xml_set_int_attr( lhs, "offset", i );
 		}
@@ -911,14 +911,14 @@ static void p_xml_print_productions( PARSER* parser, XML_T par )
 			if( !( rhs = xml_add_child( prod,
 					"semantic-right-hand-side", 0 ) ) )
 				OUTOFMEM;
-			
+
 			xml_set_int_attr( rhs, "symbol-id", sym->id );
 			xml_set_int_attr( rhs, "offset", i );
-			
+
 			if( ( tmp = (uchar*)list_getptr( p->sem_rhs_idents, i ) ) )
 				xml_set_attr( rhs, "named", tmp );
 		}
-		
+
 		/* Print right-hand side */
 		for( m = p->rhs, j = 0; m; m = list_next( m ), i++, j++ )
 		{
@@ -926,20 +926,20 @@ static void p_xml_print_productions( PARSER* parser, XML_T par )
 
 			if( !( rhs = xml_add_child( prod, "right-hand-side", 0 ) ) )
 				OUTOFMEM;
-			
+
 			xml_set_int_attr( rhs, "symbol-id", sym->id );
 			xml_set_int_attr( rhs, "offset", i );
-			
+
 			if( ( tmp = (uchar*)list_getptr( p->rhs_idents, j ) ) )
 				xml_set_attr( rhs, "named", tmp );
 		}
 
 		/* Set productions options */
 		p_xml_print_options( &( p->options ), prod );
-		
-		/* Code */		
+
+		/* Code */
 		is_default_code = FALSE;
-		
+
 		/* Production has attached semantic action */
 		if( p->code )
 			act = p->code;
@@ -955,10 +955,10 @@ static void p_xml_print_productions( PARSER* parser, XML_T par )
 			act = parser->p_def_action;
 			is_default_code = TRUE;
 		}
-		
+
 		/*
 			Unset action code if default code was chosen, left-hand side
-			is whitespace and error token is part of whitespaces ? 
+			is whitespace and error token is part of whitespaces ?
 		*/
 		if( is_default_code &&
 			( p->lhs->whitespace ||
@@ -966,12 +966,12 @@ static void p_xml_print_productions( PARSER* parser, XML_T par )
 		{
 			act = (uchar*)NULL;
 		}
-		
+
 		if( act && *act )
 		{
 			if( !( code = xml_add_child( prod, "code", 0 ) ) )
 				OUTOFMEM;
-		
+
 			if( p->code_at > 0 )
 				xml_set_int_attr( code, "defined-at", p->code_at );
 
@@ -1001,27 +1001,27 @@ static void p_xml_print_states( PARSER* parser, XML_T par )
 	PROC( "p_xml_print_states" );
 
 	MSG( "State table" );
-	
+
 	if( !( state_tab = xml_add_child( par, "states", 0 ) ) )
 		OUTOFMEM;
-	
+
 	for( l = parser->lalr_states, i = 0; l; l = list_next( l ), i++ )
 	{
 		/* Get state pointer */
 		st = (STATE*)list_access( l );
-		
+
 		/* Add state entity */
 		if( !( state = xml_add_child( state_tab, "state", 0 ) ) )
 			OUTOFMEM;
-		
+
 		/* Set some state-specific options */
 		xml_set_int_attr( state, "id", st->state_id );
-		
+
 		/* Default Production */
 		if( st->def_prod )
 			xml_set_int_attr( state, "default-production",
 				st->def_prod->id );
-				
+
 		/* Matching Lexer */
 		if( ( st_lex = list_find( parser->kw, st->dfa ) ) >= 0 )
 			xml_set_int_attr( state, "lexer", st_lex );
@@ -1030,13 +1030,13 @@ static void p_xml_print_states( PARSER* parser, XML_T par )
 		if( st->derived_from )
 			xml_set_int_attr( state, "derived-from-state",
 				st->derived_from->state_id );
-				
+
 		/* Action table */
 		for( m = st->actions; m; m = list_next( m ) )
 		{
 			/* Get table column pointer */
 			col = (TABCOL*)list_access( m );
-			
+
 			/* Shift, reduce, shift&reduce or even error? */
 			switch( col->action )
 			{
@@ -1052,7 +1052,7 @@ static void p_xml_print_states( PARSER* parser, XML_T par )
 				case SHIFT_REDUCE: /* Shift&Reduce */
 					transtype = "shift-reduce";
 					break;
-					
+
 				default:
 					MISS_MSG( "Unhandled action table action in "
 								"XML code generator" );
@@ -1065,7 +1065,7 @@ static void p_xml_print_states( PARSER* parser, XML_T par )
 			if( !( xml_set_int_attr( action, "symbol-id",
 					col->symbol->id ) ) )
 				OUTOFMEM;
-			
+
 			/* CHECK! */
 			if( col->action != ERROR )
 			{
@@ -1075,7 +1075,7 @@ static void p_xml_print_states( PARSER* parser, XML_T par )
 					xml_set_int_attr( action, "to-state", col->index );
 			}
 		}
-		
+
 		/* Goto table */
 		for( m = st->gotos; m; m = list_next( m ) )
 		{
@@ -1088,7 +1088,7 @@ static void p_xml_print_states( PARSER* parser, XML_T par )
 			if( !( xml_set_int_attr( go_to, "symbol-id",
 					col->symbol->id ) ) )
 				OUTOFMEM;
-			
+
 			/* Only print goto on reduce; Else, its value is not relevant */
 			if( ( col->action & REDUCE ) )
 			{
@@ -1103,16 +1103,16 @@ static void p_xml_print_states( PARSER* parser, XML_T par )
 					OUTOFMEM;
 			}
 		}
-		
+
 		/* TODO Kernel */
 		/*
 		LISTFOR( st->kernel, m )
 		{
 			item = (ITEM*)list_access( m );
-			
+
 			LISTFOR( item->prod->rhs, n )
 			{
-				
+
 			}
 		}
 		*/
@@ -1138,14 +1138,14 @@ static void p_xml_print_lexers( PARSER* parser, XML_T par )
 	for( l = parser->kw, i = 0; l; l = list_next( l ), i++ )
 	{
 		dfa = (pregex_dfa*)list_access( l );
-		
+
 		if( !( lex = xml_add_child( lex_tab, "lexer", 0 ) ) )
 			OUTOFMEM;
-		
+
 		if( list_count( parser->kw ) > 1 &&
 			!( xml_set_int_attr( lex, "id", i ) ) )
 				OUTOFMEM;
-				
+
 		p_build_dfa( lex, dfa );
 	}
 
@@ -1187,20 +1187,20 @@ static void p_xml_print_vtypes( PARSER* parser, XML_T par )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_build_xml()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Serves a universal XML-code generator.
-					
+
 	Parameters:		PARSER*		parser			Parser information structure
 					BOOLEAN		finished		TRUE: Parser generation has
 														finished successful.
 												FALSE: Parser generation failed
 														because of parse
 															errors.
-	
+
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -1252,25 +1252,25 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 	{
 		if( !( attrib = xml_add_child( par, "version", 0 ) ) )
 			OUTOFMEM;
-		
+
 		if( !( xml_set_txt( attrib, parser->p_version ) ) )
 			OUTOFMEM;
-	}	
+	}
 
 	if( parser->p_copyright )
 	{
 		if( !( attrib = xml_add_child( par, "copyright", 0 ) ) )
 			OUTOFMEM;
-		
+
 		if( !( xml_set_txt( attrib, parser->p_copyright ) ) )
 			OUTOFMEM;
 	}
-	
+
 	if( parser->p_desc )
 	{
 		if( !( attrib = xml_add_child( par, "description", 0 ) ) )
 			OUTOFMEM;
-		
+
 		if( !( xml_set_txt( attrib, parser->p_desc ) ) )
 			OUTOFMEM;
 	}
@@ -1288,13 +1288,13 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 	{
 		/* Build table of symbols --------------------------------------- */
 		p_xml_print_symbols( parser, par );
-			
+
 		/* Build table of productions ----------------------------------- */
 		p_xml_print_productions( parser, par );
 
 		/* Build state table -------------------------------------------- */
 		p_xml_print_states( parser, par );
-		
+
 		/* Build keyword/regular expression matching lexers ------------- */
 		p_xml_print_lexers( parser, par );
 
@@ -1304,34 +1304,34 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 	/* Put prologue code */
 	if( !( code = xml_add_child( par, "prologue", 0 ) ) )
 		OUTOFMEM;
-		
+
 	if( parser->p_header )
 		xml_set_txt( code, parser->p_header );
-	
+
 	/* Put epilogue code */
 	if( !( code = xml_add_child( par, "epilogue", 0 ) ) )
 		OUTOFMEM;
-		
+
 	if( parser->p_footer )
 		xml_set_txt( code, parser->p_footer );
-		
+
 	/* Put parser control block code */
 	if( !( code = xml_add_child( par, "pcb", 0 ) ) )
 		OUTOFMEM;
-		
+
 	if( parser->p_pcb )
 		xml_set_txt( code, parser->p_pcb );
-	
+
 	/* Put entire parser source into XML output */
 	if( !( code = xml_add_child( par, "source", 0 ) ) )
 		OUTOFMEM;
-		
+
 	xml_set_txt( code, parser->source );
 
 	/* Write error messages */
 	if( parser->err_xml )
 		xml_move( xml_child( parser->err_xml, "messages" ), par, 0 );
-	
+
 	/* Write to output file */
 	if( !parser->to_stdout )
 	{
