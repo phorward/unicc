@@ -916,7 +916,8 @@ void p_build_code( PARSER* parser )
 	FILE*			stream;
 
 	uchar*			basename;
-	uchar			xml_file			[ BUFSIZ + 1 ];
+	uchar			tlt_file			[ BUFSIZ + 1 ];
+	uchar*			tlt_path;
 	uchar*			option;
 	uchar*			tpldir;
 	uchar*			complete			= (uchar*)NULL;
@@ -977,25 +978,25 @@ void p_build_code( PARSER* parser )
 	gen = &generator;
 	memset( gen, 0, sizeof( GENERATOR ) );
 
-	sprintf( xml_file, "%s%s", parser->p_language, UNICC_TLT_EXTENSION );
-	VARS( "xml_file", "%s", xml_file );
+	sprintf( tlt_file, "%s%s", parser->p_language, UNICC_TLT_EXTENSION );
+	VARS( "tlt_file", "%s", tlt_file );
 
-	if( !pfileexists( xml_file ) && ( tpldir = getenv( "UNICC_TPLDIR" ) ) )
-	{
-		MSG( "File not found, trying to get it from UNICC_TPLDIR" );
+	if( !( tlt_path = pwhich( tlt_file, "." ) ) )
+		if( !( tlt_path = pwhich( tlt_file, getenv( "UNICC_TPLDIR" ) ) ) )
+#ifndef _WIN32
+			tlt_path = pwhich( tlt_file, "/usr/share/unicc/tlt" );
+#else
+		{
+			sprintf( tlt_file, "tlt%c%s%s", PPATHSEP,
+				parser->p_language, UNICC_TLT_EXTENSION );
+			tlt_path = pwhich( tlt_file, (uchar*)NULL );
+		}
+#endif
 
-		sprintf( xml_file, "%s%c%s.tlt",
-			tpldir,
-				( ( tpldir[ pstrlen( tpldir ) ] == PPATHSEP )
-					? '\0' : PPATHSEP ), parser->p_language );
-
-		VARS( "xml_file", "%s", xml_file );
-	}
-
-	VARS( "xml_file", "%s", xml_file );
+	VARS( "tlt_path", "%s", tlt_path );
 
 	MSG( "Loading generator" );
-	if( !p_load_generator( parser, gen, xml_file ) )
+	if( !p_load_generator( parser, gen, tlt_path ) )
 		VOIDRET;
 
 	/* Now that we have the generator, do some code generation-related
