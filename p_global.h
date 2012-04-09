@@ -98,7 +98,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 								p_error( (PARSER*)NULL, ERR_MEMORY_ERROR,\
 									ERRSTYLE_FATAL, __FILE__, __LINE__ ), \
 								exit( EXIT_FAILURE )
-									
+
 #define MISS_MSG( txt )			fprintf( stderr, "%s, %d: %s\n", \
 										__FILE__, __LINE__, txt )
 
@@ -127,7 +127,7 @@ struct _symbol
 {
 	int			id;				/* Symbol ID */
 	int			type;			/* Symbol type */
-	
+
 	uchar*		name;			/* Symbol name */
 
 	CCL			ccl;			/* Character-class definition */
@@ -135,7 +135,7 @@ struct _symbol
 	LIST*		productions;	/* List of productions attached to a
 									non-terminal symbol */
 	LIST*		first;			/* The symbol's first set */
-	
+
 	LIST*		all_sym;		/* List of all possible terminal
 									definitions, for multiple-terminals.
 									This list will only be set in the
@@ -159,7 +159,7 @@ struct _symbol
 									symbol */
 	BOOLEAN		greedy;			/* Flags if this is a greedy or nongreedy
 									nonterminal */
-									
+
 	HASHTAB		options;		/* Options hash table */
 
 	SYMBOL*		derived_from;	/* Pointer to symbol from which the
@@ -185,13 +185,13 @@ struct _prod
 
 	SYMBOL*		lhs;			/* Primary left-hand side symbol */
 	LIST*		all_lhs;		/* All possible left-hand sides */
-	
+
 	LIST*		rhs;			/* Right-hand side symbols */
-	
+
 	LIST*		rhs_idents;		/* List of offset identifiers for rhs items;
 									This list is hold equivalent to the
 										right-hand side symbol list */
-	
+
 	LIST*		sem_rhs;		/* Semantic right-hand side; This
 									may differ from the right hand side
 										in case of embedded productions,
@@ -202,11 +202,11 @@ struct _prod
 
 	int			prec;			/* Precedence level */
 	int			assoc;			/* Associativity flag */
-	
+
 	HASHTAB		options;		/* Options hash table */
-	
+
 	int			line;			/* Line of definition */
-	
+
 	uchar*		code;			/* Semantic reduction action template */
 	int			code_at;		/* Beginning line of code-segment
 									in source file */
@@ -216,7 +216,7 @@ struct _prod
 struct _item
 {
 	PROD*		prod;			/* The associated production
-									to this item */	
+									to this item */
 	int			dot_offset;		/* The dot's offset from the left
 									of the right hand side */
 	SYMBOL*		next_symbol;	/* Symbol following the dot */
@@ -229,18 +229,18 @@ struct _state
 	int			state_id;		/* State ID */
 	LIST*		kernel;			/* Kernel item set */
 	LIST*		epsilon;		/* Epsilon item set */
-	
+
 	LIST*		actions;		/* Action table entries */
 	LIST*		gotos;			/* Goto table entries */
-	
+
 	PROD*		def_prod;		/* Default production */
-	
+
 	BOOLEAN		done;			/* Done flag */
 	BOOLEAN		closed;			/* Closed flag */
 
 	pregex_dfa*	dfa;			/* DFA machine for regex recognition
 									in this state */
-									
+
 	STATE*		derived_from;	/* Previous state */
 };
 
@@ -250,7 +250,7 @@ struct _tabcol
 	SYMBOL*		symbol;			/* Symbol */
 	short		action;			/* Action on this symbol */
 	int			index;			/* Action-index on this symbol */
-	
+
 	ITEM*		derived_from;	/* List of items that caused the
 									derivation of this column */
 };
@@ -282,11 +282,11 @@ struct _parser
 	LIST*		lalr_states;	/* Linked list of LALR(1) states */
 	LIST*		dfa;			/* List containing the DFA for
 									regex terminal recognition */
-	
+
 	SYMBOL*		goal;			/* Pointer to the goal non-terminal */
 	SYMBOL*		end_of_input;	/* End of input symbol */
 	SYMBOL*		error;			/* Error token */
-	
+
 	LIST*		kw;				/* Keyword recognition machines */
 	LIST*		vtypes;			/* Value stack types */
 
@@ -314,9 +314,9 @@ struct _parser
 									of the parser */
 	uchar*		p_pcb;			/* Parser control block: Individual
 									code segment */
-	
+
 	VTYPE*		p_def_type;		/* Default value type */
-	
+
 	HASHTAB		options;		/* Options parameter hash table */
 
 	uchar*		source;			/* Parser definition source */
@@ -341,7 +341,7 @@ struct _parser
 	/* Debug and maintainance */
 	uchar*		filename;
 	int			debug_level;
-	
+
 	/* XML-root node for XML-encoded error messages */
 	XML_T		err_xml;
 };

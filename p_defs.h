@@ -1,5 +1,5 @@
 /* -HEADER----------------------------------------------------------------------
-UniCC LALR(1) Parser Generator 
+UniCC LALR(1) Parser Generator
 Copyright (C) 2006-2012 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
@@ -31,7 +31,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define P_REWRITTEN_KW			"~"
 
 /* Regular expression terminals */
-#define P_REGEX_AUTO_NAME		"regex"
+#define P_PREGEX_AUTO_NAME		"regex"
 
 /* Default End-of-Input string */
 #define P_DEF_EOF_SYMBOL		"\\0"

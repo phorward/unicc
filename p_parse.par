@@ -935,8 +935,8 @@ terminal<SYMBOL*>	->	ccl
 
 							@@->ptn = pregex_ptn_create_string( strbuf,
 										parser->p_cis_strings ?
-											REGEX_MOD_INSENSITIVE :
-												REGEX_MOD_NONE );
+											PREGEX_MOD_INSENSITIVE :
+												PREGEX_MOD_NONE );
 
 							if( @@->line < 0 )
 								@@->line = line;
@@ -1042,7 +1042,7 @@ re_factor<pregex_ptn*>
 
 					[*
 						@@ = pregex_ptn_create_string(
-									strbuf, REGEX_MOD_NONE );
+									strbuf, PREGEX_MOD_NONE );
 					*]
 
 				| '.'

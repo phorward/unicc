@@ -1,5 +1,5 @@
 /* -MODULE----------------------------------------------------------------------
-UniCC LALR(1) Parser Generator 
+UniCC LALR(1) Parser Generator
 Copyright (C) 2006-2012 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
@@ -7,7 +7,7 @@ File:	p_keywords.c
 Author:	Jan Max Meyer
 Usage:	Turns regular expression definitions into deterministic state
 		machines, by using the Phorward regular expression library.
-		
+
 You may use, modify and distribute this software under the terms and conditions
 of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
@@ -41,18 +41,18 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_keywords_to_dfa()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Converts the keywords within the states into a DFA, and
 					maybe re-uses state machines matching the same pool of
 					keywords.
-					
+
 	Parameters:		PARSER*		parser				Pointer to parser
 													information structure.
-	
+
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -130,16 +130,16 @@ void p_keywords_to_dfa( PARSER* parser )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_single_lexer()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Constructs a single DFA for a general token lexer.
-					
+
 	Parameters:		PARSER*		parser				Pointer to parser
 													information structure.
-	
+
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -197,24 +197,24 @@ void p_single_lexer( PARSER* parser )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_find_equal_dfa()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Walks trough the DFA machines of the current parser
 					definition and tests if the temporary generated DFA contains
 					the same states than a one already defined in the parser.
-					
+
 	Parameters:		PARSER*		parser				The parser information
 													structure.
 					pregex_dfa*	ndfa				Pointer to DFA that is
 													compared with the other
 													machine already integrated
 													into the parser structure.
-	
+
 	Returns:		pregex_dfa*						Returns the pointer to a
-													matching DFA, else 
+													matching DFA, else
 													(pregex_dfa*)NULL.
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 	19.11.2009	Jan Max Meyer	Revision of entire function, to work with
@@ -294,12 +294,12 @@ pregex_dfa* p_find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_symbol_to_nfa()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Convers a symbol's regular expression pattern defininition
 					into a NFA state machine.
-					
+
 	Parameters:		PARSER*		parser				Pointer to parser
 													information structure.
 					pregex_nfa*	nfa					Pointer to NFA structure,
@@ -307,9 +307,9 @@ pregex_dfa* p_find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
 													function.
 					SYMBOL*		sym					Symbol which is associated
 													with this NFA.
-	
+
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */

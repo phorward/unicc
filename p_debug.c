@@ -1,5 +1,5 @@
 /* -MODULE----------------------------------------------------------------------
-UniCC LALR(1) Parser Generator 
+UniCC LALR(1) Parser Generator
 Copyright (C) 2006-2012 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
@@ -29,26 +29,26 @@ extern	BOOLEAN		first_progress;
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_print_symbol()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Prints a single symbol.
-					
+
 	Parameters:		FILE*		stream			The stream where to dump the
 												grammar to. If this is
 												(FILE*)NULL, output is written
 												to stderr.
 					SYMBOL*		sym				Symbol pointer to be printed.
-													
+
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
 void p_print_symbol( FILE* stream, SYMBOL* sym )
 {
 	uchar*		cclstr;
-	
+
 	if( !stream )
 		stream = stderr;
 
@@ -70,21 +70,21 @@ void p_print_symbol( FILE* stream, SYMBOL* sym )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_dump_grammar()
-	ymbols 
+	ymbols
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Dumps the analyzed grammar and all its symbols to a desired
 					file or stream in an ASCII-based view.
-					
+
 	Parameters:		FILE*		stream			The stream where to dump the
 												grammar to. If this is
 												(FILE*)NULL, output is written
 												to stderr.
 					PARSER*		parser			Parser information structure
 												pointer.
-													
+
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -92,11 +92,11 @@ void p_dump_grammar( FILE* stream, PARSER* parser )
 {
 	LIST*		i		= (LIST*)NULL;
 	LIST*		j		= (LIST*)NULL;
-	
+
 	SYMBOL*		s		= (SYMBOL*)NULL;
 	SYMBOL*		sym		= (SYMBOL*)NULL;
 	PROD*		p		= (PROD*)NULL;
-	
+
 	if( !stream )
 		stream = stderr;
 
@@ -106,7 +106,7 @@ void p_dump_grammar( FILE* stream, PARSER* parser )
 	fprintf( stream, "\n%s%sGRAMMAR\n\n",
 		( parser->p_name ? parser->p_name : "" ),
 			( parser->p_name ? ": " : "" ) );
-	
+
 	for( i = parser->symbols; i; i = i->next )
 	{
 		s = i->pptr;
@@ -116,17 +116,17 @@ void p_dump_grammar( FILE* stream, PARSER* parser )
 			fprintf( stream, "    " );
 			p_print_symbol( stream, s );
 			fprintf( stream, " " );
-			
+
 			/* Printing the FIRST-set */
 			fprintf( stream, "[ " );
 			for( j = s->first; j; j = j->next )
 			{
 				sym = j->pptr;
-				
+
 				p_print_symbol( stream, sym );
 				fprintf( stream, " " );
 			}
-						
+
 			if( s->type == SYM_NON_TERMINAL )
 			{
 				fprintf( stream, "] lexem:%d prec:%d assoc:%c v:%s\n", s->lexem,
@@ -158,20 +158,20 @@ void p_dump_grammar( FILE* stream, PARSER* parser )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_dump_symbols()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Dumps the analyzed grammar symbols.
-					
+
 	Parameters:		FILE*		stream			The stream where to dump the
 												grammar to. If this is
 												(FILE*)NULL, output is written
 												to stderr.
 					PARSER*		parser			Parser information structure
 												pointer.
-													
+
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -179,7 +179,7 @@ void p_dump_symbols( FILE* stream, PARSER* parser )
 {
 	LIST*		i		= (LIST*)NULL;
 	SYMBOL*		s		= (SYMBOL*)NULL;
-	
+
 	if( !stream )
 		stream = stderr;
 
@@ -189,7 +189,7 @@ void p_dump_symbols( FILE* stream, PARSER* parser )
 	fprintf( stream, "\n%s%sSYMBOLS\n\n",
 		( parser->p_name ? parser->p_name : "" ),
 			( parser->p_name ? ": " : "" ) );
-	
+
 	for( i = parser->symbols; i; i = i->next )
 	{
 		fprintf( stream, "    " );
@@ -197,11 +197,11 @@ void p_dump_symbols( FILE* stream, PARSER* parser )
 		s = i->pptr;
 		fprintf( stream, "%c%d: ",
 			( IS_TERMINAL( s ) ? 'T' : 'N' ), s->id );
-				
+
 		p_print_symbol( stream, s );
-		
+
 		fprintf( stream, " [" );
-		
+
 		switch( s->type )
 		{
 			case SYM_NON_TERMINAL:
@@ -217,7 +217,7 @@ void p_dump_symbols( FILE* stream, PARSER* parser )
 					fprintf( stream, "terminal: string" );
 				else
 					fprintf( stream, "terminal: regular expression" );
-					
+
 				if( s->greedy )
 					fprintf( stream, "(greedy)" );
 				else
@@ -232,17 +232,17 @@ void p_dump_symbols( FILE* stream, PARSER* parser )
 				fprintf( stream, "undefined" );
 				break;
 		}
-		
+
 		fprintf( stream, "]" );
-		
+
 		if( s->vtype )
 		{
 			fprintf( stream, " <%s>", s->vtype->int_name );
 		}
-		
+
 		fprintf( stream, "\n" );
 	}
-	
+
 	fprintf( stream, "\n" );
 
 	first_progress = FALSE;
@@ -250,11 +250,11 @@ void p_dump_symbols( FILE* stream, PARSER* parser )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_dump_item_set()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Dumps an item set.
-					
+
 	Parameters:		FILE*		stream			The stream where to dump the
 												grammar to. If this is
 												(FILE*)NULL, output is written
@@ -264,7 +264,7 @@ void p_dump_symbols( FILE* stream, PARSER* parser )
 												itself.
 
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -275,7 +275,7 @@ void p_dump_item_set( FILE* stream, uchar* title, LIST* list )
 	LIST*		j		= (LIST*)NULL;
 	SYMBOL*		sym		= (SYMBOL*)NULL;
 	int			cnt		= 0;
-	
+
 	if( !stream )
 		stream = stderr;
 
@@ -286,20 +286,20 @@ void p_dump_item_set( FILE* stream, uchar* title, LIST* list )
 
 		if( title )
 			fprintf( stream, "\n%s\n", title );
-		
+
 		for( i = list; i; i = i->next )
-		{			
+		{
 			it = i->pptr;
-			
-			
+
+
 			fprintf( stream, "    (%d) %s -> ",
 				it->prod->id, it->prod->lhs->name );
-			
+
 			cnt = 0;
 			for( j = it->prod->rhs; j; j = j->next )
 			{
 				sym = j->pptr;
-				
+
 				if( cnt == it->dot_offset )
 					fprintf( stream, "." );
 
@@ -331,11 +331,11 @@ void p_dump_item_set( FILE* stream, uchar* title, LIST* list )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_dump_lalr_states()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Dumps the LALR(1) states.
-					
+
 	Parameters:		FILE*		stream			The stream where to dump the
 												grammar to. If this is
 												(FILE*)NULL, output is written
@@ -343,7 +343,7 @@ void p_dump_item_set( FILE* stream, uchar* title, LIST* list )
 					PARSER*		parser			Parser information structure.
 
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -366,7 +366,7 @@ void p_dump_lalr_states( FILE* stream, PARSER* parser )
 	for( l = parser->lalr_states; l; l = l->next )
 	{
 		st = (STATE*)(l->pptr);
-		
+
 		fprintf( stream, "  State %d:\n", st->state_id );
 		p_dump_item_set( stream, "Kernel:", st->kernel );
 		p_dump_item_set( stream, "Epsilon:", st->epsilon );
@@ -376,20 +376,20 @@ void p_dump_lalr_states( FILE* stream, PARSER* parser )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_dump_productions()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Dumps all productions.
-					
+
 	Parameters:		FILE*		stream			The stream where to dump the
 												productions to. If this is
 												(FILE*)NULL, output is written
 												to stderr.
 					PARSER*		parser			Parser information structure
 												pointer.
-													
+
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -406,7 +406,7 @@ void p_dump_productions( FILE* stream, PARSER* parser )
 	fprintf( stream, "%s%sPRODUCTIONS\n\n",
 		( parser->p_name ? parser->p_name : "" ),
 			( parser->p_name ? ": " : "" ) );
-	
+
 	for( l = parser->productions; l; l = l->next )
 	{
 		p = (PROD*)( l->pptr );
@@ -419,11 +419,11 @@ void p_dump_productions( FILE* stream, PARSER* parser )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_dump_production()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Dumps one production.
-					
+
 	Parameters:		FILE*		stream			The stream where to dump the
 												productions to. If this is
 												(FILE*)NULL, output is written
@@ -434,9 +434,9 @@ void p_dump_productions( FILE* stream, PARSER* parser )
 												a "->" between rhs
 					BOOLEAN		semantics		If TRUE, production-related
 												semantics are even printed.
-													
+
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -465,12 +465,12 @@ void p_dump_production( FILE* stream, PROD* p,
 
 		fprintf( stream, "-> " );
 	}
-		
+
 	if( semantics && p->sem_rhs )
 	{
 		l = p->sem_rhs;
 		m = p->sem_rhs_idents;
-		
+
 		embedded = TRUE;
 	}
 
@@ -487,7 +487,7 @@ void p_dump_production( FILE* stream, PROD* p,
 		ident = (char*)( m->pptr );
 		if( semantics && ident )
 			fprintf( stream, ":%s", ident );
-		
+
 		fprintf( stream, " " );
 	}
 

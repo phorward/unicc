@@ -116,7 +116,7 @@ static int replace_lines( pregex_result* res )
 void p_build_code_localizations( uchar** str, GENERATOR* g )
 {
 	uchar*		result	= (uchar*)NULL;
-	pregex		preg;
+	pregex*		preg;
 
 
 	if( line > 0 )
@@ -125,7 +125,7 @@ void p_build_code_localizations( uchar** str, GENERATOR* g )
 	line = 1;
 	genstr = g->code_localization;
 
-	pregex_init( &preg );
+	preg = pregex_create();
 	pregex_compile( &preg, "\n", 0 );
 	pregex_compile( &preg, "@@line", 1 );
 
@@ -172,7 +172,7 @@ void p_build_code_localizations( uchar** str, GENERATOR* g )
 uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 			uchar* base, BOOLEAN def_code )
 {
-	pregex			replacer;
+	pregex*			replacer;
 	pregex_result*	result;
 	int				result_cnt;
 	int				i;
@@ -197,43 +197,53 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 	PARMS( "def_code", "%s", BOOLEAN_STR( def_code ) );
 
 	/* Prepare regular expression engine */
-	pregex_init( &replacer, REGEX_MOD_GLOBAL );
+	replacer = pregex_create();
 
-	if( pregex_compile( &replacer, "@'([^']|\\')*'", 0 ) != ERR_OK )
-		RETURN( (uchar*)NULL );
+	if( pregex_compile( replacer, "@'([^']|\\')*'", 0 ) != ERR_OK )
+		on_error = TRUE;
 
-	if( pregex_compile( &replacer, "@\"([^\"]|\\\")*\"", 0 ) != ERR_OK )
-		RETURN( (uchar*)NULL );
+	if( pregex_compile( replacer, "@\"([^\"]|\\\")*\"", 0 ) != ERR_OK )
+		on_error = TRUE;
 
-	if( pregex_compile( &replacer, "@[A-Za-z_][A-Za-z0-9_]*", 1 )
+	if( pregex_compile( replacer, "@[A-Za-z_][A-Za-z0-9_]*", 1 )
 			!= ERR_OK )
-		RETURN( (uchar*)NULL );
+		on_error = TRUE;
 
-	if( pregex_compile( &replacer, "@[0-9]+", 2 ) != ERR_OK )
-		RETURN( (uchar*)NULL );
+	if( pregex_compile( replacer, "@[0-9]+", 2 ) != ERR_OK )
+		on_error = TRUE;
 
-	if( pregex_compile( &replacer, "@@", 3 ) != ERR_OK )
-		RETURN( (uchar*)NULL );
+	if( pregex_compile( replacer, "@@", 3 ) != ERR_OK )
+		on_error = TRUE;
 
 	/*
 	 * Hmm ... this way looks "cooler" for future versions, maybe
 	 * this would be a nice extension: @<command>:<parameters>
 	 */
-	if( pregex_compile( &replacer,
+	if( pregex_compile( replacer,
 			"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 4 ) != ERR_OK )
+		on_error = TRUE;
+
+	if( on_error )
+	{
+		pregex_free( replacer );
 		RETURN( (uchar*)NULL );
+	}
 
 	/* Run regular expression */
-	if( ( result_cnt = pregex_match( &replacer, base,
-							REGEX_NO_CALLBACK, &result ) ) < 0 )
+	if( ( result_cnt = pregex_match( replacer, base,
+							PREGEX_NO_CALLBACK, &result ) ) < 0 )
 	{
 		MSG( "Error occured" );
 		VARS( "result_cnt", "%d", result_cnt );
+
+		pregex_free( replacer );
 		RETURN( (uchar*)NULL );
 	}
 	else if( !result_cnt )
 	{
 		MSG( "Nothing to do at all" );
+
+		pregex_free( replacer );
 		RETURN( pstrdup( base ) );
 	}
 
@@ -241,7 +251,7 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 
 	/* Free the regular expression facilities - we have everything we
 		need from here! */
-	pregex_free( &replacer );
+	pregex_free( replacer );
 
 	VARS( "p->sem_rhs", "%p", p->sem_rhs  );
 	/* Ok, perform replacement operations */
@@ -483,15 +493,16 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 			uchar* base )
 {
-	pregex			replacer;
+	pregex*			replacer;
 	pregex_result*	result;
 	int				result_cnt;
 	uchar*			ret			= (uchar*)NULL;
 	uchar*			last;
 	uchar*			tmp;
 	LIST*			l;
-	SYMBOL*		sym;
+	SYMBOL*			sym;
 	int				i;
+	BOOLEAN			on_error	= FALSE;
 
 	PROC( "p_build_scan_action" );
 	PARMS( "parser", "%p", parser );
@@ -500,35 +511,46 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 	PARMS( "base", "%s", base );
 
 	/* Prepare regular expression engine */
-	pregex_init( &replacer, REGEX_MOD_GLOBAL | REGEX_MOD_NO_ANCHORS );
+	replacer = pregex_create();
+	pregex_set_flags( replacer, PREGEX_MOD_GLOBAL | PREGEX_MOD_NO_ANCHORS );
 
-	if( pregex_compile( &replacer, "@>", 0 )
+	if( pregex_compile( replacer, "@>", 0 )
 			!= ERR_OK )
-		RETURN( (uchar*)NULL );
+		on_error = TRUE;
 
-	if( pregex_compile( &replacer, "@<", 1 )
+	if( pregex_compile( replacer, "@<", 1 )
 			!= ERR_OK )
-		RETURN( (uchar*)NULL );
+		on_error = TRUE;
 
-	if( pregex_compile( &replacer, "@@", 2 )
+	if( pregex_compile( replacer, "@@", 2 )
 			!= ERR_OK )
-		RETURN( (uchar*)NULL );
+		on_error = TRUE;
 
-	if( pregex_compile( &replacer,
+	if( pregex_compile( replacer,
 			"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 3 ) != ERR_OK )
+		on_error = TRUE;
+
+	if( on_error )
+	{
+		pregex_free( replacer );
 		RETURN( (uchar*)NULL );
+	}
 
 	/* Run regular expression */
-	if( ( result_cnt = pregex_match( &replacer, base,
-							REGEX_NO_CALLBACK, &result ) ) < 0 )
+	if( ( result_cnt = pregex_match( replacer, base,
+							PREGEX_NO_CALLBACK, &result ) ) < 0 )
 	{
 		MSG( "Error occured" );
 		VARS( "result_cnt", "%d", result_cnt );
+
+		pregex_free( replacer );
 		RETURN( (uchar*)NULL );
 	}
 	else if( !result_cnt )
 	{
 		MSG( "Nothing to do at all" );
+
+		pregex_free( replacer );
 		RETURN( pstrdup( base ) );
 	}
 
@@ -536,7 +558,7 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 
 	/* Free the regular expression facilities - we have everything we
 		need from here! */
-	pregex_free( &replacer );
+	pregex_free( replacer );
 
 	MSG( "Iterating trough result array" );
 	for( i = 0, last = base; i < result_cnt; i++ )
