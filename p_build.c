@@ -231,7 +231,7 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 
 	/* Run regular expression */
 	if( ( result_cnt = pregex_match( replacer, base,
-							PREGEX_NO_CALLBACK, &result ) ) < 0 )
+							PREGEX_FN_NULL, &result ) ) < 0 )
 	{
 		MSG( "Error occured" );
 		VARS( "result_cnt", "%d", result_cnt );
@@ -538,7 +538,7 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 
 	/* Run regular expression */
 	if( ( result_cnt = pregex_match( replacer, base,
-							PREGEX_NO_CALLBACK, &result ) ) < 0 )
+							PREGEX_FN_NULL, &result ) ) < 0 )
 	{
 		MSG( "Error occured" );
 		VARS( "result_cnt", "%d", result_cnt );

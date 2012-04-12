@@ -210,7 +210,7 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 
 	/* Run regular expression */
 	if( ( result_cnt = pregex_match( replacer, base,
-			PREGEX_NO_CALLBACK, &result ) ) < 0 )
+			PREGEX_FN_NULL, &result ) ) < 0 )
 	{
 		MSG( "Error occured" );
 		VARS( "result_cnt", "%d", result_cnt );
@@ -513,7 +513,7 @@ static void p_xml_build_scan_action(
 
 	/* Run regular expression */
 	if( ( result_cnt = pregex_match( replacer, base,
-			PREGEX_NO_CALLBACK, &result ) ) < 0 )
+			PREGEX_FN_NULL, &result ) ) < 0 )
 	{
 		MSG( "Error occured" );
 		VARS( "result_cnt", "%d", result_cnt );
