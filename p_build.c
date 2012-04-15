@@ -101,7 +101,7 @@ uchar* p_escape_for_target( GENERATOR* g, uchar* str, BOOLEAN clear )
 static int 		line		= 0;
 static uchar*	genstr;
 
-static int replace_lines( pregex_result* res )
+static int replace_lines( pregex_range* res )
 {
 	if( res->accept == 0 )
 		line++;
@@ -173,9 +173,7 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 			uchar* base, BOOLEAN def_code )
 {
 	pregex*			replacer;
-	pregex_result*	result;
-	int				result_cnt;
-	int				i;
+	pregex_range*	range;
 	int				off;
 	uchar*			last;
 	uchar*			ret		= (uchar*)NULL;
@@ -199,59 +197,21 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 	/* Prepare regular expression engine */
 	replacer = pregex_create();
 
-	if( pregex_compile( replacer, "@'([^']|\\')*'", 0 ) != ERR_OK )
-		on_error = TRUE;
-
-	if( pregex_compile( replacer, "@\"([^\"]|\\\")*\"", 0 ) != ERR_OK )
-		on_error = TRUE;
-
-	if( pregex_compile( replacer, "@[A-Za-z_][A-Za-z0-9_]*", 1 )
-			!= ERR_OK )
-		on_error = TRUE;
-
-	if( pregex_compile( replacer, "@[0-9]+", 2 ) != ERR_OK )
-		on_error = TRUE;
-
-	if( pregex_compile( replacer, "@@", 3 ) != ERR_OK )
-		on_error = TRUE;
-
-	/*
-	 * Hmm ... this way looks "cooler" for future versions, maybe
-	 * this would be a nice extension: @<command>:<parameters>
-	 */
-	if( pregex_compile( replacer,
+	if( pregex_compile( replacer, "@'([^']|\\')*'", 0 ) != ERR_OK
+		|| pregex_compile( replacer, "@\"([^\"]|\\\")*\"", 0 ) != ERR_OK
+		|| pregex_compile( replacer, "@[A-Za-z_][A-Za-z0-9_]*", 1 ) != ERR_OK
+		|| pregex_compile( replacer, "@[0-9]+", 2 ) != ERR_OK
+		|| pregex_compile( replacer, "@@", 3 ) != ERR_OK
+		/*
+		 * Hmm ... this way looks "cooler" for future versions, maybe
+		 * this would be a nice extension: @<command>:<parameters>
+		 */
+		|| pregex_compile( replacer,
 			"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 4 ) != ERR_OK )
-		on_error = TRUE;
-
-	if( on_error )
 	{
 		pregex_free( replacer );
 		RETURN( (uchar*)NULL );
 	}
-
-	/* Run regular expression */
-	if( ( result_cnt = pregex_match( replacer, base,
-							PREGEX_FN_NULL, &result ) ) < 0 )
-	{
-		MSG( "Error occured" );
-		VARS( "result_cnt", "%d", result_cnt );
-
-		pregex_free( replacer );
-		RETURN( (uchar*)NULL );
-	}
-	else if( !result_cnt )
-	{
-		MSG( "Nothing to do at all" );
-
-		pregex_free( replacer );
-		RETURN( pstrdup( base ) );
-	}
-
-	VARS( "result_cnt", "%d", result_cnt );
-
-	/* Free the regular expression facilities - we have everything we
-		need from here! */
-	pregex_free( replacer );
 
 	VARS( "p->sem_rhs", "%p", p->sem_rhs  );
 	/* Ok, perform replacement operations */
@@ -262,30 +222,32 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 		rhs_idents = p->sem_rhs_idents;
 	}
 
-	MSG( "Iterating through the results array" );
-	for( i = 0, last = base; i < result_cnt && !on_error; i++ )
+	MSG( "Iterating trough matches" );
+	for( last = base, pregex_match( replacer, base );
+			( range = pregex_get_range( replacer ) ) && !on_error;
+				pregex_match( replacer, (uchar*)NULL ) )
 	{
 		VARS( "i", "%d", i );
 		off = 0;
 		tmp = (uchar*)NULL;
 
-		if( last < result[i].begin )
+		if( last < range->begin )
 		{
 			if( !( ret = pstrncatstr(
-					ret, last, result[i].begin - last ) ) )
+					ret, last, range->begin - last ) ) )
 				OUTOFMEM;
 
 			VARS( "ret", "%s", ret );
 
-			last = result[i].end;
+			last = range->end;
 		}
 
-		VARS( "result[i].accept", "%d", result[i].accept );
-		switch( result[i].accept )
+		VARS( "range->accept", "%d", range->accept );
+		switch( range->accept )
 		{
 			case 0:
-				result[i].begin++;
-				result[i].len -= 2;
+				range->begin++;
+				range->len -= 2;
 
 			case 1:
 				MSG( "Identifier" );
@@ -297,12 +259,12 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 
 					/*
 					printf( "check >%.*s< with >%.*s<\n",
-						result[i].len - 1, chk,
-							result[i].len - 1, result[i].begin + 1 );
+						range->len - 1, chk,
+							range->len - 1, range->begin + 1 );
 					*/
-					if( chk && !pstrncmp( chk, result[i].begin + 1,
-									result[i].len - 1 )
-							&& pstrlen( chk ) == result[i].len - 1 )
+					if( chk && !pstrncmp( chk, range->begin + 1,
+									range->len - 1 )
+							&& pstrlen( chk ) == range->len - 1 )
 					{
 						break;
 					}
@@ -311,10 +273,10 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 				if( !l )
 				{
 					p_error( parser, ERR_UNDEFINED_SYMREF, ERRSTYLE_WARNING,
-										result[i].len, result[i].begin );
+										range->len, range->begin );
 					off = 0;
 
-					tmp = pstrdup( result[i].begin );
+					tmp = pstrdup( range->begin );
 				}
 
 				VARS( "off", "%d", off );
@@ -322,7 +284,7 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 
 			case 2:
 				MSG( "Offset" );
-				off = patoi( result[i].begin + 1 );
+				off = patoi( range->begin + 1 );
 				break;
 
 			case 3:
@@ -348,8 +310,8 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 				off = 0;
 
 				if( !( tmp = pasprintf( "%.*s",
-								result[i].len - ( pstrlen( SYMBOL_VAR ) + 3 ),
-								result[i].begin + ( pstrlen( SYMBOL_VAR ) + 3 )
+								range->len - ( pstrlen( SYMBOL_VAR ) + 3 ),
+								range->begin + ( pstrlen( SYMBOL_VAR ) + 3 )
 									) ) )
 				{
 					OUTOFMEM;
@@ -387,7 +349,7 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 								ERRSTYLE_WARNING, tmp );
 					pfree( tmp );
 
-					if( !( tmp = pstrdup( result[i].begin ) ) )
+					if( !( tmp = pstrdup( range->begin ) ) )
 					{
 						OUTOFMEM;
 						RETURN( (uchar*)NULL );
@@ -421,8 +383,8 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 					else
 					{
 						p_error( parser, ERR_NO_VALUE_TYPE, ERRSTYLE_FATAL,
-								sym->name, p->id, result[i].len + 1,
-									result[i].begin );
+								sym->name, p->id, range->len + 1,
+									range->begin );
 
 						att = (uchar*)NULL;
 						on_error = TRUE;
@@ -446,7 +408,7 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 				{
 					p_error( parser, ERR_NO_VALUE_TYPE, ERRSTYLE_FATAL,
 							p_find_base_symbol( sym )->name,
-								p->id, result[i].len + 1, result[i].begin );
+								p->id, range->len + 1, range->begin );
 				}
 
 				on_error = TRUE;
@@ -459,9 +421,6 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 
 	if( last && *last )
 		ret = pstrcatstr( ret, last, FALSE );
-
-	MSG( "Free result array" );
-	pfree( result );
 
 	VARS( "ret", "%s", ret );
 	VARS( "on_error", "%s", BOOLEAN_STR( on_error ) );
@@ -494,15 +453,12 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 			uchar* base )
 {
 	pregex*			replacer;
-	pregex_result*	result;
-	int				result_cnt;
+	pregex_range*	range;
 	uchar*			ret			= (uchar*)NULL;
 	uchar*			last;
 	uchar*			tmp;
 	LIST*			l;
 	SYMBOL*			sym;
-	int				i;
-	BOOLEAN			on_error	= FALSE;
 
 	PROC( "p_build_scan_action" );
 	PARMS( "parser", "%p", parser );
@@ -514,70 +470,34 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 	replacer = pregex_create();
 	pregex_set_flags( replacer, PREGEX_MOD_GLOBAL | PREGEX_MOD_NO_ANCHORS );
 
-	if( pregex_compile( replacer, "@>", 0 )
-			!= ERR_OK )
-		on_error = TRUE;
-
-	if( pregex_compile( replacer, "@<", 1 )
-			!= ERR_OK )
-		on_error = TRUE;
-
-	if( pregex_compile( replacer, "@@", 2 )
-			!= ERR_OK )
-		on_error = TRUE;
-
-	if( pregex_compile( replacer,
+	if( pregex_compile( replacer, "@>", 0 ) != ERR_OK
+		|| pregex_compile( replacer, "@<", 1 ) != ERR_OK
+		|| pregex_compile( replacer, "@@", 2 ) != ERR_OK
+		|| pregex_compile( replacer,
 			"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 3 ) != ERR_OK )
-		on_error = TRUE;
-
-	if( on_error )
 	{
 		pregex_free( replacer );
 		RETURN( (uchar*)NULL );
 	}
 
-	/* Run regular expression */
-	if( ( result_cnt = pregex_match( replacer, base,
-							PREGEX_FN_NULL, &result ) ) < 0 )
+	MSG( "Iterating trough matches" );
+	for( last = base, pregex_match( replacer, base );
+			( range = pregex_get_range( replacer ) );
+				pregex_match( replacer, (uchar*)NULL ) )
 	{
-		MSG( "Error occured" );
-		VARS( "result_cnt", "%d", result_cnt );
-
-		pregex_free( replacer );
-		RETURN( (uchar*)NULL );
-	}
-	else if( !result_cnt )
-	{
-		MSG( "Nothing to do at all" );
-
-		pregex_free( replacer );
-		RETURN( pstrdup( base ) );
-	}
-
-	VARS( "result_cnt", "%d", result_cnt );
-
-	/* Free the regular expression facilities - we have everything we
-		need from here! */
-	pregex_free( replacer );
-
-	MSG( "Iterating trough result array" );
-	for( i = 0, last = base; i < result_cnt; i++ )
-	{
-		VARS( "i", "%d", i );
-
-		if( last < result[i].begin )
+		if( last < range->begin )
 		{
 			if( !( ret = pstrncatstr(
-					ret, last, result[i].begin - last ) ) )
+					ret, last, range->begin - last ) ) )
 				OUTOFMEM;
 
 			VARS( "ret", "%s", ret );
 		}
 
-		last = result[i].end;
+		last = range->end;
 
-		VARS( "result[i].accept", "%d", result[i].accept );
-		switch( result[i].accept )
+		VARS( "range->accept", "%d", range->accept );
+		switch( range->accept )
 		{
 			case 0:
 				MSG( "@>" );
@@ -612,13 +532,10 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 				MSG( "Set terminal symbol" );
 
 				if( !( tmp = pasprintf( "%.*s",
-								result[i].len - ( pstrlen( SYMBOL_VAR ) + 3 ),
-								result[i].begin + ( pstrlen( SYMBOL_VAR ) + 3 )
+								range->len - ( pstrlen( SYMBOL_VAR ) + 3 ),
+								range->begin + ( pstrlen( SYMBOL_VAR ) + 3 )
 									) ) )
-				{
 					OUTOFMEM;
-					RETURN( (uchar*)NULL );
-				}
 
 				VARS( "tmp", "%s", tmp );
 
@@ -661,8 +578,7 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 	if( last && *last )
 		ret = pstrcatstr( ret, last, FALSE );
 
-	MSG( "Free result array" );
-	pfree( result );
+	replacer = pregex_free( replacer );
 
 	VARS( "ret", "%s", ret );
 	RETURN( ret );
