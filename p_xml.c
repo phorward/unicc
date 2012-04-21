@@ -140,7 +140,7 @@ static XML_T p_xml_raw_code( XML_T code_xml, uchar* code )
 	12.07.2010	Jan Max Meyer	Print warning if code symbol references to un-
 								defined symbol on the semantic rhs!
 ----------------------------------------------------------------------------- */
-static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
+static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 		uchar* base, BOOLEAN def_code )
 {
 	pregex*			replacer;
@@ -177,7 +177,7 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 			"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 4 ) != ERR_OK )
 	{
 		pregex_free( replacer );
-		VOIDRET;
+		RETURN( FALSE );
 	}
 
 	VARS( "p->sem_rhs", "%p", p->sem_rhs  );
@@ -190,9 +190,8 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 	}
 
 	MSG( "Iterating trough result array" );
-	for( last = base, pregex_match( replacer, base );
-			( range = pregex_get_range( replacer ) ) && !on_error;
-				pregex_match( replacer, (uchar*)NULL ) )
+	for( last = base, range = pregex_match( replacer, base );
+			range && !on_error; range = pregex_match( replacer, (uchar*)NULL ) )
 	{
 		VARS( "i", "%d", i );
 		off = 0;
@@ -286,7 +285,7 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 									) ) )
 				{
 					OUTOFMEM;
-					VOIDRET;
+					RETURN( FALSE );
 				}
 
 				VARS( "tmp", "%s", tmp );
@@ -328,7 +327,7 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 					if( !( tmp = pstrdup( range->begin ) ) )
 					{
 						OUTOFMEM;
-						VOIDRET;
+						RETURN( FALSE );
 					}
 				}
 
@@ -390,7 +389,7 @@ static void p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 
 	pregex_free( replacer );
 
-	VOIDRET;
+	RETURN( !on_error );
 }
 
 /* -FUNCTION--------------------------------------------------------------------
@@ -439,9 +438,8 @@ static BOOLEAN p_xml_build_scan_action(
 		RETURN( FALSE );
 	}
 
-	for( last = base, pregex_match( replacer, base );
-			( range = pregex_get_range( replacer ) );
-				pregex_match( replacer, (uchar*)NULL ) )
+	for( last = base, range = pregex_match( replacer, base );
+				range; range = pregex_match( replacer, (uchar*)NULL ) )
 	{
 		VARS( "i", "%d", i );
 
