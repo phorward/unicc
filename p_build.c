@@ -223,8 +223,9 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 	}
 
 	MSG( "Iterating trough matches" );
-	for( last = base, range = pregex_match( replacer, base );
-			range && !on_error; range = pregex_match( replacer, (uchar*)NULL ) )
+	for( last = base, range = pregex_match_next( replacer, base );
+			range && !on_error;
+				range = pregex_match_next( replacer, (uchar*)NULL ) )
 	{
 		VARS( "i", "%d", i );
 		off = 0;
@@ -480,8 +481,8 @@ uchar* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 	}
 
 	MSG( "Iterating trough matches" );
-	for( last = base, range = pregex_match( replacer, base );
-			range; range = pregex_match( replacer, (uchar*)NULL ) )
+	for( last = base, range = pregex_match_next( replacer, base );
+			range; range = pregex_match_next( replacer, (uchar*)NULL ) )
 	{
 		if( last < range->begin )
 		{

@@ -190,8 +190,9 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 	}
 
 	MSG( "Iterating trough result array" );
-	for( last = base, range = pregex_match( replacer, base );
-			range && !on_error; range = pregex_match( replacer, (uchar*)NULL ) )
+	for( last = base, range = pregex_match_next( replacer, base );
+			range && !on_error;
+				range = pregex_match_next( replacer, (uchar*)NULL ) )
 	{
 		VARS( "i", "%d", i );
 		off = 0;
@@ -438,8 +439,8 @@ static BOOLEAN p_xml_build_scan_action(
 		RETURN( FALSE );
 	}
 
-	for( last = base, range = pregex_match( replacer, base );
-				range; range = pregex_match( replacer, (uchar*)NULL ) )
+	for( last = base, range = pregex_match_next( replacer, base );
+				range; range = pregex_match_next( replacer, (uchar*)NULL ) )
 	{
 		VARS( "i", "%d", i );
 
