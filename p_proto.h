@@ -53,17 +53,8 @@ BOOLEAN p_stupid_productions( PARSER* parser );
 
 /* p_string.c */
 uchar* p_int_to_str( int val );
-uchar* p_chr_to_str( int val );
 uchar* p_long_to_str( long val );
-uchar* p_str_to_str( uchar* val );
-uchar* p_str_to_xml( uchar* str );
-int p_strcmp( uchar* str1, uchar* str2, int insensitive );
-uchar* p_strupr( uchar* str );
-uchar* p_unescape_str( uchar* str );
 uchar* p_str_no_whitespace( uchar* str );
-
-#define p_tolower( ch )		ptolower( ch )
-#define p_toupper( ch )		ptoupper( ch )
 
 /* p_util.c */
 uchar* p_derivation_name( uchar* name, uchar append_char );
