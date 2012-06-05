@@ -117,18 +117,16 @@ $(PROGRAM): $(PROG_BOOT3) $(PARSER_SRC) $(PROTO) $(SRC) $(HEADERS) $(MISCDEP)
 	
 clean: clean_obj
 	-rm -f $(PROGRAM)
-	-rm -f unicc.man
-	-rm -f README
 
 clean_obj:
-	-@rm -f $(PROG_BOOT1)
-	-@rm -f $(PROG_BOOT2)
-	-@rm -f $(PROG_BOOT3)
-	-@rm -f $(PARSER)
-	-@rm -f $(PARSER_H)
-	-@rm -f $(PARSER_DBG)
-	-@rm -f $(PARSER_OBJ)
-	-@rm -f $(OBJ)
+	-rm -f $(PROG_BOOT1)
+	-rm -f $(PROG_BOOT2)
+	-rm -f $(PROG_BOOT3)
+	-rm -f $(PARSER)
+	-rm -f $(PARSER_H)
+	-rm -f $(PARSER_DBG)
+	-rm -f $(PARSER_OBJ)
+	-rm -f $(OBJ)
 
 backup:	clean
 	-@$(RM) ../p_lalr1_cc.tar
