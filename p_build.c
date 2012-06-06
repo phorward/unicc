@@ -918,17 +918,15 @@ void p_build_code( PARSER* parser )
 	sprintf( tlt_file, "%s%s", parser->p_language, UNICC_TLT_EXTENSION );
 	VARS( "tlt_file", "%s", tlt_file );
 
-	if( !( tlt_path = pwhich( tlt_file, "." ) ) )
-		if( !( tlt_path = pwhich( tlt_file, getenv( "UNICC_TPLDIR" ) ) ) )
+	if( !( tlt_path = pwhich( tlt_file, "tlt" ) )
+		&& !( tlt_path = pwhich( tlt_file, getenv( "UNICC_TPLDIR" ) ) )
 #ifndef _WIN32
-			tlt_path = pwhich( tlt_file, "/usr/share/unicc/tlt" );
-#else
-		{
-			sprintf( tlt_file, "tlt%c%s%s", PPATHSEP,
-				parser->p_language, UNICC_TLT_EXTENSION );
-			tlt_path = pwhich( tlt_file, (uchar*)NULL );
-		}
+			&& !( tlt_path = pwhich( tlt_file, "/usr/share/unicc/tlt" ) )
 #endif
+		)
+	{
+		tlt_path = tlt_file;
+	}
 
 	VARS( "tlt_path", "%s", tlt_path );
 
