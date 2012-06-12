@@ -89,3 +89,22 @@ unicc_DEPENDENCIES = unicc_boot3
 
 p_parse.c: p_parse.par unicc_boot3
 	./unicc_boot3 -svwb p_parse p_parse.par
+
+# --- UniCC Documentation ------------------------------------------------------
+#
+# Now documentation generation follows, using txt2tags.
+#
+
+doc: manpage README
+
+manpage: unicc.man
+
+README: unicc.t2t
+	-rm -f $@
+	txt2tags -t txt -H -o - $? | sed -E -n '1h;1!H;$${;g;s/ +([-A-Z ]+)\n +(=+)/\2==\n \1 \n\2==/g;p;}' | sed -e "/^=/s/=/*/g;1,15d" >$@.tmp
+	cat unicc.hdr $@.tmp >>$@
+	rm -f $@.tmp
+
+
+unicc.man: unicc.t2t
+	txt2tags -t man $?
