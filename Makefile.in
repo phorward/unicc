@@ -53,9 +53,6 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = unicc$(EXEEXT)
-noinst_PROGRAMS = unicc_boot1$(EXEEXT) unicc_boot2$(EXEEXT) \
-	unicc_boot3$(EXEEXT)
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(dist_tlt_DATA) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
@@ -278,6 +275,11 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+bin_PROGRAMS = unicc$(EXEEXT)
+noinst_PROGRAMS = unicc_boot1$(EXEEXT) \
+					unicc_boot2$(EXEEXT) \
+					unicc_boot3$(EXEEXT)
+
 man1_MANS = unicc.man
 tltdir = $(datadir)/unicc/tlt
 dist_tlt_DATA = tlt/C.tlt
@@ -325,7 +327,7 @@ unicc_boot1_CFLAGS = -DUNICC_BOOTSTRAP=1
 #
 unicc_boot2_SOURCES = p_parse_boot2.c $(SOURCES)
 unicc_boot2_CFLAGS = -DUNICC_BOOTSTRAP=2
-unicc_boot2_DEPENDENCIES = unicc_boot1
+unicc_boot2_DEPENDENCIES = unicc_boot1$(EXEEXT)
 
 # --- UniCC Bootstrap phase 3 --------------------------------------------------
 #
@@ -334,14 +336,14 @@ unicc_boot2_DEPENDENCIES = unicc_boot1
 #
 unicc_boot3_SOURCES = p_parse_boot3.c $(SOURCES)
 unicc_boot3_CFLAGS = -DUNICC_BOOTSTRAP=3
-unicc_boot3_DEPENDENCIES = unicc_boot2
+unicc_boot3_DEPENDENCIES = unicc_boot2$(EXEEXT)
 
 # --- UniCC Final Build --------------------------------------------------------
 #
 # Using the third bootstrap phase, the final UniCC executable is build.
 #
 unicc_SOURCES = p_parse.c $(SOURCES)
-unicc_DEPENDENCIES = unicc_boot3
+unicc_DEPENDENCIES = unicc_boot3$(EXEEXT)
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -1595,13 +1597,13 @@ uninstall-man: uninstall-man1
 p_parse_boot1.c: p_parse.syn
 	min_lalr1 $? >$@ 2>/dev/null
 
-p_parse_boot2.c p_parse_boot2.h: p_parse.par unicc_boot1
+p_parse_boot2.c p_parse_boot2.h: p_parse.par unicc_boot1$(EXEEXT)
 	./unicc_boot1 -svwb p_parse_boot2 p_parse.par
 
-p_parse_boot3.c p_parse_boot3.h: p_parse.par unicc_boot2
+p_parse_boot3.c p_parse_boot3.h: p_parse.par unicc_boot2$(EXEEXT)
 	./unicc_boot2 -svwb p_parse_boot3 p_parse.par
 
-p_parse.c: p_parse.par unicc_boot3
+p_parse.c: p_parse.par unicc_boot3$(EXEEXT)
 	./unicc_boot3 -svwb p_parse p_parse.par
 
 # --- UniCC Documentation ------------------------------------------------------

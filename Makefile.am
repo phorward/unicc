@@ -3,9 +3,11 @@
 # Automake targets
 #
 
-bin_PROGRAMS = unicc
+bin_PROGRAMS = unicc$(EXEEXT)
 
-noinst_PROGRAMS = unicc_boot1 unicc_boot2 unicc_boot3
+noinst_PROGRAMS = unicc_boot1$(EXEEXT) \
+					unicc_boot2$(EXEEXT) \
+					unicc_boot3$(EXEEXT)
 
 man1_MANS = unicc.man
 
@@ -61,9 +63,9 @@ p_parse_boot1.c: p_parse.syn
 
 unicc_boot2_SOURCES = p_parse_boot2.c $(SOURCES)
 unicc_boot2_CFLAGS = -DUNICC_BOOTSTRAP=2
-unicc_boot2_DEPENDENCIES = unicc_boot1
+unicc_boot2_DEPENDENCIES = unicc_boot1$(EXEEXT)
 
-p_parse_boot2.c p_parse_boot2.h: p_parse.par unicc_boot1
+p_parse_boot2.c p_parse_boot2.h: p_parse.par unicc_boot1$(EXEEXT)
 	./unicc_boot1 -svwb p_parse_boot2 p_parse.par
 
 # --- UniCC Bootstrap phase 3 --------------------------------------------------
@@ -74,9 +76,9 @@ p_parse_boot2.c p_parse_boot2.h: p_parse.par unicc_boot1
 
 unicc_boot3_SOURCES = p_parse_boot3.c $(SOURCES)
 unicc_boot3_CFLAGS = -DUNICC_BOOTSTRAP=3
-unicc_boot3_DEPENDENCIES = unicc_boot2
+unicc_boot3_DEPENDENCIES = unicc_boot2$(EXEEXT)
 
-p_parse_boot3.c p_parse_boot3.h: p_parse.par unicc_boot2
+p_parse_boot3.c p_parse_boot3.h: p_parse.par unicc_boot2$(EXEEXT)
 	./unicc_boot2 -svwb p_parse_boot3 p_parse.par
 
 # --- UniCC Final Build --------------------------------------------------------
@@ -85,9 +87,9 @@ p_parse_boot3.c p_parse_boot3.h: p_parse.par unicc_boot2
 #
 
 unicc_SOURCES = p_parse.c $(SOURCES)
-unicc_DEPENDENCIES = unicc_boot3
+unicc_DEPENDENCIES = unicc_boot3$(EXEEXT)
 
-p_parse.c: p_parse.par unicc_boot3
+p_parse.c: p_parse.par unicc_boot3$(EXEEXT)
 	./unicc_boot3 -svwb p_parse p_parse.par
 
 # --- UniCC Documentation ------------------------------------------------------
