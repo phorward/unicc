@@ -10,17 +10,18 @@ AM_PROG_CC_C_O
 AC_PROG_MAKE_SET
 
 # Check for min_lalr1.
-AC_CHECK_PROG([MIN_LALR1], [min_lalr1], [Y], [N])
-if test $MIN_LALR1 = N ; then
-	AC_MSG_ERROR([Cannot build without min_lalr1 parser generator;
-	Install Phorward Foundation Libraries first, or check your PATH.])
+AC_CHECK_PROG([MIN_LALR1], [min_lalr1], "yes", "no")
+if test $MIN_LALR1 = "no" ; then
+	AC_MSG_ERROR([Cannot build without min_lalr1 parser generator; Install Phorward Foundation Toolkit first, or check your PATH.])
 fi
 
 # Checks for libraries.
 AC_CHECK_LIB([rt], [sprintf])
-AC_CHECK_LIB([phorward], [pmalloc])
+AC_CHECK_LIB([phorward], [pmalloc], [], [AC_MSG_ERROR([Cannot build without libphorward; Install Phorward Foundation Toolkit first, or set your LDFLAGS correct.])])
+
 
 # Checks for header files.
+AC_CHECK_HEADER([phorward.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
