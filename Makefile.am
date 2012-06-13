@@ -5,9 +5,11 @@
 
 bin_PROGRAMS = unicc$(EXEEXT)
 
+if WITH_BOOTSTRAP
 noinst_PROGRAMS = unicc_boot1$(EXEEXT) \
 					unicc_boot2$(EXEEXT) \
 					unicc_boot3$(EXEEXT)
+endif
 
 man1_MANS = unicc.man
 
@@ -35,25 +37,26 @@ SOURCES			= 	\
 				p_xml.c \
 				p_main.c
 
-BUILT_SOURCES	= \
+if WITH_BOOTSTRAP
+
+BUILT_SOURCES	=	\
 				p_parse_boot1.c \
 				p_parse_boot2.c \
 				p_parse_boot2.h \
 				p_parse_boot3.c \
-				p_parse_boot3.h \
-				p_parse.c
-
+				p_parse_boot3.h
+				
 # --- UniCC Bootstrap phase 1 --------------------------------------------------
 #
 # This phase uses the experimental min_lalr1 Parser Generator from the
-# Phorward Foundation Library to build a rudimentary parser for UniCC.
+# Phorward Foundation Toolkit to build a rudimentary parser for UniCC.
 #
 
 unicc_boot1_SOURCES = p_parse_boot1.c $(SOURCES)
 unicc_boot1_CFLAGS = -DUNICC_BOOTSTRAP=1
 
 p_parse_boot1.c: p_parse.syn
-	min_lalr1 $? >$@ 2>/dev/null
+	min_lalr1$(EXEEXT) $? >$@ 2>/dev/null
 
 # --- UniCC Bootstrap phase 2 --------------------------------------------------
 #
@@ -63,10 +66,10 @@ p_parse_boot1.c: p_parse.syn
 
 unicc_boot2_SOURCES = p_parse_boot2.c $(SOURCES)
 unicc_boot2_CFLAGS = -DUNICC_BOOTSTRAP=2
-unicc_boot2_DEPENDENCIES = unicc_boot1$(EXEEXT)
+#unicc_boot2_DEPENDENCIES = unicc_boot1$(EXEEXT)
 
 p_parse_boot2.c p_parse_boot2.h: p_parse.par unicc_boot1$(EXEEXT)
-	./unicc_boot1 -svwb p_parse_boot2 p_parse.par
+	./unicc_boot1$(EXEEXT) -svwb p_parse_boot2 p_parse.par
 
 # --- UniCC Bootstrap phase 3 --------------------------------------------------
 #
@@ -76,21 +79,25 @@ p_parse_boot2.c p_parse_boot2.h: p_parse.par unicc_boot1$(EXEEXT)
 
 unicc_boot3_SOURCES = p_parse_boot3.c $(SOURCES)
 unicc_boot3_CFLAGS = -DUNICC_BOOTSTRAP=3
-unicc_boot3_DEPENDENCIES = unicc_boot2$(EXEEXT)
+#unicc_boot3_DEPENDENCIES = unicc_boot2$(EXEEXT)
 
 p_parse_boot3.c p_parse_boot3.h: p_parse.par unicc_boot2$(EXEEXT)
-	./unicc_boot2 -svwb p_parse_boot3 p_parse.par
+	./unicc_boot2$(EXEEXT) -svwb p_parse_boot3 p_parse.par
+
+endif
 
 # --- UniCC Final Build --------------------------------------------------------
 #
-# Using the third bootstrap phase, the final UniCC executable is build.
+# Using the third bootstrap phase, the final UniCC executable is built.
 #
 
 unicc_SOURCES = p_parse.c $(SOURCES)
-unicc_DEPENDENCIES = unicc_boot3$(EXEEXT)
+#unicc_DEPENDENCIES = unicc_boot3$(EXEEXT)
 
-p_parse.c: p_parse.par unicc_boot3$(EXEEXT)
-	./unicc_boot3 -svwb p_parse p_parse.par
+if WITH_BOOTSTRAP
+p_parse.c p_parse.h: p_parse.par unicc_boot3$(EXEEXT)
+	./unicc_boot3$(EXEEXT) -svwb p_parse p_parse.par
+endif
 
 # --- UniCC Documentation ------------------------------------------------------
 #

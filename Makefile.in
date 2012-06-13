@@ -77,6 +77,10 @@ am__objects_1 = p_mem.$(OBJEXT) p_error.$(OBJEXT) p_first.$(OBJEXT) \
 am_unicc_OBJECTS = p_parse.$(OBJEXT) $(am__objects_1)
 unicc_OBJECTS = $(am_unicc_OBJECTS)
 unicc_LDADD = $(LDADD)
+am__unicc_boot1_SOURCES_DIST = p_parse_boot1.c p_mem.c p_error.c \
+	p_first.c p_lalr_gen.c p_util.c p_string.c p_integrity.c \
+	p_virtual.c p_rewrite.c p_debug.c p_keywords.c p_build.c \
+	p_xml.c p_main.c
 am__objects_2 = unicc_boot1-p_mem.$(OBJEXT) \
 	unicc_boot1-p_error.$(OBJEXT) unicc_boot1-p_first.$(OBJEXT) \
 	unicc_boot1-p_lalr_gen.$(OBJEXT) unicc_boot1-p_util.$(OBJEXT) \
@@ -86,12 +90,17 @@ am__objects_2 = unicc_boot1-p_mem.$(OBJEXT) \
 	unicc_boot1-p_rewrite.$(OBJEXT) unicc_boot1-p_debug.$(OBJEXT) \
 	unicc_boot1-p_keywords.$(OBJEXT) unicc_boot1-p_build.$(OBJEXT) \
 	unicc_boot1-p_xml.$(OBJEXT) unicc_boot1-p_main.$(OBJEXT)
-am_unicc_boot1_OBJECTS = unicc_boot1-p_parse_boot1.$(OBJEXT) \
-	$(am__objects_2)
+@WITH_BOOTSTRAP_TRUE@am_unicc_boot1_OBJECTS =  \
+@WITH_BOOTSTRAP_TRUE@	unicc_boot1-p_parse_boot1.$(OBJEXT) \
+@WITH_BOOTSTRAP_TRUE@	$(am__objects_2)
 unicc_boot1_OBJECTS = $(am_unicc_boot1_OBJECTS)
 unicc_boot1_LDADD = $(LDADD)
 unicc_boot1_LINK = $(CCLD) $(unicc_boot1_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+am__unicc_boot2_SOURCES_DIST = p_parse_boot2.c p_mem.c p_error.c \
+	p_first.c p_lalr_gen.c p_util.c p_string.c p_integrity.c \
+	p_virtual.c p_rewrite.c p_debug.c p_keywords.c p_build.c \
+	p_xml.c p_main.c
 am__objects_3 = unicc_boot2-p_mem.$(OBJEXT) \
 	unicc_boot2-p_error.$(OBJEXT) unicc_boot2-p_first.$(OBJEXT) \
 	unicc_boot2-p_lalr_gen.$(OBJEXT) unicc_boot2-p_util.$(OBJEXT) \
@@ -101,12 +110,17 @@ am__objects_3 = unicc_boot2-p_mem.$(OBJEXT) \
 	unicc_boot2-p_rewrite.$(OBJEXT) unicc_boot2-p_debug.$(OBJEXT) \
 	unicc_boot2-p_keywords.$(OBJEXT) unicc_boot2-p_build.$(OBJEXT) \
 	unicc_boot2-p_xml.$(OBJEXT) unicc_boot2-p_main.$(OBJEXT)
-am_unicc_boot2_OBJECTS = unicc_boot2-p_parse_boot2.$(OBJEXT) \
-	$(am__objects_3)
+@WITH_BOOTSTRAP_TRUE@am_unicc_boot2_OBJECTS =  \
+@WITH_BOOTSTRAP_TRUE@	unicc_boot2-p_parse_boot2.$(OBJEXT) \
+@WITH_BOOTSTRAP_TRUE@	$(am__objects_3)
 unicc_boot2_OBJECTS = $(am_unicc_boot2_OBJECTS)
 unicc_boot2_LDADD = $(LDADD)
 unicc_boot2_LINK = $(CCLD) $(unicc_boot2_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+am__unicc_boot3_SOURCES_DIST = p_parse_boot3.c p_mem.c p_error.c \
+	p_first.c p_lalr_gen.c p_util.c p_string.c p_integrity.c \
+	p_virtual.c p_rewrite.c p_debug.c p_keywords.c p_build.c \
+	p_xml.c p_main.c
 am__objects_4 = unicc_boot3-p_mem.$(OBJEXT) \
 	unicc_boot3-p_error.$(OBJEXT) unicc_boot3-p_first.$(OBJEXT) \
 	unicc_boot3-p_lalr_gen.$(OBJEXT) unicc_boot3-p_util.$(OBJEXT) \
@@ -116,8 +130,9 @@ am__objects_4 = unicc_boot3-p_mem.$(OBJEXT) \
 	unicc_boot3-p_rewrite.$(OBJEXT) unicc_boot3-p_debug.$(OBJEXT) \
 	unicc_boot3-p_keywords.$(OBJEXT) unicc_boot3-p_build.$(OBJEXT) \
 	unicc_boot3-p_xml.$(OBJEXT) unicc_boot3-p_main.$(OBJEXT)
-am_unicc_boot3_OBJECTS = unicc_boot3-p_parse_boot3.$(OBJEXT) \
-	$(am__objects_4)
+@WITH_BOOTSTRAP_TRUE@am_unicc_boot3_OBJECTS =  \
+@WITH_BOOTSTRAP_TRUE@	unicc_boot3-p_parse_boot3.$(OBJEXT) \
+@WITH_BOOTSTRAP_TRUE@	$(am__objects_4)
 unicc_boot3_OBJECTS = $(am_unicc_boot3_OBJECTS)
 unicc_boot3_LDADD = $(LDADD)
 unicc_boot3_LINK = $(CCLD) $(unicc_boot3_CFLAGS) $(CFLAGS) \
@@ -130,8 +145,9 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(unicc_SOURCES) $(unicc_boot1_SOURCES) \
-	$(unicc_boot2_SOURCES) $(unicc_boot3_SOURCES)
+DIST_SOURCES = $(unicc_SOURCES) $(am__unicc_boot1_SOURCES_DIST) \
+	$(am__unicc_boot2_SOURCES_DIST) \
+	$(am__unicc_boot3_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -276,9 +292,9 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 bin_PROGRAMS = unicc$(EXEEXT)
-noinst_PROGRAMS = unicc_boot1$(EXEEXT) \
-					unicc_boot2$(EXEEXT) \
-					unicc_boot3$(EXEEXT)
+@WITH_BOOTSTRAP_TRUE@noinst_PROGRAMS = unicc_boot1$(EXEEXT) \
+@WITH_BOOTSTRAP_TRUE@					unicc_boot2$(EXEEXT) \
+@WITH_BOOTSTRAP_TRUE@					unicc_boot3$(EXEEXT)
 
 man1_MANS = unicc.man
 tltdir = $(datadir)/unicc/tlt
@@ -303,47 +319,43 @@ SOURCES = \
 				p_xml.c \
 				p_main.c
 
-BUILT_SOURCES = \
-				p_parse_boot1.c \
-				p_parse_boot2.c \
-				p_parse_boot2.h \
-				p_parse_boot3.c \
-				p_parse_boot3.h \
-				p_parse.c
+@WITH_BOOTSTRAP_TRUE@BUILT_SOURCES = \
+@WITH_BOOTSTRAP_TRUE@				p_parse_boot1.c \
+@WITH_BOOTSTRAP_TRUE@				p_parse_boot2.c \
+@WITH_BOOTSTRAP_TRUE@				p_parse_boot2.h \
+@WITH_BOOTSTRAP_TRUE@				p_parse_boot3.c \
+@WITH_BOOTSTRAP_TRUE@				p_parse_boot3.h
 
 
 # --- UniCC Bootstrap phase 1 --------------------------------------------------
 #
 # This phase uses the experimental min_lalr1 Parser Generator from the
-# Phorward Foundation Library to build a rudimentary parser for UniCC.
+# Phorward Foundation Toolkit to build a rudimentary parser for UniCC.
 #
-unicc_boot1_SOURCES = p_parse_boot1.c $(SOURCES)
-unicc_boot1_CFLAGS = -DUNICC_BOOTSTRAP=1
+@WITH_BOOTSTRAP_TRUE@unicc_boot1_SOURCES = p_parse_boot1.c $(SOURCES)
+@WITH_BOOTSTRAP_TRUE@unicc_boot1_CFLAGS = -DUNICC_BOOTSTRAP=1
 
 # --- UniCC Bootstrap phase 2 --------------------------------------------------
 #
 # In this phase, the parser generated by min_lalr1 is will be used to parse the
 # grammar definition of the UniCC parser (p_parse.par)
 #
-unicc_boot2_SOURCES = p_parse_boot2.c $(SOURCES)
-unicc_boot2_CFLAGS = -DUNICC_BOOTSTRAP=2
-unicc_boot2_DEPENDENCIES = unicc_boot1$(EXEEXT)
+@WITH_BOOTSTRAP_TRUE@unicc_boot2_SOURCES = p_parse_boot2.c $(SOURCES)
+@WITH_BOOTSTRAP_TRUE@unicc_boot2_CFLAGS = -DUNICC_BOOTSTRAP=2
 
 # --- UniCC Bootstrap phase 3 --------------------------------------------------
 #
 # In this phase, the UniCC parser compiled by UniCC will be used to build
 # itself.
 #
-unicc_boot3_SOURCES = p_parse_boot3.c $(SOURCES)
-unicc_boot3_CFLAGS = -DUNICC_BOOTSTRAP=3
-unicc_boot3_DEPENDENCIES = unicc_boot2$(EXEEXT)
+@WITH_BOOTSTRAP_TRUE@unicc_boot3_SOURCES = p_parse_boot3.c $(SOURCES)
+@WITH_BOOTSTRAP_TRUE@unicc_boot3_CFLAGS = -DUNICC_BOOTSTRAP=3
 
 # --- UniCC Final Build --------------------------------------------------------
 #
-# Using the third bootstrap phase, the final UniCC executable is build.
+# Using the third bootstrap phase, the final UniCC executable is built.
 #
 unicc_SOURCES = p_parse.c $(SOURCES)
-unicc_DEPENDENCIES = unicc_boot3$(EXEEXT)
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -1594,17 +1606,20 @@ uninstall-man: uninstall-man1
 	uninstall-dist_tltDATA uninstall-man uninstall-man1
 
 
-p_parse_boot1.c: p_parse.syn
-	min_lalr1 $? >$@ 2>/dev/null
+@WITH_BOOTSTRAP_TRUE@p_parse_boot1.c: p_parse.syn
+@WITH_BOOTSTRAP_TRUE@	min_lalr1$(EXEEXT) $? >$@ 2>/dev/null
+#unicc_boot2_DEPENDENCIES = unicc_boot1$(EXEEXT)
 
-p_parse_boot2.c p_parse_boot2.h: p_parse.par unicc_boot1$(EXEEXT)
-	./unicc_boot1 -svwb p_parse_boot2 p_parse.par
+@WITH_BOOTSTRAP_TRUE@p_parse_boot2.c p_parse_boot2.h: p_parse.par unicc_boot1$(EXEEXT)
+@WITH_BOOTSTRAP_TRUE@	./unicc_boot1$(EXEEXT) -svwb p_parse_boot2 p_parse.par
+#unicc_boot3_DEPENDENCIES = unicc_boot2$(EXEEXT)
 
-p_parse_boot3.c p_parse_boot3.h: p_parse.par unicc_boot2$(EXEEXT)
-	./unicc_boot2 -svwb p_parse_boot3 p_parse.par
+@WITH_BOOTSTRAP_TRUE@p_parse_boot3.c p_parse_boot3.h: p_parse.par unicc_boot2$(EXEEXT)
+@WITH_BOOTSTRAP_TRUE@	./unicc_boot2$(EXEEXT) -svwb p_parse_boot3 p_parse.par
+#unicc_DEPENDENCIES = unicc_boot3$(EXEEXT)
 
-p_parse.c: p_parse.par unicc_boot3$(EXEEXT)
-	./unicc_boot3 -svwb p_parse p_parse.par
+@WITH_BOOTSTRAP_TRUE@p_parse.c p_parse.h: p_parse.par unicc_boot3$(EXEEXT)
+@WITH_BOOTSTRAP_TRUE@	./unicc_boot3$(EXEEXT) -svwb p_parse p_parse.par
 
 # --- UniCC Documentation ------------------------------------------------------
 #

@@ -645,6 +645,8 @@ CPPFLAGS
 LDFLAGS
 CFLAGS
 CC
+WITH_BOOTSTRAP_FALSE
+WITH_BOOTSTRAP_TRUE
 am__untar
 am__tar
 AMTAR
@@ -708,6 +710,7 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
+with_bootstrap
 enable_dependency_tracking
 '
       ac_precious_vars='build_alias
@@ -1337,6 +1340,12 @@ Optional Features:
                           do not reject slow dependency extractors
   --disable-dependency-tracking
                           speeds up one-time build
+
+Optional Packages:
+  --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
+  --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-bootstrap        configures to compile UniCC parser bootstrap
+                          toolchain
 
 Some influential environment variables:
   CC          C compiler command
@@ -2700,6 +2709,29 @@ am__tar='$${TAR-tar} chof - "$$tardir"' am__untar='$${TAR-tar} xf -'
 
 
 
+#Bootstrap toolchain should be built?
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if UniCC bootstrap toolchain is wanted" >&5
+$as_echo_n "checking if UniCC bootstrap toolchain is wanted... " >&6; }
+
+# Check whether --with-bootstrap was given.
+if test "${with_bootstrap+set}" = set; then :
+  withval=$with_bootstrap; with_bootstrap="yes"
+else
+  with_bootstrap="no"
+fi
+
+
+ if test "$with_bootstrap" = "yes"; then
+  WITH_BOOTSTRAP_TRUE=
+  WITH_BOOTSTRAP_FALSE='#'
+else
+  WITH_BOOTSTRAP_TRUE='#'
+  WITH_BOOTSTRAP_FALSE=
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_bootstrap" >&5
+$as_echo "$with_bootstrap" >&6; }
+
 # Checks for programs.
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
@@ -3840,7 +3872,8 @@ fi
 
 
 # Check for min_lalr1.
-# Extract the first word of "min_lalr1", so it can be a program name with args.
+if test "$with_bootstrap" = "yes"; then :
+  # Extract the first word of "min_lalr1", so it can be a program name with args.
 set dummy min_lalr1; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
@@ -3878,8 +3911,9 @@ $as_echo "no" >&6; }
 fi
 
 
-if test $MIN_LALR1 = "no" ; then
-	as_fn_error $? "Cannot build without min_lalr1 parser generator; Install Phorward Foundation Toolkit first, or check your PATH." "$LINENO" 5
+	if test $MIN_LALR1 = "no" ; then
+		as_fn_error $? "Cannot build without min_lalr1 parser generator; Install Phorward Foundation Toolkit first, or check your PATH." "$LINENO" 5
+	fi
 fi
 
 # Checks for libraries.
@@ -4573,6 +4607,10 @@ else
   am__EXEEXT_FALSE=
 fi
 
+if test -z "${WITH_BOOTSTRAP_TRUE}" && test -z "${WITH_BOOTSTRAP_FALSE}"; then
+  as_fn_error $? "conditional \"WITH_BOOTSTRAP\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 if test -z "${AMDEP_TRUE}" && test -z "${AMDEP_FALSE}"; then
   as_fn_error $? "conditional \"AMDEP\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
