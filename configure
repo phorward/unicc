@@ -711,6 +711,7 @@ ac_subst_files=''
 ac_user_opts='
 enable_option_checking
 with_bootstrap
+with_trace
 enable_dependency_tracking
 '
       ac_precious_vars='build_alias
@@ -1346,6 +1347,7 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-bootstrap        configures to compile UniCC parser bootstrap
                           toolchain
+  --with-trace            enable trace macro facilities (huger binary files)
 
 Some influential environment variables:
   CC          C compiler command
@@ -2710,8 +2712,8 @@ am__tar='$${TAR-tar} chof - "$$tardir"' am__untar='$${TAR-tar} xf -'
 
 
 #Bootstrap toolchain should be built?
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if UniCC bootstrap toolchain is wanted" >&5
-$as_echo_n "checking if UniCC bootstrap toolchain is wanted... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether UniCC bootstrap toolchain is wanted" >&5
+$as_echo_n "checking whether UniCC bootstrap toolchain is wanted... " >&6; }
 
 # Check whether --with-bootstrap was given.
 if test "${with_bootstrap+set}" = set; then :
@@ -2731,6 +2733,21 @@ fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_bootstrap" >&5
 $as_echo "$with_bootstrap" >&6; }
+
+# Enable Trace facilities?
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking wether Phorward trace facilities will be integrated" >&5
+$as_echo_n "checking wether Phorward trace facilities will be integrated... " >&6; }
+
+# Check whether --with-trace was given.
+if test "${with_trace+set}" = set; then :
+  withval=$with_trace; with_trace="yes" $as_echo "#define DEBUG 1" >>confdefs.h
+
+else
+  with_trace="no"
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_trace" >&5
+$as_echo "$with_trace" >&6; }
 
 # Checks for programs.
 ac_ext=c

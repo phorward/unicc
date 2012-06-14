@@ -227,7 +227,6 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 			range && !on_error;
 				range = pregex_match_next( replacer, (uchar*)NULL ) )
 	{
-		VARS( "i", "%d", i );
 		off = 0;
 		tmp = (uchar*)NULL;
 

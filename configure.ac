@@ -5,7 +5,7 @@ AC_CONFIG_SRCDIR([p_main.c])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 
 #Bootstrap toolchain should be built?
-AC_MSG_CHECKING([if UniCC bootstrap toolchain is wanted])
+AC_MSG_CHECKING([whether UniCC bootstrap toolchain is wanted])
 AC_ARG_WITH([bootstrap],
 	[AS_HELP_STRING([--with-bootstrap],
 		[configures to compile UniCC parser bootstrap toolchain])],
@@ -14,6 +14,15 @@ AC_ARG_WITH([bootstrap],
 
 AM_CONDITIONAL([WITH_BOOTSTRAP],[test "$with_bootstrap" = "yes"])
 AC_MSG_RESULT([$with_bootstrap])
+
+# Enable Trace facilities?
+AC_MSG_CHECKING([wether Phorward trace facilities will be integrated])
+AC_ARG_WITH([trace],
+	[AS_HELP_STRING([--with-trace],
+		[enable trace macro facilities (huger binary files)])],
+		[with_trace="yes" AC_DEFINE([DEBUG])],
+		[with_trace="no"])
+AC_MSG_RESULT([$with_trace])
 
 # Checks for programs.
 AC_PROG_CC

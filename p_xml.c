@@ -159,7 +159,7 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 	XML_T			code;
 
 	PROC( "p_xml_build_action" );
-	PARMS( "xml_code", "%p", xml_code );
+	PARMS( "code_xml", "%p", code_xml );
 	PARMS( "parser", "%p", parser );
 	PARMS( "p", "%p", p );
 	PARMS( "base", "%s", base );
@@ -194,7 +194,6 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 			range && !on_error;
 				range = pregex_match_next( replacer, (uchar*)NULL ) )
 	{
-		VARS( "i", "%d", i );
 		off = 0;
 		tmp = (uchar*)NULL;
 
@@ -207,7 +206,7 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 
 			p_xml_raw_code( code_xml, raw );
 
-			VARS( "ret", "%s", ret );
+			VARS( "range->end", "%s", range->end );
 			last = range->end;
 		}
 
@@ -442,8 +441,6 @@ static BOOLEAN p_xml_build_scan_action(
 	for( last = base, range = pregex_match_next( replacer, base );
 				range; range = pregex_match_next( replacer, (uchar*)NULL ) )
 	{
-		VARS( "i", "%d", i );
-
 		if( last < range->begin )
 		{
 			if( !( raw = pstrncatstr(
@@ -452,7 +449,7 @@ static BOOLEAN p_xml_build_scan_action(
 
 			p_xml_raw_code( code_xml, raw );
 
-			VARS( "ret", "%s", ret );
+			VARS( "raw", "%s", raw );
 		}
 
 		last = range->end;
@@ -1155,8 +1152,8 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 	uchar*			xmlstr;
 
 	PROC( "p_build_xml" );
-	PARMS( "root", "%p", root );
 	PARMS( "parser", "%p", parser );
+	PARMS( "finished", "%s", BOOLEAN_STR( finished ) );
 
 	/* Create root node */
 	if( !( par = xml_new( "parser" ) ) )
