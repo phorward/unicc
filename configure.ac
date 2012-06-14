@@ -16,7 +16,7 @@ AM_CONDITIONAL([WITH_BOOTSTRAP],[test "$with_bootstrap" = "yes"])
 AC_MSG_RESULT([$with_bootstrap])
 
 # Enable Trace facilities?
-AC_MSG_CHECKING([wether Phorward trace facilities will be integrated])
+AC_MSG_CHECKING([whether Phorward trace facilities will be integrated])
 AC_ARG_WITH([trace],
 	[AS_HELP_STRING([--with-trace],
 		[enable trace macro facilities (huger binary files)])],
