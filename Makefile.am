@@ -14,8 +14,9 @@ endif
 man1_MANS = unicc.man
 
 tltdir = $(datadir)/unicc/tlt
-
 dist_tlt_DATA = tlt/C.tlt
+
+AM_CPPFLAGS = -DTLTDIR=\"$(tltdir)\"
 
 #
 # All sources except the grammar parser are equal in all bootstrappers.

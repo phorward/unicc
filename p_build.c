@@ -920,7 +920,13 @@ void p_build_code( PARSER* parser )
 	if( !( tlt_path = pwhich( tlt_file, "tlt" ) )
 		&& !( tlt_path = pwhich( tlt_file, getenv( "UNICC_TPLDIR" ) ) )
 #ifndef _WIN32
-			&& !( tlt_path = pwhich( tlt_file, "/usr/share/unicc/tlt" ) )
+			&& !( tlt_path = pwhich( tlt_file, 
+#ifdef TLTDIR
+			TLTDIR
+#else
+			"/usr/share/unicc/tlt"
+#endif
+			) )
 #endif
 		)
 	{

@@ -2735,8 +2735,8 @@ fi
 $as_echo "$with_bootstrap" >&6; }
 
 # Enable Trace facilities?
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking wether Phorward trace facilities will be integrated" >&5
-$as_echo_n "checking wether Phorward trace facilities will be integrated... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether Phorward trace facilities will be integrated" >&5
+$as_echo_n "checking whether Phorward trace facilities will be integrated... " >&6; }
 
 # Check whether --with-trace was given.
 if test "${with_trace+set}" = set; then :
