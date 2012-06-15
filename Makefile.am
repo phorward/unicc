@@ -13,8 +13,10 @@ endif
 
 man1_MANS = unicc.man
 
-tltdir = $(datadir)/unicc/tlt
-dist_tlt_DATA = tlt/C.tlt
+uniccdir = $(datadir)/unicc
+tltdir = $(uniccdir)/tlt
+dist_tlt_DATA = tlt/C.tlt 
+dist_unicc_DATA = unicc.dtd LICENSE README
 
 AM_CPPFLAGS = -DTLTDIR=\"$(tltdir)\"
 

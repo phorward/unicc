@@ -55,7 +55,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(dist_tlt_DATA) \
-	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+	$(dist_unicc_DATA) $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/configure compile depcomp install-sh missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -67,7 +67,7 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" \
-	"$(DESTDIR)$(tltdir)"
+	"$(DESTDIR)$(tltdir)" "$(DESTDIR)$(uniccdir)"
 PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
 am__objects_1 = p_mem.$(OBJEXT) p_error.$(OBJEXT) p_first.$(OBJEXT) \
 	p_lalr_gen.$(OBJEXT) p_util.$(OBJEXT) p_string.$(OBJEXT) \
@@ -183,7 +183,7 @@ am__uninstall_files_from_dir = { \
 man1dir = $(mandir)/man1
 NROFF = nroff
 MANS = $(man1_MANS)
-DATA = $(dist_tlt_DATA)
+DATA = $(dist_tlt_DATA) $(dist_unicc_DATA)
 ETAGS = etags
 CTAGS = ctags
 CSCOPE = cscope
@@ -297,8 +297,10 @@ bin_PROGRAMS = unicc$(EXEEXT)
 @WITH_BOOTSTRAP_TRUE@					unicc_boot3$(EXEEXT)
 
 man1_MANS = unicc.man
-tltdir = $(datadir)/unicc/tlt
-dist_tlt_DATA = tlt/C.tlt
+uniccdir = $(datadir)/unicc
+tltdir = $(uniccdir)/tlt
+dist_tlt_DATA = tlt/C.tlt 
+dist_unicc_DATA = unicc.dtd LICENSE README
 AM_CPPFLAGS = -DTLTDIR=\"$(tltdir)\"
 
 #
@@ -1224,6 +1226,27 @@ uninstall-dist_tltDATA:
 	@list='$(dist_tlt_DATA)'; test -n "$(tltdir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	dir='$(DESTDIR)$(tltdir)'; $(am__uninstall_files_from_dir)
+install-dist_uniccDATA: $(dist_unicc_DATA)
+	@$(NORMAL_INSTALL)
+	@list='$(dist_unicc_DATA)'; test -n "$(uniccdir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(uniccdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(uniccdir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(uniccdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(uniccdir)" || exit $$?; \
+	done
+
+uninstall-dist_uniccDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(dist_unicc_DATA)'; test -n "$(uniccdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(uniccdir)'; $(am__uninstall_files_from_dir)
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -1475,7 +1498,7 @@ check: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) check-am
 all-am: Makefile $(PROGRAMS) $(MANS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(tltdir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(tltdir)" "$(DESTDIR)$(uniccdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: $(BUILT_SOURCES)
@@ -1534,7 +1557,8 @@ info: info-am
 
 info-am:
 
-install-data-am: install-dist_tltDATA install-man
+install-data-am: install-dist_tltDATA install-dist_uniccDATA \
+	install-man
 
 install-dvi: install-dvi-am
 
@@ -1582,7 +1606,7 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-binPROGRAMS uninstall-dist_tltDATA \
-	uninstall-man
+	uninstall-dist_uniccDATA uninstall-man
 
 uninstall-man: uninstall-man1
 
@@ -1596,15 +1620,16 @@ uninstall-man: uninstall-man1
 	distclean-generic distclean-tags distcleancheck distdir \
 	distuninstallcheck dvi dvi-am html html-am info info-am \
 	install install-am install-binPROGRAMS install-data \
-	install-data-am install-dist_tltDATA install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-man1 install-pdf install-pdf-am install-ps \
+	install-data-am install-dist_tltDATA install-dist_uniccDATA \
+	install-dvi install-dvi-am install-exec install-exec-am \
+	install-html install-html-am install-info install-info-am \
+	install-man install-man1 install-pdf install-pdf-am install-ps \
 	install-ps-am install-strip installcheck installcheck-am \
 	installdirs maintainer-clean maintainer-clean-generic \
 	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
 	ps ps-am tags uninstall uninstall-am uninstall-binPROGRAMS \
-	uninstall-dist_tltDATA uninstall-man uninstall-man1
+	uninstall-dist_tltDATA uninstall-dist_uniccDATA uninstall-man \
+	uninstall-man1
 
 
 @WITH_BOOTSTRAP_TRUE@p_parse_boot1.c: p_parse.syn

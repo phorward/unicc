@@ -1292,7 +1292,14 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 	if( ( xmlstr = xml_toxml( par ) ) )
 	{
 		fprintf( out, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" );
-		fprintf( out, "<!DOCTYPE parser SYSTEM \"unicc.dtd\">\n" );
+		fprintf( out, "<!DOCTYPE parser SYSTEM \"%s\">\n",
+#ifndef _WIN32
+#ifdef TLTDIR
+			TLTDIR "/"
+#endif
+#endif
+			"unicc.tlt"
+					);
 
 		parser->files_count++;
 		fprintf( out, "%s", xmlstr );
