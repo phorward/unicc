@@ -249,6 +249,7 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+TXT2TAGS = @TXT2TAGS@
 VERSION = @VERSION@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -1652,18 +1653,18 @@ uninstall-man: uninstall-man1
 # Now documentation generation follows, using txt2tags.
 #
 
-doc: manpage README
+@WITH_TXT2TAGS_TRUE@doc: manpage README
 
-manpage: unicc.man
+@WITH_TXT2TAGS_TRUE@manpage: unicc.man
 
-README: unicc.t2t
-	-rm -f $@
-	txt2tags -t txt -H -o - $? | sed -E -n '1h;1!H;$${;g;s/ +([-A-Z ]+)\n +(=+)/\2==\n \1 \n\2==/g;p;}' | sed -e "/^=/s/=/*/g;1,15d" >$@.tmp
-	cat unicc.hdr $@.tmp >>$@
-	rm -f $@.tmp
+@WITH_TXT2TAGS_TRUE@README: unicc.t2t
+@WITH_TXT2TAGS_TRUE@	-rm -f $@
+@WITH_TXT2TAGS_TRUE@	txt2tags -t txt -H -o - $? | sed -E -n '1h;1!H;$${;g;s/ +([-A-Z ]+)\n +(=+)/\2==\n \1 \n\2==/g;p;}' | sed -e "/^=/s/=/*/g;1,15d" >$@.tmp
+@WITH_TXT2TAGS_TRUE@	cat unicc.hdr $@.tmp >>$@
+@WITH_TXT2TAGS_TRUE@	rm -f $@.tmp
 
-unicc.man: unicc.t2t
-	txt2tags -t man $?
+@WITH_TXT2TAGS_TRUE@unicc.man: unicc.t2t
+@WITH_TXT2TAGS_TRUE@	txt2tags -t man $?
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

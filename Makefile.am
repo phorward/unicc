@@ -102,6 +102,7 @@ p_parse.c p_parse.h: p_parse.par unicc_boot3$(EXEEXT)
 	./unicc_boot3$(EXEEXT) -svwb p_parse p_parse.par
 endif
 
+if WITH_TXT2TAGS
 # --- UniCC Documentation ------------------------------------------------------
 #
 # Now documentation generation follows, using txt2tags.
@@ -120,3 +121,6 @@ README: unicc.t2t
 
 unicc.man: unicc.t2t
 	txt2tags -t man $?
+
+endif
+
