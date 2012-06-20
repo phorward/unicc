@@ -1,6 +1,6 @@
 UniCC
 UniCC 1.0
-January 2012
+June 2012
 
 = NAME =
 
@@ -86,7 +86,9 @@ possibilities.
 
 To get UniCC work properly, the **unicc** executable must be in the PATH.
 It is also required to set an environment variable UNICC_TPLDIR that directs
-to a directory holding the UniCC target language templates.
+to a directory holding the UniCC target language templates. If UNICC_TPLDIR is
+not set, UniCC will automatically check for templates in $prefix/share/unicc/tlt
+on Linux/Unix.
 
 = COMMAND-LINE OPTIONS =
 
@@ -97,20 +99,20 @@ further tasks.
 -a, --all-warnings
 	Runs UniCC to print all warnings that come up with the grammar. UniCC
 	normaly supresses some warning messages that raise up during the parse
-	table constructions according to their importance. 
+	table constructions according to their importance.
 
 -b //NAME//, --basename //NAME//
 	Defines the specified basename //NAME// to be used for the output
 	file(s) instead of the one derived by the #prefix-directive or by the
 	name of the input filename. This basename is used for all output files
 	if the provided parser template causes the construction of multiple
-	files. 
+	files.
 
 -G, --grammar
 	Dumps an overview of the finally constructred grammar to stderr, right
-	before the parse-tables are generated. 
+	before the parse-tables are generated.
 
--h, --help 
+-h, --help
 	Prints a short overview about the command-line options and exists.
 
 -n, --no-opt
@@ -120,11 +122,11 @@ further tasks.
 	possible when the last symbol of a production is shifted. Standard
 	LALR(1) parsers only support SHIFT or REDUCE, not both operations at the
 	same time. When this option is used, UniCC produces about 20-30% more
-	LALR(1) states. 
+	LALR(1) states.
 
 -P, --production
 	Dumps an overview about the finally produced productions and their
-	semantic actions. 
+	semantic actions.
 
 -s, --stats
 	Prints a statistics message to stderr when parser generation has
@@ -133,13 +135,13 @@ further tasks.
 
 -S, --states
 	Dumps the generated LALR(1) states that had been generated during the
-	parse table generation process. 
+	parse table generation process.
 
 -t, --stdout
 	Print all code generator output to stdout instead as files.
 
 -T, --symbols
-	Dumps an overview of all used symbols. 
+	Dumps an overview of all used symbols.
 
 -v, --verbose
 	Prints process messages about the specific tasks during parser generation
@@ -149,14 +151,14 @@ further tasks.
 	Prints copyright and version information and exits.
 
 -w, --warnings
-	Print relevant warnings. 
+	Print relevant warnings.
 
 -x, --xml
 	Triggers UniCC to run the parser description file generator additionally
 	to the program module generator. The parser description file generator
 	outputs an XML-based parser representation of the generated parse tables,
 	which can be used by third-party code generators or grammar analsys and
-	debugging tools. 
+	debugging tools.
 
 -X, --XML
 	Triggers UniCC to only run the parser description file generator
@@ -167,84 +169,67 @@ Errors and warnings are printed to STDERR, any other kind of output to STDOUT.
 = BUILDING UNICC FROM SOURCE =
 
 UniCC is a product that was entirely established and developed on top of the
-Phorward Foundation Libraries (to be more exactly, many parts of the Phorward
-Foundation Libraries have their origin in earlier development stages of the
-UniCC Parser Generator, but where moved into libraries for usage outside
+Phorward Foundation Toolkit (to be more exactly, most parts of the Phorward
+Foundation Toolkit are having their origin in earlier development stages of
+the UniCC Parser Generator, but where moved into libraries for usage outside
 UniCC).
 
-The Phorward Foundation Libraries are the development environment of Phorward
-Software Technologies, and provides a build-environment, toolchain and library
-toolkit that will be used by several projects created by Phorward Software
-Technologies.
+The Phorward Foundation Toolkit and its library //libphorward// provide many
+useful functions for general purpose and extended software-development tasks,
+including standard data structures, a system-independent interface, extending
+data types and regular expression management functions, required by UniCC to
+construct the lexical analyzers.
 
 The Phorward Foundation Libraries are released under the BSD License, more
-information can be obtained from http://phorward.phorward-software.com.
+information can be obtained from the official product website at
+http://phorward.phorward-software.com.
 
-Before you can build UniCC, ensure that you have installed the Phorward
-Foundation Libraries in their latest version.
+Before UniCC, can be built, ensure that the Phorward Foundation Toolkit is
+installed in its lates version.
 
-Get the latest version using the Mercurial SCM with
+Getting the latest version is simple using the Mercurial SCM with
 
-``` hg clone http://phorward.hg.sourceforge.net:8000/hgroot/phorward/phorward 
+``` hg clone http://phorward.hg.sourceforge.net:8000/hgroot/phorward/phorward
 
 then, change into the cloned directory and run
 
-``` run/psetup
+```
+./configure
+make
+make install
+```
 
-follow the instructions on the screen.
-Run
-
-``` . ./psh
-
-when finished. Congratulations, you setup the Phorward Foundation Libraries
-on your system.
-
-When this is done, move to the $PHOME/src directory of your Phorward Foundation
-Libraries installation by simply typing
-
-``` s
-	
-and clone the following repositories. They provide the UniCC LALR(1) Parser
-Generator, the UniCC Standard C Parser Template and XPL, a demonstration of
-a tiny programming language implementation written with UniCC.
+After that, clone the following repositories. They provide the UniCC Parser
+Generator and XPL, a demonstration of a tiny programming language implementation
+written with UniCC.
 
 ```
 hg clone http://unicc.hg.sourceforge.net:8000/hgroot/unicc/unicc
-hg clone http://unicc.hg.sourceforge.net:8000/hgroot/unicc/Cparser
 hg clone http://unicc.hg.sourceforge.net:8000/hgroot/unicc/xpl
 ```
 
-Then, run
+Optionally, if hacking the UniCC Standard C Parser Template is wanted, clone
+
+``` hg clone http://unicc.hg.sourceforge.net:8000/hgroot/unicc/Cparser
+
+also.
+
+Change into the directory ``unicc`` and, again run
 
 ```
-test ! -x "$PHOME/etc/userenv" && echo '#!/bin/sh' >$PHOME/etc/userenv
-echo 'export UNICC_TPLDIR=$PHOME/src/Cparser' >>$PHOME/etc/userenv
-chmod +x $PHOME/etc/userenv
-. $PHOME/etc/userenv
+./configure
+make
+make install
 ```
 
-on the console. This will create a permanent user-defined environment script
-that is applied the next time you setup the Phorward Foundation Libraries
-environment, and also updates the current environment to get the variable
-UNICC_TPLDIR known.
+If the UniCC bootstrapping toolchain is wanted, configure with
 
-After this
+``` ./configure --with-bootstrap
 
-``` echo "phorward min_lalr1 Cparser unicc xpl" >makeall-seq
+this will bootstrap the UniCC grammar parser with multiple generation states.
 
-will create an extended build-sequence for the makeall script, which is part
-of the Phorward Foundation Libraries.
-
-Finally compile all modules by simply typing
-
-``` make
-
-After a successful build, UniCC can be invoked with
-
-``` unicc
-	
-and will be made available in $PHOME/run. The UniCC Standard C Parser Template
-will be build into $PHOME/src/Cparser/C.tlt.
+After UniCC was successfully built and installed, ``xpl`` can be compiled
+out of the box without any configuration script.
 
 = AUTHOR =
 
@@ -254,7 +239,7 @@ written and maintained by Jan Max Meyer, Phorward Software Technologies.
 = COPYRIGHT =
 
 Copyright (C) 2006-2012 by Phorward Software Technologies, Jan Max Meyer
-		
+
 You may use, modify and distribute this software under the terms and conditions
 of the Artistic License, version 2.
 
