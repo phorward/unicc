@@ -150,10 +150,10 @@ typedef union _VTYPE
 typedef struct
 {
 	unsigned char*		name;
-	int					type;
-	int					lexem;
-	int					whitespace;
-	int					greedy;
+	short				type;
+	UNICC_BOOLEAN		lexem;
+	UNICC_BOOLEAN		whitespace;
+	UNICC_BOOLEAN		greedy;
 } _syminfo;
 
 /* Typedef for production information table */
