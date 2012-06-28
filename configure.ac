@@ -44,6 +44,8 @@ AM_CONDITIONAL([WITH_TXT2TAGS],[test "$TXT2TAGS" = "yes"])
 AC_CHECK_LIB([rt], [sprintf])
 AC_CHECK_LIB([phorward], [pmalloc], [], [AC_MSG_ERROR([Cannot build without libphorward; Install Phorward Foundation Toolkit first, or set your LDFLAGS correct.])])
 
+AC_DEFINE([UNICODE],[1])
+AC_DEFINE([UTF8],[1])
 
 # Checks for header files.
 AC_CHECK_HEADER([phorward.h])

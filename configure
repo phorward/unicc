@@ -4079,6 +4079,10 @@ else
 fi
 
 
+$as_echo "#define UNICODE 1" >>confdefs.h
+
+$as_echo "#define UTF8 1" >>confdefs.h
+
 
 # Checks for header files.
 ac_ext=c
