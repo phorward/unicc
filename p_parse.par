@@ -283,6 +283,7 @@ fixed_directive		-> "mode"				mode_type
 						*]
 
 					//TODO: Must be reworked!
+/*
 					| "character universe"	integer
 
 						[*	int universe = atoi( strbuf );
@@ -294,6 +295,7 @@ fixed_directive		-> "mode"				mode_type
 									ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
 										parser->filename, line );
 						*]
+*/
 					;
 
 mode_type			->	"context-sensitive"

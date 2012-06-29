@@ -5,14 +5,14 @@
 :: CHANGELOG FILE
 --------------------------------------------------------------------------------
 
-
 LEGEND:
 [+] New features
 [-] Bugfixes
 
 ----------------------------------------
-v1.0.0 (changeset 264)
+v1.0.0 (changeset 295)
 ----------------------------------------
+[+] Moved build toolchain to GNU autotools, cross-compiles well on Linux
 [+] Turned the entire regular expression handling to the new pregex_ptn
 	structures of the Phorward Foundation Library.
 [+] Output of original regular expressions in the standard regex notation

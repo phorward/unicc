@@ -173,15 +173,6 @@ fixed_directive: "mode"					mode_type
 																		pfree( parser->p_language );
 																	parser->p_language = pstrdup( strbuf );
 																}
-				| "character universe"	integer					{	int universe = atoi( strbuf );
-
-																	if( universe > 0 )
-																		parser->p_universe = universe;
-																	else
-																		p_error( parser, ERR_INVALID_CHAR_UNIVERSE,
-																			ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
-																				parser->filename, line );
-																}
 				;
 
 mode_type:		"context-sensitive"								{	parser->p_mode = MODE_SENSITIVE;	}
