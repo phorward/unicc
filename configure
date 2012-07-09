@@ -3932,7 +3932,7 @@ fi
 
 
 	if test $MIN_LALR1 = "no" ; then
-		as_fn_error $? "Cannot build without min_lalr1 parser generator; Install Phorward Foundation Toolkit first, or check your PATH." "$LINENO" 5
+		as_fn_error $? "Cannot build without min_lalr1 parser generator; Install min_lalr1 first, or check your PATH." "$LINENO" 5
 	fi
 fi
 

@@ -33,7 +33,7 @@ AC_PROG_MAKE_SET
 AS_IF([test "$with_bootstrap" = "yes"],
 	[AC_CHECK_PROG([MIN_LALR1], [min_lalr1], "yes", "no")
 	if test $MIN_LALR1 = "no" ; then
-		AC_MSG_ERROR([Cannot build without min_lalr1 parser generator; Install Phorward Foundation Toolkit first, or check your PATH.])
+		AC_MSG_ERROR([Cannot build without min_lalr1 parser generator; Install min_lalr1 first, or check your PATH.])
 	fi],[])
 
 # Check if txt2tags is installed here

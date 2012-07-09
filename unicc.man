@@ -329,7 +329,11 @@ make install
 
 
 .P
-If the UniCC bootstrapping toolchain is wanted, configure with
+After UniCC was successfully built and installed, xpl can be compiled
+out of the box without any configuration script.
+
+.P
+If the UniCC bootstrapping toolchain is wanted, configure UniCC with
 
 .nf
 \&./configure --with-bootstrap
@@ -338,10 +342,13 @@ If the UniCC bootstrapping toolchain is wanted, configure with
 
 .P
 this will bootstrap the UniCC grammar parser with multiple generation states.
+When bootstraping toolchain is enabled, it is additionally required to install
+the min_lalr1 parser generator. This program can be obtained with
 
-.P
-After UniCC was successfully built and installed, xpl can be compiled
-out of the box without any configuration script.
+.nf
+hg clone http://unicc.hg.sourceforge.net:8000/hgroot/unicc/min_lalr1
+.fi
+
 
 .SH AUTHOR
 
