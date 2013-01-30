@@ -1,0 +1,21 @@
+This folder contains the file structure, the setup routine and some copies of smaller files that are part of the UniCC setup package for Windows. Watch out for .content files, these are files that need to be copied there before assembling a setup package.
+
+These files are
+
+doc/unicc.pdf => The UniCC User's Manual
+bin/unicc-x86-32.exe => The 32-Bit UniCC executable
+bin/unicc-x86-64.exe => The 64-Bit UniCC executable
+
+Additionally, update these files for generating a valid setup:
+
+README => Copy of ../README
+LICENSE => Copy of ../LICENSE
+CHANGELOG => Copy of ../CHANGELOG
+LICENSE.txt => Copy of LICENSE, but without header
+CHANGELOG.txt => Copy of CHANGELOG, but without header
+etc/unicc.dtd => Copy of ../unicc.dtd
+tlt/C.tlt => Copy of the Cparser Target Language Template, probably ../tlt/C.tlt
+tlt/README => Copy of the Cparser README
+tlt/LICENSE => Copy of the Cparser LICENSE
+
+The examples/ directory contains xpl and some assembled files from the grammar repository that is also hostet at the SourceForge.net page of UniCC.
