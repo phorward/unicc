@@ -283,7 +283,7 @@ uchar* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 
 			case 2:
 				MSG( "Offset" );
-				off = patoi( range->begin + 1 );
+				off = atoi( range->begin + 1 );
 				break;
 
 			case 3:
