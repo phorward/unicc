@@ -1,0 +1,97 @@
+//Meta information
+#parser             "XPL";
+#description        "eXample Programming Language (Draft)";
+#copyright          "In the public domain, 2011";
+#version            "0.1";
+#prefix             "xpl";
+
+//Precedence and associativity
+#left               "=";
+
+#left               "=="
+                    "!="
+                    "<="
+                    ">="
+                    '>'
+                    '<'
+                    ;
+
+#left               '+'
+                    '-'
+                    ;
+
+#left               '*'
+                    '/'
+                    ;
+
+//Regular expressions
+@string             '"' !'"'* '"'
+                    ;
+
+@identifier         'A-Za-z_' 'A-Za-z0-9_'*
+                    ;
+
+//Lexemes
+#lexeme             real
+                    ;
+
+real               ->       real_integer '.' real_fraction
+                    |       real_integer '.'?
+                    |       '.' real_fraction
+                    ;
+
+real_integer        ->      real_integer '0-9'
+                    |       '0-9'
+                    ;
+                    
+real_fraction       ->      real_fraction '0-9'
+                    |       '0-9'
+                    ;
+                    
+//Whitespace grammar construct
+#whitespaces        whitespace
+                    ;
+
+whitespace          ->      ' \r\n\t'+
+                    |       "//" !'\n'* '\n'
+                    ;
+
+//Goal symbol
+program$            ->      statement*
+                    ;
+
+statement           ->      "if" '(' expression ')' statement
+                    |       "if" '(' expression ')' statement
+                                "else" statement
+                    |       "while" '(' expression ')' statement
+                    |       '{' statement* '}'
+                    |       expression ';'
+                    |       ';'
+                    ;
+
+expression          ->      variable "=" expression
+                    |       expression "==" expression
+                    |       expression "!=" expression
+                    |       expression '>' expression
+                    |       expression '<' expression
+                    |       expression "<=" expression
+                    |       expression ">=" expression
+                    |       expression '+' expression
+                    |       expression '-' expression
+                    |       expression '*' expression
+                    |       expression '/' expression
+                    |       '-' expression              #precedence '*'
+                    |       '(' expression ')'
+                    |       real
+                    |       @string
+                    |       variable
+                    |       function '(' parameter_list? ')'
+                    ;
+
+parameter_list      ->      parameter_list ',' expression
+                    |       expression
+                    ;
+
+variable
+function            ->      @identifier
+                    ;

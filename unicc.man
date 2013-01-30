@@ -1,4 +1,4 @@
-.TH "UniCC" 1 "June 2012" "UniCC 1.0"
+.TH "UniCC" 1 "January 2013" "UniCC 1.0"
 
 
 .SH NAME
@@ -282,7 +282,7 @@ installed in its lates version.
 Getting the latest version is simple using the Mercurial SCM with
 
 .nf
-hg clone http://phorward.hg.sourceforge.net:8000/hgroot/phorward/phorward
+hg clone http://hg.code.sf.net/p/unicc/code
 .fi
 
 
@@ -302,8 +302,8 @@ Generator and XPL, a demonstration of a tiny programming language implementation
 written with UniCC.
 
 .nf
-hg clone http://unicc.hg.sourceforge.net:8000/hgroot/unicc/unicc
-hg clone http://unicc.hg.sourceforge.net:8000/hgroot/unicc/xpl
+hg clone http://hg.code.sf.net/p/unicc/unicc
+hg clone http://hg.code.sf.net/p/unicc/xpl
 .fi
 
 
@@ -311,7 +311,7 @@ hg clone http://unicc.hg.sourceforge.net:8000/hgroot/unicc/xpl
 Optionally, if hacking the UniCC Standard C Parser Template is wanted, clone
 
 .nf
-hg clone http://unicc.hg.sourceforge.net:8000/hgroot/unicc/Cparser
+hg clone http://hg.code.sf.net/p/unicc/Cparser
 .fi
 
 
@@ -346,7 +346,7 @@ When bootstraping toolchain is enabled, it is additionally required to install
 the min_lalr1 parser generator. This program can be obtained with
 
 .nf
-hg clone http://unicc.hg.sourceforge.net:8000/hgroot/unicc/min_lalr1
+hg clone http://hg.code.sf.net/p/unicc/min_lalr1
 .fi
 
 
@@ -359,7 +359,7 @@ written and maintained by Jan Max Meyer, Phorward Software Technologies.
 .SH COPYRIGHT
 
 .P
-Copyright (C) 2006\-2012 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006\-2013 by Phorward Software Technologies, Jan Max Meyer
 
 .P
 You may use, modify and distribute this software under the terms and conditions

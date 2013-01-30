@@ -1,0 +1,31 @@
+:: UniCC LALR(1) Parser Generator
+:: Copyright (C) 2006-2012 by Phorward Software Technologies, Jan Max Meyer
+:: http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
+::
+:: CHANGELOG FILE
+--------------------------------------------------------------------------------
+
+LEGEND:
+[+] New features
+[-] Bugfixes
+
+----------------------------------------
+v1.0.0 (changeset 295)
+----------------------------------------
+[+] Moved build toolchain to GNU autotools, cross-compiles well on Linux
+[+] Turned the entire regular expression handling to the new pregex_ptn
+	structures of the Phorward Foundation Library.
+[+] Output of original regular expressions in the standard regex notation
+	into the <regex>-tag of the parser description file.
+[+] New command-line option '-t' to print the output files to stdout instead
+	of writing it into files.
+[+] Command-line option '-v' automatically switches '-s' on.
+[+] Added document type definition file 'unicc.dtd' and changed XML output.
+[-] The "#case insensitive strings" option was not correctly recognized due
+	the revision of the regular pattern construction mechanism.
+
+----------------------------------------
+v1.0.0rc1 (changeset 244)
+----------------------------------------
+First official release of UniCC after a 5-year time of silent development.
+

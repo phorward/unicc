@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+UniCC LALR(1) Parser Generator :: DTD for Parser Definition Files
+Copyright (C) 2006-2012 by Phorward Software Technologies, Jan Max Meyer
+http://www.phorward-software.com ++ contact<<AT>>phorward-software<<DOT>>com
+All rights reserved. See license agreements below.
+
+File:		unicc.dtd
+Author:		Jan Max Meyer
+Usage:		Document Type Definitions for Parser Definition Files
+
+You may use, modify and distribute this software under the terms and conditions
+of the Artistic License, version 2. Please see LICENSE for more information.
+-->
+
+<!ELEMENT begin-of-match EMPTY >
+
+<!ELEMENT character-class ( range+ ) >
+<!ATTLIST character-class count NMTOKEN #REQUIRED >
+
+<!ELEMENT code ( begin-of-match | command | raw | return-value | variable )* >
+<!ATTLIST code defined-at NMTOKEN #IMPLIED >
+
+<!ELEMENT command EMPTY >
+<!ATTLIST command action NMTOKEN #REQUIRED >
+<!ATTLIST command symbol NMTOKEN #REQUIRED >
+
+<!ELEMENT copyright ( #PCDATA ) >
+
+<!ELEMENT description ( #PCDATA ) >
+
+<!ELEMENT dfa ( state+ ) >
+
+<!ELEMENT epilogue ( #PCDATA ) >
+
+<!ELEMENT goto EMPTY >
+<!ATTLIST goto by-production NMTOKEN #IMPLIED >
+<!ATTLIST goto symbol-id NMTOKEN #REQUIRED >
+<!ATTLIST goto to-state NMTOKEN #IMPLIED >
+
+<!ELEMENT left-hand-side EMPTY >
+<!ATTLIST left-hand-side offset ( 0 | 1 ) #REQUIRED >
+<!ATTLIST left-hand-side symbol-id NMTOKEN #REQUIRED >
+
+<!ELEMENT lexer ( state+ ) >
+<!ATTLIST lexer id NMTOKEN #REQUIRED >
+
+<!ELEMENT lexers ( lexer+ ) >
+
+<!ELEMENT parser ( version, copyright, description, symbols, productions, states, lexers, value-types, prologue, epilogue, pcb, source ) >
+<!ATTLIST parser basename NMTOKEN #REQUIRED >
+<!ATTLIST parser char-max NMTOKEN #REQUIRED >
+<!ATTLIST parser char-min NMTOKEN #REQUIRED >
+<!ATTLIST parser mode NMTOKEN #REQUIRED >
+<!ATTLIST parser name NMTOKEN #REQUIRED >
+<!ATTLIST parser prefix NMTOKEN #REQUIRED >
+<!ATTLIST parser source NMTOKEN #REQUIRED >
+<!ATTLIST parser target-language NMTOKEN #REQUIRED >
+<!ATTLIST parser unicc-version NMTOKEN #REQUIRED >
+
+<!ELEMENT pcb ( #PCDATA ) >
+
+<!ELEMENT production ( code | left-hand-side | right-hand-side | semantic-right-hand-side )* >
+<!ATTLIST production defined-at NMTOKEN #IMPLIED >
+<!ATTLIST production id NMTOKEN #REQUIRED >
+<!ATTLIST production length NMTOKEN #REQUIRED >
+
+<!ELEMENT productions ( production+ ) >
+
+<!ELEMENT prologue ( #PCDATA ) >
+
+<!ELEMENT range EMPTY >
+<!ATTLIST range from NMTOKEN #REQUIRED >
+<!ATTLIST range to NMTOKEN #REQUIRED >
+
+<!ELEMENT raw ( #PCDATA ) >
+
+<!ELEMENT regex ( #PCDATA ) >
+
+<!ELEMENT return-value EMPTY >
+<!ATTLIST return-value value-type CDATA #REQUIRED >
+<!ATTLIST return-value value-type-id NMTOKEN #REQUIRED >
+
+<!ELEMENT right-hand-side EMPTY >
+<!ATTLIST right-hand-side named CDATA #IMPLIED >
+<!ATTLIST right-hand-side offset NMTOKEN #REQUIRED >
+<!ATTLIST right-hand-side symbol-id NMTOKEN #REQUIRED >
+
+<!ELEMENT semantic-right-hand-side EMPTY >
+<!ATTLIST semantic-right-hand-side named NMTOKEN #IMPLIED >
+<!ATTLIST semantic-right-hand-side offset NMTOKEN #REQUIRED >
+<!ATTLIST semantic-right-hand-side symbol-id NMTOKEN #REQUIRED >
+
+<!ELEMENT shift EMPTY >
+<!ATTLIST shift symbol-id NMTOKEN #REQUIRED >
+<!ATTLIST shift to-state NMTOKEN #REQUIRED >
+
+<!ELEMENT shift-reduce EMPTY >
+<!ATTLIST shift-reduce by-production NMTOKEN #REQUIRED >
+<!ATTLIST shift-reduce symbol-id NMTOKEN #REQUIRED >
+
+<!ELEMENT source ( #PCDATA ) >
+
+<!ELEMENT state ( goto | shift | shift-reduce | transition )* >
+<!ATTLIST state accept NMTOKEN #IMPLIED >
+<!ATTLIST state default-production NMTOKEN #IMPLIED >
+<!ATTLIST state default-transition NMTOKEN #IMPLIED >
+<!ATTLIST state derived-from-state NMTOKEN #IMPLIED >
+<!ATTLIST state id NMTOKEN #REQUIRED >
+<!ATTLIST state lexer NMTOKEN #IMPLIED >
+
+<!ELEMENT states ( state+ ) >
+
+<!ELEMENT symbol ( character-class | code | dfa | regex )* >
+<!ATTLIST symbol defined-at NMTOKEN #IMPLIED >
+<!ATTLIST symbol derived-from NMTOKEN #IMPLIED >
+<!ATTLIST symbol id NMTOKEN #REQUIRED >
+<!ATTLIST symbol name CDATA #REQUIRED >
+<!ATTLIST symbol terminal-type ( character-class | string | regular-expression | system ) #IMPLIED >
+<!ATTLIST symbol type ( non-terminal | terminal ) #REQUIRED >
+<!ATTLIST symbol value-type CDATA #IMPLIED >
+<!ATTLIST symbol value-type-id NMTOKEN #IMPLIED >
+
+<!ELEMENT symbols ( symbol+ ) >
+
+<!ELEMENT transition ( character-class ) >
+<!ATTLIST transition goto NMTOKEN #REQUIRED >
+
+<!ELEMENT value-type ( #PCDATA ) >
+<!ATTLIST value-type c_name CDATA #REQUIRED >
+<!ATTLIST value-type id NMTOKEN #REQUIRED >
+
+<!ELEMENT value-types ( value-type+ ) >
+
+<!ELEMENT variable EMPTY >
+<!ATTLIST variable offset NMTOKEN #IMPLIED >
+<!ATTLIST variable target ( left-hand-side | right-hand-side ) #REQUIRED >
+<!ATTLIST variable value-type CDATA #IMPLIED >
+<!ATTLIST variable value-type-id NMTOKEN #IMPLIED >
+
+<!ELEMENT version ( #PCDATA ) >
+
