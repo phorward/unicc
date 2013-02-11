@@ -2,7 +2,7 @@
  * File:        p_parse.c
  * Parser:		UniCC Grammar Definition Language
  * Version:		1.5.1
- * Copyright:	Copyright (C) 2008-2012 by Jan Max Meyer, Phorward Software Technologies
+ * Copyright:	Copyright (C) 2008-2013 by Jan Max Meyer, Phorward Software Technologies
  * Description:	Parser for UniCC parser definitions
  *
  * UniCC Parser Template for C - Version 1.0
@@ -5043,7 +5043,7 @@ int main( int argc, char** argv )
 			printf( "UniCC Grammar Definition Language v1.5.1\n" );
 		
 		if( 72 > 0 )
-			printf( "Copyright (C) 2008-2012 by Jan Max Meyer, Phorward Software Technologies\n\n" );
+			printf( "Copyright (C) 2008-2013 by Jan Max Meyer, Phorward Software Technologies\n\n" );
 	}
 
 	/* Parser invocation loop */

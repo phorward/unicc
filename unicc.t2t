@@ -210,7 +210,7 @@ hg clone http://hg.code.sf.net/p/unicc/xpl
 
 Optionally, if hacking the UniCC Standard C Parser Template is wanted, clone
 
-``` hg clone http://hg.code.sf.net/p/unicc/Cparser
+``` hg clone http://hg.code.sf.net/p/unicc/cparser
 
 also.
 

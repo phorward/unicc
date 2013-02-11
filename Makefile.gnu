@@ -1,28 +1,8 @@
+# Standard GNU Makefile for the generic development environment at
+# Phorward Software (no autotools, etc. wanted in here).
 
-#
-# Automake targets
-#
-
-bin_PROGRAMS = unicc$(EXEEXT)
-
-if WITH_BOOTSTRAP
-noinst_PROGRAMS = unicc_boot1$(EXEEXT) \
-					unicc_boot2$(EXEEXT) \
-					unicc_boot3$(EXEEXT)
-endif
-
-man1_MANS = unicc.man
-
-uniccdir = $(datadir)/unicc
-tltdir = $(uniccdir)/tlt
-dist_tlt_DATA = tlt/C.tlt 
-dist_unicc_DATA = unicc.dtd LICENSE README
-
-AM_CPPFLAGS = -DTLTDIR=\"$(tltdir)\"
-
-#
-# All sources except the grammar parser are equal in all bootstrappers.
-#
+CFLAGS 			= -I../phorward/src -DUTF8 -DUNICODE -DDEBUG -Wall $(CLOCAL)
+LIBPHORWARD		= ../phorward/src/libphorward.a
 
 SOURCES			= 	\
 				p_mem.c \
@@ -40,26 +20,34 @@ SOURCES			= 	\
 				p_xml.c \
 				p_main.c
 
-if WITH_BOOTSTRAP
+all: unicc
 
-BUILT_SOURCES	=	\
-				p_parse_boot1.c \
-				p_parse_boot2.c \
-				p_parse_boot2.h \
-				p_parse_boot3.c \
-				p_parse_boot3.h
-				
+clean:
+	-rm *.o
+	-rm p_parse_boot1.c p_parse_boot2.c p_parse_boot2.h p_parse_boot3.c p_parse_boot3.h
+	-rm unicc unicc_boot1 unicc_boot2 unicc_boot3
+
+make:
+	cp Makefile.gnu Makefile
+
+unmake:
+	-rm -f Makefile
+
 # --- UniCC Bootstrap phase 1 --------------------------------------------------
 #
 # This phase uses the experimental min_lalr1 Parser Generator to build a
-# rudimentary parser for UniCC. min_lalr1 must be installed and in the PATH.
+# rudimentary parser for UniCC. min_lalr1 must be available and compiled
+# with its delivered Makefile.gnu in a directory ../min_lalr from here.
 #
 
 unicc_boot1_SOURCES = p_parse_boot1.c $(SOURCES)
-unicc_boot1_CFLAGS = -DUNICC_BOOTSTRAP=1
+unicc_boot1_OBJECTS = $(patsubst %.c,%.o,$(unicc_boot1_SOURCES))
 
 p_parse_boot1.c: p_parse.syn
-	min_lalr1$(EXEEXT) $? >$@ 2>/dev/null
+	../min_lalr1/min_lalr1 $? >$@ 2>/dev/null
+
+unicc_boot1: $(unicc_boot1_OBJECTS) $(LIBPHORWARD)
+	$(CC) -o $@ $(unicc_boot1_OBJECTS) $(LIBPHORWARD)
 
 # --- UniCC Bootstrap phase 2 --------------------------------------------------
 #
@@ -68,11 +56,13 @@ p_parse_boot1.c: p_parse.syn
 #
 
 unicc_boot2_SOURCES = p_parse_boot2.c $(SOURCES)
-unicc_boot2_CFLAGS = -DUNICC_BOOTSTRAP=2
-#unicc_boot2_DEPENDENCIES = unicc_boot1$(EXEEXT)
+unicc_boot2_OBJECTS = $(patsubst %.c,%.o,$(unicc_boot2_SOURCES))
 
-p_parse_boot2.c p_parse_boot2.h: p_parse.par unicc_boot1$(EXEEXT)
-	./unicc_boot1$(EXEEXT) -svwb p_parse_boot2 p_parse.par
+p_parse_boot2.c p_parse_boot2.h: p_parse.par unicc_boot1
+	./unicc_boot1 -svwb p_parse_boot2 p_parse.par
+
+unicc_boot2: $(unicc_boot2_OBJECTS) $(LIBPHORWARD)
+	$(CC) -o $@ $(unicc_boot2_OBJECTS) $(LIBPHORWARD)
 
 # --- UniCC Bootstrap phase 3 --------------------------------------------------
 #
@@ -81,13 +71,13 @@ p_parse_boot2.c p_parse_boot2.h: p_parse.par unicc_boot1$(EXEEXT)
 #
 
 unicc_boot3_SOURCES = p_parse_boot3.c $(SOURCES)
-unicc_boot3_CFLAGS = -DUNICC_BOOTSTRAP=3
-#unicc_boot3_DEPENDENCIES = unicc_boot2$(EXEEXT)
+unicc_boot3_OBJECTS = $(patsubst %.c,%.o,$(unicc_boot3_SOURCES))
 
-p_parse_boot3.c p_parse_boot3.h: p_parse.par unicc_boot2$(EXEEXT)
-	./unicc_boot2$(EXEEXT) -svwb p_parse_boot3 p_parse.par
+p_parse_boot3.c p_parse_boot3.h: p_parse.par unicc_boot2
+	./unicc_boot2 -svwb p_parse_boot3 p_parse.par
 
-endif
+unicc_boot3: $(unicc_boot3_OBJECTS) $(LIBPHORWARD)
+	$(CC) -o $@ $(unicc_boot3_OBJECTS) $(LIBPHORWARD)
 
 # --- UniCC Final Build --------------------------------------------------------
 #
@@ -95,14 +85,14 @@ endif
 #
 
 unicc_SOURCES = p_parse.c $(SOURCES)
-#unicc_DEPENDENCIES = unicc_boot3$(EXEEXT)
+unicc_OBJECTS = $(patsubst %.c,%.o,$(unicc_SOURCES))
 
-if WITH_BOOTSTRAP
-p_parse.c p_parse.h: p_parse.par unicc_boot3$(EXEEXT)
-	./unicc_boot3$(EXEEXT) -svwb p_parse p_parse.par
-endif
+p_parse.c p_parse.h: p_parse.par unicc_boot3
+	./unicc_boot3 -svwb p_parse p_parse.par
 
-if WITH_TXT2TAGS
+unicc: $(unicc_OBJECTS) $(LIBPHORWARD)
+	$(CC) -o $@ $(unicc_OBJECTS) $(LIBPHORWARD)
+
 # --- UniCC Documentation ------------------------------------------------------
 #
 # Now documentation generation follows, using txt2tags.
@@ -121,6 +111,4 @@ README: unicc.t2t
 
 unicc.man: unicc.t2t
 	txt2tags -t man $?
-
-endif
 
