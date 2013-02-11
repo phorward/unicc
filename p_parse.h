@@ -6,7 +6,7 @@
  * Description:	Parser for UniCC parser definitions
  *
  * UniCC Parser Template for C - Version 1.0
- * Copyright (C) 2006-2012 by Phorward Software Technologies, Jan Max Meyer
+ * Copyright (C) 2006-2013 by Phorward Software Technologies, Jan Max Meyer
  */
 
 #ifndef P_PARSE_H
@@ -35,7 +35,7 @@
 #	define UNICC_CHAR				wchar_t
 #	define UNICC_CHAR_FORMAT		"%S"
 #else
-#	define UNICC_CHAR				unsigned char
+#	define UNICC_CHAR				char
 #	define UNICC_CHAR_FORMAT		"%s"
 #endif
 #endif /* UNICC_CHAR */
@@ -46,7 +46,7 @@
 #	define UNICC_SCHAR				wchar_t
 #	define UNICC_SCHAR_FORMAT		"%S"
 #else
-#	define UNICC_SCHAR				unsigned char
+#	define UNICC_SCHAR				char
 #	define UNICC_SCHAR_FORMAT		"%s"
 #endif
 #endif /* UNICC_SCHAR */
@@ -149,19 +149,19 @@ typedef union _VTYPE
 /* Typedef for symbol information table */
 typedef struct
 {
-	unsigned char*		name;
-	short				type;
-	UNICC_BOOLEAN		lexem;
-	UNICC_BOOLEAN		whitespace;
-	UNICC_BOOLEAN		greedy;
+	char*			name;
+	short			type;
+	UNICC_BOOLEAN	lexem;
+	UNICC_BOOLEAN	whitespace;
+	UNICC_BOOLEAN	greedy;
 } _syminfo;
 
 /* Typedef for production information table */
 typedef struct
 {
-	unsigned char*		definition;
-	int					length;
-	int					lhs;
+	char*	definition;
+	int		length;
+	int		lhs;
 } _prodinfo;
 
 

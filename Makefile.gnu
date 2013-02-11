@@ -1,6 +1,7 @@
 # Standard GNU Makefile for the generic development environment at
 # Phorward Software (no autotools, etc. wanted in here).
 
+UNICC_TPLDIR	= ./tlt
 CFLAGS 			= -I../phorward/src -DUTF8 -DUNICODE -DDEBUG -Wall $(CLOCAL)
 LIBPHORWARD		= ../phorward/src/libphorward.a
 

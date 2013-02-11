@@ -316,10 +316,6 @@ pregex_dfa* p_find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
 void p_symbol_to_nfa( PARSER* parser, pregex_nfa* nfa, SYMBOL* sym )
 {
 	pregex_accept	acc;
-	pregex_nfa		tmp_nfa;
-	pregex_nfa_st*	nfa_ptr;
-	pregex_nfa_st*	nfa_cpy;
-	LIST*			l;
 
 	PROC( "p_symbol_to_nfa" );
 	PARMS( "parser", "%p", parser );

@@ -855,7 +855,6 @@ void p_build_code( PARSER* parser )
 	uchar			tlt_file			[ BUFSIZ + 1 ];
 	uchar*			tlt_path;
 	uchar*			option;
-	uchar*			tpldir;
 	uchar*			complete			= (uchar*)NULL;
 	uchar*			all					= (uchar*)NULL;
 	uchar*			action_table		= (uchar*)NULL;

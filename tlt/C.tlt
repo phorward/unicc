@@ -1111,8 +1111,6 @@ UNICC_STATIC UNICC_CHAR @@prefix_utf8_getchar( int (*getfn)() )
 
 UNICC_STATIC UNICC_CHAR @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offset )
 {
-	UNICC_CHAR	ch;
-
 #if UNICC_DEBUG	&gt; 2
 	fprintf( stderr, "%s: get input: pcb-&gt;buf + offset = %p pcb-&gt;bufend = %p\n",
 				UNICC_PARSER, pcb-&gt;buf + offset, pcb-&gt;bufend );
@@ -2068,7 +2066,7 @@ int main( int argc, char** argv )
 #	define UNICC_CHAR				wchar_t
 #	define UNICC_CHAR_FORMAT		"%S"
 #else
-#	define UNICC_CHAR				unsigned char
+#	define UNICC_CHAR				char
 #	define UNICC_CHAR_FORMAT		"%s"
 #endif
 #endif /* UNICC_CHAR */
@@ -2079,7 +2077,7 @@ int main( int argc, char** argv )
 #	define UNICC_SCHAR				wchar_t
 #	define UNICC_SCHAR_FORMAT		"%S"
 #else
-#	define UNICC_SCHAR				unsigned char
+#	define UNICC_SCHAR				char
 #	define UNICC_SCHAR_FORMAT		"%s"
 #endif
 #endif /* UNICC_SCHAR */
@@ -2171,19 +2169,19 @@ int main( int argc, char** argv )
 /* Typedef for symbol information table */
 typedef struct
 {
-	unsigned char*		name;
-	short				type;
-	UNICC_BOOLEAN		lexem;
-	UNICC_BOOLEAN		whitespace;
-	UNICC_BOOLEAN		greedy;
+	char*			name;
+	short			type;
+	UNICC_BOOLEAN	lexem;
+	UNICC_BOOLEAN	whitespace;
+	UNICC_BOOLEAN	greedy;
 } @@prefix_syminfo;
 
 /* Typedef for production information table */
 typedef struct
 {
-	unsigned char*		definition;
-	int					length;
-	int					lhs;
+	char*	definition;
+	int		length;
+	int		lhs;
 } @@prefix_prodinfo;
 
 

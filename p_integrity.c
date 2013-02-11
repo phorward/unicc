@@ -181,7 +181,6 @@ static BOOLEAN p_nfa_matches_parser(
 	int		act;
 	int		accept;
 	int		idx;
-	int		error;
 	int		tos 			= 0;
 	PROD*	rprod;
 	STATE*	st;
@@ -195,8 +194,6 @@ static BOOLEAN p_nfa_matches_parser(
 		changed somewhere in the future. But for now, it does
 		its job.
 	*/
-	error = list_count( parser->productions ) * -1;
-
 	if( ( st = list_getptr( parser->lalr_states, start ) ) )
 		stack[ tos++ ] = st->derived_from->state_id;
 	else

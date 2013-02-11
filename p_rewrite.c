@@ -705,9 +705,7 @@ void p_symbol_order( PARSER* parser )
 {
 	LIST*			new_order		= (LIST*)NULL;
 	LIST*			l;
-	LIST*			m;
 	SYMBOL*			sym;
-	pregex_nfa_st*	n_st;
 
 	int				sort_order[]	=	{
 											/* SYM_REGEX_TERMINAL,
@@ -774,9 +772,6 @@ void p_charsets_to_ptn( PARSER* parser )
 {
 	SYMBOL*			sym;
 	LIST*			l;
-
-	pregex_nfa_st*	begin;
-	pregex_nfa_st*	end;
 
 	PROC( "p_charsets_to_ptn" );
 	PARMS( "parser", "%p", parser );
