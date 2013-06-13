@@ -1298,7 +1298,7 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 			TLTDIR "/"
 #endif
 #endif
-			"unicc.tlt"
+			"unicc.dtd"
 					);
 
 		parser->files_count++;
