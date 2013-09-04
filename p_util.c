@@ -36,21 +36,21 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 					The derivation of a name is just a string, where an
 					character is appended to, and which is unique.
 
-	Parameters:		uchar*		name		Original name to be derived.
-					uchar		append_char	Character to be appended.
+	Parameters:		char*		name		Original name to be derived.
+					char		append_char	Character to be appended.
 					
-	Returns:		uchar*					The derived name; New allocated memory,
+	Returns:		char*					The derived name; New allocated memory,
 											must be freed!
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-uchar* p_derivation_name( uchar* name, uchar append_char )
+char* p_derivation_name( char* name, char append_char )
 {
-	uchar*		ret;
+	char*		ret;
 	size_t		len;
 
-	ret = (uchar*)pmalloc( ( strlen( name ) + 1 + 1 ) * sizeof( uchar ) );
+	ret = (char*)pmalloc( ( strlen( name ) + 1 + 1 ) * sizeof( char ) );
 	strcpy( ret, name );
 	
 	len = strlen( ret );
@@ -83,9 +83,9 @@ uchar* p_derivation_name( uchar* name, uchar append_char )
 	
 	Usage:			Parses a single character, even escaped ones.
 
-	Parameters:		uchar*		str			Pointer where the character parse
+	Parameters:		char*		str			Pointer where the character parse
 											starts at.
-					uchar**		strfix		Optional return pointer for the
+					char**		strfix		Optional return pointer for the
 											new position next to parsed character
 											definition.
 					
@@ -95,9 +95,9 @@ uchar* p_derivation_name( uchar* name, uchar append_char )
 	Date:		Author:			Note:
 	18.07.2009	Jan Max Meyer	Negative escaped characters
 ----------------------------------------------------------------------------- */
-int p_unescape_char( uchar* str, uchar** strfix )
+int p_unescape_char( char* str, char** strfix )
 {
-	uchar*	ptr = str;
+	char*	ptr = str;
 	int		ch = 0;
 	short	cnt = 0;
 	BOOLEAN	neg = FALSE;
@@ -244,9 +244,9 @@ SYMBOL* p_find_base_symbol( SYMBOL* sym )
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-uchar* p_gen_c_identifier( uchar* str, BOOLEAN to_upper )
+char* p_gen_c_identifier( char* str, BOOLEAN to_upper )
 {
-	uchar*	p;
+	char*	p;
 
 	if( !( str = pstrdup( str ) ) )
 	 	OUTOFMEM;

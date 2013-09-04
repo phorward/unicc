@@ -62,7 +62,7 @@ void p_rewrite_grammar( PARSER* parser )
 			*	sym,
 			*	nsym;
 	PROD	*	p;
-	uchar	*	deriv;
+	char	*	deriv;
 
 	/* Create productions for all whitespaces */
 	for( l = parser->symbols; l; l = l->next )
@@ -80,7 +80,7 @@ void p_rewrite_grammar( PARSER* parser )
 			}
 
 			p = p_create_production( parser, ws_all );
-			p_append_to_production( p, sym, (uchar*)NULL );
+			p_append_to_production( p, sym, (char*)NULL );
 		}
 	}
 
@@ -201,9 +201,9 @@ void p_rewrite_grammar( PARSER* parser )
 										SYM_NON_TERMINAL, TRUE );
 
 							p = p_create_production( parser, nsym );
-							p_append_to_production( p, sym, (uchar*)NULL );
+							p_append_to_production( p, sym, (char*)NULL );
 							p_append_to_production( p, ws_optlist,
-															(uchar*)NULL );
+															(char*)NULL );
 
 							/* p_dump_production( stdout, p, TRUE, FALSE ); */
 
@@ -262,8 +262,8 @@ void p_rewrite_grammar( PARSER* parser )
 		return;
 	}
 
-	p_append_to_production( p, ws_optlist, (uchar*)NULL );
-	p_append_to_production( p, parser->goal, (uchar*)NULL );
+	p_append_to_production( p, ws_optlist, (char*)NULL );
+	p_append_to_production( p, parser->goal, (char*)NULL );
 	parser->goal = sym;
 }
 
@@ -298,7 +298,7 @@ void p_unique_charsets( PARSER* parser )
 	CCL			inter;
 	CCL			diff;
 	int			old_prod_cnt;
-	uchar*		tmpstr;
+	char*		tmpstr;
 
 	PROC( "p_unique_charsets" );
 
@@ -398,10 +398,10 @@ void p_unique_charsets( PARSER* parser )
 
 					/* Create & append productions */
 					p = p_create_production( parser, tsym );
-					p_append_to_production( p, nsym, (uchar*)NULL );
+					p_append_to_production( p, nsym, (char*)NULL );
 
 					p = p_create_production( parser, tsym );
-					p_append_to_production( p, rsym, (uchar*)NULL );
+					p_append_to_production( p, rsym, (char*)NULL );
 				}
 				else
 				{
@@ -625,7 +625,7 @@ void p_setup_single_goal( PARSER* parser )
 {
 	SYMBOL*	sym;
 	PROD*	p;
-	uchar*	deriv;
+	char*	deriv;
 
 	if( list_count( parser->goal->productions ) == 1 )
 	{
@@ -666,8 +666,8 @@ void p_setup_single_goal( PARSER* parser )
 		return;
 	}
 
-	p_append_to_production( p, parser->goal, (uchar*)NULL );
-	p_append_to_production( p, parser->end_of_input, (uchar*)NULL );
+	p_append_to_production( p, parser->goal, (char*)NULL );
+	p_append_to_production( p, parser->end_of_input, (char*)NULL );
 
 	parser->goal = sym;
 }

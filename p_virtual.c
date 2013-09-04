@@ -47,7 +47,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
 SYMBOL* p_positive_closure( PARSER* parser, SYMBOL* base )
 {
-	uchar*	deriv_str;
+	char*	deriv_str;
 	PROD*	p;
 	SYMBOL*	s			= (SYMBOL*)NULL;
 
@@ -68,11 +68,11 @@ SYMBOL* p_positive_closure( PARSER* parser, SYMBOL* base )
 			s->line = base->line;
 
 			p = p_create_production( parser, s );
-			p_append_to_production( p, s, (uchar*)NULL );
-			p_append_to_production( p, base, (uchar*)NULL );
+			p_append_to_production( p, s, (char*)NULL );
+			p_append_to_production( p, base, (char*)NULL );
 			
 			p = p_create_production( parser, s );
-			p_append_to_production( p, base, (uchar*)NULL );
+			p_append_to_production( p, base, (char*)NULL );
 		}
 
 		pfree( deriv_str );
@@ -109,7 +109,7 @@ SYMBOL* p_positive_closure( PARSER* parser, SYMBOL* base )
 ----------------------------------------------------------------------------- */
 SYMBOL* p_kleene_closure( PARSER* parser, SYMBOL* base )
 {
-	uchar*	deriv_str;
+	char*	deriv_str;
 	PROD*	p;
 	SYMBOL*	s			= (SYMBOL*)NULL;
 	SYMBOL*	pos_s		= (SYMBOL*)NULL;
@@ -135,9 +135,9 @@ SYMBOL* p_kleene_closure( PARSER* parser, SYMBOL* base )
 			s->line = base->line;
 
 			p = p_create_production( parser, s );
-			/*p_append_to_production( p, s, (uchar*)NULL );
-			p_append_to_production( p, base, (uchar*)NULL );*/
-			p_append_to_production( p, pos_s, (uchar*)NULL );
+			/*p_append_to_production( p, s, (char*)NULL );
+			p_append_to_production( p, base, (char*)NULL );*/
+			p_append_to_production( p, pos_s, (char*)NULL );
 		
 			p = p_create_production( parser, s );
 		}
@@ -168,7 +168,7 @@ SYMBOL* p_kleene_closure( PARSER* parser, SYMBOL* base )
 ----------------------------------------------------------------------------- */
 SYMBOL* p_optional_closure( PARSER* parser, SYMBOL* base )
 {
-	uchar*	deriv_str;
+	char*	deriv_str;
 	PROD*	p;
 	SYMBOL*	s			= (SYMBOL*)NULL;
 
@@ -189,7 +189,7 @@ SYMBOL* p_optional_closure( PARSER* parser, SYMBOL* base )
 			s->line = base->line;
 
 			p = p_create_production( parser, s );
-			p_append_to_production( p, base, (uchar*)NULL );
+			p_append_to_production( p, base, (char*)NULL );
 			
 			p = p_create_production( parser, s );
 		}

@@ -47,7 +47,7 @@ extern	BOOLEAN		first_progress;
 ----------------------------------------------------------------------------- */
 void p_print_symbol( FILE* stream, SYMBOL* sym )
 {
-	uchar*		cclstr;
+	char*		cclstr;
 
 	if( !stream )
 		stream = stderr;
@@ -259,7 +259,7 @@ void p_dump_symbols( FILE* stream, PARSER* parser )
 												grammar to. If this is
 												(FILE*)NULL, output is written
 												to stderr.
-					uchar*		title			The title of the item set.
+					char*		title			The title of the item set.
 					LIST*		list			The item set linked-list
 												itself.
 
@@ -268,7 +268,7 @@ void p_dump_symbols( FILE* stream, PARSER* parser )
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-void p_dump_item_set( FILE* stream, uchar* title, LIST* list )
+void p_dump_item_set( FILE* stream, char* title, LIST* list )
 {
 	ITEM*		it		= (ITEM*)NULL;
 	LIST*		i		= (LIST*)NULL;
@@ -448,7 +448,7 @@ void p_dump_production( FILE* stream, PROD* p,
 	LIST*	m			= p->rhs_idents;
 	BOOLEAN	embedded 	= FALSE;
 	SYMBOL*	sym;
-	uchar*	ident;
+	char*	ident;
 
 	if( !stream )
 		stream = stderr;

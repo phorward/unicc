@@ -16,3 +16,7 @@ p_parse_boot2.c
 p_parse_boot2.h
 p_parse_boot3.c
 p_parse_boot3.h
+unicc_boot1
+unicc_boot2
+unicc_boot3
+Makefile

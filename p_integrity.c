@@ -108,7 +108,7 @@ static LIST* p_nfa_transition_on_ccl(
 {
 	pregex_accept	acc;
 	CCL				i;
-	pchar			ch;
+	wchar_t			ch;
 	LIST*			tr;
 	LIST*			ret_res	= (LIST*)NULL;
 
@@ -155,7 +155,7 @@ static LIST* p_nfa_transition_on_ccl(
 
 	Parameters:		PARSER*		parser		Pointer to the parser information
 											structure.
-					uchar*		str			String to be recognized (the key-
+					char*		str			String to be recognized (the key-
 											word)
 					int			start		The start state; This is the state
 											where parsing is immediatelly

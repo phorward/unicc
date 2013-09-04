@@ -25,8 +25,8 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 /* Including the Phorward Foundation Library */
 #include <phorward.h>
 
-#undef uchar
-#define uchar char
+#undef char
+#define char char
 
 /* Internal includes */
 #include "p_defs.h"
@@ -128,7 +128,7 @@ struct _symbol
 	int			id;				/* Symbol ID */
 	int			type;			/* Symbol type */
 
-	uchar*		name;			/* Symbol name */
+	char*		name;			/* Symbol name */
 
 	CCL			ccl;			/* Character-class definition */
 
@@ -173,7 +173,7 @@ struct _symbol
 
 	int			line;			/* Line of definition */
 
-	uchar*		code;			/* Code for regex terminals */
+	char*		code;			/* Code for regex terminals */
 	int			code_at;		/* Beginning line of code-segment
 									in source file */
 };
@@ -207,7 +207,7 @@ struct _prod
 
 	int			line;			/* Line of definition */
 
-	uchar*		code;			/* Semantic reduction action template */
+	char*		code;			/* Semantic reduction action template */
 	int			code_at;		/* Beginning line of code-segment
 									in source file */
 };
@@ -259,16 +259,16 @@ struct _tabcol
 struct _vtype
 {
 	int			id;				/* Value type ID */
-	uchar*		int_name;		/* Internal name for verification */
-	uchar*		real_def;		/* Definition by user */
+	char*		int_name;		/* Internal name for verification */
+	char*		real_def;		/* Definition by user */
 };
 
 /* Parser option */
 struct _option
 {
 	int			line;			/* Line of option definition */
-	uchar*		opt;			/* Option name */
-	uchar*		def;			/* Option content */
+	char*		opt;			/* Option name */
+	char*		def;			/* Option content */
 };
 
 /* Parser information structure */
@@ -291,15 +291,15 @@ struct _parser
 	LIST*		vtypes;			/* Value stack types */
 
 	short		p_mode;			/* Parser model */
-	uchar*		p_name;			/* Parser name */
-	uchar*		p_desc;			/* Parser description */
-	uchar*		p_language;		/* Parser target programming language */
-	uchar*		p_copyright;	/* Parser copyright notice */
-	uchar*		p_version;		/* Parser version */
-	uchar*		p_prefix;		/* Parser symbol prefix */
-	uchar*		p_basename;		/* Parser file basename */
-	uchar*		p_def_action;	/* Default reduce action */
-	uchar*		p_def_action_e;	/* Default reduce action for
+	char*		p_name;			/* Parser name */
+	char*		p_desc;			/* Parser description */
+	char*		p_language;		/* Parser target programming language */
+	char*		p_copyright;	/* Parser copyright notice */
+	char*		p_version;		/* Parser version */
+	char*		p_prefix;		/* Parser symbol prefix */
+	char*		p_basename;		/* Parser file basename */
+	char*		p_def_action;	/* Default reduce action */
+	char*		p_def_action_e;	/* Default reduce action for
 									epsilon-productions */
 
 	BOOLEAN		p_lexem_sep;	/* Flag, if lexem separation is switched
@@ -309,17 +309,17 @@ struct _parser
 	BOOLEAN		p_reserve_regex;/* Flag, if regex'es are reserved */
 	int			p_universe;		/* Maximum of the character universe */
 
-	uchar*		p_header;		/* Header/Prologue program code of the parser */
-	uchar*		p_footer;		/* Footer/Epilogue embedded program code
+	char*		p_header;		/* Header/Prologue program code of the parser */
+	char*		p_footer;		/* Footer/Epilogue embedded program code
 									of the parser */
-	uchar*		p_pcb;			/* Parser control block: Individual
+	char*		p_pcb;			/* Parser control block: Individual
 									code segment */
 
 	VTYPE*		p_def_type;		/* Default value type */
 
 	HASHTAB		options;		/* Options parameter hash table */
 
-	uchar*		source;			/* Parser definition source */
+	char*		source;			/* Parser definition source */
 
 	/* Context-free model relevant */
 	LIST*		lexer;
@@ -339,7 +339,7 @@ struct _parser
 	int			files_count;
 
 	/* Debug and maintainance */
-	uchar*		filename;
+	char*		filename;
 	int			debug_level;
 
 	/* XML-root node for XML-encoded error messages */
@@ -349,28 +349,28 @@ struct _parser
 /* Generator 2D table structure */
 struct _generator_2d_tab
 {
-	uchar*		row_start;
-	uchar*		row_end;
-	uchar*		col;
-	uchar*		col_sep;
-	uchar*		row_sep;
+	char*		row_start;
+	char*		row_end;
+	char*		col;
+	char*		col_sep;
+	char*		row_sep;
 };
 
 /* Generator 1D table structur */
 struct _generator_1d_tab
 {
-	uchar*		col;
-	uchar*		col_sep;
+	char*		col;
+	char*		col_sep;
 };
 
 /* Generator template structure */
 struct _generator
 {
-	uchar*		name;						/* Target language name */
-	uchar*		driver;						/* Driver source code */
-	uchar*		vstack_def_type;			/* Default-type for nonterminals
+	char*		name;						/* Target language name */
+	char*		driver;						/* Driver source code */
+	char*		vstack_def_type;			/* Default-type for nonterminals
 												if no type is specified */
-	uchar*		vstack_term_type;			/* Type for terminals
+	char*		vstack_term_type;			/* Type for terminals
 												(characters) to be pushed on
 													the value stack */
 	_2D_TABLE	acttab;						/* Action table */
@@ -385,45 +385,45 @@ struct _generator
 	_1D_TABLE	dfa_trans;					/* DFA transitions */
 	_2D_TABLE	dfa_accept;					/* DFA accepting states */
 
-	uchar*		action_start;				/* Action code start */
-	uchar*		action_end;					/* Action code end */
-	uchar*		action_single;				/* Action vstack access */
-	uchar*		action_union;				/* Action union access */
-	uchar*		action_lhs_single;			/* Action left-hand side
+	char*		action_start;				/* Action code start */
+	char*		action_end;					/* Action code end */
+	char*		action_single;				/* Action vstack access */
+	char*		action_union;				/* Action union access */
+	char*		action_lhs_single;			/* Action left-hand side
 												single access */
-	uchar*		action_lhs_union;			/* Action left-hand side
+	char*		action_lhs_union;			/* Action left-hand side
 												union access */
-	uchar*		action_set_lhs;				/* Set a left-hand
+	char*		action_set_lhs;				/* Set a left-hand
 												side within semantic
 												action code */
-	uchar*		vstack_single;				/* Single value stack type
+	char*		vstack_single;				/* Single value stack type
 												definition */
-	uchar*		vstack_union_start;			/* Begin of value stack
+	char*		vstack_union_start;			/* Begin of value stack
 												union definition */
-	uchar*		vstack_union_end;			/* End of value stack
+	char*		vstack_union_end;			/* End of value stack
 												union definition */
-	uchar*		vstack_union_def;			/* Union inline type
+	char*		vstack_union_def;			/* Union inline type
 												definition */
-	uchar*		vstack_union_att;			/* Union attribute name */
-	uchar*		scan_action_start;			/* Scanner action code start */
-	uchar*		scan_action_end;			/* Scanner action code end */
-	uchar*		scan_action_begin_offset;	/* Begin-offset of scanned token
+	char*		vstack_union_att;			/* Union attribute name */
+	char*		scan_action_start;			/* Scanner action code start */
+	char*		scan_action_end;			/* Scanner action code end */
+	char*		scan_action_begin_offset;	/* Begin-offset of scanned token
 												in source */
-	uchar*		scan_action_end_offset;		/* End-offset of scanned token
+	char*		scan_action_end_offset;		/* End-offset of scanned token
 												in source */
-	uchar*		scan_action_ret_single;		/* Semantic value,
+	char*		scan_action_ret_single;		/* Semantic value,
 												single access */
-	uchar*		scan_action_ret_union;		/* Semantic value,
+	char*		scan_action_ret_union;		/* Semantic value,
 												union access */
-	uchar*		scan_action_set_symbol;		/* Set regex symbol depending
+	char*		scan_action_set_symbol;		/* Set regex symbol depending
 												on action code decision */
 
-	uchar*		code_localization;			/* Code localization template */
+	char*		code_localization;			/* Code localization template */
 
-	uchar**		for_sequences;				/* Dynamic array of string
+	char**		for_sequences;				/* Dynamic array of string
 												sequences to be replaced/es-
 												caped in output strings */
-	uchar**		do_sequences;				/* Dynamic array of escape-
+	char**		do_sequences;				/* Dynamic array of escape-
 												sequences for the particular
 												string sequence in the above
 												array */

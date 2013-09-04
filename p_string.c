@@ -36,16 +36,16 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 
 	Parameters:		int		val					Value to be converted
 
-	Returns:		uchar*						Pointer to allocated string
+	Returns:		char*						Pointer to allocated string
 
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-uchar* p_int_to_str( int val )
+char* p_int_to_str( int val )
 {
-	uchar*	ret;
+	char*	ret;
 
-	ret = (uchar*)pmalloc( 64 * sizeof( uchar ) );
+	ret = (char*)pmalloc( 64 * sizeof( char ) );
 	sprintf( ret, "%d", val );
 
 	return ret;
@@ -61,16 +61,16 @@ uchar* p_int_to_str( int val )
 
 	Parameters:		long	val					Value to be converted
 
-	Returns:		uchar*						Pointer to allocated string
+	Returns:		char*						Pointer to allocated string
 
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-uchar* p_long_to_str( long val )
+char* p_long_to_str( long val )
 {
-	uchar*	ret;
+	char*	ret;
 
-	ret = (uchar*)pmalloc( 128 * sizeof( uchar ) );
+	ret = (char*)pmalloc( 128 * sizeof( char ) );
 	sprintf( ret, "%ld", val );
 
 	return ret;
@@ -84,17 +84,17 @@ uchar* p_long_to_str( long val )
 	Usage:			Removes all whitespaces from a string (including inline
 					ones!) and returns the resulting string.
 
-	Parameters:		uchar*	str			Acts both as input and output-string.
+	Parameters:		char*	str			Acts both as input and output-string.
 
 	Returns:		Pointer to the input string.
 
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-uchar* p_str_no_whitespace( uchar* str )
+char* p_str_no_whitespace( char* str )
 {
-	uchar*	ptr		= str;
-	uchar*	start	= str;
+	char*	ptr		= str;
+	char*	start	= str;
 
 	while( *str != '\0' )
 		if( *str == ' ' || *str == '\t' )

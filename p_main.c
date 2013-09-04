@@ -27,9 +27,9 @@ BOOLEAN 		no_warnings			= TRUE;
 
 extern int		error_count;
 extern int		warning_count;
-extern uchar*	progname;
+extern char*	progname;
 
-uchar* 			pmod[] = 
+char* 			pmod[] = 
 {
 	"sensitive",
 	"insensitive"
@@ -50,9 +50,9 @@ uchar* 			pmod[] =
 							} \
 							else \
 								first_progress = FALSE;
-#define DONE()				p_status( parser, "Done\n", (uchar*)NULL );
-#define FAIL()				p_status( parser, "Failed\n", (uchar*)NULL );
-#define SUCCESS()			p_status( parser, "Succeeded\n", (uchar*)NULL );
+#define DONE()				p_status( parser, "Done\n", (char*)NULL );
+#define FAIL()				p_status( parser, "Failed\n", (char*)NULL );
+#define SUCCESS()			p_status( parser, "Succeeded\n", (char*)NULL );
 #define SKIPPED( why )		p_status( parser, "Skipped: %s\n", why );
 
 /*
@@ -67,8 +67,8 @@ uchar* 			pmod[] =
 	Usage:			Internal function to print verbose status messages.
 					
 	Parameters:		PARSER* 		parser			Parser info struct
-					uchar*			status_msg		Status info/Format string
-					uchar*			reason			One parameter to be inserted
+					char*			status_msg		Status info/Format string
+					char*			reason			One parameter to be inserted
 													by the fprintf( status ... )
 													have fun!
 
@@ -77,7 +77,7 @@ uchar* 			pmod[] =
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-static void p_status( PARSER* parser, uchar* status_msg, uchar* reason )
+static void p_status( PARSER* parser, char* status_msg, char* reason )
 {
 	if( !parser->verbose )
 		return;
@@ -106,7 +106,7 @@ static void p_status( PARSER* parser, uchar* status_msg, uchar* reason )
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-uchar* p_version( BOOLEAN long_version )
+char* p_version( BOOLEAN long_version )
 {
 	static char	version [ ONE_LINE + 1 ];
 
@@ -169,14 +169,14 @@ void p_copyright( FILE* stream )
 													printed to. If this is
 													(FILE*)NULL, stdout will be
 													used.
-					uchar*		progname			Name of the executable.
+					char*		progname			Name of the executable.
 	
 	Returns:		void
   
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-void p_usage( FILE* stream, uchar* progname )
+void p_usage( FILE* stream, char* progname )
 {
 	if( !stream )
 		stream = stdout;
@@ -215,9 +215,9 @@ void p_usage( FILE* stream, uchar* progname )
 					parser generator.
 					
 	Parameters:		int			argc		Argument count from main()
-					uchar**		argv		Argument values from main()
-					uchar**		filename	Name of the parser source file
-					uchar**		output		Name of a possible output file
+					char**		argv		Argument values from main()
+					char**		filename	Name of the parser source file
+					char**		output		Name of a possible output file
 					PARSER*		parser		Parser structure
 	
 	Returns:		BOOLEAN					TRUE, if command-line parameters
@@ -232,8 +232,8 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 	int		i;
 	int		rc;
 	int		next;
-	uchar	opt		[ ONE_LINE + 1 ];
-	uchar*	param;
+	char	opt		[ ONE_LINE + 1 ];
+	char*	param;
 	
 	progname = *argv;
 
@@ -326,9 +326,9 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 ----------------------------------------------------------------------------- */
 int main( int argc, char** argv )
 {
-	uchar*	filename	= (uchar*)NULL;
-	uchar*	base_name	= (uchar*)NULL;
-	uchar*	mbase_name	= (uchar*)NULL;
+	char*	filename	= (char*)NULL;
+	char*	base_name	= (char*)NULL;
+	char*	mbase_name	= (char*)NULL;
 	PARSER*	parser;
 	BOOLEAN	recursions	= FALSE;
 	BOOLEAN	def_lang	= FALSE;

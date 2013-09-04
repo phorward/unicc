@@ -77,7 +77,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 struct @@prefix_rhs_item
 {
 	SYMBOL*	sym;
-	uchar*	ident;
+	char*	ident;
 };
 
 #ifndef MALLOC_STEP
@@ -90,7 +90,7 @@ struct @@prefix_rhs_item
 
 PARSER*	parser			= (PARSER*)NULL;
 
-static uchar*	src_ptr;
+static char*	src_ptr;
 static int		directive_level	= 0; /* Directive level */
 static int		prec_cnt		= 1; /* Precedence level */
 static int		line			= 1; /* Line within source file */
@@ -103,8 +103,8 @@ static BOOLEAN	greedy			= TRUE;
 
 extern int	error_count;
 
-uchar*		strbuf			= (uchar*)NULL;
-uchar*		regex			= (uchar*)NULL;
+char*		strbuf			= (char*)NULL;
+char*		regex			= (char*)NULL;
 
 /*
  * Functions
@@ -137,17 +137,17 @@ static int getinput( void )
 }
 
 /* Append character to current string */
-static void strbuf_append( uchar ch )
+static void strbuf_append( char ch )
 {
 	int len;
 
 	len = pstrlen( strbuf );
 
 	if( !strbuf )
-		strbuf = (uchar*)pmalloc( ( MALLOC_STEP + 2 ) * sizeof( uchar ) );
+		strbuf = (char*)pmalloc( ( MALLOC_STEP + 2 ) * sizeof( char ) );
 	else if( len % MALLOC_STEP == 0 )
-		strbuf = (uchar*)prealloc( (uchar*)strbuf, ( len + MALLOC_STEP + 2 )
-			* sizeof( uchar ) );
+		strbuf = (char*)prealloc( (char*)strbuf, ( len + MALLOC_STEP + 2 )
+			* sizeof( char ) );
 
 	strbuf[len] = ch;
 	strbuf[len+1] = '\0';
@@ -188,7 +188,7 @@ static void make_semantic_rhs( PROD* p )
 {
 	int		i;
 	LIST*	l		= (LIST*)NULL;
-	uchar*	dup;
+	char*	dup;
 
 	if( current_prod && current_prod->rhs )
 	{
@@ -215,7 +215,7 @@ static void make_semantic_rhs( PROD* p )
 
 		for( ; l; l = list_next( l ) )
 		{
-			dup = (uchar*)list_access( l );
+			dup = (char*)list_access( l );
 			if( dup )
 			{
 				if( !( dup = pstrdup( dup ) ) )
@@ -228,11 +228,11 @@ static void make_semantic_rhs( PROD* p )
 	}
 }
 
-static OPT* set_option( HASHTAB* ht, uchar* key, uchar* val, int line )
+static OPT* set_option( HASHTAB* ht, char* key, char* val, int line )
 {
 	OPT*		opt;
 
-	if( !( opt = p_create_opt( ht, key, (uchar*)NULL ) ) )
+	if( !( opt = p_create_opt( ht, key, (char*)NULL ) ) )
 		OUTOFMEM;
 
 	opt->def = val;
@@ -244,7 +244,7 @@ static OPT* set_option( HASHTAB* ht, uchar* key, uchar* val, int line )
 	if( ( he = hashtab_get( ht, key ) ) )
 	{
 		if( !( val = pstrcatstr(
-				(uchar*)hashelem_access( he ), val, TRUE ) ) )
+				(char*)hashelem_access( he ), val, TRUE ) ) )
 			OUTOFMEM;
 
 		hashtab_update( ht, key, (void*)val );
@@ -322,7 +322,7 @@ unfixed_directive	->	'#' directive_parms
 					*/
 					;
 
-@USERDEF<uchar*>	!'\0"\'/ \t\n\r!;'+
+@USERDEF<char*>	!'\0"\'/ \t\n\r!;'+
 					[*
 						@@ = @>;
 					*];
@@ -469,7 +469,7 @@ directive_parms		-> "whitespaces" 	symbol_list
 					| "default value type" type
 						[*	if( !( parser->p_def_type ) )
 								parser->p_def_type = p_create_vtype(
-									parser, (uchar*)@type );
+									parser, (char*)@type );
 							else
 								p_error( parser, ERR_DIRECTIVE_ALREADY_USED,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
@@ -605,7 +605,7 @@ definition			->	lhs:primary
 							if( @type )
 							{
 								vt = p_create_vtype( parser,
-										(uchar*)@type );
+										(char*)@type );
 
 								pfree( @type );
 							}
@@ -684,7 +684,7 @@ definition			->	lhs:primary
 									primary->code_at = last_code_begin;
 								}
 
-								strbuf = (uchar*)NULL;
+								strbuf = (char*)NULL;
 							}
 
 							/* Value type */
@@ -732,7 +732,7 @@ sym_option			->	'#' "greedy"
 							set_option( &( current_sym->options ), @key,
 											strbuf, @line_number );
 
-							strbuf = (uchar*)NULL;
+							strbuf = (char*)NULL;
 						*]
 					;
 
@@ -783,7 +783,7 @@ prod_directives<int>
 						[* 	set_option( &( current_prod->options ),
 								@key, strbuf, @line_number );
 
-							strbuf = (uchar*)NULL;
+							strbuf = (char*)NULL;
 						*]
 
 					;
@@ -791,7 +791,7 @@ prod_directives<int>
 rhs<PROD*>			->	rhs symbol access_name
 
 						[*	p_append_to_production( @1, @2,
-								( *strbuf == '\0' ? (uchar*)NULL :
+								( *strbuf == '\0' ? (char*)NULL :
 											pstrdup( strbuf ) ) );
 									@@ = @1;
 						*]
@@ -803,7 +803,7 @@ rhs<PROD*>			->	rhs symbol access_name
 									(SYMBOL*)NULL );
 
 							p_append_to_production( @@, @1,
-								( *strbuf == '\0' ? (uchar*)NULL :
+								( *strbuf == '\0' ? (char*)NULL :
 									pstrdup( strbuf ) ) );
 						*]
 					;
@@ -859,7 +859,7 @@ sym<SYMBOL*>		-> terminal
 					| type '('  stack_cur_prod productions ')'
 
 						[*
-							uchar	temp_nonterm[ ONE_LINE + 1 ];
+							char	temp_nonterm[ ONE_LINE + 1 ];
 							PROD*	prod;
 							LIST*	l;
 
@@ -879,7 +879,7 @@ sym<SYMBOL*>		-> terminal
 								VTYPE*	vt;
 
 								vt = p_create_vtype( parser,
-										(uchar*)@type );
+										(char*)@type );
 								@@->vtype = vt;
 
 								pfree( @type );
@@ -1092,7 +1092,7 @@ ccl_char		->	!'\\\''
 					[*	strbuf_append( @1 ); *]
 
 				| '\\' !'\0'
-					[* 	strbuf_append( (uchar)'\\' );
+					[* 	strbuf_append( (char)'\\' );
 						strbuf_append( @2 ); 	  *]
 				;
 
@@ -1108,14 +1108,14 @@ kw_char			->	!'\\"'
 					[* 	strbuf_append( @1 ); *]
 
 				| '\\' !'\0'
-					[* 	strbuf_append( (uchar)'\\' );
+					[* 	strbuf_append( (char)'\\' );
 						strbuf_append( @2 );
 					*]
 				;
 
-type<uchar*>	->	'<' type_str '>'
+type<char*>	->	'<' type_str '>'
 					[*	@@ = pstrdup( strbuf ); *]
-				|	[*	@@ = (uchar*)NULL; *]
+				|	[*	@@ = (char*)NULL; *]
 				;
 
 type_str		->	type_str !'>'
@@ -1124,7 +1124,7 @@ type_str		->	type_str !'>'
 				;
 
 /*
-identifier_cpy<uchar*>
+identifier_cpy<char*>
 				->	identifier
 					[*
 						@@ = pstrdup( strbuf );
@@ -1160,7 +1160,7 @@ integer			->	integer '0-9'
 					*]
 				;
 
-code_opt_dup<uchar*>
+code_opt_dup<char*>
 				->	code_opt
 
 					[* 	@@ = pstrdup( @code_opt );
@@ -1168,10 +1168,10 @@ code_opt_dup<uchar*>
 					*]
 				;
 
-code_opt<uchar*>->	code
+code_opt<char*>->	code
 					[*	@@ = strbuf; *]
 				|	[*	reset_strbuf();
-						@@ = (uchar*)NULL; *]
+						@@ = (char*)NULL; *]
 				;
 
 code			->	code_begin inner_code_opt "*]"
@@ -1243,19 +1243,19 @@ line_number		->	[* @@ = line; *]
 static void p_parse_error( @@prefix_pcb* pcb )
 {
 	int		i;
-	uchar**	vptr;
-	uchar**	valid;
-	uchar*	cur;
+	char**	vptr;
+	char**	valid;
+	char*	cur;
 
 	if( !( vptr = valid =
-			(uchar**)pmalloc( ( @@prefix_act[ pcb->tos->state ][0] + 1 )
-						* sizeof( uchar* ) ) ) )
+			(char**)pmalloc( ( @@prefix_act[ pcb->tos->state ][0] + 1 )
+						* sizeof( char* ) ) ) )
 		OUTOFMEM;
 
 	for( i = 1; i < @@prefix_act[ pcb->tos->state ][0] * 3; i += 3 )
 		*( vptr++ ) = @@prefix_symbols[ _act[ pcb->tos->state ][i] ].name;
 
-	*vptr = (uchar*)NULL;
+	*vptr = (char*)NULL;
 
 	if( pcb->sym == -1 )
 		cur = pcb->lexem;
@@ -1267,7 +1267,7 @@ static void p_parse_error( @@prefix_pcb* pcb )
 					parser->filename, pcb->line, cur, valid );
 }
 
-int p_parse( PARSER* p, uchar* src )
+int p_parse( PARSER* p, char* src )
 {
 	@@prefix_pcb pcb;
 

@@ -21,7 +21,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 /*
  * Global variables
  */
-uchar* error_txt[128] =
+char* error_txt[128] =
 {
 	"Memory allocation error (out of memory?) in %s, line %d",
 	"Parameter required behind command-line option \'%s\'",
@@ -70,7 +70,7 @@ int					error_count		= 0;
 int					warning_count	= 0;
 extern	BOOLEAN		first_progress;
 extern	BOOLEAN		no_warnings;
-uchar*				progname;
+char*				progname;
 
 /*
  * Functions
@@ -98,7 +98,7 @@ uchar*				progname;
 void p_error( PARSER* parser, int err_id, int err_style, ... )
 {
 	va_list		params;
-	uchar*		filename 	= (uchar*)NULL;
+	char*		filename 	= (char*)NULL;
 	int			line 		= 0;
 	STATE*		state		= (STATE*)NULL;
 	PROD*		p			= (PROD*)NULL;
@@ -108,7 +108,7 @@ void p_error( PARSER* parser, int err_id, int err_style, ... )
 
 	BOOLEAN		do_print	= TRUE;
 
-	uchar*		tmp;
+	char*		tmp;
 	
 	va_start( params, err_style );
 
@@ -141,7 +141,7 @@ void p_error( PARSER* parser, int err_id, int err_style, ... )
 	
 	if( err_style & ERRSTYLE_FILEINFO )
 	{
-		filename = va_arg( params, uchar* );		
+		filename = va_arg( params, char* );		
 		line = va_arg( params, int );
 
 		if( errmsg )

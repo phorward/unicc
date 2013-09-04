@@ -67,9 +67,9 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
 SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 {
-	uchar		keych;
-	uchar*		keyname;
-	uchar*		name		= (uchar*)dfn;
+	char		keych;
+	char*		keyname;
+	char*		name		= (char*)dfn;
 	SYMBOL*		sym			= (SYMBOL*)NULL;
 	HASHELEM*	he;
 
@@ -124,9 +124,9 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 			RETURN( (SYMBOL*)NULL );
 	}
 
-	if( !( keyname = (uchar*)pmalloc(
+	if( !( keyname = (char*)pmalloc(
 			( pstrlen( name ) + 1 + 1 )
-				* sizeof( uchar ) ) ) )
+				* sizeof( char ) ) ) )
 	{
 		OUTOFMEM;
 		return (SYMBOL*)NULL;
@@ -323,10 +323,10 @@ PROD* p_create_production( PARSER* p, SYMBOL* lhs )
 	Parameters:		PROD*			p				Production
 					SYMBOL*			sym				Symbol to append to
 					 								production
-					uchar*			name			Optional semantic identifier
+					char*			name			Optional semantic identifier
 													for the symbol on the
 													right-hand side, can be
-													(uchar*)NULL.
+													(char*)NULL.
 
 	Returns:		void
 
@@ -335,7 +335,7 @@ PROD* p_create_production( PARSER* p, SYMBOL* lhs )
 	11.07.2010	Jan Max Meyer	Use name of derived symbol in case of
 								virtual productions.
 ----------------------------------------------------------------------------- */
-void p_append_to_production( PROD* p, SYMBOL* sym, uchar* name )
+void p_append_to_production( PROD* p, SYMBOL* sym, char* name )
 {
 	if( p && sym )
 	{
@@ -680,9 +680,9 @@ TABCOL* p_find_tabcol( LIST* row, SYMBOL* sym )
 												is (HASHTAB*)NULL, only a
 												pointer to the new option
 												structure will be returned.
-					uchar*		opt				Identifiying option name
-					uchar*		def				Option definition; Can be
-												left (uchar*)NULL.
+					char*		opt				Identifiying option name
+					char*		def				Option definition; Can be
+												left (char*)NULL.
 
 	Returns:		OPT*						Pointer to the newly created
 												OPT-structure, (OPT*)NULL
@@ -691,7 +691,7 @@ TABCOL* p_find_tabcol( LIST* row, SYMBOL* sym )
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-OPT* p_create_opt( HASHTAB* ht, uchar* opt, uchar* def )
+OPT* p_create_opt( HASHTAB* ht, char* opt, char* def )
 {
 	OPT*		option;
 
@@ -869,7 +869,7 @@ void p_free_parser( PARSER* parser )
 	Usage:			Seaches for a value stack type.
 
 	Parameters:		PARSER*		p					Parser information structure
-					uchar*		name				Value type name
+					char*		name				Value type name
 
 	Returns:		VTYPE*							Pointer to the VTYPE
 													structure representing the
@@ -879,11 +879,11 @@ void p_free_parser( PARSER* parser )
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-VTYPE* p_find_vtype( PARSER* p, uchar* name )
+VTYPE* p_find_vtype( PARSER* p, char* name )
 {
 	VTYPE*	vt;
 	LIST*	l;
-	uchar*	test_name;
+	char*	test_name;
 
 	test_name = pstrdup( name );
 	if( !test_name )
@@ -914,7 +914,7 @@ VTYPE* p_find_vtype( PARSER* p, uchar* name )
 					if it does already exist.
 
 	Parameters:		PARSER*		p					Parser information structure
-					uchar*		name				Value type name
+					char*		name				Value type name
 
 	Returns:		VTYPE*							Pointer to the VTYPE
 													structure representing the
@@ -923,7 +923,7 @@ VTYPE* p_find_vtype( PARSER* p, uchar* name )
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-VTYPE* p_create_vtype( PARSER* p, uchar* name )
+VTYPE* p_create_vtype( PARSER* p, char* name )
 {
 	VTYPE*	vt;
 

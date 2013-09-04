@@ -135,7 +135,7 @@
 /* Value Types */
 typedef union _VTYPE
 {
-	uchar* value_0;
+	char* value_0;
 	BOOLEAN value_1;
 	LIST* value_2;
 	SYMBOL* value_3;

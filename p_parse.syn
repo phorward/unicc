@@ -38,8 +38,8 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 
 union _stack_val
 {
-	uchar*			str;
-	uchar			ch;
+	char*			str;
+	char			ch;
 	int				num;
 	void*			ptr;
 	BOOLEAN			negative;
@@ -60,8 +60,8 @@ union _stack_val
 #define VAL union _stack_val
 #define SET_CURRENT_CHAR .ch
 
-#ifndef uchar
-#define uchar unsigned char
+#ifndef char
+#define char unsigned char
 #endif
 
 #ifndef MALLOC_STEP
@@ -80,44 +80,27 @@ BOOLEAN greedy		= TRUE;
 
 extern int	error_count;
 
-uchar*		strbuf	= (uchar*)NULL;
+char*		strbuf	= (char*)NULL;
 
 /*
  * Functions
  */
 
 /* Append character to current string */
-static void strbuf_append( uchar ch )
+static void strbuf_append( char ch )
 {
 	int len;
 	len = strbuf ? (int)strlen( strbuf ) : 0;
 
 	if( !strbuf )
-		strbuf = (uchar*)pmalloc( ( MALLOC_STEP + 2 ) * sizeof( uchar ) );
+		strbuf = (char*)pmalloc( ( MALLOC_STEP + 2 ) * sizeof( char ) );
 	else if( len % MALLOC_STEP == 0 )
-		strbuf = (uchar*)prealloc( (uchar*)strbuf, ( len + MALLOC_STEP + 2 )
-			* sizeof( uchar ) );
+		strbuf = (char*)prealloc( (char*)strbuf, ( len + MALLOC_STEP + 2 )
+			* sizeof( char ) );
 
 	strbuf[len] = ch;
 	strbuf[len+1] = '\0';
 	strbuf[len+2] = '\0';
-}
-
-static void strbuf_prefix( uchar ch )
-{
-	int len;
-	uchar* tmp;
-	len = strbuf ? (int)strlen( strbuf ) : 0;
-
-	if( !strbuf )
-		strbuf = (uchar*)pmalloc( ( MALLOC_STEP + 2 ) * sizeof( uchar ) );
-	else if( len % MALLOC_STEP == 0 )
-		strbuf = (uchar*)prealloc( (uchar*)strbuf, ( len + MALLOC_STEP + 2 )
-			* sizeof( uchar ) );
-
-	tmp = pstrdup( strbuf );
-	sprintf( strbuf, "%c%s%c", ch, tmp, '\0' );
-	pfree( tmp );
 }
 
 /* Create a new string */
@@ -339,7 +322,7 @@ definition:		lhs goal_mark type "->" productions				{
 																		VTYPE*	vt;
 
 																		vt = p_create_vtype( parser,
-																				(uchar*)(#3.ptr) );
+																				(char*)(#3.ptr) );
 																		((SYMBOL*)(#1.ptr))->vtype = vt;
 
 																		pfree( #3.ptr );
@@ -359,7 +342,7 @@ definition:		lhs goal_mark type "->" productions				{
 																	if( strbuf && *strbuf )
 																	{
 																		s->code = strbuf;
-																		strbuf = (uchar*)NULL;
+																		strbuf = (char*)NULL;
 																	}
 
 																	/* Value type */
@@ -368,7 +351,7 @@ definition:		lhs goal_mark type "->" productions				{
 																		VTYPE*	vt;
 
 																		vt = p_create_vtype( parser,
-																				(uchar*)(#3.ptr) );
+																				(char*)(#3.ptr) );
 																		s->vtype = vt;
 																		pfree( #3.ptr );
 																	}
@@ -404,7 +387,7 @@ productions:	productions '|' rhs code_opt					{	if( *strbuf != '\0' )
 				;
 
 rhs:			rhs symbol access_name							{	p_append_to_production( #1.ptr, #2.ptr,
-																		( *strbuf == '\0' ? (uchar*)NULL :
+																		( *strbuf == '\0' ? (char*)NULL :
 																			pstrdup( strbuf ) ) );
 																	##.ptr = #1.ptr;
 																}
@@ -612,14 +595,14 @@ ccl_str:	ccl_str ccl_char
 			|													{ 	reset_strbuf(); }
 			;
 
-ccl_char:	'^\'\\'												{ strbuf_append( (uchar)#1.ch ); }
-			| '\\' '^'											{ strbuf_append( (uchar)'\\' );
-																  strbuf_append( (uchar)#2.ch ); }
+ccl_char:	'^\'\\'												{ strbuf_append( (char)#1.ch ); }
+			| '\\' '^'											{ strbuf_append( (char)'\\' );
+																  strbuf_append( (char)#2.ch ); }
 			;
 
 kw:			'\"' kw_str '\"';
 
-kw_str:		kw_str '^\"'										{ 	strbuf_append( (uchar)#2.ch ); }
+kw_str:		kw_str '^\"'										{ 	strbuf_append( (char)#2.ch ); }
 			|													{ 	reset_strbuf(); }
 			;
 
@@ -627,7 +610,7 @@ type:		'<' type_str '>'									{	##.ptr = pstrdup( strbuf );	}
 			|													{	##.ptr = (void*)NULL; }
 			;
 
-type_str:	type_str '^>'										{ 	strbuf_append( (uchar)#2.ch ); }
+type_str:	type_str '^>'										{ 	strbuf_append( (char)#2.ch ); }
 			|													{ 	reset_strbuf(); }
 			;
 
@@ -649,7 +632,7 @@ escape_sequence:
 */
 
 identifier_copy:	identifier									{	##.str = strbuf;
-																	strbuf = (uchar*)NULL;
+																	strbuf = (char*)NULL;
 																}
 			;
 
@@ -708,7 +691,7 @@ scomment:	scomment '^\n'
 
 {
 
-int p_parse( PARSER* p, uchar* src )
+int p_parse( PARSER* p, char* src )
 {
 	char* s,
 		* sp;

@@ -29,7 +29,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 /*
  * Global variables
  */
-extern uchar*	pmod[];
+extern char*	pmod[];
 
 /*
  * Functions
@@ -90,7 +90,7 @@ static void p_xml_ccl( XML_T parent_xml, CCL ccl )
 	Parameters:		XML_T		code_xml			Parent element where the
 													raw-code block will be
 													attached to.
-					uchar*		code				The content of the raw
+					char*		code				The content of the raw
 													code block.
 
 	Returns:		XML_T							Raw-code tag.
@@ -98,7 +98,7 @@ static void p_xml_ccl( XML_T parent_xml, CCL ccl )
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-static XML_T p_xml_raw_code( XML_T code_xml, uchar* code )
+static XML_T p_xml_raw_code( XML_T code_xml, char* code )
 {
 	XML_T	raw_code;
 
@@ -127,7 +127,7 @@ static XML_T p_xml_raw_code( XML_T code_xml, uchar* code )
 													will be attached to.
 					PARSER*		parser				Parser information structure
 					PROD*		p					Production
-					uchar*		base				Code-base template for the
+					char*		base				Code-base template for the
 													reduction action
 					BOOLEAN		def_code			Defines if the base-pointer
 													is a default-code block or
@@ -141,21 +141,21 @@ static XML_T p_xml_raw_code( XML_T code_xml, uchar* code )
 								defined symbol on the semantic rhs!
 ----------------------------------------------------------------------------- */
 static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
-		uchar* base, BOOLEAN def_code )
+		char* base, BOOLEAN def_code )
 {
 	pregex*			replacer;
 	pregex_range*	range;
 	int				off;
-	uchar*			last;
-	uchar*			chk;
-	uchar*			tmp;
+	char*			last;
+	char*			chk;
+	char*			tmp;
 	LIST*			l;
 	LIST*			m;
 	LIST*			rhs			= p->rhs;
 	LIST*			rhs_idents	= p->rhs_idents;
 	BOOLEAN			on_error	= FALSE;
 	SYMBOL*			sym;
-	uchar*			raw;
+	char*			raw;
 	XML_T			code;
 
 	PROC( "p_xml_build_action" );
@@ -192,16 +192,16 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 	MSG( "Iterating trough result array" );
 	for( last = base, range = pregex_match_next( replacer, base );
 			range && !on_error;
-				range = pregex_match_next( replacer, (uchar*)NULL ) )
+				range = pregex_match_next( replacer, (char*)NULL ) )
 	{
 		off = 0;
-		tmp = (uchar*)NULL;
+		tmp = (char*)NULL;
 
 		/* Copy raw part of code into its own tag */
 		if( last < range->begin )
 		{
 			if( !( raw = pstrncatstr(
-					(uchar*)NULL, last, range->begin - last ) ) )
+					(char*)NULL, last, range->begin - last ) ) )
 				OUTOFMEM;
 
 			p_xml_raw_code( code_xml, raw );
@@ -222,7 +222,7 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 				for( l = rhs_idents, m = rhs, off = 1; l && m;
 						l = list_next( l ), m = list_next( m ), off++ )
 				{
-					chk = (uchar*)list_access( l );
+					chk = (char*)list_access( l );
 					VARS( "chk", "%s", chk ? chk : "(NULL)" );
 
 					/*
@@ -300,7 +300,7 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 						MSG( "Found a matching symbol!" );
 
 						pfree( tmp );
-						tmp = (uchar*)NULL;
+						tmp = (char*)NULL;
 
 						if( !( code = xml_add_child( code_xml,
 								"command", 0 ) ) )
@@ -407,14 +407,14 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
 static BOOLEAN p_xml_build_scan_action(
-	XML_T code_xml, PARSER* parser, SYMBOL* s, uchar* base )
+	XML_T code_xml, PARSER* parser, SYMBOL* s, char* base )
 {
 	pregex*			replacer;
 	pregex_range*	range;
-	uchar*			last;
-	uchar*			raw;
+	char*			last;
+	char*			raw;
 	XML_T			code;
-	uchar*			tmp;
+	char*			tmp;
 	SYMBOL*			sym;
 	LIST*			l;
 
@@ -439,12 +439,12 @@ static BOOLEAN p_xml_build_scan_action(
 	}
 
 	for( last = base, range = pregex_match_next( replacer, base );
-				range; range = pregex_match_next( replacer, (uchar*)NULL ) )
+				range; range = pregex_match_next( replacer, (char*)NULL ) )
 	{
 		if( last < range->begin )
 		{
 			if( !( raw = pstrncatstr(
-					(uchar*)NULL, last, range->begin - last ) ) )
+					(char*)NULL, last, range->begin - last ) ) )
 				OUTOFMEM;
 
 			p_xml_raw_code( code_xml, raw );
@@ -648,7 +648,7 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 {
 	LIST*			l;
 	SYMBOL*			sym;
-	uchar*			tmp;
+	char*			tmp;
 	pregex_nfa		tmp_nfa;
 	pregex_dfa		tmp_dfa;
 	pregex_accept	acc;
@@ -658,7 +658,7 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 	XML_T			code;
 	XML_T			lex;
 	XML_T			regex;
-	uchar*			regex_str;
+	char*			regex_str;
 
 	PROC( "p_xml_print_symbols" );
 	MSG( "Printing symbol table" );
@@ -794,8 +794,8 @@ static void p_xml_print_productions( PARSER* parser, XML_T par )
 	SYMBOL*			sym;
 	PROD*			p;
 	BOOLEAN			is_default_code;
-	uchar*			act;
-	uchar*			tmp;
+	char*			act;
+	char*			tmp;
 	int				i;
 	int				j;
 
@@ -850,7 +850,7 @@ static void p_xml_print_productions( PARSER* parser, XML_T par )
 			xml_set_int_attr( rhs, "symbol-id", sym->id );
 			xml_set_int_attr( rhs, "offset", i );
 
-			if( ( tmp = (uchar*)list_getptr( p->sem_rhs_idents, i ) ) )
+			if( ( tmp = (char*)list_getptr( p->sem_rhs_idents, i ) ) )
 				xml_set_attr( rhs, "named", tmp );
 		}
 
@@ -865,7 +865,7 @@ static void p_xml_print_productions( PARSER* parser, XML_T par )
 			xml_set_int_attr( rhs, "symbol-id", sym->id );
 			xml_set_int_attr( rhs, "offset", i );
 
-			if( ( tmp = (uchar*)list_getptr( p->rhs_idents, j ) ) )
+			if( ( tmp = (char*)list_getptr( p->rhs_idents, j ) ) )
 				xml_set_attr( rhs, "named", tmp );
 		}
 
@@ -899,7 +899,7 @@ static void p_xml_print_productions( PARSER* parser, XML_T par )
 			( p->lhs->whitespace ||
 				list_find( p->rhs, parser->error ) > -1 ) )
 		{
-			act = (uchar*)NULL;
+			act = (char*)NULL;
 		}
 
 		if( act && *act )
@@ -924,7 +924,7 @@ static void p_xml_print_states( PARSER* parser, XML_T par )
 
 	STATE*			st;
 	TABCOL*			col;
-	uchar*			transtype;
+	char*			transtype;
 	int				i;
 	int				st_lex;
 
@@ -1147,9 +1147,9 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 	XML_T			attrib;
 
 	FILE* 			out					= stdout;
-	uchar*			outname				= (uchar*)NULL;
+	char*			outname				= (char*)NULL;
 
-	uchar*			xmlstr;
+	char*			xmlstr;
 
 	PROC( "p_build_xml" );
 	PARMS( "parser", "%p", parser );
