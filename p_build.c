@@ -261,7 +261,7 @@ char* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 						range->len - 1, chk,
 							range->len - 1, range->begin + 1 );
 					*/
-					if( chk && !pstrncmp( chk, range->begin + 1,
+					if( chk && !strncmp( chk, range->begin + 1,
 									range->len - 1 )
 							&& pstrlen( chk ) == range->len - 1 )
 					{
@@ -324,7 +324,7 @@ char* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 				{
 					sym = (SYMBOL*)list_access( l );
 
-					if( !pstrcmp( sym->name, tmp ) )
+					if( !strcmp( sym->name, tmp ) )
 					{
 						MSG( "Found a matching symbol!" );
 
@@ -542,7 +542,7 @@ char* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
 				{
 					sym = (SYMBOL*)list_access( l );
 
-					if( !pstrcmp( sym->name, tmp ) )
+					if( !strcmp( sym->name, tmp ) )
 					{
 						MSG( "Found a matching symbol!" );
 						ret = pstrcatstr( ret,

@@ -187,9 +187,9 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 				sym->used = TRUE;
 				sym->defined = TRUE;
 
-				if( pstrcmp( sym->name, P_ERROR_RESYNC ) == 0 )
+				if( strcmp( sym->name, P_ERROR_RESYNC ) == 0 )
 					p->error = sym;
-				else if( pstrcmp( sym->name, P_END_OF_FILE ) == 0 )
+				else if( strcmp( sym->name, P_END_OF_FILE ) == 0 )
 					p->end_of_input = sym;
 			}
 		}

@@ -229,7 +229,7 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 					printf( "check >%s< with >%.*s<\n",
 						chk, range->len - 1, range->begin + 1 );
 					*/
-					if( chk && !pstrncmp( chk, range->begin + 1,
+					if( chk && !strncmp( chk, range->begin + 1,
 									range->len - 1 )
 							&& pstrlen( chk ) == range->len - 1 )
 					{
@@ -295,7 +295,7 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 				{
 					sym = (SYMBOL*)list_access( l );
 
-					if( !pstrcmp( sym->name, tmp ) )
+					if( !strcmp( sym->name, tmp ) )
 					{
 						MSG( "Found a matching symbol!" );
 
@@ -510,7 +510,7 @@ static BOOLEAN p_xml_build_scan_action(
 				{
 					sym = (SYMBOL*)list_access( l );
 
-					if( !pstrcmp( sym->name, tmp ) )
+					if( !strcmp( sym->name, tmp ) )
 					{
 						MSG( "Found a matching symbol!" );
 

@@ -253,10 +253,10 @@ char* p_gen_c_identifier( char* str, BOOLEAN to_upper )
 
 	for( p = str; *p; p++ )
 	{
-		if( pisalnum( *p ) )
+		if( isalnum( *p ) )
 		{
 			if( to_upper )
-				*p = ptoupper( *p );
+				*p = toupper( *p );
 		}
 		else
 			*p = '_';
