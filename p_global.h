@@ -130,7 +130,7 @@ struct _symbol
 
 	char*		name;			/* Symbol name */
 
-	CCL			ccl;			/* Character-class definition */
+	pregex_ccl			ccl;			/* Character-class definition */
 
 	LIST*		productions;	/* List of productions attached to a
 									non-terminal symbol */

@@ -873,7 +873,7 @@ UNICC_STATIC _syminfo _symbols[] =
 	{ /* 72 */ "identifier", 0, 1, 0, 1 },
 	{ /* 73 */ "modifier", 0, 1, 0, 1 },
 	{ /* 74 */ "code", 0, 1, 0, 1 },
-	{ /* 75 */ "ccl_string", 0, 1, 0, 1 },
+	{ /* 75 */ "pregex_ccl_string", 0, 1, 0, 1 },
 	{ /* 76 */ "kw", 0, 1, 0, 1 },
 	{ /* 77 */ "type", 0, 1, 0, 1 },
 	{ /* 78 */ "grammar_spec", 0, 0, 0, 1 },
@@ -925,8 +925,8 @@ UNICC_STATIC _syminfo _symbols[] =
 	{ /* 124 */ "re_modifier", 0, 0, 0, 1 },
 	{ /* 125 */ "re_factor", 0, 0, 0, 1 },
 	{ /* 126 */ "string_single+", 0, 0, 0, 1 },
-	{ /* 127 */ "ccl_str", 0, 1, 0, 1 },
-	{ /* 128 */ "ccl_char", 0, 1, 0, 1 },
+	{ /* 127 */ "pregex_ccl_str", 0, 1, 0, 1 },
+	{ /* 128 */ "pregex_ccl_char", 0, 1, 0, 1 },
 	{ /* 129 */ "\\x0-&(-[]-\\uFFFE#", 0, 0, 0, 1 },
 	{ /* 130 */ "\\x1-\\uFFFE#", 0, 0, 0, 1 },
 	{ /* 131 */ "kw_str", 0, 1, 0, 1 },
@@ -979,7 +979,7 @@ UNICC_STATIC _syminfo _symbols[] =
 	{ /* 178 */ "on'", 0, 0, 0, 1 },
 	{ /* 179 */ "off'", 0, 0, 0, 1 },
 	{ /* 180 */ "option'", 0, 0, 0, 1 },
-	{ /* 181 */ "ccl_string'", 0, 0, 0, 1 },
+	{ /* 181 */ "pregex_ccl_string'", 0, 0, 0, 1 },
 	{ /* 182 */ "kw'", 0, 0, 0, 1 },
 	{ /* 183 */ "terminal'", 0, 0, 0, 1 },
 	{ /* 184 */ "identifier'", 0, 0, 0, 1 },
@@ -1229,15 +1229,15 @@ UNICC_STATIC _prodinfo _productions[] =
 	{ /* 116 */ "string_single+ -> string_single+ string_single", 2, 126 },
 	{ /* 117 */ "string_single+ -> string_single", 1, 126 },
 	{ /* 118 */ "string -> string_single+", 1, 87 },
-	{ /* 119 */ "string_single -> ccl_string'", 1, 121 },
+	{ /* 119 */ "string_single -> pregex_ccl_string'", 1, 121 },
 	{ /* 120 */ "string_single -> kw'", 1, 121 },
-	{ /* 121 */ "ccl -> ccl_string", 1, 120 },
-	{ /* 122 */ "ccl -> '!' ccl_string", 2, 120 },
-	{ /* 123 */ "ccl_string -> ''' ccl_str '''", 3, 75 },
-	{ /* 124 */ "ccl_str -> ccl_str ccl_char", 2, 127 },
-	{ /* 125 */ "ccl_str -> ", 0, 127 },
-	{ /* 126 */ "ccl_char -> \\x0-&(-[]-\\uFFFE#", 1, 128 },
-	{ /* 127 */ "ccl_char -> '\\\\' \\x1-\\uFFFE#", 2, 128 },
+	{ /* 121 */ "ccl -> pregex_ccl_string", 1, 120 },
+	{ /* 122 */ "ccl -> '!' pregex_ccl_string", 2, 120 },
+	{ /* 123 */ "pregex_ccl_string -> ''' pregex_ccl_str '''", 3, 75 },
+	{ /* 124 */ "pregex_ccl_str -> pregex_ccl_str pregex_ccl_char", 2, 127 },
+	{ /* 125 */ "pregex_ccl_str -> ", 0, 127 },
+	{ /* 126 */ "pregex_ccl_char -> \\x0-&(-[]-\\uFFFE#", 1, 128 },
+	{ /* 127 */ "pregex_ccl_char -> '\\\\' \\x1-\\uFFFE#", 2, 128 },
 	{ /* 128 */ "kw -> '\"' kw_str '\"'", 3, 76 },
 	{ /* 129 */ "kw_str -> kw_str kw_char", 2, 131 },
 	{ /* 130 */ "kw_str -> ", 0, 131 },
@@ -1312,7 +1312,7 @@ UNICC_STATIC _prodinfo _productions[] =
 	{ /* 199 */ "on' -> \"on\" &whitespace*", 2, 178 },
 	{ /* 200 */ "off' -> \"off\" &whitespace*", 2, 179 },
 	{ /* 201 */ "option' -> \"option\" &whitespace*", 2, 180 },
-	{ /* 202 */ "ccl_string' -> ccl_string &whitespace*", 2, 181 },
+	{ /* 202 */ "pregex_ccl_string' -> pregex_ccl_string &whitespace*", 2, 181 },
 	{ /* 203 */ "kw' -> kw &whitespace*", 2, 182 },
 	{ /* 204 */ "terminal' -> terminal &whitespace*", 2, 183 },
 	{ /* 205 */ "identifier' -> identifier &whitespace*", 2, 184 },
@@ -3255,11 +3255,11 @@ UNICC_STATIC int _parse( _pcb* pcb )
 					case 93:
 				{
 					#line 912 "p_parse.par"
-	CCL		ccl;
+	pregex_ccl		ccl;
 
-							ccl = ccl_create( strbuf );
+							ccl = pregex_ccl_create( strbuf );
 							if( ( ( pcb->tos - 0 )->value.value_1 ) )
-								ccl_negate( ccl );
+								pregex_ccl_negate( ccl );
 
 							pcb->ret.value_3 = p_get_symbol( parser,
 									(void*)ccl,
@@ -3395,11 +3395,11 @@ UNICC_STATIC int _parse( _pcb* pcb )
 				{
 					#line 1033 "p_parse.par"
 
-						CCL		ccl;
+						pregex_ccl		ccl;
 
-						ccl = ccl_create( strbuf );
+						ccl = pregex_ccl_create( strbuf );
 						if( ( ( pcb->tos - 0 )->value.value_1 ) )
-							ccl = ccl_negate( ccl );
+							ccl = pregex_ccl_negate( ccl );
 
 						pcb->ret.value_6 = pregex_ptn_create_char( ccl );
 					
@@ -3418,8 +3418,8 @@ UNICC_STATIC int _parse( _pcb* pcb )
 
 						greedy = FALSE;
 
-						pcb->ret.value_6 = pregex_ptn_create_char( ccl_addrange(
-									(CCL)NULL, CCL_MIN, CCL_MAX - 1 ) );
+						pcb->ret.value_6 = pregex_ptn_create_char( pregex_ccl_addrange(
+									(pregex_ccl)NULL, PREGEX_CCL_MIN, PREGEX_CCL_MAX - 1 ) );
 					
 				}				break;
 					case 115:

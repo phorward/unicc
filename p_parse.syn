@@ -137,7 +137,7 @@ static void set_assoc_and_prec( LIST* symbols, int assoc )
 }
 
 ~ whitespace;
-$ sym modifier code ccl_string kw type;
+$ sym modifier code pregex_ccl_string kw type;
 
 grammar_spec:	fixed_directives segments
 				;
@@ -440,12 +440,12 @@ sym:			terminal										{	##.ptr = #1.ptr; 	}
 				;
 
 terminal:		ccl												{ 	SYMBOL* s;
-																	CCL 	ccl;
+																	pregex_ccl 	ccl;
 
-																	ccl = ccl_create( strbuf );
+																	ccl = pregex_ccl_create( strbuf );
 
 																	if( #1.negative )
-																		ccl_negate( ccl );
+																		pregex_ccl_negate( ccl );
 
 
 																	s = p_get_symbol( parser,
@@ -548,11 +548,11 @@ re_modifier:	re_factor '*'
 re_factor:		ccl
 
 					{
-						CCL		ccl;
+						pregex_ccl		ccl;
 
-						ccl = ccl_create( strbuf );
+						ccl = pregex_ccl_create( strbuf );
 						if( #1.negative )
-							ccl_negate( ccl );
+							pregex_ccl_negate( ccl );
 
 						##.ptn = pregex_ptn_create_char( ccl );
 					}
@@ -570,8 +570,8 @@ re_factor:		ccl
 						greedy = FALSE;
 
 						##.ptn = pregex_ptn_create_char(
-									ccl_addrange( (CCL)NULL,
-											CCL_MIN, CCL_MAX - 1 ) );
+									pregex_ccl_addrange( (pregex_ccl)NULL,
+											PREGEX_CCL_MIN, PREGEX_CCL_MAX - 1 ) );
 					}
 
 				| '(' regex ')'
@@ -582,20 +582,20 @@ re_factor:		ccl
 				;
 
 /* General parsing objects */
-string:			ccl_string | kw;
+string:			pregex_ccl_string | kw;
 
-ccl:		ccl_string											{	##.negative = FALSE; }
-			| '!' ccl_string									{	##.negative = TRUE; }
+ccl:		pregex_ccl_string											{	##.negative = FALSE; }
+			| '!' pregex_ccl_string									{	##.negative = TRUE; }
 			;
 
-ccl_string:	'\'' ccl_str '\''
+pregex_ccl_string:	'\'' pregex_ccl_str '\''
 			;
 
-ccl_str:	ccl_str ccl_char
+pregex_ccl_str:	pregex_ccl_str pregex_ccl_char
 			|													{ 	reset_strbuf(); }
 			;
 
-ccl_char:	'^\'\\'												{ strbuf_append( (char)#1.ch ); }
+pregex_ccl_char:	'^\'\\'												{ strbuf_append( (char)#1.ch ); }
 			| '\\' '^'											{ strbuf_append( (char)'\\' );
 																  strbuf_append( (char)#2.ch ); }
 			;

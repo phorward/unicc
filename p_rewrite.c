@@ -295,8 +295,8 @@ void p_unique_charsets( PARSER* parser )
 	SYMBOL*		nsym;
 	SYMBOL*		rsym;
 	PROD*		p;
-	CCL			inter;
-	CCL			diff;
+	pregex_ccl			inter;
+	pregex_ccl			diff;
 	int			old_prod_cnt;
 	char*		tmpstr;
 
@@ -317,8 +317,8 @@ void p_unique_charsets( PARSER* parser )
 			VARS( "sym->name", "%s", sym->name );
 
 			/*
-			fprintf( stderr, "sym->ccl: %d\n", ccl_size( sym->ccl ) );
-			ccl_print( stderr, sym->ccl, 1 );
+			fprintf( stderr, "sym->ccl: %d\n", pregex_ccl_size( sym->ccl ) );
+			pregex_ccl_print( stderr, sym->ccl, 1 );
 			*/
 
 			/* Find overlapping character classes */
@@ -336,33 +336,33 @@ void p_unique_charsets( PARSER* parser )
 
 				VARS( "tsym->name", "%s", tsym->name );
 
-				inter = ccl_intersect( sym->ccl, tsym->ccl );
+				inter = pregex_ccl_intersect( sym->ccl, tsym->ccl );
 
 				/*
-				fprintf( stderr, "inter: %d\n", ccl_size( inter ) );
-				ccl_print( stderr, inter, 1 );
-				fprintf( stderr, "tsym->ccl: %d\n", ccl_size( tsym->ccl ) );
-				ccl_print( stderr, tsym->ccl, 1 );
+				fprintf( stderr, "inter: %d\n", pregex_ccl_size( inter ) );
+				pregex_ccl_print( stderr, inter, 1 );
+				fprintf( stderr, "tsym->ccl: %d\n", pregex_ccl_size( tsym->ccl ) );
+				pregex_ccl_print( stderr, tsym->ccl, 1 );
 				*/
 
-				VARS( "ccl_size( inter )", "%d", ccl_size( inter ) );
-				if( ccl_size( inter ) )
+				VARS( "pregex_ccl_size( inter )", "%d", pregex_ccl_size( inter ) );
+				if( pregex_ccl_size( inter ) )
 				{
 					MSG( "Intersections found with tsym" );
 
 					/* Create charclass-symbol for remaining symbols */
-					diff = ccl_diff( tsym->ccl, inter );
-					if( !ccl_size( diff ) )
+					diff = pregex_ccl_diff( tsym->ccl, inter );
+					if( !pregex_ccl_size( diff ) )
 					{
-						diff = ccl_free( diff );
-						inter = ccl_free( inter );
+						diff = pregex_ccl_free( diff );
+						inter = pregex_ccl_free( inter );
 						continue;
 					}
 
 					/* Disallow intersections in context-sensitive model */
 					if( parser->p_mode == MODE_INSENSITIVE )
 					{
-						if( !( tmpstr = ccl_to_str( inter, TRUE ) ) )
+						if( !( tmpstr = pregex_ccl_to_str( inter, TRUE ) ) )
 							OUTOFMEM;
 
 						p_error( parser, ERR_CHARCLASS_OVERLAP,
@@ -382,7 +382,7 @@ void p_unique_charsets( PARSER* parser )
 						nsym->defined = TRUE;
 					}
 					else
-						inter = ccl_free( inter );
+						inter = pregex_ccl_free( inter );
 
 					rsym = p_get_symbol( parser, (void*)diff,
 									SYM_CCL_TERMINAL, TRUE );
@@ -390,7 +390,7 @@ void p_unique_charsets( PARSER* parser )
 					rsym->defined = TRUE;
 
 					/* Re-configure symbol */
-					tsym->ccl = ccl_free( tsym->ccl );
+					tsym->ccl = pregex_ccl_free( tsym->ccl );
 					tsym->name = pstrcatstr( tsym->name,
 									P_REWRITTEN_CCL, FALSE );
 					tsym->type = SYM_NON_TERMINAL;
@@ -406,7 +406,7 @@ void p_unique_charsets( PARSER* parser )
 				else
 				{
 					MSG( "Has no intersections, next" );
-					inter = ccl_free( inter );
+					inter = pregex_ccl_free( inter );
 				}
 			}
 		}

@@ -45,31 +45,31 @@ extern char*	pmod[];
 	Parameters:		XML_T		parent_xml			Parent element where the
 													character-class block will
 													be attached to.
-					CCL			ccl					The character-class.
+					pregex_ccl			ccl					The character-class.
 
 	Returns:		void
 
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-static void p_xml_ccl( XML_T parent_xml, CCL ccl )
+static void p_xml_ccl( XML_T parent_xml, pregex_ccl ccl )
 {
-	CCL		i;
-	XML_T	ccl_xml;
+	pregex_ccl		i;
+	XML_T	pregex_ccl_xml;
 	XML_T	range_xml;
 
 	PROC( "p_xml_ccl" );
 	PARMS( "parent_xml", "%p", parent_xml );
 	PARMS( "ccl", "%p", ccl );
 
-	if( !( ccl_xml = xml_add_child( parent_xml, "character-class", 0 ) ) )
+	if( !( pregex_ccl_xml = xml_add_child( parent_xml, "character-class", 0 ) ) )
 		OUTOFMEM;
 
-	xml_set_int_attr( ccl_xml, "count", ccl_count( ccl ) );
+	xml_set_int_attr( pregex_ccl_xml, "count", pregex_ccl_count( ccl ) );
 
-	for( i = ccl; i->begin != CCL_MAX; i++ )
+	for( i = ccl; i->begin != PREGEX_CCL_MAX; i++ )
 	{
-		if( !( range_xml = xml_add_child( ccl_xml, "range", 0 ) ) )
+		if( !( range_xml = xml_add_child( pregex_ccl_xml, "range", 0 ) ) )
 			OUTOFMEM;
 
 		xml_set_int_attr( range_xml, "from", i->begin );
@@ -1210,7 +1210,7 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 			OUTOFMEM;
 	}
 
-	if( !xml_set_int_attr( par, "char-min", CCL_MIN ) )
+	if( !xml_set_int_attr( par, "char-min", PREGEX_CCL_MIN ) )
 		OUTOFMEM;
 	if( !xml_set_int_attr( par, "char-max", parser->p_universe - 1 ) )
 		OUTOFMEM;

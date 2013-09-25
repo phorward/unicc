@@ -54,7 +54,7 @@ void p_print_symbol( FILE* stream, SYMBOL* sym )
 
 	if( sym->type == SYM_CCL_TERMINAL )
 	{
-		cclstr = ccl_to_str( sym->ccl, TRUE );
+		cclstr = pregex_ccl_to_str( sym->ccl, TRUE );
 		fprintf( stream, "'%s'", cclstr );
 		pfree( cclstr );
 	}

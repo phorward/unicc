@@ -905,7 +905,7 @@ void p_build_code( PARSER* parser )
 	PROD*			p;
 	PROD*			goalprod;
 	VTYPE*			vt;
-	CCL				c;
+	pregex_ccl				c;
 	int				i;
 	BOOLEAN			is_default_code;
 
@@ -1177,7 +1177,7 @@ void p_build_code( PARSER* parser )
 			{
 				dfa_ent = (pregex_dfa_tr*)list_access( n );
 
-				for( c = dfa_ent->ccl; c && c->begin != CCL_MAX; c++ )
+				for( c = dfa_ent->ccl; c && c->begin != PREGEX_CCL_MAX; c++ )
 				{
 					dfa_char = pstrcatstr( dfa_char,
 								pstrrender( gen->dfa_char.col,
@@ -1264,7 +1264,7 @@ void p_build_code( PARSER* parser )
 
 #if 0
 	/* Map of invalid keyword suffix characters */
-	for( c = parser->p_invalid_suf; c && c->begin != CCL_MAX; c++ )
+	for( c = parser->p_invalid_suf; c && c->begin != PREGEX_CCL_MAX; c++ )
 	{
 		VARS( "c->begin", "%d", c->begin );
 		VARS( "c->end", "%d", c->end );

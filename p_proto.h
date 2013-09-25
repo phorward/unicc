@@ -85,7 +85,6 @@ void p_print_symbol( FILE* stream, SYMBOL* sym );
 void p_dump_grammar( FILE* stream, PARSER* parser );
 void p_dump_symbols( FILE* stream, PARSER* parser );
 void p_dump_item_set( FILE* stream, char* title, LIST* list );
-void p_dump_map( FILE* stream, bitset map, int map_size );
 void p_dump_lalr_states( FILE* stream, PARSER* parser );
 void p_dump_productions( FILE* stream, PARSER* parser );
 void p_dump_production( FILE* stream, PROD* prod,

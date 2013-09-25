@@ -45,7 +45,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
  * Parser configuration
  */
 #whitespaces 			whitespace;
-#lexeme					terminal identifier modifier code ccl_string kw type;
+#lexeme					terminal identifier modifier code pregex_ccl_string kw type;
 #lexeme separation		on;
 #default action			[* @@ = @1; *];
 #default epsilon action	[* @@ = 0; *];
@@ -909,11 +909,11 @@ stack_cur_prod<PROD*>
 
 terminal<SYMBOL*>	->	ccl
 
-						[*	CCL		ccl;
+						[*	pregex_ccl		ccl;
 
-							ccl = ccl_create( strbuf );
+							ccl = pregex_ccl_create( strbuf );
 							if( @1 )
-								ccl_negate( ccl );
+								pregex_ccl_negate( ccl );
 
 							@@ = p_get_symbol( parser,
 									(void*)ccl,
@@ -1031,11 +1031,11 @@ re_factor<pregex_ptn*>
 				->	ccl
 
 					[*
-						CCL		ccl;
+						pregex_ccl		ccl;
 
-						ccl = ccl_create( strbuf );
+						ccl = pregex_ccl_create( strbuf );
 						if( @1 )
-							ccl = ccl_negate( ccl );
+							ccl = pregex_ccl_negate( ccl );
 
 						@@ = pregex_ptn_create_char( ccl );
 					*]
@@ -1052,8 +1052,8 @@ re_factor<pregex_ptn*>
 					[*
 						greedy = FALSE;
 
-						@@ = pregex_ptn_create_char( ccl_addrange(
-									(CCL)NULL, CCL_MIN, CCL_MAX - 1 ) );
+						@@ = pregex_ptn_create_char( pregex_ccl_addrange(
+									(pregex_ccl)NULL, PREGEX_CCL_MIN, PREGEX_CCL_MAX - 1 ) );
 					*]
 
 				| '(' regex ')'
@@ -1067,28 +1067,28 @@ re_factor<pregex_ptn*>
 string			->	string_single+
 				;
 
-string_single	-> ccl_string | kw
+string_single	-> pregex_ccl_string | kw
 				;
 
-ccl<BOOLEAN>	->	ccl_string
+ccl<BOOLEAN>	->	pregex_ccl_string
 
 					[*	@@ = FALSE; *]
 
-				| '!' ccl_string
+				| '!' pregex_ccl_string
 
 					[*	@@ = TRUE; *]
 				;
 
 
 /* ------------------------------------- TODO: Must be re-designed... --- */
-ccl_string		->	'\'' ccl_str '\'';
+pregex_ccl_string		->	'\'' pregex_ccl_str '\'';
 
-ccl_str			->	ccl_str ccl_char
+pregex_ccl_str			->	pregex_ccl_str pregex_ccl_char
 				|
 					[*	reset_strbuf(); *]
 				;
 
-ccl_char		->	!'\\\''
+pregex_ccl_char		->	!'\\\''
 					[*	strbuf_append( @1 ); *]
 
 				| '\\' !'\0'

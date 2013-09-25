@@ -269,7 +269,7 @@ pregex_dfa* p_find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
 				dfa_ent[0] = list_access( o );
 				dfa_ent[1] = list_access( p );
 
-				if( !( ccl_compare( dfa_ent[0]->ccl, dfa_ent[1]->ccl ) == 0
+				if( !( pregex_ccl_compare( dfa_ent[0]->ccl, dfa_ent[1]->ccl ) == 0
 						&& dfa_ent[0]->go_to == dfa_ent[1]->go_to ) )
 				{
 					MSG( "Deep scan of transitions not equal" );

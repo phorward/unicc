@@ -79,11 +79,11 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 	PARMS( "type", "%d", type );
 	PARMS( "create", "%d", create );
 
-	/* In case of a CCL-terminal, generate the name from the CCL */
+	/* In case of a pregex_ccl-terminal, generate the name from the pregex_ccl */
 	if( type == SYM_CCL_TERMINAL )
 	{
 		MSG( "SYM_CCL_TERMINAL detected - converting character class" );
-		if( !( name = ccl_to_str( (CCL)dfn, TRUE ) ) )
+		if( !( name = pregex_ccl_to_str( (pregex_ccl)dfn, TRUE ) ) )
 		{
 			OUTOFMEM;
 			RETURN( (SYMBOL*)NULL );
@@ -162,7 +162,7 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 			if( type == SYM_CCL_TERMINAL )
 			{
 				sym->name = name;
-				sym->ccl = (CCL)dfn;
+				sym->ccl = (pregex_ccl)dfn;
 			}
 			else if( !( sym->name = pstrdup( name ) ) )
 			{
@@ -233,7 +233,7 @@ void p_free_symbol( SYMBOL* sym )
 	if( sym->ptn )
 		pregex_ptn_free( sym->ptn );
 	else
-		sym->ccl = ccl_free( sym->ccl );
+		sym->ccl = pregex_ccl_free( sym->ccl );
 
 	list_free( sym->first );
 	list_free( sym->productions );
@@ -779,7 +779,7 @@ PARSER* p_create_parser( void )
 
 	/* Setup defaults */
 	pptr->p_mode = MODE_SENSITIVE;
-	pptr->p_universe = CCL_MAX;
+	pptr->p_universe = PREGEX_CCL_MAX;
 	pptr->optimize_states = TRUE;
 	pptr->gen_prog = TRUE;
 
