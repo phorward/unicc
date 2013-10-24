@@ -79,15 +79,11 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 	PARMS( "type", "%d", type );
 	PARMS( "create", "%d", create );
 
-	/* In case of a pregex_ccl-terminal, generate the name from the pregex_ccl */
+	/* In case of a ccl-terminal, generate the name from the ccl */
 	if( type == SYM_CCL_TERMINAL )
 	{
 		MSG( "SYM_CCL_TERMINAL detected - converting character class" );
-		if( !( name = pregex_ccl_to_str( (pregex_ccl)dfn, TRUE ) ) )
-		{
-			OUTOFMEM;
-			RETURN( (SYMBOL*)NULL );
-		}
+		name = pregex_ccl_to_str( (pregex_ccl*)dfn, TRUE );
 
 		VARS( "name", "%s", name );
 	}
@@ -160,11 +156,9 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 
 			/* Identifying name */
 			if( type == SYM_CCL_TERMINAL )
-			{
-				sym->name = name;
-				sym->ccl = (pregex_ccl)dfn;
-			}
-			else if( !( sym->name = pstrdup( name ) ) )
+				sym->ccl = (pregex_ccl*)dfn;
+
+			if( !( sym->name = pstrdup( name ) ) )
 			{
 				OUTOFMEM;
 				RETURN( (SYMBOL*)NULL );
@@ -200,12 +194,7 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 		}
 	}
 	else if( he )
-	{
 		sym = (SYMBOL*)( he->data );
-
-		if( type == SYM_CCL_TERMINAL )
-			pfree( name );
-	}
 
 	pfree( keyname );
 	RETURN( sym );

@@ -92,7 +92,7 @@ BOOLEAN p_undef_or_unused( PARSER* parser )
 					int*			accept			Return pointer for the
 													accepting ID of the
 													NFA.
-					pregex_ccl				check_with		Character-class to test
+					pregex_ccl*		check_with		Character-class to test
 													transitions on.
 
 	Returns:		LIST*							The result of the
@@ -104,10 +104,12 @@ BOOLEAN p_undef_or_unused( PARSER* parser )
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
 static LIST* p_nfa_transition_on_ccl(
-	pregex_nfa* nfa, LIST* res, int* accept, pregex_ccl check_with )
+	pregex_nfa* nfa, LIST* res, int* accept, pregex_ccl* check_with )
 {
 	pregex_accept	acc;
-	pregex_ccl				i;
+	int				i;
+	pchar			beg;
+	pchar			end;
 	wchar_t			ch;
 	LIST*			tr;
 	LIST*			ret_res	= (LIST*)NULL;
@@ -121,14 +123,14 @@ static LIST* p_nfa_transition_on_ccl(
 
 	*accept = acc.accept;
 
-	for( i = check_with; !pregex_ccl_end( i ); i++ )
+	for( i = 0; pregex_ccl_get( &beg, &end, check_with, i ); i++ )
 	{
 		/*
 			This may be the source for large run time latency.
 			The way chosen by pregex/dfa.c should be used if necessary
 			somewhere in future.
 		*/
-		for( ch = i->begin; ch <= i->end; ch++ )
+		for( ch = beg; ch <= end; ch++ )
 		{
 			tr = list_dup( res );
 			if( ( tr = pregex_nfa_move( nfa, tr, ch, ch ) ) )

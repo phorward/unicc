@@ -2,7 +2,7 @@
 # Phorward Software (no autotools, etc. wanted in here).
 
 UNICC_TPLDIR	= ./tlt
-CFLAGS 			= -I../phorward/src -DUTF8 -DUNICODE -DDEBUG -Wall $(CLOCAL)
+CFLAGS 			= -g -I../phorward/src -DUTF8 -DUNICODE -DDEBUG -Wall $(CLOCAL)
 LIBPHORWARD		= ../phorward/src/libphorward.a
 
 SOURCES			= 	\

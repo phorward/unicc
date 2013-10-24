@@ -45,35 +45,37 @@ extern char*	pmod[];
 	Parameters:		XML_T		parent_xml			Parent element where the
 													character-class block will
 													be attached to.
-					pregex_ccl			ccl					The character-class.
+					pregex_ccl	ccl					The character-class.
 
 	Returns:		void
 
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-static void p_xml_ccl( XML_T parent_xml, pregex_ccl ccl )
+static void p_xml_ccl( XML_T parent_xml, pregex_ccl* ccl )
 {
-	pregex_ccl		i;
-	XML_T	pregex_ccl_xml;
-	XML_T	range_xml;
+	int			i;
+	pchar		beg;
+	pchar		end;
+	XML_T		ccl_xml;
+	XML_T		range_xml;
 
 	PROC( "p_xml_ccl" );
 	PARMS( "parent_xml", "%p", parent_xml );
 	PARMS( "ccl", "%p", ccl );
 
-	if( !( pregex_ccl_xml = xml_add_child( parent_xml, "character-class", 0 ) ) )
+	if( !( ccl_xml = xml_add_child( parent_xml, "character-class", 0 ) ) )
 		OUTOFMEM;
 
-	xml_set_int_attr( pregex_ccl_xml, "count", pregex_ccl_count( ccl ) );
+	xml_set_int_attr( ccl_xml, "count", pregex_ccl_count( ccl ) );
 
-	for( i = ccl; i->begin != PREGEX_CCL_MAX; i++ )
+	for( i = 0; pregex_ccl_get( &beg, &end, ccl, i ); i++ )
 	{
-		if( !( range_xml = xml_add_child( pregex_ccl_xml, "range", 0 ) ) )
+		if( !( range_xml = xml_add_child( ccl_xml, "range", 0 ) ) )
 			OUTOFMEM;
 
-		xml_set_int_attr( range_xml, "from", i->begin );
-		xml_set_int_attr( range_xml, "to", i->end );
+		xml_set_int_attr( range_xml, "from", beg );
+		xml_set_int_attr( range_xml, "to", end );
 	}
 
 	VOIDRET;

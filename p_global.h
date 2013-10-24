@@ -74,7 +74,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 /* UniCC version number */
 #define UNICC_VER_MAJOR			1
 #define UNICC_VER_MINOR			0
-#define UNICC_VER_PATCH			0
+#define UNICC_VER_PATCH			1
 #define UNICC_VER_EXTSTR		""
 
 /* Default target language */
@@ -130,7 +130,7 @@ struct _symbol
 
 	char*		name;			/* Symbol name */
 
-	pregex_ccl			ccl;			/* Character-class definition */
+	pregex_ccl*	ccl;			/* Character-class definition */
 
 	LIST*		productions;	/* List of productions attached to a
 									non-terminal symbol */

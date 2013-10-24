@@ -295,10 +295,9 @@ void p_unique_charsets( PARSER* parser )
 	SYMBOL*		nsym;
 	SYMBOL*		rsym;
 	PROD*		p;
-	pregex_ccl			inter;
-	pregex_ccl			diff;
+	pregex_ccl*	inter;
+	pregex_ccl*	diff;
 	int			old_prod_cnt;
-	char*		tmpstr;
 
 	PROC( "p_unique_charsets" );
 
@@ -341,12 +340,13 @@ void p_unique_charsets( PARSER* parser )
 				/*
 				fprintf( stderr, "inter: %d\n", pregex_ccl_size( inter ) );
 				pregex_ccl_print( stderr, inter, 1 );
-				fprintf( stderr, "tsym->ccl: %d\n", pregex_ccl_size( tsym->ccl ) );
+				fprintf( stderr, "tsym->ccl: %d\n",
+						pregex_ccl_size( tsym->ccl ) );
 				pregex_ccl_print( stderr, tsym->ccl, 1 );
 				*/
 
-				VARS( "pregex_ccl_size( inter )", "%d", pregex_ccl_size( inter ) );
-				if( pregex_ccl_size( inter ) )
+				VARS( "inter", "%p", inter );
+				if( inter )
 				{
 					MSG( "Intersections found with tsym" );
 
@@ -362,13 +362,11 @@ void p_unique_charsets( PARSER* parser )
 					/* Disallow intersections in context-sensitive model */
 					if( parser->p_mode == MODE_INSENSITIVE )
 					{
-						if( !( tmpstr = pregex_ccl_to_str( inter, TRUE ) ) )
-							OUTOFMEM;
-
 						p_error( parser, ERR_CHARCLASS_OVERLAP,
-									ERRSTYLE_FATAL, tmpstr );
+									ERRSTYLE_FATAL,
+										pregex_ccl_to_str( inter, TRUE ));
 
-						pfree( tmpstr );
+						inter = pregex_ccl_free( inter );
 						continue;
 					}
 
@@ -406,7 +404,6 @@ void p_unique_charsets( PARSER* parser )
 				else
 				{
 					MSG( "Has no intersections, next" );
-					inter = pregex_ccl_free( inter );
 				}
 			}
 		}

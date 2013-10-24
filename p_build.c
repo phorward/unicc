@@ -905,7 +905,8 @@ void p_build_code( PARSER* parser )
 	PROD*			p;
 	PROD*			goalprod;
 	VTYPE*			vt;
-	pregex_ccl				c;
+	pchar			beg;
+	pchar			end;
 	int				i;
 	BOOLEAN			is_default_code;
 
@@ -1177,14 +1178,14 @@ void p_build_code( PARSER* parser )
 			{
 				dfa_ent = (pregex_dfa_tr*)list_access( n );
 
-				for( c = dfa_ent->ccl; c && c->begin != PREGEX_CCL_MAX; c++ )
+				for( i = 0; pregex_ccl_get( &beg, &end, dfa_ent->ccl, i ); i++ )
 				{
 					dfa_char = pstrcatstr( dfa_char,
 								pstrrender( gen->dfa_char.col,
 								GEN_WILD_PREFIX "from",
-									p_int_to_str( c->begin ), TRUE,
+									p_int_to_str( beg ), TRUE,
 								GEN_WILD_PREFIX "to",
-									p_int_to_str( c->end ), TRUE,
+									p_int_to_str( end ), TRUE,
 								GEN_WILD_PREFIX "goto",
 									p_int_to_str( dfa_st->accept.accept ), TRUE,
 								(char*)NULL ), TRUE );
