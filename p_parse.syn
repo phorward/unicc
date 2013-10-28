@@ -442,8 +442,7 @@ sym:			terminal										{	##.ptr = #1.ptr; 	}
 terminal:		ccl												{ 	SYMBOL* s;
 																	pregex_ccl*	ccl;
 
-																	ccl = pregex_ccl_create(
-																			PREGEX_CCL_MIN, PREGEX_CCL_MAX, strbuf );
+																	ccl = pregex_ccl_create( -1, -1, strbuf );
 
 																	if( #1.negative )
 																		pregex_ccl_negate( ccl );
@@ -551,8 +550,7 @@ re_factor:		ccl
 					{
 						pregex_ccl*		ccl;
 
-						ccl = pregex_ccl_create(
-								PREGEX_CCL_MIN, PREGEX_CCL_MAX, strbuf );
+						ccl = pregex_ccl_create( -1, -1, strbuf );
 						if( #1.negative )
 							pregex_ccl_negate( ccl );
 
@@ -572,8 +570,7 @@ re_factor:		ccl
 						pregex_ccl*	ccl;
 						greedy = FALSE;
 						
-						ccl = pregex_ccl_create(
-								PREGEX_CCL_MIN, PREGEX_CCL_MAX, (char*)NULL );
+						ccl = pregex_ccl_create( -1, -1, (char*)NULL );
 								
 						pregex_ccl_addrange(
 								ccl, PREGEX_CCL_MIN, PREGEX_CCL_MAX );

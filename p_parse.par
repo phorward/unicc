@@ -239,19 +239,6 @@ static OPT* set_option( HASHTAB* ht, char* key, char* val, int line )
 	opt->line = line;
 
 	return opt;
-
-	/*
-	if( ( he = hashtab_get( ht, key ) ) )
-	{
-		if( !( val = pstrcatstr(
-				(char*)hashelem_access( he ), val, TRUE ) ) )
-			OUTOFMEM;
-
-		hashtab_update( ht, key, (void*)val );
-	}
-	else if( !hashtab_insert( ht, key, val ) )
-		OUTOFMEM;
-	*/
 }
 
 static void p_parse_error();
@@ -911,8 +898,7 @@ terminal<SYMBOL*>	->	ccl
 
 						[*	pregex_ccl*		ccl;
 
-							ccl = pregex_ccl_create(
-									PREGEX_CCL_MIN, PREGEX_CCL_MAX, strbuf );
+							ccl = pregex_ccl_create( -1, -1, strbuf );
 							if( @1 )
 								pregex_ccl_negate( ccl );
 
@@ -1033,8 +1019,7 @@ re_factor<pregex_ptn*>
 					[*
 						pregex_ccl*		ccl;
 
-						ccl = pregex_ccl_create(
-									PREGEX_CCL_MIN, PREGEX_CCL_MAX, strbuf );
+						ccl = pregex_ccl_create( -1, -1, strbuf );
 						if( @1 )
 							pregex_ccl_negate( ccl );
 
@@ -1054,8 +1039,7 @@ re_factor<pregex_ptn*>
 						pregex_ccl*	ccl;
 						greedy = FALSE;
 						
-						ccl = pregex_ccl_create(
-								PREGEX_CCL_MIN, PREGEX_CCL_MAX, (char*)NULL );
+						ccl = pregex_ccl_create( -1, -1, (char*)NULL );
 								
 						pregex_ccl_addrange( ccl,
 								PREGEX_CCL_MIN, PREGEX_CCL_MAX );
