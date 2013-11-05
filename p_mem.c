@@ -71,7 +71,7 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 	char*		keyname;
 	char*		name		= (char*)dfn;
 	SYMBOL*		sym			= (SYMBOL*)NULL;
-	HASHELEM*	he;
+	plistel*	e;
 
 	PROC( "p_get_symbol" );
 	PARMS( "p", "%p", p );
@@ -131,70 +131,75 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 	sprintf( keyname, "%c%s", keych, name );
 	VARS( "keyname", "%s", keyname );
 
-	if( !( he = hashtab_get( &( p->definitions ), keyname ) ) && create )
+	/*
+	plist_for( p->definitions, e )
+	{
+		sym = (SYMBOL*)plist_access( e );
+		fprintf( stderr, ">%s< >%s<\n", sym->name, plist_key( e ) );
+	}
+	*/
+
+	if( !( e = plist_get_by_key( p->definitions, keyname ) ) && create )
 	{
 		MSG( "Hash table not found - going to create entry" );
 
-		if( ( sym = (SYMBOL*)pmalloc( sizeof( SYMBOL ) ) ) )
-		{
-			memset( sym, 0, sizeof( SYMBOL ) );
-
-			/* Set up attributes */
-			sym->id = list_count( p->symbols ); /* add 1 to here on errors... */
-			sym->type = type;
-			sym->line = -1;
-			sym->nullable = FALSE;
-			sym->greedy = TRUE;
-
-			/* Initialize options table */
-			hashtab_init( &( sym->options ), BUCKET_COUNT,
-				HASHTAB_MOD_LIST | HASHTAB_MOD_EXTKEYS );
-
-			/* Terminal symbols have always theirself in the FIRST-set... */
-			if( IS_TERMINAL( sym ) )
-				sym->first = list_push( sym->first, sym );
-
-			/* Identifying name */
-			if( type == SYM_CCL_TERMINAL )
-				sym->ccl = (pregex_ccl*)dfn;
-
-			if( !( sym->name = pstrdup( name ) ) )
-			{
-				OUTOFMEM;
-				RETURN( (SYMBOL*)NULL );
-			}
-
-			/* Insert pointer into hash-table */
-			if( !( hashtab_insert( &( p->definitions ),
-					keyname, (void*)sym ) ) )
-			{
-				OUTOFMEM;
-				RETURN( (SYMBOL*)NULL );
-			}
-
-			/* Insert pointer into symbol list */
-			p->symbols = list_push( p->symbols, sym );
-
-			/* System terminals are linked to the parser object */
-			if( type == SYM_SYSTEM_TERMINAL )
-			{
-				sym->used = TRUE;
-				sym->defined = TRUE;
-
-				if( strcmp( sym->name, P_ERROR_RESYNC ) == 0 )
-					p->error = sym;
-				else if( strcmp( sym->name, P_END_OF_FILE ) == 0 )
-					p->end_of_input = sym;
-			}
-		}
-		else
+		if( !( sym = (SYMBOL*)pmalloc( sizeof( SYMBOL ) ) ) )
 		{
 			OUTOFMEM;
 			RETURN( (SYMBOL*)NULL );
 		}
+
+		memset( sym, 0, sizeof( SYMBOL ) );
+
+		/* Set up attributes */
+		sym->id = list_count( p->symbols ); /* add 1 to here on errors... */
+		sym->type = type;
+		sym->line = -1;
+		sym->nullable = FALSE;
+		sym->greedy = TRUE;
+
+		/* Initialize options table */
+		sym->options = plist_create( sizeof( OPT ), PLIST_MOD_EXTKEYS );
+
+		/* Terminal symbols have always theirself in the FIRST-set... */
+		if( IS_TERMINAL( sym ) )
+			sym->first = list_push( sym->first, sym );
+
+		/* Identifying name */
+		if( type == SYM_CCL_TERMINAL )
+			sym->ccl = (pregex_ccl*)dfn;
+
+		if( !( sym->name = pstrdup( name ) ) )
+		{
+			OUTOFMEM;
+			RETURN( (SYMBOL*)NULL );
+		}
+
+		/* Insert pointer into hash-table */
+		if( !( plist_insert( p->definitions, (plistel*)NULL,
+					keyname, (void*)sym ) ) )
+		{
+			OUTOFMEM;
+			RETURN( (SYMBOL*)NULL );
+		}
+
+		/* Insert pointer into symbol list */
+		p->symbols = list_push( p->symbols, sym );
+
+		/* System terminals are linked to the parser object */
+		if( type == SYM_SYSTEM_TERMINAL )
+		{
+			sym->used = TRUE;
+			sym->defined = TRUE;
+
+			if( strcmp( sym->name, P_ERROR_RESYNC ) == 0 )
+				p->error = sym;
+			else if( strcmp( sym->name, P_END_OF_FILE ) == 0 )
+				p->end_of_input = sym;
+		}
 	}
-	else if( he )
-		sym = (SYMBOL*)( he->data );
+	else if( e )
+		sym = (SYMBOL*)plist_access( e );
 
 	pfree( keyname );
 	RETURN( sym );
@@ -205,7 +210,7 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 
 	Author:			Jan Max Meyer
 
-	Usage:			p_frees a symbol structure and all its members.
+	Usage:			Frees a symbol structure and all its members.
 
 	Parameters:		SYMBOL*			sym				Symbol to be freed.
 
@@ -228,7 +233,7 @@ void p_free_symbol( SYMBOL* sym )
 	list_free( sym->productions );
 	list_free( sym->all_sym );
 
-	hashtab_free( &( sym->options ), (HASHTAB_CALLBACK)p_free_opt );
+	sym->options = p_free_opts( sym->options );
 
 	pfree( sym );
 }
@@ -257,45 +262,45 @@ PROD* p_create_production( PARSER* p, SYMBOL* lhs )
 {
 	PROD*		prod		= (PROD*)NULL;
 
-	if( p )
+	if( !p )
+		return (PROD*)NULL;
+
+	if( !( prod = (PROD*)pmalloc( sizeof( PROD ) ) ) )
 	{
-		if( ( prod = (PROD*)pmalloc( sizeof( PROD ) ) ) )
+		OUTOFMEM;
+		return (PROD*)NULL;
+	}
+
+	memset( prod, 0, sizeof( PROD ) );
+
+	prod->id = list_count( p->productions );
+
+	/* Insert into production table */
+	if( !( p->productions = list_push( p->productions, prod ) ) )
+	{
+		OUTOFMEM;
+		pfree( prod );
+		return (PROD*)NULL;
+	}
+
+	/* Initialize options table */
+	prod->options = plist_create( sizeof( OPT ), PLIST_MOD_EXTKEYS );
+
+	/* Set up production attributes */
+	if( lhs )
+	{
+		prod->lhs = lhs;
+		prod->all_lhs = list_push( prod->all_lhs, (void*)lhs );
+
+		lhs->productions = list_push( lhs->productions, prod );
+
+		/* Add to left-hand side non-terminal */
+		if( !( lhs->productions ) )
 		{
-			memset( prod, 0, sizeof( PROD ) );
-
-			prod->id = list_count( p->productions );
-
-			/* Insert into production table */
-			if( !( p->productions = list_push( p->productions, prod ) ) )
-			{
-				OUTOFMEM;
-				pfree( prod );
-				return (PROD*)NULL;
-			}
-
-			/* Initialize options table */
-			hashtab_init( &( prod->options ), BUCKET_COUNT,
-				HASHTAB_MOD_LIST | HASHTAB_MOD_EXTKEYS );
-
-			/* Set up production attributes */
-			if( lhs )
-			{
-				prod->lhs = lhs;
-				prod->all_lhs = list_push( prod->all_lhs, (void*)lhs );
-
-				lhs->productions = list_push( lhs->productions, prod );
-
-				/* Add to left-hand side non-terminal */
-				if( !( lhs->productions ) )
-				{
-					OUTOFMEM;
-					pfree( prod );
-					return (PROD*)NULL;
-				}
-			}
-		}
-		else
 			OUTOFMEM;
+			pfree( prod );
+			return (PROD*)NULL;
+		}
 	}
 
 	return prod;
@@ -358,7 +363,7 @@ void p_append_to_production( PROD* p, SYMBOL* sym, char* name )
 
 	Author:			Jan Max Meyer
 
-	Usage:			p_frees a production structure and all its members.
+	Usage:			Frees a production structure and all its members.
 
 	Parameters:		PROD*			prod			Production to be freed.
 
@@ -389,7 +394,7 @@ void p_free_production( PROD* prod )
 
 	pfree( prod->code );
 
-	hashtab_free( &( prod->options ), (HASHTAB_CALLBACK)p_free_opt );
+	prod->options = p_free_opts( prod->options );
 
 	pfree( prod );
 }
@@ -665,10 +670,7 @@ TABCOL* p_find_tabcol( LIST* row, SYMBOL* sym )
 	Usage:			Creates an option data structure and optionally inserts it
 					into a hash-table.
 
-	Parameters:		HASHTAB*	ht				Hash-table (optional). If this
-												is (HASHTAB*)NULL, only a
-												pointer to the new option
-												structure will be returned.
+	Parameters:		plist*		opts			Hash-table of options.
 					char*		opt				Identifiying option name
 					char*		def				Option definition; Can be
 												left (char*)NULL.
@@ -680,59 +682,57 @@ TABCOL* p_find_tabcol( LIST* row, SYMBOL* sym )
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-OPT* p_create_opt( HASHTAB* ht, char* opt, char* def )
+OPT* p_create_opt( plist* options, char* opt, char* def )
 {
-	OPT*		option;
+	OPT			option;
+	plistel*	e;
 
-	if( !( option = (OPT*)pmalloc( sizeof( OPT ) ) ) )
+	memset( &option, 0, sizeof( OPT ) );
+
+	option.opt = pstrdup( opt );
+	option.def = pstrdup( def );
+
+	if( !( e = plist_insert( options,
+					(plistel*)NULL, option.opt, (void*)&option ) ) )
 	{
-		OUTOFMEM;
-		return (OPT*)NULL;
-	}
-
-	memset( option, 0, sizeof( OPT ) );
-
-	if( !( option->opt = pstrdup( opt ) ) )
-	{
-		pfree( option );
-
-		OUTOFMEM;
-		return (OPT*)NULL;
-	}
-
-	option->def = pstrdup( def );
-
-	if( ht && !hashtab_insert( ht, option->opt, (void*)option ) )
-	{
-		p_free_opt( option );
+		pfree( option.opt );
+		pfree( option.def );
 
 		OUTOFMEM;
 		return (OPT*)NULL;
 	}
 
-	return option;
+	return (OPT*)plist_access( e );
 }
 
 /* -FUNCTION--------------------------------------------------------------------
-	Function:		p_free_opt()
+	Function:		p_free_opts()
 
 	Author:			Jan Max Meyer
 
-	Usage:			Frees an option's memory content.
+	Usage:			Frees an entire list and its options.
 
-	Parameters:		OPT*	option 				Pointer to option to be freed.
+	Parameters:		plist*	options				Options list
 
-	Returns:		void
+	Returns:		Always returns (plist
 
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-void p_free_opt( OPT* option )
+plist* p_free_opts( plist* options )
 {
-	pfree( option->opt );
-	pfree( option->def );
+	OPT		opt;
 
-	pfree( option );
+	if( !options )
+		return (plist*)NULL;
+
+	while( plist_pop( options, (void*)&opt ) )
+	{
+		pfree( opt.opt );
+		pfree( opt.def );
+	}
+
+	return plist_free( options );
 }
 
 /* -FUNCTION--------------------------------------------------------------------
@@ -764,7 +764,7 @@ PARSER* p_create_parser( void )
 	memset( pptr, 0, sizeof( PARSER ) );
 
 	/* Initialize the hash table for fast symbol access */
-	hashtab_init( &( pptr->definitions ), BUCKET_COUNT, FALSE );
+	pptr->definitions = plist_create( sizeof( SYMBOL* ), PLIST_MOD_PTR );
 
 	/* Setup defaults */
 	pptr->p_mode = MODE_SENSITIVE;
@@ -773,8 +773,7 @@ PARSER* p_create_parser( void )
 	pptr->gen_prog = TRUE;
 
 	/* Initialize options table */
-	hashtab_init( &( pptr->options ), BUCKET_COUNT,
-		HASHTAB_MOD_LIST | HASHTAB_MOD_EXTKEYS );
+	pptr->options = plist_create( sizeof( OPT ), PLIST_MOD_EXTKEYS );
 
 	/* End of Input symbol must exist in every parser! */
 	p_get_symbol( pptr, P_END_OF_FILE, SYM_SYSTEM_TERMINAL, TRUE );
@@ -801,7 +800,7 @@ void p_free_parser( PARSER* parser )
 	LIST*		it			= (LIST*)NULL;
 	pregex_dfa*	dfa;
 
-	hashtab_free( &( parser->definitions ), (void*)NULL );
+	plist_free( parser->definitions );
 
 	for( it = parser->symbols; it; it = it->next )
 		p_free_symbol( it->pptr );
@@ -843,7 +842,7 @@ void p_free_parser( PARSER* parser )
 
 	pfree( parser->source );
 
-	hashtab_free( &( parser->options ), (HASHTAB_CALLBACK)p_free_opt );
+	parser->options = p_free_opts( parser->options );
 
 	xml_free( parser->err_xml );
 

@@ -617,19 +617,16 @@ static void p_build_dfa( XML_T parent, pregex_dfa* dfa )
 	VOIDRET;
 }
 
-static void p_xml_print_options( HASHTAB* ht, XML_T append_to )
+static void p_xml_print_options( plist* opts, XML_T append_to )
 {
-	LIST*		l;
-	HASHELEM*	he;
+	plistel*	e;
 	OPT*		opt;
-
 	XML_T		option;
 
 	/* Set parser options */
-	for( l = hashtab_list( ht ); l; l = list_next( l ) )
+	plist_for( opts, e )
 	{
-		he = (HASHELEM*)list_access( l );
-		opt = (OPT*)hashelem_access( he );
+		opt = (OPT*)plist_access( e );
 
 		if( !( option = xml_add_child( append_to, "option", 0 ) ) )
 			OUTOFMEM;
@@ -783,7 +780,7 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 			xml_set_int_attr( symbol, "defined-at", sym->line );
 
 		/* Set symbol options */
-		p_xml_print_options( &( sym->options ), symbol );
+		p_xml_print_options( sym->options, symbol );
 	}
 
 	VOIDRET;
@@ -872,7 +869,7 @@ static void p_xml_print_productions( PARSER* parser, XML_T par )
 		}
 
 		/* Set productions options */
-		p_xml_print_options( &( p->options ), prod );
+		p_xml_print_options( p->options, prod );
 
 		/* Code */
 		is_default_code = FALSE;
@@ -1218,7 +1215,7 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 		OUTOFMEM;
 
 	/* Print parser's options */
-	p_xml_print_options( &( parser->options ), par );
+	p_xml_print_options( parser->options, par );
 
 	VARS( "finished", "%s", BOOLEAN_STR( finished ) );
 	if( finished )

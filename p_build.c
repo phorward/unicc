@@ -910,7 +910,7 @@ void p_build_code( PARSER* parser )
 	int				i;
 	BOOLEAN			is_default_code;
 
-	HASHELEM*		he;
+	plistel*		e;
 
 	PROC( "p_build_code" );
 	PARMS( "parser", "%p", parser );
@@ -924,7 +924,7 @@ void p_build_code( PARSER* parser )
 	if( !( tlt_path = pwhich( tlt_file, "tlt" ) )
 		&& !( tlt_path = pwhich( tlt_file, getenv( "UNICC_TPLDIR" ) ) )
 #ifndef _WIN32
-			&& !( tlt_path = pwhich( tlt_file, 
+			&& !( tlt_path = pwhich( tlt_file,
 #ifdef TLTDIR
 			TLTDIR
 #else
@@ -1591,16 +1591,14 @@ void p_build_code( PARSER* parser )
 		);
 
 		/* Replace all top-level options */
-		for( l = hashtab_list( &( parser->options ) ); l; l = list_next( l ) )
+		plist_for( parser->options, e )
 		{
-			he = (HASHELEM*)list_access( l );
-
 			if( !( option = pasprintf( "%s%s",
-					GEN_WILD_PREFIX, hashelem_key( he ) ) ) )
+					GEN_WILD_PREFIX, plist_key( e ) ) ) )
 				OUTOFMEM;
 
 			if( !( complete = pstrrender( all,
-								option, (char*)hashelem_access( he ), FALSE,
+								option, (char*)plist_access( e ), FALSE,
 								(char*)NULL ) ) )
 				OUTOFMEM;
 

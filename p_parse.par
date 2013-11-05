@@ -228,11 +228,11 @@ static void make_semantic_rhs( PROD* p )
 	}
 }
 
-static OPT* set_option( HASHTAB* ht, char* key, char* val, int line )
+static OPT* set_option( plist* opts, char* key, char* val, int line )
 {
 	OPT*		opt;
 
-	if( !( opt = p_create_opt( ht, key, (char*)NULL ) ) )
+	if( !( opt = p_create_opt( opts, key, (char*)NULL ) ) )
 		OUTOFMEM;
 
 	opt->def = val;
@@ -499,7 +499,7 @@ directive_parms		-> "whitespaces" 	symbol_list
 
 					| "option"? line_number @USERDEF:key userparam
 						[*
-							set_option( &( parser->options ),
+							set_option( parser->options,
 								@key, strbuf, @line_number );
 
 							strbuf = (char*)NULL;
@@ -716,7 +716,7 @@ sym_option			->	'#' "greedy"
 						'#' "option"? line_number @USERDEF:key userparam
 
 						[*
-							set_option( &( current_sym->options ), @key,
+							set_option( current_sym->options, @key,
 											strbuf, @line_number );
 
 							strbuf = (char*)NULL;
@@ -767,7 +767,7 @@ prod_directives<int>
 
 					|	'#' "option"? line_number @USERDEF:key userparam
 
-						[* 	set_option( &( current_prod->options ),
+						[* 	set_option( current_prod->options,
 								@key, strbuf, @line_number );
 
 							strbuf = (char*)NULL;
@@ -1038,9 +1038,9 @@ re_factor<pregex_ptn*>
 					[*
 						pregex_ccl*	ccl;
 						greedy = FALSE;
-						
+
 						ccl = pregex_ccl_create( -1, -1, (char*)NULL );
-								
+
 						pregex_ccl_addrange( ccl,
 								PREGEX_CCL_MIN, PREGEX_CCL_MAX );
 

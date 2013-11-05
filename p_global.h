@@ -25,9 +25,6 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 /* Including the Phorward Foundation Library */
 #include <phorward.h>
 
-#undef char
-#define char char
-
 /* Internal includes */
 #include "p_defs.h"
 
@@ -160,7 +157,7 @@ struct _symbol
 	BOOLEAN		greedy;			/* Flags if this is a greedy or nongreedy
 									nonterminal */
 
-	HASHTAB		options;		/* Options hash table */
+	plist*		options;		/* Options hash table */
 
 	SYMBOL*		derived_from;	/* Pointer to symbol from which the
 									current has been derived */
@@ -203,7 +200,7 @@ struct _prod
 	int			prec;			/* Precedence level */
 	int			assoc;			/* Associativity flag */
 
-	HASHTAB		options;		/* Options hash table */
+	plist*		options;		/* Options hash table */
 
 	int			line;			/* Line of definition */
 
@@ -274,7 +271,7 @@ struct _option
 /* Parser information structure */
 struct _parser
 {
-	HASHTAB		definitions;	/* Symbol hash table for faster
+	plist*		definitions;	/* Symbol hash table for faster
 									symbol access */
 	LIST*		symbols;		/* Linked list for sequencial
 									symbol management */
@@ -317,7 +314,7 @@ struct _parser
 
 	VTYPE*		p_def_type;		/* Default value type */
 
-	HASHTAB		options;		/* Options parameter hash table */
+	plist*		options;		/* Options parameter hash table */
 
 	char*		source;			/* Parser definition source */
 
