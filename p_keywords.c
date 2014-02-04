@@ -1,6 +1,6 @@
 /* -MODULE----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2013 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2014 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_keywords.c
@@ -58,8 +58,8 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
 void p_keywords_to_dfa( PARSER* parser )
 {
-	pregex_nfa	nfa;
-	pregex_dfa	dfa;
+	pregex_nfa*	nfa;
+	pregex_dfa*	dfa;
 	pregex_dfa*	ex_dfa;
 	LIST*	l;
 	LIST*	m;
@@ -74,47 +74,46 @@ void p_keywords_to_dfa( PARSER* parser )
 		s = (STATE*)list_access( l );
 
 		VARS( "s->state_id", "%d", s->state_id );
-		memset( &nfa, 0, sizeof( pregex_nfa ) );
+		nfa = pregex_nfa_create();
+		dfa = pregex_dfa_create();
 
 		/* Construct NFAs from keywords */
 		LISTFOR( s->actions, m )
 		{
 			col = (TABCOL*)list_access( m );
-			p_symbol_to_nfa( parser, &nfa, col->symbol );
+			p_symbol_to_nfa( parser, nfa, col->symbol );
 		}
 
 		/* Construct DFA, if NFA has been constructed */
-		VARS( "list_count( nfa.states )", "%d", list_count( nfa.states ) );
-		if( list_count( nfa.states ) )
+		VARS( "plist_count( nfa->states )", "%d", plist_count( nfa->states ) );
+		if( plist_count( nfa->states ) )
 		{
 			MSG( "Constructing DFA from NFA" );
-			if( pregex_dfa_from_nfa( &dfa, &nfa ) < ERR_OK )
+			if( pregex_dfa_from_nfa( dfa, nfa ) < ERR_OK )
 				OUTOFMEM;
 
-			VARS( "list_count( dfa.states )", "%d",
-					list_count( dfa.states ) );
+			VARS( "plist_count( dfa->states )", "%d",
+					plist_count( dfa->states ) );
 
 			MSG( "Freeing NFA" );
-			pregex_nfa_free( &nfa );
+			nfa = pregex_nfa_free( nfa );
 
 			MSG( "Minimizing DFA" );
-			if( pregex_dfa_minimize( &dfa ) < ERR_OK )
+			if( pregex_dfa_minimize( dfa ) < ERR_OK )
 				OUTOFMEM;
 
-			VARS( "list_count( dfa.states )", "%d",
-					list_count( dfa.states ) );
+			VARS( "plist_count( dfa->states )", "%d",
+					plist_count( dfa->states ) );
 
-			if( ( ex_dfa = p_find_equal_dfa( parser, &dfa ) ) )
+			if( ( ex_dfa = p_find_equal_dfa( parser, dfa ) ) )
 			{
 				MSG( "An equal DFA exists; Freeing temporary one!" );
-				pregex_dfa_free( &dfa );
+				dfa = pregex_dfa_free( dfa );
 			}
 			else
 			{
 				MSG( "This DFA does not exist in pool yet - integrating!" );
-				if( !( ex_dfa = (pregex_dfa*)pmemdup(
-									&dfa, sizeof( pregex_dfa ) ) ) )
-					OUTOFMEM;
+				ex_dfa = dfa;
 
 				if( !( parser->kw = list_push( parser->kw, (void*)ex_dfa ) ) )
 					OUTOFMEM;
@@ -145,9 +144,8 @@ void p_keywords_to_dfa( PARSER* parser )
 ----------------------------------------------------------------------------- */
 void p_single_lexer( PARSER* parser )
 {
-	pregex_nfa			nfa;
-	pregex_dfa			dfa;
-	pregex_dfa*			pdfa;
+	pregex_nfa*			nfa;
+	pregex_dfa*			dfa;
 	LIST*				l;
 	SYMBOL*				s;
 
@@ -155,40 +153,39 @@ void p_single_lexer( PARSER* parser )
 	PARMS( "parser", "%p", parser );
 
 	MSG( "Constructing NFA" );
-	memset( &nfa, 0, sizeof( pregex_nfa ) );
+	nfa = pregex_nfa_create();
+	dfa = pregex_dfa_create();
+
 	LISTFOR( parser->symbols, l )
 	{
 		s = (SYMBOL*)list_access( l );
 		VARS( "s->id", "%d", s->id );
 
-		p_symbol_to_nfa( parser, &nfa, s );
+		p_symbol_to_nfa( parser, nfa, s );
 	}
 
 	/* Construct DFA, if NFA has been constructed */
-	VARS( "list_count( nfa.states )", "%d", list_count( nfa.states ) );
-	if( list_count( nfa.states ) )
+	VARS( "plist_count( nfa->states )", "%d", plist_count( nfa->states ) );
+	if( plist_count( nfa->states ) )
 	{
 		MSG( "Constructing DFA from NFA" );
-		if( pregex_dfa_from_nfa( &dfa, &nfa ) < ERR_OK )
+		if( pregex_dfa_from_nfa( dfa, nfa ) < ERR_OK )
 			OUTOFMEM;
 
-		VARS( "list_count( dfa.states )", "%d",
-				list_count( dfa.states ) );
+		VARS( "plist_count( dfa->states )", "%d",
+				plist_count( dfa->states ) );
 
 		MSG( "Freeing NFA" );
-		pregex_nfa_free( &nfa );
+		nfa = pregex_nfa_free( nfa );
 
 		MSG( "Minimizing DFA" );
-		if( pregex_dfa_minimize( &dfa ) < ERR_OK )
+		if( pregex_dfa_minimize( dfa ) < ERR_OK )
 			OUTOFMEM;
 
-		VARS( "list_count( dfa.states )", "%d",
-				list_count( dfa.states ) );
+		VARS( "plist_count( dfa->states )", "%d",
+				plist_count( dfa->states ) );
 
-		if( !( pdfa = (pregex_dfa*)pmemdup( &dfa, sizeof( pregex_dfa ) ) ) )
-			OUTOFMEM;
-
-		if( !( parser->kw = list_push( parser->kw, (void*)pdfa ) ) )
+		if( !( parser->kw = list_push( parser->kw, (void*)dfa ) ) )
 			OUTOFMEM;
 	}
 
@@ -219,14 +216,17 @@ void p_single_lexer( PARSER* parser )
 	Date:		Author:			Note:
 	19.11.2009	Jan Max Meyer	Revision of entire function, to work with
 								structures of the new regex-library.
+	16.01.2014	Jan Max Meyer	Fixed sources to run with libphorward v0.18
+								(current development version).
 ----------------------------------------------------------------------------- */
 pregex_dfa* p_find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
 {
 	LIST*			l;
-	LIST*			m;
-	LIST*			n;
-	LIST*			o;
-	LIST*			p;
+	plistel*		e;
+	plistel*		f;
+	plistel*		g;
+	plistel*		h;
+
 	pregex_dfa*		tdfa;
 	pregex_dfa_st*	dfa_st		[2];
 	pregex_dfa_tr*	dfa_ent		[2];
@@ -240,36 +240,39 @@ pregex_dfa* p_find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
 	{
 		tdfa = (pregex_dfa*)list_access( l );
 
-		VARS( "list_count( tdfa->states )", "%d", list_count( tdfa->states ) );
-		VARS( "list_count( ndfa->states )", "%d", list_count( ndfa->states ) );
-		if( list_count( tdfa->states ) != list_count( ndfa->states ) )
+		VARS( "plist_count( tdfa->states )", "%d", plist_count( tdfa->states ) );
+		VARS( "plist_count( ndfa->states )", "%d", plist_count( ndfa->states ) );
+		if( plist_count( tdfa->states ) != plist_count( ndfa->states ) )
 		{
 			MSG( "Number of states does already not match - test next" );
 			continue;
 		}
 
-		for( m = tdfa->states, n = ndfa->states, match = TRUE;
-				m && n && match; m = list_next( m ), n = list_next( n ) )
+		for( e = plist_first( tdfa->states ),
+				f = plist_first( ndfa->states ), match = TRUE;
+					e && f && match; e = plist_next( e ), f = plist_next( f ) )
 		{
-			dfa_st[0] = (pregex_dfa_st*)list_access( m );
-			dfa_st[1] = (pregex_dfa_st*)list_access( n );
+			dfa_st[0] = (pregex_dfa_st*)plist_access( e );
+			dfa_st[1] = (pregex_dfa_st*)plist_access( f );
 
 			if( !( dfa_st[0]->accept.accept == dfa_st[1]->accept.accept
-					&& list_count( dfa_st[0]->trans )
-							== list_count( dfa_st[1]->trans ) ) )
+					&& plist_count( dfa_st[0]->trans )
+							== plist_count( dfa_st[1]->trans ) ) )
 			{
 				MSG( "Number of transitions or accepting ID does not match" );
 				match = FALSE;
 				break;
 			}
 
-			for( o = dfa_st[0]->trans, p = dfa_st[1]->trans; o && p;
-					o = list_next( o ), p = list_next( p ) )
+			for( g = plist_first( dfa_st[0]->trans ),
+					h = plist_first( dfa_st[1]->trans ); g && h;
+						g = plist_next( g ), h = plist_next( h ) )
 			{
-				dfa_ent[0] = list_access( o );
-				dfa_ent[1] = list_access( p );
+				dfa_ent[0] = (pregex_dfa_tr*)plist_access( g );
+				dfa_ent[1] = (pregex_dfa_tr*)plist_access( h );
 
-				if( !( pregex_ccl_compare( dfa_ent[0]->ccl, dfa_ent[1]->ccl ) == 0
+				if( !( pregex_ccl_compare( dfa_ent[0]->ccl, dfa_ent[1]->ccl )
+							== 0
 						&& dfa_ent[0]->go_to == dfa_ent[1]->go_to ) )
 				{
 					MSG( "Deep scan of transitions not equal" );
@@ -315,8 +318,6 @@ pregex_dfa* p_find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
 ----------------------------------------------------------------------------- */
 void p_symbol_to_nfa( PARSER* parser, pregex_nfa* nfa, SYMBOL* sym )
 {
-	pregex_accept	acc;
-
 	PROC( "p_symbol_to_nfa" );
 	PARMS( "parser", "%p", parser );
 	PARMS( "nfa", "%p", nfa );
@@ -334,10 +335,13 @@ void p_symbol_to_nfa( PARSER* parser, pregex_nfa* nfa, SYMBOL* sym )
 
 	if( sym->ptn )
 	{
-		pregex_accept_init( &acc );
-		acc.accept = sym->id;
+		if( !sym->ptn->accept )
+			sym->ptn->accept = pmalloc( sizeof( pregex_accept ) );
 
-		pregex_ptn_to_nfa( nfa, sym->ptn, &acc );
+		pregex_accept_init( sym->ptn->accept );
+		sym->ptn->accept->accept = sym->id;
+
+		pregex_ptn_to_nfa( nfa, sym->ptn );
 	}
 
 	VOIDRET;

@@ -1,6 +1,6 @@
 /* -MODULE----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2013 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2014 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_integrity.c
@@ -103,23 +103,25 @@ BOOLEAN p_undef_or_unused( PARSER* parser )
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-static LIST* p_nfa_transition_on_ccl(
-	pregex_nfa* nfa, LIST* res, int* accept, pregex_ccl* check_with )
+static int p_nfa_transition_on_ccl(
+	pregex_nfa* nfa, plist* res, int* accept, pregex_ccl* check_with )
 {
 	pregex_accept	acc;
 	int				i;
 	pchar			beg;
 	pchar			end;
 	wchar_t			ch;
-	LIST*			tr;
-	LIST*			ret_res	= (LIST*)NULL;
+	plist*			tr;
+	plist*			ret_res;
+	plistel*		e;
 
-	if( !res )
-		res = list_push( (LIST*)NULL, list_access( nfa->states ) );
+	if( !plist_count( res ) )
+		plist_push( res, plist_access( plist_first( nfa->states ) ) );
 
 	pregex_accept_init( &acc );
 
-	res = pregex_nfa_epsilon_closure( nfa, res, &acc );
+	pregex_nfa_epsilon_closure( nfa, res, &acc );
+	ret_res = plist_create( 0, PLIST_MOD_PTR );
 
 	*accept = acc.accept;
 
@@ -132,16 +134,23 @@ static LIST* p_nfa_transition_on_ccl(
 		*/
 		for( ch = beg; ch <= end; ch++ )
 		{
-			tr = list_dup( res );
-			if( ( tr = pregex_nfa_move( nfa, tr, ch, ch ) ) )
-				ret_res = list_union( ret_res, tr );
+			tr = plist_dup( res );
 
-			list_free( tr );
+			if( pregex_nfa_move( nfa, tr, ch, ch ) > 0 )
+				plist_union( ret_res, tr );
+
+			tr = plist_free( tr );
 		}
 	}
 
-	list_free( res );
-	return ret_res;
+	plist_erase( res );
+
+	plist_for( ret_res, e )
+		plist_push( res, plist_access( e ) );
+
+	plist_free( ret_res );
+
+	return plist_count( res );
 }
 
 /* -FUNCTION--------------------------------------------------------------------
@@ -175,26 +184,30 @@ static LIST* p_nfa_transition_on_ccl(
 								function now tries to parse along a NFA
 								state machine which must not have its
 								origin in a keyword terminal.
+	16.01.2014	Jan Max Meyer	Fixed sources to run with libphorward v0.18
+								(current development version).
 ----------------------------------------------------------------------------- */
 static BOOLEAN p_nfa_matches_parser(
-	PARSER* parser, pregex_nfa* nfa, LIST* start_res, int start )
+	PARSER* parser, pregex_nfa* nfa, plist* start_res, int start )
 {
-	int		stack[ 1024 ];
-	int		act;
-	int		accept;
-	int		idx;
-	int		tos 			= 0;
-	PROD*	rprod;
-	STATE*	st;
-	TABCOL*	col;
-	LIST*	l;
-	LIST*	res;
+	int			stack[ 1024 ];
+	int			act;
+	int			accept;
+	int			idx;
+	int			tos 			= 0;
+	PROD*		rprod;
+	STATE*		st;
+	TABCOL*		col;
+	plist*		res;
+	LIST*		l;
 
 	/*
 		TODO:
 		This part of UniCC is programmed very rude, should be
 		changed somewhere in the future. But for now, it does
 		its job.
+
+		Nelson: "Haaahaaaa" ... never! I think... ;)
 	*/
 	if( ( st = list_getptr( parser->lalr_states, start ) ) )
 		stack[ tos++ ] = st->derived_from->state_id;
@@ -214,10 +227,10 @@ static BOOLEAN p_nfa_matches_parser(
 			col = (TABCOL*)l->pptr;
 			if( col->symbol->type == SYM_CCL_TERMINAL )
 			{
-				res = list_dup( start_res );
+				res = plist_dup( start_res );
 
-				if( ( res = p_nfa_transition_on_ccl( nfa, res,
-						&accept, col->symbol->ccl ) ) )
+				if( p_nfa_transition_on_ccl( nfa, res,
+						&accept, col->symbol->ccl ) > 0 )
 				{
 					act = col->action;
 					idx = col->index;
@@ -226,17 +239,13 @@ static BOOLEAN p_nfa_matches_parser(
 				if( act || accept != PREGEX_ACCEPT_NONE )
 					break;
 
-				list_free( res );
+				plist_free( res );
 			}
 		}
 		/*
 		fprintf( stderr, "state = %d, act = %d idx = %d accept = %d res = %p\n",
 			st->state_id, act, idx, accept, res );
 		*/
-
-		list_free( start_res );
-		start_res = res;
-
 		if( accept != PREGEX_ACCEPT_NONE )
 			break;
 
@@ -285,7 +294,6 @@ static BOOLEAN p_nfa_matches_parser(
 	}
 	while( accept == PREGEX_ACCEPT_NONE );
 
-	list_free( res );
 	return TRUE;
 }
 
@@ -350,10 +358,11 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 	int				cnt;
 	BOOLEAN			found;
 
-	LIST*			res			= (LIST*)NULL;
-	pregex_nfa		nfa;
-	pregex_accept	acc;
+	plist*			res;
+	pregex_nfa*		nfa;
 	int				accept;
+
+	res = plist_create( 0, PLIST_MOD_PTR | PLIST_MOD_RECYCLE );
 
 	/*
 		For every keyword, try to find a character class beginning with the
@@ -392,11 +401,16 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 				/*
 					Generate NFA from pattern
 				*/
-				memset( &nfa, 0, sizeof( pregex_nfa ) );
-				pregex_accept_init( &acc );
-				acc.accept = col->symbol->id;
+				nfa = pregex_nfa_create();
 
-				pregex_ptn_to_nfa( &nfa, col->symbol->ptn, &acc );
+				if( !col->symbol->ptn->accept )
+					col->symbol->ptn->accept =
+						pmalloc( sizeof( pregex_accept ) );
+
+				pregex_accept_init( col->symbol->ptn->accept );
+				col->symbol->ptn->accept->accept = col->symbol->id;
+
+				pregex_ptn_to_nfa( nfa, col->symbol->ptn );
 
 				/*
 					p_nfa_matches_parser() can either be called here;
@@ -413,6 +427,8 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 					if( ccol->symbol->type == SYM_CCL_TERMINAL
 							&& ccol->action & SHIFT )
 					{
+						plist_erase( res );
+
 						/*
 							If this is a match with the grammar and the keyword,
 							a keyword anomaly exists between the shift by a
@@ -421,9 +437,9 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 							keyword. This is not the problem if there is only
 							one reduce, but if there are more, output a warning!
 						*/
-						if( ( res = p_nfa_transition_on_ccl(
-									&nfa, (LIST*)NULL, &accept,
-										ccol->symbol->ccl ) ) )
+						if( p_nfa_transition_on_ccl(
+									nfa, res, &accept,
+										ccol->symbol->ccl ) )
 						{
 							/*
 							printf( "state %d\n", st->state_id );
@@ -431,7 +447,8 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 							p_dump_item_set( stderr, (char*)NULL, st->epsilon );
 							getchar();
 							*/
-							if( p_nfa_matches_parser( parser, &nfa, res,
+
+							if( p_nfa_matches_parser( parser, nfa, res,
 									st->state_id ) && cnt > 1 )
 							{
 								/*
@@ -443,6 +460,7 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 									FIRST-sets of following symbols, report
 									this anomaly!
 								*/
+								fprintf( stderr, "ICH TRETE EIN\n" );
 								p = (PROD*)list_getptr(
 										parser->productions, col->index );
 								lhs = p->lhs;
@@ -496,10 +514,12 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 					}
 				}
 
-				pregex_nfa_free( &nfa );
+				nfa = pregex_nfa_free( nfa );
 			}
 		}
 	} /* This is stupid... */
+
+	plist_free( res );
 
 	return FALSE;
 }

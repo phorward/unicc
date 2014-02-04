@@ -1,6 +1,6 @@
 /* -MODULE----------------------------------------------------------------------
-UniCC LALR(1) Parser Generator 
-Copyright (C) 2006-2013 by Phorward Software Technologies, Jan Max Meyer
+UniCC LALR(1) Parser Generator
+Copyright (C) 2006-2014 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_main.c (created on 28.01.2007)
@@ -29,7 +29,7 @@ extern int		error_count;
 extern int		warning_count;
 extern char*	progname;
 
-char* 			pmod[] = 
+char* 			pmod[] =
 {
 	"sensitive",
 	"insensitive"
@@ -61,11 +61,11 @@ char* 			pmod[] =
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_status()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Internal function to print verbose status messages.
-					
+
 	Parameters:		PARSER* 		parser			Parser info struct
 					char*			status_msg		Status info/Format string
 					char*			reason			One parameter to be inserted
@@ -73,7 +73,7 @@ char* 			pmod[] =
 													have fun!
 
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -81,28 +81,28 @@ static void p_status( PARSER* parser, char* status_msg, char* reason )
 {
 	if( !parser->verbose )
 		return;
-		
+
 	if( first_progress )
 		fprintf( status, status_msg, reason );
 	else
 		fprintf( status, "\n" );
-	
+
 	first_progress = FALSE;
 }
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_version()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Generates and returns the UniCC version number string.
-					
+
 	Parameters:		BOOLEAN		long_version		If TRUE, prints a long
 													version string with
 													patchlevel information.
 
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -123,19 +123,19 @@ char* p_version( BOOLEAN long_version )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_copyright()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Prints a program copyright info message to a desired file
 					or stream.
-					
+
 	Parameters:		FILE*		stream				Stream where the message is
 													printed to. If this is
 													(FILE*)NULL, stdout will be
 													used.
-	
+
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -146,33 +146,33 @@ void p_copyright( FILE* stream )
 
 	fprintf( stream, "UniCC LALR(1) Parser Generator v%s [build %s %s]\n",
 			p_version( TRUE ), __DATE__, __TIME__ );
-	fprintf( stream, "Copyright (C) 2006-2013 by "
+	fprintf( stream, "Copyright (C) 2006-2014 by "
 						"Phorward Software Technologies, Jan Max Meyer\n" );
 	fprintf( stream, "http://www.phorward-software.com ++ "
 						"contact<at>phorward<dash>software<dot>com\n\n" );
-						
+
 	fprintf( stream, "You may use, modify and distribute this software under "
 				"the terms and\n" );
 	fprintf( stream, "conditions of the Artistic License, version 2.\n"
 				"Please see LICENSE for more information.\n" );
-	
+
 }
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_usage()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Prints the program usage message.
-					
+
 	Parameters:		FILE*		stream				Stream where the message is
 													printed to. If this is
 													(FILE*)NULL, stdout will be
 													used.
 					char*		progname			Name of the executable.
-	
+
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -188,7 +188,7 @@ void p_usage( FILE* stream, char* progname )
 		"  -h   --help            Print this help and exit\n"
 		"  -n   --no-opt          Disables state optimization\n"
 		"                         (this will cause more states)\n"
-		"  -P   --productions     Dump final productions\n"		
+		"  -P   --productions     Dump final productions\n"
 		"  -s   --stats           Print statistics message\n"
 		"  -S   --states          Dump LALR(1) states\n"
 		"  -t   --stdout          Print output to stdout instead of files\n"
@@ -208,21 +208,21 @@ void p_usage( FILE* stream, char* progname )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_get_command_line()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Analyzes the command line parameters passed to the
 					parser generator.
-					
+
 	Parameters:		int			argc		Argument count from main()
 					char**		argv		Argument values from main()
 					char**		filename	Name of the parser source file
 					char**		output		Name of a possible output file
 					PARSER*		parser		Parser structure
-	
+
 	Returns:		BOOLEAN					TRUE, if command-line parameters
 											are correct, FALSE else.
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -234,7 +234,7 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 	int		next;
 	char	opt		[ ONE_LINE + 1 ];
 	char*	param;
-	
+
 	progname = *argv;
 
 	for( i = 0;
@@ -244,7 +244,7 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 							"stats states stdout symbols verbose version "
 								"warnings xml XML", i ) ) == ERR_OK; i++ )
 	{
-		if( !strcmp( opt, "output" ) || !strcmp( opt, "o" ) 
+		if( !strcmp( opt, "output" ) || !strcmp( opt, "o" )
 			|| !strcmp( opt, "basename" ) || !strcmp( opt, "b" ) )
 		{
 			if( !param )
@@ -310,17 +310,17 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		main()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Global program entry
-					
+
 	Parameters:		int			argc				Argument count
 					char**		argv				Argument values
-	
+
 	Returns:		int								Number of errors count,
 													0 = all right :D
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -353,10 +353,10 @@ int main( int argc, char** argv )
 				p_free_parser( parser );
 
 				return error_count;
-				
+
 			case ERR_OK:
 				break;
-				
+
 			default:
 				break;
 		}
@@ -395,7 +395,7 @@ int main( int argc, char** argv )
 				PROGRESS( "Setting up single goal symbol" )
 				p_setup_single_goal( parser );
 				DONE()
-					
+
 				/* Rewrite the grammar, if required */
 				PROGRESS( "Rewriting grammar" )
 				if( parser->p_mode == MODE_SENSITIVE )
@@ -404,7 +404,7 @@ int main( int argc, char** argv )
 				p_unique_charsets( parser );
 				p_symbol_order( parser );
 				p_charsets_to_ptn( parser );
-				
+
 				if( parser->p_mode == MODE_SENSITIVE )
 					p_inherit_fixiations( parser );
 				DONE()
@@ -413,7 +413,7 @@ int main( int argc, char** argv )
 				PROGRESS( "Fixing precedences" )
 				p_fix_precedences( parser );
 				DONE()
-				
+
 				/* FIRST-set computation */
 				PROGRESS( "Computing FIRST-sets" )
 				p_first( parser->symbols );
@@ -421,7 +421,7 @@ int main( int argc, char** argv )
 
 				if( parser->show_grammar )
 					p_dump_grammar( status, parser );
-				
+
 				if( parser->show_symbols )
 					p_dump_symbols( status, parser );
 
@@ -449,7 +449,7 @@ int main( int argc, char** argv )
 
 					/* Terminal anomaly detection */
 					PROGRESS( "Terminal anomaly detection" )
-					if( parser->p_mode == MODE_SENSITIVE )
+					if( 0 && parser->p_mode == MODE_SENSITIVE )
 					{
 						if( recursions )
 						{
@@ -479,7 +479,7 @@ int main( int argc, char** argv )
 						p_single_lexer( parser );
 
 					DONE()
-					
+
 					/* Default production detection */
 					PROGRESS( "Detecting default rules" )
 					p_detect_default_productions( parser );
@@ -521,7 +521,7 @@ int main( int argc, char** argv )
 				FAIL()
 				p_error( parser, ERR_NO_GOAL_SYMBOL, ERRSTYLE_FATAL );
 			}
-		
+
 			if( parser->stats )
 				fprintf( status, "%s%s produced %d states "
 							"(%d error%s, %d warning%s), %d file%s\n",
@@ -530,7 +530,7 @@ int main( int argc, char** argv )
 						error_count, ( error_count == 1 ) ? "" : "s",
 						warning_count, ( warning_count == 1 ) ? "" : "s",
 						parser->files_count,
-							( parser->files_count == 1 ) ? "" : "s" );	
+							( parser->files_count == 1 ) ? "" : "s" );
 		}
 		else
 		{

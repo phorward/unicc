@@ -1,6 +1,6 @@
 /* -MODULE----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2013 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2014 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_xml.c
@@ -574,16 +574,16 @@ static void p_build_dfa( XML_T parent, pregex_dfa* dfa )
 	pregex_dfa_st*	st;
 	pregex_dfa_tr*	tr;
 	int 			i;
-	LIST*			l;
-	LIST*			m;
+	plistel*		e;
+	plistel*		f;
 	XML_T			state;
 	XML_T			trans;
 
 	PROC( "p_build_dfa" );
 
-	for( l = dfa->states, i = 0; l; l = list_next( l ), i++ )
+	for( e = plist_first( dfa->states ), i = 0; e; e = plist_next( e ), i++ )
 	{
-		st = (pregex_dfa_st*)list_access( l );
+		st = (pregex_dfa_st*)plist_access( e );
 
 		if( !( state = xml_add_child( parent, "state", 0 ) ) )
 			OUTOFMEM;
@@ -600,9 +600,9 @@ static void p_build_dfa( XML_T parent, pregex_dfa* dfa )
 					st->def_trans->go_to ) ) )
 				OUTOFMEM;
 
-		LISTFOR( st->trans, m )
+		plist_for( st->trans, f )
 		{
-			tr = (pregex_dfa_tr*)list_access( m );
+			tr = (pregex_dfa_tr*)plist_access( f );
 
 			if( !( trans = xml_add_child( state, "transition", 0 ) ) )
 				OUTOFMEM;
@@ -648,9 +648,8 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 	LIST*			l;
 	SYMBOL*			sym;
 	char*			tmp;
-	pregex_nfa		tmp_nfa;
-	pregex_dfa		tmp_dfa;
-	pregex_accept	acc;
+	pregex_nfa*		tmp_nfa;
+	pregex_dfa*		tmp_dfa;
 
 	XML_T			sym_tab;
 	XML_T			symbol;
@@ -707,21 +706,27 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 						/*
 							Convert regular pattern into DFA state machine
 						*/
-						memset( &tmp_nfa, 0, sizeof( pregex_nfa ) );
-						pregex_accept_init( &acc );
-						acc.accept = sym->id;
+						tmp_nfa = pregex_nfa_create();
+						tmp_dfa = pregex_dfa_create();
 
-						pregex_ptn_to_nfa( &tmp_nfa, sym->ptn, &acc );
+						if( !sym->ptn->accept )
+							sym->ptn->accept = pmalloc(
+								sizeof( pregex_accept ) );
 
-						pregex_dfa_from_nfa( &tmp_dfa, &tmp_nfa );
-						pregex_dfa_minimize( &tmp_dfa );
+						pregex_accept_init( sym->ptn->accept );
+						sym->ptn->accept->accept = sym->id;
+
+						pregex_ptn_to_nfa( tmp_nfa, sym->ptn );
+
+						pregex_dfa_from_nfa( tmp_dfa, tmp_nfa );
+						pregex_dfa_minimize( tmp_dfa );
 
 						if( !( lex = xml_add_child( symbol, "dfa", 0 ) ) )
 							OUTOFMEM;
 
-						p_build_dfa( lex, &tmp_dfa );
-						pregex_nfa_free( &tmp_nfa );
-						pregex_dfa_free( &tmp_dfa );
+						p_build_dfa( lex, tmp_dfa );
+						tmp_nfa = pregex_nfa_free( tmp_nfa );
+						tmp_dfa = pregex_dfa_free( tmp_dfa );
 					}
 					break;
 				case SYM_SYSTEM_TERMINAL:

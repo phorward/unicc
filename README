@@ -1,5 +1,5 @@
 :: UniCC LALR(1) Parser Generator
-:: Copyright (C) 2006-2013 by Phorward Software Technologies, Jan Max Meyer
+:: Copyright (C) 2006-2014 by Phorward Software Technologies, Jan Max Meyer
 :: http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 ::
 :: README FILE
@@ -265,7 +265,7 @@ written and maintained by Jan Max Meyer, Phorward Software Technologies.
  COPYRIGHT 
 ***********
 
-Copyright (C) 2006-2013 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2014 by Phorward Software Technologies, Jan Max Meyer
 
 You may use, modify and distribute this software under the terms and conditions
 of the Artistic License, version 2.

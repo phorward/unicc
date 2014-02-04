@@ -1,6 +1,6 @@
 /* -MODULE----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2013 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2014 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_debug.c
@@ -47,17 +47,11 @@ extern	BOOLEAN		first_progress;
 ----------------------------------------------------------------------------- */
 void p_print_symbol( FILE* stream, SYMBOL* sym )
 {
-	char*		cclstr;
-
 	if( !stream )
 		stream = stderr;
 
 	if( sym->type == SYM_CCL_TERMINAL )
-	{
-		cclstr = pregex_ccl_to_str( sym->ccl, TRUE );
-		fprintf( stream, "'%s'", cclstr );
-		pfree( cclstr );
-	}
+		fprintf( stream, "'%s'", pregex_ccl_to_str( sym->ccl, TRUE ) );
 	else if( sym->type == SYM_REGEX_TERMINAL && sym->keyword )
 		fprintf( stream, "\"%s\"", sym->name );
 	else if( sym->type == SYM_REGEX_TERMINAL && !( sym->keyword ) )

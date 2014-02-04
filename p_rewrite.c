@@ -1,6 +1,6 @@
 /* -MODULE----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2013 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2014 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_rewrite.c
@@ -338,11 +338,10 @@ void p_unique_charsets( PARSER* parser )
 				inter = pregex_ccl_intersect( sym->ccl, tsym->ccl );
 
 				/*
-				fprintf( stderr, "inter: %d\n", pregex_ccl_size( inter ) );
-				pregex_ccl_print( stderr, inter, 1 );
-				fprintf( stderr, "tsym->ccl: %d\n",
-						pregex_ccl_size( tsym->ccl ) );
-				pregex_ccl_print( stderr, tsym->ccl, 1 );
+				fprintf( stdout, "inter = >%s< sym = >%s< tsym = >%s<\n",
+					pregex_ccl_to_str( inter, TRUE ),
+					pregex_ccl_to_str( sym->ccl, TRUE ),
+					pregex_ccl_to_str( tsym->ccl, TRUE ) );
 				*/
 
 				VARS( "inter", "%p", inter );

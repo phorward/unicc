@@ -1,6 +1,6 @@
 /* -MODULE----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2013 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2014 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
 File:	p_build.c
@@ -895,7 +895,6 @@ void p_build_code( PARSER* parser )
 	int				row;
 	LIST*			l;
 	LIST*			m;
-	LIST*			n;
 	pregex_dfa*		dfa;
 	pregex_dfa_st*	dfa_st;
 	pregex_dfa_tr*	dfa_ent;
@@ -911,6 +910,7 @@ void p_build_code( PARSER* parser )
 	BOOLEAN			is_default_code;
 
 	plistel*		e;
+	plistel*		f;
 
 	PROC( "p_build_code" );
 	PARMS( "parser", "%p", parser );
@@ -1131,25 +1131,25 @@ void p_build_code( PARSER* parser )
 		/* Row start */
 		dfa_idx_row = pstrrender( gen->dfa_idx.row_start,
 				GEN_WILD_PREFIX "number-of-columns",
-					p_int_to_str( list_count( dfa->states ) ), TRUE,
+					p_int_to_str( plist_count( dfa->states ) ), TRUE,
 				GEN_WILD_PREFIX "row",
 					p_int_to_str( row ), TRUE,
 				(char*)NULL );
 
 		dfa_accept_row = pstrrender( gen->dfa_accept.row_start,
 				GEN_WILD_PREFIX "number-of-columns",
-					p_int_to_str( list_count( dfa->states ) ), TRUE,
+					p_int_to_str( plist_count( dfa->states ) ), TRUE,
 				GEN_WILD_PREFIX "row",
 					p_int_to_str( row ), TRUE,
 				(char*)NULL );
 
-		if( max_dfa_idx < list_count( dfa->states ) )
-			max_dfa_accept = max_dfa_idx = list_count( dfa->states );
+		if( max_dfa_idx < plist_count( dfa->states ) )
+			max_dfa_accept = max_dfa_idx = plist_count( dfa->states );
 
 		/* Building row entries */
-		LISTFOR( dfa->states, m )
+		plist_for( dfa->states, e )
 		{
-			dfa_st = (pregex_dfa_st*)list_access( m );
+			dfa_st = (pregex_dfa_st*)plist_access( e );
 			VARS( "dfa_st", "%p", dfa_st );
 
 			if( dfa_char && dfa_trans )
@@ -1174,9 +1174,9 @@ void p_build_code( PARSER* parser )
 
 			/* Iterate trough all transitions */
 			MSG( "Iterating to transitions of DFA" );
-			LISTFOR( dfa_st->trans, n )
+			plist_for( dfa_st->trans, f )
 			{
-				dfa_ent = (pregex_dfa_tr*)list_access( n );
+				dfa_ent = (pregex_dfa_tr*)plist_access( f );
 
 				for( i = 0; pregex_ccl_get( &beg, &end, dfa_ent->ccl, i ); i++ )
 				{
@@ -1224,7 +1224,7 @@ void p_build_code( PARSER* parser )
 
 			column++;
 
-			if( list_next( m ) )
+			if( plist_next( e ) )
 			{
 				dfa_idx_row = pstrcatstr( dfa_idx_row,
 						gen->dfa_idx.col_sep, FALSE );
@@ -1237,7 +1237,7 @@ void p_build_code( PARSER* parser )
 		dfa_idx_row = pstrcatstr( dfa_idx_row,
 				pstrrender( gen->dfa_idx.row_end,
 					GEN_WILD_PREFIX "number-of-columns",
-						p_int_to_str( list_count( dfa->states ) ), TRUE,
+						p_int_to_str( plist_count( dfa->states ) ), TRUE,
 					GEN_WILD_PREFIX "row",
 						p_int_to_str( row ), TRUE,
 					(char*)NULL ), TRUE );
@@ -1245,7 +1245,7 @@ void p_build_code( PARSER* parser )
 		dfa_accept_row = pstrcatstr( dfa_accept_row,
 				pstrrender( gen->dfa_accept.row_end,
 					GEN_WILD_PREFIX "number-of-columns",
-						p_int_to_str( list_count( dfa->states ) ), TRUE,
+						p_int_to_str( plist_count( dfa->states ) ), TRUE,
 					GEN_WILD_PREFIX "row", p_int_to_str( row ), TRUE,
 					(char*)NULL ), TRUE );
 
