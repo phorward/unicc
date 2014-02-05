@@ -449,7 +449,7 @@ int main( int argc, char** argv )
 
 					/* Terminal anomaly detection */
 					PROGRESS( "Terminal anomaly detection" )
-					if( 0 && parser->p_mode == MODE_SENSITIVE )
+					if( parser->p_mode == MODE_SENSITIVE )
 					{
 						if( recursions )
 						{

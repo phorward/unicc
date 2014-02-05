@@ -199,6 +199,8 @@ static BOOLEAN p_nfa_matches_parser(
 	STATE*		st;
 	TABCOL*		col;
 	plist*		res;
+	plistel*	e;
+	BOOLEAN		ret				= TRUE;
 	LIST*		l;
 
 	/*
@@ -216,6 +218,8 @@ static BOOLEAN p_nfa_matches_parser(
 
 	stack[ tos ] = start;
 
+	res = plist_create( 0, PLIST_MOD_PTR | PLIST_MOD_RECYCLE );
+
 	do
 	{
 		act = 0;
@@ -227,7 +231,10 @@ static BOOLEAN p_nfa_matches_parser(
 			col = (TABCOL*)l->pptr;
 			if( col->symbol->type == SYM_CCL_TERMINAL )
 			{
-				res = plist_dup( start_res );
+				plist_erase( res );
+				plist_for( start_res, e )
+					plist_push( res, plist_access( e ) );
+
 
 				if( p_nfa_transition_on_ccl( nfa, res,
 						&accept, col->symbol->ccl ) > 0 )
@@ -238,20 +245,26 @@ static BOOLEAN p_nfa_matches_parser(
 
 				if( act || accept != PREGEX_ACCEPT_NONE )
 					break;
-
-				plist_free( res );
 			}
 		}
 		/*
 		fprintf( stderr, "state = %d, act = %d idx = %d accept = %d res = %p\n",
 			st->state_id, act, idx, accept, res );
 		*/
+
+		plist_erase( start_res );
+		plist_for( res, e )
+			plist_push( start_res, plist_access( e ) );
+
 		if( accept != PREGEX_ACCEPT_NONE )
 			break;
 
 		/* Error */
 		if( act == ERROR )
-			return FALSE;
+		{
+			ret = FALSE;
+			break;
+		}
 
 		/* Shift */
 		if( act & SHIFT )
@@ -289,12 +302,16 @@ static BOOLEAN p_nfa_matches_parser(
 			}
 
 			if( stack[ tos ] == -1 )
-				return FALSE;
+			{
+				ret = FALSE;
+				break;
+			}
 		}
 	}
-	while( accept == PREGEX_ACCEPT_NONE );
+	while( ret && accept == PREGEX_ACCEPT_NONE );
 
-	return TRUE;
+	plist_free( res );
+	return ret;
 }
 
 /* -FUNCTION--------------------------------------------------------------------
@@ -430,6 +447,12 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 						plist_erase( res );
 
 						/*
+						fprintf( stderr, "col = >%s< ccol = >%s<\n",
+							col->symbol->name,
+								pregex_ccl_to_str( ccol->symbol->ccl, TRUE ) );
+						*/
+
+						/*
 							If this is a match with the grammar and the keyword,
 							a keyword anomaly exists between the shift by a
 							character and the reduce by a keyword which can be
@@ -460,7 +483,6 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 									FIRST-sets of following symbols, report
 									this anomaly!
 								*/
-								fprintf( stderr, "ICH TRETE EIN\n" );
 								p = (PROD*)list_getptr(
 										parser->productions, col->index );
 								lhs = p->lhs;
