@@ -36,6 +36,7 @@ SOURCES			= 	\
 				p_rewrite.c \
 				p_debug.c \
 				p_keywords.c \
+				p_list.c \
 				p_build.c \
 				p_xml.c \
 				p_main.c

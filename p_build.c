@@ -904,8 +904,8 @@ void p_build_code( PARSER* parser )
 	PROD*			p;
 	PROD*			goalprod;
 	VTYPE*			vt;
-	pchar			beg;
-	pchar			end;
+	wchar_t			beg;
+	wchar_t			end;
 	int				i;
 	BOOLEAN			is_default_code;
 

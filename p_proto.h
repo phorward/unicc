@@ -99,6 +99,21 @@ void p_single_lexer( PARSER* parser );
 pregex_dfa* p_find_equal_dfa( PARSER* parser, pregex_dfa* ndfa );
 void p_symbol_to_nfa( PARSER* parser, pregex_nfa* nfa, SYMBOL* sym );
 
+/* p_list.c */
+LIST* list_push( LIST* list, void* ptr );
+LIST* list_pop( LIST* list, void** ptr );
+LIST* list_remove( LIST* list, void* ptr );
+LIST* list_free( LIST* list );
+void list_print( LIST* list, void (*callback)( void* ) );
+LIST* list_dup( LIST* src );
+int list_find( LIST* list, void* ptr );
+void* list_getptr( LIST* list, int cnt );
+int list_diff( LIST* first, LIST* second );
+LIST* list_union( LIST* first, LIST* second );
+int list_count( LIST* list );
+pboolean list_subset( LIST* list, LIST* subset );
+LIST* list_sort( LIST* list, int (*sf)( void*, void* ) );
+
 /* p_build.c */
 void p_build_code( PARSER* parser );
 char* p_build_action( PARSER* parser, GENERATOR* g,

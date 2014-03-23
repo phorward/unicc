@@ -55,8 +55,8 @@ extern char*	pmod[];
 static void p_xml_ccl( XML_T parent_xml, pregex_ccl* ccl )
 {
 	int			i;
-	pchar		beg;
-	pchar		end;
+	wchar_t		beg;
+	wchar_t		end;
 	XML_T		ccl_xml;
 	XML_T		range_xml;
 

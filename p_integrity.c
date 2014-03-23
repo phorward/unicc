@@ -108,8 +108,8 @@ static int p_nfa_transition_on_ccl(
 {
 	pregex_accept	acc;
 	int				i;
-	pchar			beg;
-	pchar			end;
+	wchar_t			beg;
+	wchar_t			end;
 	wchar_t			ch;
 	plist*			tr;
 	plist*			ret_res;

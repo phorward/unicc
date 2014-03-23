@@ -102,6 +102,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 /*
  * Type definitions
  */
+typedef struct _list				LIST;
 typedef struct _symbol 				SYMBOL;
 typedef struct _def					DEF;
 typedef struct _prod 				PROD;
@@ -118,6 +119,19 @@ typedef struct _generator_2d_tab	_2D_TABLE;
 /*
  * Structure declarations
  */
+
+/* Simple linked list */
+struct _list
+{
+	void*		pptr;
+	LIST*		next;
+};
+
+#define list_access( ll )		( (ll) ? (ll)->pptr : (void*)NULL )
+#define list_next( ll )			( (ll) ? (ll)->next : (LIST*)NULL )
+#define list_replace( ll, ptr )	( (ll) ? (ll)->pptr = (ptr) : 0 )
+
+#define LISTFOR( ll, cc )		for( (cc) = (ll); (cc); (cc) = list_next(cc) )
 
 /* Symbol structure */
 struct _symbol

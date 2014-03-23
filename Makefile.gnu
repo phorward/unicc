@@ -17,6 +17,7 @@ SOURCES			= 	\
 				p_rewrite.c \
 				p_debug.c \
 				p_keywords.c \
+				p_list.c \
 				p_build.c \
 				p_xml.c \
 				p_main.c
@@ -28,10 +29,10 @@ clean:
 	-rm p_parse_boot1.c p_parse_boot2.c p_parse_boot2.h p_parse_boot3.c p_parse_boot3.h
 	-rm unicc unicc_boot1 unicc_boot2 unicc_boot3
 
-make:
+make_install:
 	cp Makefile.gnu Makefile
 
-unmake:
+make_uninstall:
 	-rm -f Makefile
 
 # --- UniCC Bootstrap phase 1 --------------------------------------------------
