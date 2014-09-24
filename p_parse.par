@@ -258,10 +258,10 @@ fixed_directive_def	-> "#!" fixed_directive ';'
 
 fixed_directive		-> "mode"				mode_type
 					|  "model"				mode_type
-					| "language"		string
+					|  "language"			string
 						[*
-							if( !( parser->p_language ) )
-								parser->p_language = pstrdup( strbuf );
+							if( !( parser->p_template ) )
+								parser->p_template = pstrdup( strbuf );
 							else
 								p_error( parser, ERR_DIRECTIVE_ALREADY_USED,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
@@ -896,11 +896,11 @@ stack_cur_prod<PROD*>
 
 terminal<SYMBOL*>	->	ccl
 
-						[*	pregex_ccl*		ccl;
+						[*	pccl*		ccl;
 
-							ccl = pregex_ccl_create( -1, -1, strbuf );
+							ccl = p_ccl_create( -1, -1, strbuf );
 							if( @1 )
-								pregex_ccl_negate( ccl );
+								p_ccl_negate( ccl );
 
 							@@ = p_get_symbol( parser, (void*)ccl,
 									SYM_CCL_TERMINAL, TRUE );
@@ -1017,11 +1017,11 @@ re_factor<pregex_ptn*>
 				->	ccl
 
 					[*
-						pregex_ccl*		ccl;
+						pccl*		ccl;
 
-						ccl = pregex_ccl_create( -1, -1, strbuf );
+						ccl = p_ccl_create( -1, -1, strbuf );
 						if( @1 )
-							pregex_ccl_negate( ccl );
+							p_ccl_negate( ccl );
 
 						@@ = pregex_ptn_create_char( ccl );
 					*]
@@ -1036,13 +1036,12 @@ re_factor<pregex_ptn*>
 				| '.'
 
 					[*
-						pregex_ccl*	ccl;
+						pccl*	ccl;
 						greedy = FALSE;
 
-						ccl = pregex_ccl_create( -1, -1, (char*)NULL );
+						ccl = p_ccl_create( -1, -1, (char*)NULL );
 
-						pregex_ccl_addrange( ccl,
-								PREGEX_CCL_MIN, PREGEX_CCL_MAX );
+						p_ccl_addrange( ccl, PCCL_MIN, PCCL_MAX );
 
 						@@ = pregex_ptn_create_char( ccl );
 					*]
@@ -1167,10 +1166,10 @@ code_opt<char*>->	code
 
 code			->	code_begin inner_code_opt "*]"
 					[*
-						if( !parser->p_language )
+						if( !parser->p_template )
 						{
 							p_error( parser,
-								ERR_NO_TARGET_LANG_SUPPLY,
+								ERR_NO_TARGET_TPL_SUPPLY,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 										parser->filename, last_code_begin );
 

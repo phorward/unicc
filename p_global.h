@@ -141,7 +141,7 @@ struct _symbol
 
 	char*		name;			/* Symbol name */
 
-	pregex_ccl*	ccl;			/* Character-class definition */
+	pccl*		ccl;			/* Character-class definition */
 
 	LIST*		productions;	/* List of productions attached to a
 									non-terminal symbol */
@@ -304,7 +304,7 @@ struct _parser
 	short		p_mode;			/* Parser model */
 	char*		p_name;			/* Parser name */
 	char*		p_desc;			/* Parser description */
-	char*		p_language;		/* Parser target programming language */
+	char*		p_template;		/* Parser target template */
 	char*		p_copyright;	/* Parser copyright notice */
 	char*		p_version;		/* Parser version */
 	char*		p_prefix;		/* Parser symbol prefix */

@@ -295,8 +295,8 @@ void p_unique_charsets( PARSER* parser )
 	SYMBOL*		nsym;
 	SYMBOL*		rsym;
 	PROD*		p;
-	pregex_ccl*	inter;
-	pregex_ccl*	diff;
+	pccl*	inter;
+	pccl*	diff;
 	int			old_prod_cnt;
 
 	PROC( "p_unique_charsets" );
@@ -316,8 +316,8 @@ void p_unique_charsets( PARSER* parser )
 			VARS( "sym->name", "%s", sym->name );
 
 			/*
-			fprintf( stderr, "sym->ccl: %d\n", pregex_ccl_size( sym->ccl ) );
-			pregex_ccl_print( stderr, sym->ccl, 1 );
+			fprintf( stderr, "sym->ccl: %d\n", p_ccl_size( sym->ccl ) );
+			p_ccl_print( stderr, sym->ccl, 1 );
 			*/
 
 			/* Find overlapping character classes */
@@ -335,13 +335,13 @@ void p_unique_charsets( PARSER* parser )
 
 				VARS( "tsym->name", "%s", tsym->name );
 
-				inter = pregex_ccl_intersect( sym->ccl, tsym->ccl );
+				inter = p_ccl_intersect( sym->ccl, tsym->ccl );
 
 				/*
 				fprintf( stdout, "inter = >%s< sym = >%s< tsym = >%s<\n",
-					pregex_ccl_to_str( inter, TRUE ),
-					pregex_ccl_to_str( sym->ccl, TRUE ),
-					pregex_ccl_to_str( tsym->ccl, TRUE ) );
+					p_ccl_to_str( inter, TRUE ),
+					p_ccl_to_str( sym->ccl, TRUE ),
+					p_ccl_to_str( tsym->ccl, TRUE ) );
 				*/
 
 				VARS( "inter", "%p", inter );
@@ -350,11 +350,11 @@ void p_unique_charsets( PARSER* parser )
 					MSG( "Intersections found with tsym" );
 
 					/* Create charclass-symbol for remaining symbols */
-					diff = pregex_ccl_diff( tsym->ccl, inter );
-					if( !pregex_ccl_size( diff ) )
+					diff = p_ccl_diff( tsym->ccl, inter );
+					if( !p_ccl_size( diff ) )
 					{
-						diff = pregex_ccl_free( diff );
-						inter = pregex_ccl_free( inter );
+						diff = p_ccl_free( diff );
+						inter = p_ccl_free( inter );
 						continue;
 					}
 
@@ -363,9 +363,9 @@ void p_unique_charsets( PARSER* parser )
 					{
 						p_error( parser, ERR_CHARCLASS_OVERLAP,
 									ERRSTYLE_FATAL,
-										pregex_ccl_to_str( inter, TRUE ));
+										p_ccl_to_str( inter, TRUE ));
 
-						inter = pregex_ccl_free( inter );
+						inter = p_ccl_free( inter );
 						continue;
 					}
 
@@ -379,7 +379,7 @@ void p_unique_charsets( PARSER* parser )
 						nsym->defined = TRUE;
 					}
 					else
-						inter = pregex_ccl_free( inter );
+						inter = p_ccl_free( inter );
 
 					rsym = p_get_symbol( parser, (void*)diff,
 									SYM_CCL_TERMINAL, TRUE );
@@ -387,7 +387,7 @@ void p_unique_charsets( PARSER* parser )
 					rsym->defined = TRUE;
 
 					/* Re-configure symbol */
-					tsym->ccl = pregex_ccl_free( tsym->ccl );
+					tsym->ccl = p_ccl_free( tsym->ccl );
 					tsym->name = pstrcatstr( tsym->name,
 									P_REWRITTEN_CCL, FALSE );
 					tsym->type = SYM_NON_TERMINAL;

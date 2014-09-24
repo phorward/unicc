@@ -1,5 +1,5 @@
 /* -MODULE----------------------------------------------------------------------
-UniCC LALR(1) Parser Generator 
+UniCC LALR(1) Parser Generator
 Copyright (C) 2006-2014 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
@@ -42,7 +42,7 @@ char* error_txt[128] =
 	"Shift-reduce conflict on lookahead: ",
 	/* "Nonassociativity conflict on lookahead: ", */
 	"Terminal anomaly at shift on \'%s\' and reduce on \'%s\'",
-	"Unimplemented target language \'%s\' for code generator",
+	"Unimplemented template \'%s\' for code generator",
 	"Undefined value type for \'%s\' in reduction code of rule %d, \'%.*s\'",
 	"Unable to open output file \'%s\'",
 	"Unable to open input file \'%s\'",
@@ -62,7 +62,7 @@ char* error_txt[128] =
 	"Action references to undefined right-hand side symbol '%.*s'",
 	"Left-hand side '%s' not known",
 	"Terminal '%s' not known",
-	"Semantic code will be ignored: No target language specified.",
+	"Semantic code will be ignored: No target specified.",
 	"Multiple use of directive '#%s' ignored; It has already been defined."
 };
 
@@ -78,11 +78,11 @@ char*				progname;
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_error()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Prints an error message.
-					
+
 	Parameters:		PARSER*		parser			Parser information structure
 					int			err_id			Error ID
 					int			err_style		Error message behavior
@@ -91,7 +91,7 @@ char*				progname;
 												error message style.
 
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -109,7 +109,7 @@ void p_error( PARSER* parser, int err_id, int err_style, ... )
 	BOOLEAN		do_print	= TRUE;
 
 	char*		tmp;
-	
+
 	va_start( params, err_style );
 
 	if( err_style & ERRSTYLE_WARNING && no_warnings )
@@ -117,7 +117,7 @@ void p_error( PARSER* parser, int err_id, int err_style, ... )
 
 	if( parser->gen_xml )
 	{
-		/* 
+		/*
 			This XML library is a cramp...
 			it's not possible to move a root-tag,
 			so it's required to create a dummy-root
@@ -138,10 +138,10 @@ void p_error( PARSER* parser, int err_id, int err_style, ... )
 
 		xml_set_int_attr( errmsg, "errorcode", err_id );
 	}
-	
+
 	if( err_style & ERRSTYLE_FILEINFO )
 	{
-		filename = va_arg( params, char* );		
+		filename = va_arg( params, char* );
 		line = va_arg( params, int );
 
 		if( errmsg )
@@ -165,7 +165,7 @@ void p_error( PARSER* parser, int err_id, int err_style, ... )
 		if( errmsg )
 			xml_set_int_attr( errmsg, "production", p->id );
 	}
-	
+
 	/* NO ELSE IF!! */
 	if( err_style & ERRSTYLE_SYMBOL )
 	{

@@ -92,7 +92,7 @@ BOOLEAN p_undef_or_unused( PARSER* parser )
 					int*			accept			Return pointer for the
 													accepting ID of the
 													NFA.
-					pregex_ccl*		check_with		Character-class to test
+					pccl*		check_with		Character-class to test
 													transitions on.
 
 	Returns:		LIST*							The result of the
@@ -104,7 +104,7 @@ BOOLEAN p_undef_or_unused( PARSER* parser )
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
 static int p_nfa_transition_on_ccl(
-	pregex_nfa* nfa, plist* res, int* accept, pregex_ccl* check_with )
+	pregex_nfa* nfa, plist* res, int* accept, pccl* check_with )
 {
 	pregex_accept	acc;
 	int				i;
@@ -125,7 +125,7 @@ static int p_nfa_transition_on_ccl(
 
 	*accept = acc.accept;
 
-	for( i = 0; pregex_ccl_get( &beg, &end, check_with, i ); i++ )
+	for( i = 0; p_ccl_get( &beg, &end, check_with, i ); i++ )
 	{
 		/*
 			This may be the source for large run time latency.
@@ -449,7 +449,7 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 						/*
 						fprintf( stderr, "col = >%s< ccol = >%s<\n",
 							col->symbol->name,
-								pregex_ccl_to_str( ccol->symbol->ccl, TRUE ) );
+								p_ccl_to_str( ccol->symbol->ccl, TRUE ) );
 						*/
 
 						/*

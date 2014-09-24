@@ -83,7 +83,7 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 	if( type == SYM_CCL_TERMINAL )
 	{
 		MSG( "SYM_CCL_TERMINAL detected - converting character class" );
-		name = pregex_ccl_to_str( (pregex_ccl*)dfn, TRUE );
+		name = p_ccl_to_str( (pccl*)dfn, TRUE );
 
 		VARS( "name", "%s", name );
 	}
@@ -167,7 +167,7 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 
 		/* Identifying name */
 		if( type == SYM_CCL_TERMINAL )
-			sym->ccl = (pregex_ccl*)dfn;
+			sym->ccl = (pccl*)dfn;
 
 		if( !( sym->name = pstrdup( name ) ) )
 		{
@@ -227,7 +227,7 @@ void p_free_symbol( SYMBOL* sym )
 	if( sym->ptn )
 		pregex_ptn_free( sym->ptn );
 	else
-		sym->ccl = pregex_ccl_free( sym->ccl );
+		sym->ccl = p_ccl_free( sym->ccl );
 
 	list_free( sym->first );
 	list_free( sym->productions );
@@ -768,7 +768,7 @@ PARSER* p_create_parser( void )
 
 	/* Setup defaults */
 	pptr->p_mode = MODE_SENSITIVE;
-	pptr->p_universe = PREGEX_CCL_MAX;
+	pptr->p_universe = PCCL_MAX;
 	pptr->optimize_states = TRUE;
 	pptr->gen_prog = TRUE;
 
@@ -828,7 +828,7 @@ void p_free_parser( PARSER* parser )
 
 	pfree( parser->p_name );
 	pfree( parser->p_desc );
-	pfree( parser->p_language );
+	pfree( parser->p_template );
 	pfree( parser->p_copyright );
 	pfree( parser->p_version );
 	pfree( parser->p_prefix );

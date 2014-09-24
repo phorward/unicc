@@ -448,8 +448,7 @@ char* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
-char* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
-			char* base )
+char* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s, char* base )
 {
 	pregex*			replacer;
 	pregex_range*	range;
@@ -918,7 +917,7 @@ void p_build_code( PARSER* parser )
 	gen = &generator;
 	memset( gen, 0, sizeof( GENERATOR ) );
 
-	sprintf( tlt_file, "%s%s", parser->p_language, UNICC_TLT_EXTENSION );
+	sprintf( tlt_file, "%s%s", parser->p_template, UNICC_TLT_EXTENSION );
 	VARS( "tlt_file", "%s", tlt_file );
 
 	if( !( tlt_path = pwhich( tlt_file, "tlt" ) )
@@ -1178,7 +1177,7 @@ void p_build_code( PARSER* parser )
 			{
 				dfa_ent = (pregex_dfa_tr*)plist_access( f );
 
-				for( i = 0; pregex_ccl_get( &beg, &end, dfa_ent->ccl, i ); i++ )
+				for( i = 0; p_ccl_get( &beg, &end, dfa_ent->ccl, i ); i++ )
 				{
 					dfa_char = pstrcatstr( dfa_char,
 								pstrrender( gen->dfa_char.col,
@@ -1260,30 +1259,6 @@ void p_build_code( PARSER* parser )
 		dfa_idx = pstrcatstr( dfa_idx, dfa_idx_row, TRUE );
 		dfa_accept = pstrcatstr( dfa_accept, dfa_accept_row, TRUE );
 	}
-
-	MSG( "Construct map of invalid characters (regex recognition)" );
-
-#if 0
-	/* Map of invalid keyword suffix characters */
-	for( c = parser->p_invalid_suf; c && c->begin != PREGEX_CCL_MAX; c++ )
-	{
-		VARS( "c->begin", "%d", c->begin );
-		VARS( "c->end", "%d", c->end );
-
-		if( kw_invalid_suffix )
-			kw_invalid_suffix = pstrcatstr(
-				kw_invalid_suffix, gen->kw_invalid_suffix.col_sep,
-					FALSE );
-
-		kw_invalid_suffix = pstrcatstr( kw_invalid_suffix,
-			pstrrender( gen->kw_invalid_suffix.col,
-				GEN_WILD_PREFIX "from",
-					p_int_to_str( c->begin ), TRUE,
-				GEN_WILD_PREFIX "to",
-					p_int_to_str( c->end ), TRUE,
-				(char*)NULL ), TRUE );
-	}
-#endif
 
 	MSG( "Construct symbol information table" );
 

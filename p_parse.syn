@@ -149,9 +149,9 @@ fixed_directives:	fixed_directives "#!" fixed_directive ';'
 
 fixed_directive: "mode"					mode_type
 				| "model"				mode_type
-				| "language"			string					{	if( parser->p_language )
-																		pfree( parser->p_language );
-																	parser->p_language = pstrdup( strbuf );
+				| "language"			string					{	if( parser->p_template )
+																		pfree( parser->p_template );
+																	parser->p_template = pstrdup( strbuf );
 																}
 				;
 
@@ -437,12 +437,12 @@ sym:			terminal										{	##.ptr = #1.ptr; 	}
 				;
 
 terminal:		ccl												{ 	SYMBOL* s;
-																	pregex_ccl*	ccl;
+																	pccl*	ccl;
 
-																	ccl = pregex_ccl_create( -1, -1, strbuf );
+																	ccl = p_ccl_create( -1, -1, strbuf );
 
 																	if( #1.negative )
-																		pregex_ccl_negate( ccl );
+																		p_ccl_negate( ccl );
 
 
 																	s = p_get_symbol( parser,
@@ -545,11 +545,11 @@ re_modifier:	re_factor '*'
 re_factor:		ccl
 
 					{
-						pregex_ccl*		ccl;
+						pccl*		ccl;
 
-						ccl = pregex_ccl_create( -1, -1, strbuf );
+						ccl = p_ccl_create( -1, -1, strbuf );
 						if( #1.negative )
-							pregex_ccl_negate( ccl );
+							p_ccl_negate( ccl );
 
 						##.ptn = pregex_ptn_create_char( ccl );
 					}
@@ -564,13 +564,12 @@ re_factor:		ccl
 				| '.'
 
 					{
-						pregex_ccl*	ccl;
+						pccl*	ccl;
 						greedy = FALSE;
-						
-						ccl = pregex_ccl_create( -1, -1, (char*)NULL );
-								
-						pregex_ccl_addrange(
-								ccl, PREGEX_CCL_MIN, PREGEX_CCL_MAX );
+
+						ccl = p_ccl_create( -1, -1, (char*)NULL );
+
+						p_ccl_addrange( ccl, PCCL_MIN, PCCL_MAX );
 
 						##.ptn = pregex_ptn_create_char( ccl );
 					}
@@ -659,10 +658,10 @@ code_opt:	code
 			;
 
 code:		"[*" inner_code "*]"								{
-																	if( !parser->p_language )
+																	if( !parser->p_template )
 																	{
 																		p_error( parser,
-																			ERR_NO_TARGET_LANG_SUPPLY,
+																			ERR_NO_TARGET_TPL_SUPPLY,
 																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 																			parser->filename, line );
 																		reset_strbuf();

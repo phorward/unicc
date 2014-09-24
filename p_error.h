@@ -1,5 +1,5 @@
 /* -HEADER----------------------------------------------------------------------
-UniCC LALR(1) Parser Generator 
+UniCC LALR(1) Parser Generator
 Copyright (C) 2006-2014 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
 
@@ -60,7 +60,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #define ERR_UNDEFINED_SYMREF		34
 #define ERR_UNDEFINED_LHS			35
 #define ERR_UNDEFINED_TERMINAL		36
-#define ERR_NO_TARGET_LANG_SUPPLY	37
+#define ERR_NO_TARGET_TPL_SUPPLY	37
 #define ERR_DIRECTIVE_ALREADY_USED	38
 
 #endif

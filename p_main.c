@@ -486,9 +486,9 @@ int main( int argc, char** argv )
 					DONE()
 
 					/* Code generator */
-					if( !( parser->p_language ) )
+					if( !( parser->p_template ) )
 					{
-						parser->p_language = pstrdup( UNICC_DEFAULT_LNG );
+						parser->p_template = pstrdup( UNICC_DEFAULT_LNG );
 						def_lang = TRUE;
 					}
 
@@ -496,7 +496,7 @@ int main( int argc, char** argv )
 					{
 						if( parser->verbose )
 							fprintf( status, "Code generation target: %s%s\n",
-								parser->p_language,
+								parser->p_template,
 									( def_lang ? " (default)" : "" ) );
 
 						PROGRESS( "Invoking code generator" )
