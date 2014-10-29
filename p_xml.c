@@ -170,13 +170,17 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 	/* Prepare regular expression engine */
 	replacer = pregex_create();
 
-	if( pregex_compile( replacer, "@'([^']|\\')*'", 0 ) != ERR_OK
-		|| pregex_compile( replacer, "@\"([^\"]|\\\")*\"", 0 ) != ERR_OK
-		|| pregex_compile( replacer, "@[A-Za-z_][A-Za-z0-9_]*", 1 ) != ERR_OK
-		|| pregex_compile( replacer, "@[0-9]+", 2 ) != ERR_OK
-		|| pregex_compile( replacer, "@@", 3 ) != ERR_OK
-		|| pregex_compile( replacer,
-			"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 4 ) != ERR_OK )
+	if( !( pregex_compile( replacer, "@'([^']|\\')*'", 0 )
+			&& pregex_compile( replacer, "@\"([^\"]|\\\")*\"", 0 )
+			&& pregex_compile( replacer, "@[A-Za-z_][A-Za-z0-9_]*", 1 )
+			&& pregex_compile( replacer, "@[0-9]+", 2 )
+			&& pregex_compile( replacer, "@@", 3 )
+			/*
+			 * Hmm ... this way looks "cooler" for future versions, maybe
+			 * this would be a nice extension: @<command>:<parameters>
+			 */
+			&& pregex_compile( replacer,
+					"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 4 ) ) )
 	{
 		pregex_free( replacer );
 		RETURN( FALSE );
@@ -430,11 +434,11 @@ static BOOLEAN p_xml_build_scan_action(
 	replacer = pregex_create();
 	pregex_set_flags( replacer, PREGEX_MOD_GLOBAL | PREGEX_MOD_NO_ANCHORS );
 
-	if( pregex_compile( replacer, "@>", 0 ) != ERR_OK
-		|| pregex_compile( replacer, "@<", 1 ) != ERR_OK
-		|| pregex_compile( replacer, "@@", 2 ) != ERR_OK
-		|| pregex_compile( replacer,
-			"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 3 ) != ERR_OK )
+	if( !( pregex_compile( replacer, "@>", 0 )
+			&& pregex_compile( replacer, "@<", 1 )
+				&& pregex_compile( replacer, "@@", 2 )
+					&& pregex_compile( replacer,
+						"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 3 ) ) )
 	{
 		pregex_free( replacer );
 		RETURN( FALSE );
@@ -692,8 +696,7 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 						tmp = "regular-expression";
 
 						/* Rebuild the regular expression string */
-						if( pregex_ptn_to_regex( &regex_str, sym->ptn )
-								== ERR_OK )
+						if( pregex_ptn_to_regex( &regex_str, sym->ptn ) )
 						{
 							if( !( regex = xml_add_child(
 									symbol, "regex", 0 ) ) )

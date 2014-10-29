@@ -89,7 +89,7 @@ void p_keywords_to_dfa( PARSER* parser )
 		if( plist_count( nfa->states ) )
 		{
 			MSG( "Constructing DFA from NFA" );
-			if( pregex_dfa_from_nfa( dfa, nfa ) < ERR_OK )
+			if( !pregex_dfa_from_nfa( dfa, nfa ) )
 				OUTOFMEM;
 
 			VARS( "plist_count( dfa->states )", "%d",
@@ -99,7 +99,7 @@ void p_keywords_to_dfa( PARSER* parser )
 			nfa = pregex_nfa_free( nfa );
 
 			MSG( "Minimizing DFA" );
-			if( pregex_dfa_minimize( dfa ) < ERR_OK )
+			if( !pregex_dfa_minimize( dfa ) )
 				OUTOFMEM;
 
 			VARS( "plist_count( dfa->states )", "%d",
@@ -169,7 +169,7 @@ void p_single_lexer( PARSER* parser )
 	if( plist_count( nfa->states ) )
 	{
 		MSG( "Constructing DFA from NFA" );
-		if( pregex_dfa_from_nfa( dfa, nfa ) < ERR_OK )
+		if( !pregex_dfa_from_nfa( dfa, nfa ) )
 			OUTOFMEM;
 
 		VARS( "plist_count( dfa->states )", "%d",
@@ -179,7 +179,7 @@ void p_single_lexer( PARSER* parser )
 		nfa = pregex_nfa_free( nfa );
 
 		MSG( "Minimizing DFA" );
-		if( pregex_dfa_minimize( dfa ) < ERR_OK )
+		if( !pregex_dfa_minimize( dfa ) )
 			OUTOFMEM;
 
 		VARS( "plist_count( dfa->states )", "%d",

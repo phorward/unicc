@@ -197,17 +197,17 @@ char* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 	/* Prepare regular expression engine */
 	replacer = pregex_create();
 
-	if( pregex_compile( replacer, "@'([^']|\\')*'", 0 ) != ERR_OK
-		|| pregex_compile( replacer, "@\"([^\"]|\\\")*\"", 0 ) != ERR_OK
-		|| pregex_compile( replacer, "@[A-Za-z_][A-Za-z0-9_]*", 1 ) != ERR_OK
-		|| pregex_compile( replacer, "@[0-9]+", 2 ) != ERR_OK
-		|| pregex_compile( replacer, "@@", 3 ) != ERR_OK
-		/*
-		 * Hmm ... this way looks "cooler" for future versions, maybe
-		 * this would be a nice extension: @<command>:<parameters>
-		 */
-		|| pregex_compile( replacer,
-			"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 4 ) != ERR_OK )
+	if( !( pregex_compile( replacer, "@'([^']|\\')*'", 0 )
+			&& pregex_compile( replacer, "@\"([^\"]|\\\")*\"", 0 )
+			&& pregex_compile( replacer, "@[A-Za-z_][A-Za-z0-9_]*", 1 )
+			&& pregex_compile( replacer, "@[0-9]+", 2 )
+			&& pregex_compile( replacer, "@@", 3 )
+			/*
+			 * Hmm ... this way looks "cooler" for future versions, maybe
+			 * this would be a nice extension: @<command>:<parameters>
+			 */
+			&& pregex_compile( replacer,
+					"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 4 ) ) )
 	{
 		pregex_free( replacer );
 		RETURN( (char*)NULL );
@@ -468,11 +468,11 @@ char* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s, char* base )
 	replacer = pregex_create();
 	pregex_set_flags( replacer, PREGEX_MOD_GLOBAL | PREGEX_MOD_NO_ANCHORS );
 
-	if( pregex_compile( replacer, "@>", 0 ) != ERR_OK
-		|| pregex_compile( replacer, "@<", 1 ) != ERR_OK
-		|| pregex_compile( replacer, "@@", 2 ) != ERR_OK
-		|| pregex_compile( replacer,
-			"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 3 ) != ERR_OK )
+	if( !( pregex_compile( replacer, "@>", 0 )
+			&& pregex_compile( replacer, "@<", 1 )
+				&& pregex_compile( replacer, "@@", 2 )
+					&& pregex_compile( replacer,
+						"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 3 ) ) )
 	{
 		pregex_free( replacer );
 		RETURN( (char*)NULL );
