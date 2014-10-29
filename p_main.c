@@ -242,7 +242,7 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 						"ab:Ghno:PsStTvVwxX",
 						"all grammar help no-opt output: basename: productions"
 							"stats states stdout symbols verbose version "
-								"warnings xml XML", i ) ) == ERR_OK; i++ )
+								"warnings xml XML", i ) ) == 0; i++ )
 	{
 		if( !strcmp( opt, "output" ) || !strcmp( opt, "o" )
 			|| !strcmp( opt, "basename" ) || !strcmp( opt, "b" ) )
@@ -302,7 +302,7 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 
 	if( rc == 1 )
 		*filename = param;
-	else if( rc == ERR_FAILURE && param )
+	else if( rc < 0 && param )
 		p_error( parser, ERR_CMD_OPT, ERRSTYLE_FATAL, param );
 
 	return ( *filename ? TRUE : FALSE );
@@ -344,21 +344,12 @@ int main( int argc, char** argv )
 
 	if( p_get_command_line( argc, argv, &filename, &base_name, parser ) )
 	{
-		parser->filename = filename;
-		switch( map_file( &parser->source, filename ) )
+		if( !map_file( &parser->source, ( parser->filename = filename ) ) )
 		{
-			case 1:
-				p_error( parser, ERR_OPEN_INPUT_FILE,
-					ERRSTYLE_FATAL, filename );
-				p_free_parser( parser );
+			p_error( parser, ERR_OPEN_INPUT_FILE, ERRSTYLE_FATAL, filename );
+			p_free_parser( parser );
 
-				return error_count;
-
-			case ERR_OK:
-				break;
-
-			default:
-				break;
+			return error_count;
 		}
 
 		/* Basename */
