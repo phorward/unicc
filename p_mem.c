@@ -152,7 +152,7 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 		memset( sym, 0, sizeof( SYMBOL ) );
 
 		/* Set up attributes */
-		sym->id = list_count( p->symbols ); /* add 1 to here on errors... */
+		sym->id = list_count( p->symbols );
 		sym->type = type;
 		sym->line = -1;
 		sym->nullable = FALSE;

@@ -172,10 +172,12 @@ void p_build_code_localizations( char** str, GENERATOR* g )
 char* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 			char* base, BOOLEAN def_code )
 {
-	pregex*			replacer;
-	pregex_range*	range;
+	plex*			lex;
+	char*			last	= base;
+	char*			start;
+	char*			end;
 	int				off;
-	char*			last;
+	int				match;
 	char*			ret		= (char*)NULL;
 	char*			chk;
 	char*			tmp;
@@ -195,21 +197,22 @@ char* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 	PARMS( "def_code", "%s", BOOLEAN_STR( def_code ) );
 
 	/* Prepare regular expression engine */
-	replacer = pregex_create();
+	lex = plex_create( 0 );
 
-	if( !( pregex_compile( replacer, "@'([^']|\\')*'", 0 )
-			&& pregex_compile( replacer, "@\"([^\"]|\\\")*\"", 0 )
-			&& pregex_compile( replacer, "@[A-Za-z_][A-Za-z0-9_]*", 1 )
-			&& pregex_compile( replacer, "@[0-9]+", 2 )
-			&& pregex_compile( replacer, "@@", 3 )
+	if( !( plex_define( lex, "@'([^']|\\')*'", 1, 0 )
+			&& plex_define( lex, "@\"([^\"]|\\\")*\"", 1, 0 )
+			&& plex_define( lex, "@[A-Za-z_][A-Za-z0-9_]*", 2, 0 )
+			&& plex_define( lex, "@[0-9]+", 3, 0 )
+			&& plex_define( lex, "@@", 4, 0 )
 			/*
 			 * Hmm ... this way looks "cooler" for future versions, maybe
 			 * this would be a nice extension: @<command>:<parameters>
 			 */
-			&& pregex_compile( replacer,
-					"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 4 ) ) )
+			&& plex_define( lex, "@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*",
+										5, 0 )
+		) )
 	{
-		pregex_free( replacer );
+		plex_free( lex );
 		RETURN( (char*)NULL );
 	}
 
@@ -223,32 +226,30 @@ char* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 	}
 
 	MSG( "Iterating trough matches" );
-	for( last = base, range = pregex_match_next( replacer, base );
-			range && !on_error;
-				range = pregex_match_next( replacer, (char*)NULL ) )
+
+	while( ( start = plex_find( lex, last, &match, &end ) ) && !on_error )
 	{
 		off = 0;
 		tmp = (char*)NULL;
 
-		if( last < range->begin )
+		if( last < start )
 		{
-			if( !( ret = pstrncatstr(
-					ret, last, range->begin - last ) ) )
+			if( !( ret = pstrncatstr( ret, last, start - last ) ) )
 				OUTOFMEM;
 
 			VARS( "ret", "%s", ret );
-
-			last = range->end;
 		}
 
-		VARS( "range->accept", "%d", range->accept );
-		switch( range->accept )
-		{
-			case 0:
-				range->begin++;
-				range->len -= 2;
+		last = end;
 
+		VARS( "match", "%d", match );
+		switch( match )
+		{
 			case 1:
+				start++;
+				end--;
+
+			case 2:
 				MSG( "Identifier" );
 				for( l = rhs_idents, m = rhs, off = 1; l && m;
 						l = list_next( l ), m = list_next( m ), off++ )
@@ -256,14 +257,8 @@ char* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 					chk = (char*)list_access( l );
 					VARS( "chk", "%s", chk ? chk : "(NULL)" );
 
-					/*
-					printf( "check >%.*s< with >%.*s<\n",
-						range->len - 1, chk,
-							range->len - 1, range->begin + 1 );
-					*/
-					if( chk && !strncmp( chk, range->begin + 1,
-									range->len - 1 )
-							&& pstrlen( chk ) == range->len - 1 )
+					if( chk && !strncmp( chk, start + 1, end - start - 1 )
+							&& pstrlen( chk ) == end - start - 1 )
 					{
 						break;
 					}
@@ -272,21 +267,20 @@ char* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 				if( !l )
 				{
 					p_error( parser, ERR_UNDEFINED_SYMREF, ERRSTYLE_WARNING,
-										range->len, range->begin );
+										end - start, start );
 					off = 0;
-
-					tmp = pstrdup( range->begin );
+					tmp = pstrdup( start );
 				}
 
 				VARS( "off", "%d", off );
 				break;
 
-			case 2:
+			case 3:
 				MSG( "Offset" );
-				off = atoi( range->begin + 1 );
+				off = atoi( start + 1 );
 				break;
 
-			case 3:
+			case 4:
 				MSG( "Left-hand side" );
 				if( p->lhs->vtype && list_count( parser->vtypes ) > 1 )
 					ret = pstrcatstr( ret,
@@ -304,13 +298,13 @@ char* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 				VARS( "ret", "%s", ret );
 				break;
 
-			case 4:
+			case 5:
 				MSG( "Assign left-hand side symbol" );
 				off = 0;
 
 				if( !( tmp = pasprintf( "%.*s",
-								range->len - ( pstrlen( SYMBOL_VAR ) + 3 ),
-								range->begin + ( pstrlen( SYMBOL_VAR ) + 3 )
+								end - start - ( pstrlen( SYMBOL_VAR ) + 3 ),
+								start + ( pstrlen( SYMBOL_VAR ) + 3 )
 									) ) )
 				{
 					OUTOFMEM;
@@ -344,11 +338,10 @@ char* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 				{
 					MSG( "No match found..." );
 
-					p_error( parser, ERR_UNDEFINED_LHS,
-								ERRSTYLE_WARNING, tmp );
+					p_error( parser, ERR_UNDEFINED_LHS, ERRSTYLE_WARNING, tmp );
 					pfree( tmp );
 
-					if( !( tmp = pstrdup( range->begin ) ) )
+					if( !( tmp = pstrdup( start ) ) )
 					{
 						OUTOFMEM;
 						RETURN( (char*)NULL );
@@ -382,8 +375,7 @@ char* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 					else
 					{
 						p_error( parser, ERR_NO_VALUE_TYPE, ERRSTYLE_FATAL,
-								sym->name, p->id, range->len + 1,
-									range->begin );
+								sym->name, p->id, end - start + 1, start );
 
 						att = (char*)NULL;
 						on_error = TRUE;
@@ -407,7 +399,7 @@ char* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 				{
 					p_error( parser, ERR_NO_VALUE_TYPE, ERRSTYLE_FATAL,
 							p_find_base_symbol( sym )->name,
-								p->id, range->len + 1, range->begin );
+								p->id, end - start + 1, start );
 				}
 
 				on_error = TRUE;
@@ -423,6 +415,8 @@ char* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 
 	VARS( "ret", "%s", ret );
 	VARS( "on_error", "%s", BOOLEAN_STR( on_error ) );
+
+	plex_free( lex );
 
 	if( on_error && ret )
 	{
@@ -450,10 +444,12 @@ char* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 ----------------------------------------------------------------------------- */
 char* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s, char* base )
 {
-	pregex*			replacer;
-	pregex_range*	range;
+	plex*			lex;
+	char*			last		= base;
+	char*			start;
+	char*			end;
+	int				match;
 	char*			ret			= (char*)NULL;
-	char*			last;
 	char*			tmp;
 	LIST*			l;
 	SYMBOL*			sym;
@@ -465,51 +461,50 @@ char* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s, char* base )
 	PARMS( "base", "%s", base );
 
 	/* Prepare regular expression engine */
-	replacer = pregex_create();
-	pregex_set_flags( replacer, PREGEX_MOD_GLOBAL | PREGEX_MOD_NO_ANCHORS );
+	lex = plex_create( PREGEX_COMP_NOANCHORS );
 
-	if( !( pregex_compile( replacer, "@>", 0 )
-			&& pregex_compile( replacer, "@<", 1 )
-				&& pregex_compile( replacer, "@@", 2 )
-					&& pregex_compile( replacer,
-						"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 3 ) ) )
+	if( !( plex_define( lex, "@>", 1, 0 )
+		&& plex_define( lex, "@<", 2, 0 )
+		&& plex_define( lex, "@@", 3, 0 )
+		&& plex_define( lex, "@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 4, 0 )
+			) )
 	{
-		pregex_free( replacer );
+		plex_free( lex );
 		RETURN( (char*)NULL );
 	}
 
 	MSG( "Iterating trough matches" );
-	for( last = base, range = pregex_match_next( replacer, base );
-			range; range = pregex_match_next( replacer, (char*)NULL ) )
+
+	while( ( start = plex_find( lex, last, &match, &end ) ) )
 	{
-		if( last < range->begin )
+		if( last < start )
 		{
 			if( !( ret = pstrncatstr(
-					ret, last, range->begin - last ) ) )
+					ret, last, start - last ) ) )
 				OUTOFMEM;
 
 			VARS( "ret", "%s", ret );
 		}
 
-		last = range->end;
+		last = end;
 
-		VARS( "range->accept", "%d", range->accept );
-		switch( range->accept )
+		VARS( "match", "%d", match );
+		switch( match )
 		{
-			case 0:
+			case 1:
 				MSG( "@>" );
 				ret = pstrcatstr( ret,
 					g->scan_action_begin_offset, FALSE );
 				break;
 
-			case 1:
+			case 2:
 				MSG( "@<" );
 				ret = pstrcatstr( ret,
 					g->scan_action_end_offset, FALSE );
 
 				break;
 
-			case 2:
+			case 3:
 				MSG( "@@" );
 				if( s->vtype && list_count( parser->vtypes ) > 1 )
 					ret = pstrcatstr( ret,
@@ -525,12 +520,12 @@ char* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s, char* base )
 							g->scan_action_ret_single, FALSE );
 				break;
 
-			case 3:
+			case 4:
 				MSG( "Set terminal symbol" );
 
 				if( !( tmp = pasprintf( "%.*s",
-								range->len - ( pstrlen( SYMBOL_VAR ) + 3 ),
-								range->begin + ( pstrlen( SYMBOL_VAR ) + 3 )
+								end - start - ( pstrlen( SYMBOL_VAR ) + 3 ),
+								start + ( pstrlen( SYMBOL_VAR ) + 3 )
 									) ) )
 					OUTOFMEM;
 
@@ -575,7 +570,7 @@ char* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s, char* base )
 	if( last && *last )
 		ret = pstrcatstr( ret, last, FALSE );
 
-	replacer = pregex_free( replacer );
+	plex_free( lex );
 
 	VARS( "ret", "%s", ret );
 	RETURN( ret );

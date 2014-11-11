@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="yes"?>
 <!--
 UniCC LALR(1) Parser Generator :: Standard C Parser Template
-Copyright (C) 2006-2014 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2013 by Phorward Software Technologies, Jan Max Meyer
 http://www.phorward-software.com ++ contact<<AT>>phorward-software<<DOT>>com
 All rights reserved. See license agreements below.
 
@@ -805,7 +805,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Description:	@@description
  *
  * UniCC Parser Template for C - Version 1.0
- * Copyright (C) 2006-2014 by Phorward Software Technologies, Jan Max Meyer
+ * Copyright (C) 2006-2013 by Phorward Software Technologies, Jan Max Meyer
  */
 
 #if @@prologue_len == 0
@@ -1297,16 +1297,16 @@ fprintf( stderr, "%s: lex: next = %d @@prefix_dfa_chars[ chr ] = %d, "
 #if UNICC_DEBUG	&gt; 1
 fprintf( stderr, "%s: lex: dfa_st = %d\n", UNICC_PARSER, dfa_st );
 #endif
-				if( @@prefix_dfa_accept[ mach ][ dfa_st ] &gt; -1 )
+				if( @@prefix_dfa_accept[ mach ][ dfa_st ] &gt; 0 )
 				{
+					pcb-&gt;len = len + 1;
+					pcb-&gt;sym = @@prefix_dfa_accept[ mach ][ dfa_st ] - 1;
+
 #if UNICC_DEBUG	&gt; 1
 fprintf( stderr, "%s: lex: new accepting symbol pcb-&gt;sym = %d greedy = %d\n",
-			UNICC_PARSER, @@prefix_dfa_accept[ mach ][ dfa_st ],
-				@@prefix_symbols[ pcb-&gt;sym ].greedy );
+			UNICC_PARSER, pcb-&gt;sym, @@prefix_symbols[ pcb-&gt;sym ].greedy );
 #endif
-					pcb-&gt;len = len + 1;
-					if( ( pcb-&gt;sym = @@prefix_dfa_accept[ mach ][ dfa_st ] )
-							== @@eof )
+					if( pcb-&gt;sym == @@eof )
 					{
 						dfa_st = -1; /* test! */
 						break;
@@ -2037,7 +2037,7 @@ int main( int argc, char** argv )
  * Description:	@@description
  *
  * UniCC Parser Template for C - Version 1.0
- * Copyright (C) 2006-2014 by Phorward Software Technologies, Jan Max Meyer
+ * Copyright (C) 2006-2013 by Phorward Software Technologies, Jan Max Meyer
  */
 
 #ifndef @@CBASENAME_H

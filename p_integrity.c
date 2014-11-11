@@ -118,7 +118,7 @@ static int p_nfa_transition_on_ccl(
 	if( !plist_count( res ) )
 		plist_push( res, plist_access( plist_first( nfa->states ) ) );
 
-	pregex_accept_init( &acc );
+	memset( &acc, 0, sizeof( pregex_accept ) );
 
 	pregex_nfa_epsilon_closure( nfa, res, &acc );
 	ret_res = plist_create( 0, PLIST_MOD_PTR );
@@ -243,7 +243,7 @@ static BOOLEAN p_nfa_matches_parser(
 					idx = col->index;
 				}
 
-				if( act || accept != PREGEX_ACCEPT_NONE )
+				if( act || accept )
 					break;
 			}
 		}
@@ -256,7 +256,7 @@ static BOOLEAN p_nfa_matches_parser(
 		plist_for( res, e )
 			plist_push( start_res, plist_access( e ) );
 
-		if( accept != PREGEX_ACCEPT_NONE )
+		if( accept )
 			break;
 
 		/* Error */
@@ -308,7 +308,7 @@ static BOOLEAN p_nfa_matches_parser(
 			}
 		}
 	}
-	while( ret && accept == PREGEX_ACCEPT_NONE );
+	while( ret && !accept );
 
 	plist_free( res );
 	return ret;
@@ -422,10 +422,9 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 
 				if( !col->symbol->ptn->accept )
 					col->symbol->ptn->accept =
-						pmalloc( sizeof( pregex_accept ) );
+						(pregex_accept*)pmalloc( sizeof( pregex_accept ) );
 
-				pregex_accept_init( col->symbol->ptn->accept );
-				col->symbol->ptn->accept->accept = col->symbol->id;
+				col->symbol->ptn->accept->accept = col->symbol->id + 1;
 
 				pregex_ptn_to_nfa( nfa, col->symbol->ptn );
 

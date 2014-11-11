@@ -465,8 +465,8 @@ terminal:		ccl												{ 	SYMBOL* s;
 
 																	s->ptn = pregex_ptn_create_string( strbuf,
 																				parser->p_cis_strings ?
-																					PREGEX_MOD_INSENSITIVE :
-																						PREGEX_MOD_NONE );
+																					PREGEX_COMP_INSENSITIVE :
+																						0 );
 
 																	##.ptr = s;
 																}
@@ -557,8 +557,7 @@ re_factor:		ccl
 				| kw
 
 					{
-						##.ptn = pregex_ptn_create_string(
-									strbuf, PREGEX_MOD_NONE );
+						##.ptn = pregex_ptn_create_string( strbuf, 0 );
 					}
 
 				| '.'

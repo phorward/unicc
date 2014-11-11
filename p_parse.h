@@ -6,7 +6,7 @@
  * Description:	Parser for UniCC parser definitions
  *
  * UniCC Parser Template for C - Version 1.0
- * Copyright (C) 2006-2014 by Phorward Software Technologies, Jan Max Meyer
+ * Copyright (C) 2006-2013 by Phorward Software Technologies, Jan Max Meyer
  */
 
 #ifndef P_PARSE_H

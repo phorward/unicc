@@ -338,9 +338,7 @@ void p_symbol_to_nfa( PARSER* parser, pregex_nfa* nfa, SYMBOL* sym )
 		if( !sym->ptn->accept )
 			sym->ptn->accept = pmalloc( sizeof( pregex_accept ) );
 
-		pregex_accept_init( sym->ptn->accept );
-		sym->ptn->accept->accept = sym->id;
-
+		sym->ptn->accept->accept = sym->id + 1;
 		pregex_ptn_to_nfa( nfa, sym->ptn );
 	}
 

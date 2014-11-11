@@ -145,10 +145,12 @@ static XML_T p_xml_raw_code( XML_T code_xml, char* code )
 static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 		char* base, BOOLEAN def_code )
 {
-	pregex*			replacer;
-	pregex_range*	range;
+	plex*			lex;
 	int				off;
-	char*			last;
+	char*			last		= base;
+	char*			start;
+	char*			end;
+	int				match;
 	char*			chk;
 	char*			tmp;
 	LIST*			l;
@@ -168,21 +170,22 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 	PARMS( "def_code", "%s", BOOLEAN_STR( def_code ) );
 
 	/* Prepare regular expression engine */
-	replacer = pregex_create();
+	lex = plex_create( 0 );
 
-	if( !( pregex_compile( replacer, "@'([^']|\\')*'", 0 )
-			&& pregex_compile( replacer, "@\"([^\"]|\\\")*\"", 0 )
-			&& pregex_compile( replacer, "@[A-Za-z_][A-Za-z0-9_]*", 1 )
-			&& pregex_compile( replacer, "@[0-9]+", 2 )
-			&& pregex_compile( replacer, "@@", 3 )
+	if( !( plex_define( lex, "@'([^']|\\')*'", 1, 0 )
+			&& plex_define( lex, "@\"([^\"]|\\\")*\"", 1, 0 )
+			&& plex_define( lex, "@[A-Za-z_][A-Za-z0-9_]*", 2, 0 )
+			&& plex_define( lex, "@[0-9]+", 3, 0 )
+			&& plex_define( lex, "@@", 4, 0 )
 			/*
 			 * Hmm ... this way looks "cooler" for future versions, maybe
 			 * this would be a nice extension: @<command>:<parameters>
 			 */
-			&& pregex_compile( replacer,
-					"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 4 ) ) )
+			&& plex_define( lex, "@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*",
+										5, 0 )
+		) )
 	{
-		pregex_free( replacer );
+		plex_free( lex );
 		RETURN( FALSE );
 	}
 
@@ -196,34 +199,33 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 	}
 
 	MSG( "Iterating trough result array" );
-	for( last = base, range = pregex_match_next( replacer, base );
-			range && !on_error;
-				range = pregex_match_next( replacer, (char*)NULL ) )
+	while( ( start = plex_find( lex, last, &match, &end ) ) && !on_error )
 	{
 		off = 0;
 		tmp = (char*)NULL;
 
 		/* Copy raw part of code into its own tag */
-		if( last < range->begin )
+		if( last < start )
 		{
 			if( !( raw = pstrncatstr(
-					(char*)NULL, last, range->begin - last ) ) )
+					(char*)NULL, last, start - last ) ) )
 				OUTOFMEM;
 
 			p_xml_raw_code( code_xml, raw );
 
-			VARS( "range->end", "%s", range->end );
-			last = range->end;
+			VARS( "end", "%s", end );
 		}
 
-		VARS( "range->accept", "%d", range->accept );
-		switch( range->accept )
-		{
-			case 0:
-				range->begin++;
-				range->len -= 2;
+		last = end;
 
+		VARS( "match", "%d", match );
+		switch( match )
+		{
 			case 1:
+				start++;
+				end--;
+
+			case 2:
 				MSG( "Identifier" );
 				for( l = rhs_idents, m = rhs, off = 1; l && m;
 						l = list_next( l ), m = list_next( m ), off++ )
@@ -233,11 +235,11 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 
 					/*
 					printf( "check >%s< with >%.*s<\n",
-						chk, range->len - 1, range->begin + 1 );
+						chk, end - start - 1, start + 1 );
 					*/
-					if( chk && !strncmp( chk, range->begin + 1,
-									range->len - 1 )
-							&& pstrlen( chk ) == range->len - 1 )
+					if( chk && !strncmp( chk, start + 1,
+									end - start - 1 )
+							&& pstrlen( chk ) == end - start - 1 )
 					{
 						break;
 					}
@@ -246,21 +248,21 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 				if( !l )
 				{
 					p_error( parser, ERR_UNDEFINED_SYMREF, ERRSTYLE_WARNING,
-										range->len, range->begin  );
+										end - start, start  );
 					off = 0;
 
-					tmp = pstrdup( range->begin );
+					tmp = pstrdup( start );
 				}
 
 				VARS( "off", "%d", off );
 				break;
 
-			case 2:
+			case 3:
 				MSG( "Offset" );
-				off = atoi( range->begin + 1 );
+				off = atoi( start + 1 );
 				break;
 
-			case 3:
+			case 4:
 				MSG( "Left-hand side" );
 
 				if( !( code = xml_add_child( code_xml, "variable", 0 ) ) )
@@ -282,12 +284,12 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 
 				break;
 
-			case 4:
+			case 5:
 				MSG( "Assign left-hand side symbol" );
 
 				if( !( tmp = pasprintf( "%.*s",
-								range->len - ( pstrlen( SYMBOL_VAR ) + 3 ),
-								range->begin + ( pstrlen( SYMBOL_VAR ) + 3 )
+								end - start - ( pstrlen( SYMBOL_VAR ) + 3 ),
+								start + ( pstrlen( SYMBOL_VAR ) + 3 )
 									) ) )
 				{
 					OUTOFMEM;
@@ -330,7 +332,7 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 					p_error( parser, ERR_UNDEFINED_LHS, ERRSTYLE_WARNING, tmp );
 					pfree( tmp );
 
-					if( !( tmp = pstrdup( range->begin ) ) )
+					if( !( tmp = pstrdup( start ) ) )
 					{
 						OUTOFMEM;
 						RETURN( FALSE );
@@ -379,7 +381,7 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 				{
 					p_error( parser, ERR_NO_VALUE_TYPE, ERRSTYLE_FATAL,
 							p_find_base_symbol( sym )->name,
-								p->id, range->len + 1, range->begin );
+								p->id, end - start + 1, start );
 				}
 
 				on_error = TRUE;
@@ -393,7 +395,7 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 	if( last && *last )
 		p_xml_raw_code( code_xml, pstrdup( last ) );
 
-	pregex_free( replacer );
+	plex_free( lex );
 
 	RETURN( !on_error );
 }
@@ -415,9 +417,11 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 static BOOLEAN p_xml_build_scan_action(
 	XML_T code_xml, PARSER* parser, SYMBOL* s, char* base )
 {
-	pregex*			replacer;
-	pregex_range*	range;
-	char*			last;
+	plex*			lex;
+	char*			last	= base;
+	char*			start;
+	char*			end;
+	int				match;
 	char*			raw;
 	XML_T			code;
 	char*			tmp;
@@ -431,26 +435,24 @@ static BOOLEAN p_xml_build_scan_action(
 	PARMS( "base", "%s", base );
 
 	/* Prepare regular expression engine */
-	replacer = pregex_create();
-	pregex_set_flags( replacer, PREGEX_MOD_GLOBAL | PREGEX_MOD_NO_ANCHORS );
+	lex = plex_create( PREGEX_COMP_NOANCHORS );
 
-	if( !( pregex_compile( replacer, "@>", 0 )
-			&& pregex_compile( replacer, "@<", 1 )
-				&& pregex_compile( replacer, "@@", 2 )
-					&& pregex_compile( replacer,
-						"@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 3 ) ) )
+	if( !( plex_define( lex, "@>", 1, 0 )
+		&& plex_define( lex, "@<", 2, 0 )
+		&& plex_define( lex, "@@", 3, 0 )
+		&& plex_define( lex, "@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*",  4, 0 )
+		) )
 	{
-		pregex_free( replacer );
+		plex_free( lex );
 		RETURN( FALSE );
 	}
 
-	for( last = base, range = pregex_match_next( replacer, base );
-				range; range = pregex_match_next( replacer, (char*)NULL ) )
+	while( ( start = plex_find( lex, last, &match, &end ) ) )
 	{
-		if( last < range->begin )
+		if( last < start )
 		{
 			if( !( raw = pstrncatstr(
-					(char*)NULL, last, range->begin - last ) ) )
+					(char*)NULL, last, start - last ) ) )
 				OUTOFMEM;
 
 			p_xml_raw_code( code_xml, raw );
@@ -458,12 +460,12 @@ static BOOLEAN p_xml_build_scan_action(
 			VARS( "raw", "%s", raw );
 		}
 
-		last = range->end;
+		last = end;
 
-		VARS( "range->accept", "%d", range->accept );
-		switch( range->accept )
+		VARS( "match", "%d", match );
+		switch( match )
 		{
-			case 0:
+			case 1:
 				MSG( "@>" );
 
 				if( !( code = xml_add_child( code_xml,
@@ -472,7 +474,7 @@ static BOOLEAN p_xml_build_scan_action(
 
 				break;
 
-			case 1:
+			case 2:
 				MSG( "@<" );
 
 				if( !( code = xml_add_child( code_xml,
@@ -481,7 +483,7 @@ static BOOLEAN p_xml_build_scan_action(
 
 				break;
 
-			case 2:
+			case 3:
 				MSG( "@@" );
 
 				if( !( code = xml_add_child( code_xml,
@@ -500,12 +502,12 @@ static BOOLEAN p_xml_build_scan_action(
 				}
 				break;
 
-			case 3:
+			case 4:
 				MSG( "Set terminal symbol" );
 
 				if( !( tmp = pasprintf( "%.*s",
-								range->len - ( pstrlen( SYMBOL_VAR ) + 3 ),
-								range->begin + ( pstrlen( SYMBOL_VAR ) + 3 )
+								end - start - ( pstrlen( SYMBOL_VAR ) + 3 ),
+								start + ( pstrlen( SYMBOL_VAR ) + 3 )
 									) ) )
 					OUTOFMEM;
 
@@ -554,7 +556,7 @@ static BOOLEAN p_xml_build_scan_action(
 	if( last && *last )
 		p_xml_raw_code( code_xml, pstrdup( last ) );
 
-	replacer = pregex_free( replacer );
+	plex_free( lex );
 
 	RETURN( TRUE );
 }
@@ -595,7 +597,7 @@ static void p_build_dfa( XML_T parent, pregex_dfa* dfa )
 		if( !( xml_set_int_attr( state, "id", i ) ) )
 				OUTOFMEM;
 
-		if( st->accept.accept > PREGEX_ACCEPT_NONE &&
+		if( st->accept.accept &&
 			!( xml_set_int_attr( state, "accept", st->accept.accept ) ) )
 				OUTOFMEM;
 
@@ -713,10 +715,9 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 						tmp_dfa = pregex_dfa_create();
 
 						if( !sym->ptn->accept )
-							sym->ptn->accept = pmalloc(
-								sizeof( pregex_accept ) );
+							sym->ptn->accept = (pregex_accept*)pmalloc(
+													sizeof( pregex_accept ) );
 
-						pregex_accept_init( sym->ptn->accept );
 						sym->ptn->accept->accept = sym->id;
 
 						pregex_ptn_to_nfa( tmp_nfa, sym->ptn );
