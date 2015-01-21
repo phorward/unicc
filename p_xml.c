@@ -662,7 +662,6 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 	XML_T			code;
 	XML_T			lex;
 	XML_T			regex;
-	char*			regex_str;
 
 	PROC( "p_xml_print_symbols" );
 	MSG( "Printing symbol table" );
@@ -697,16 +696,11 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 					{
 						tmp = "regular-expression";
 
-						/* Rebuild the regular expression string */
-						if( pregex_ptn_to_regex( &regex_str, sym->ptn ) )
-						{
-							if( !( regex = xml_add_child(
-									symbol, "regex", 0 ) ) )
-								OUTOFMEM;
+						if( !( regex = xml_add_child(
+								symbol, "regex", 0 ) ) )
+							OUTOFMEM;
 
-							xml_set_txt_d( regex, regex_str );
-							pfree( regex_str );
-						}
+						xml_set_txt_d( regex, pregex_ptn_to_regex( sym->ptn ) );
 
 						/*
 							Convert regular pattern into DFA state machine

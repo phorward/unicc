@@ -344,7 +344,7 @@ int main( int argc, char** argv )
 
 	if( p_get_command_line( argc, argv, &filename, &base_name, parser ) )
 	{
-		if( !map_file( &parser->source, ( parser->filename = filename ) ) )
+		if( !pfiletostr( &parser->source, ( parser->filename = filename ) ) )
 		{
 			p_error( parser, ERR_OPEN_INPUT_FILE, ERRSTYLE_FATAL, filename );
 			p_free_parser( parser );
