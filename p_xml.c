@@ -199,7 +199,7 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 	}
 
 	MSG( "Iterating trough result array" );
-	while( ( start = plex_find( lex, last, &match, &end ) ) && !on_error )
+	while( ( start = plex_next( lex, last, &match, &end ) ) && !on_error )
 	{
 		off = 0;
 		tmp = (char*)NULL;
@@ -447,7 +447,7 @@ static BOOLEAN p_xml_build_scan_action(
 		RETURN( FALSE );
 	}
 
-	while( ( start = plex_find( lex, last, &match, &end ) ) )
+	while( ( start = plex_next( lex, last, &match, &end ) ) )
 	{
 		if( last < start )
 		{

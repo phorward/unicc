@@ -111,11 +111,11 @@ char* p_version( BOOLEAN long_version )
 	static char	version [ ONE_LINE + 1 ];
 
 	if( long_version )
-		psprintf( version, "%d.%d.%d%s",
+		sprintf( version, "%d.%d.%d%s",
 				UNICC_VER_MAJOR, UNICC_VER_MINOR, UNICC_VER_PATCH,
 					UNICC_VER_EXTSTR );
 	else
-		psprintf( version, "%d.%d%s",
+		sprintf( version, "%d.%d%s",
 				UNICC_VER_MAJOR, UNICC_VER_MINOR, UNICC_VER_EXTSTR );
 
 	return version;

@@ -227,7 +227,7 @@ char* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 
 	MSG( "Iterating trough matches" );
 
-	while( ( start = plex_find( lex, last, &match, &end ) ) && !on_error )
+	while( ( start = plex_next( lex, last, &match, &end ) ) && !on_error )
 	{
 		off = 0;
 		tmp = (char*)NULL;
@@ -475,7 +475,7 @@ char* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s, char* base )
 
 	MSG( "Iterating trough matches" );
 
-	while( ( start = plex_find( lex, last, &match, &end ) ) )
+	while( ( start = plex_next( lex, last, &match, &end ) ) )
 	{
 		if( last < start )
 		{
