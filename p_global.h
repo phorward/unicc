@@ -26,6 +26,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #include <phorward.h>
 
 /* Internal includes */
+#include "xml.h"
 #include "p_defs.h"
 
 /*

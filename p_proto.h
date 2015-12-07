@@ -127,4 +127,35 @@ BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, char* genfile );
 /* p_xml.c */
 void p_build_xml( PARSER* parser, BOOLEAN finished );
 
+/* xml.c */
+XML_T xml_child( XML_T xml, char* name );
+XML_T xml_idx( XML_T xml, int idx );
+char* xml_attr( XML_T xml, char* attr );
+long xml_int_attr( XML_T xml, char* attr );
+double xml_float_attr( XML_T xml, char* attr );
+XML_T xml_vget( XML_T xml, va_list ap );
+XML_T xml_get( XML_T xml, ... );
+char ** xml_pi( XML_T xml, char* target );
+char* xml_decode( char* s, char ** ent, char t );
+char* xml_str2utf8( char ** s, size_t* len );
+void xml_free_attr( char ** attr );
+XML_T xml_parse_str( char* s, size_t len );
+XML_T xml_parse_fp( FILE* fp );
+XML_T xml_parse_file( char* file );
+char* xml_ampencode( char* s, size_t len, char ** dst, size_t* dlen, size_t* max, short a );
+char* xml_toxml( XML_T xml );
+void xml_free( XML_T xml );
+char* xml_error( XML_T xml );
+XML_T xml_new( char* name );
+XML_T xml_insert( XML_T xml, XML_T dest, size_t off );
+XML_T xml_add_child( XML_T xml, char* name, size_t off );
+XML_T xml_set_txt( XML_T xml, char* txt );
+XML_T xml_set_attr( XML_T xml, char* name, char* value );
+XML_T xml_set_int_attr( XML_T xml, char* name, long value );
+XML_T xml_set_float_attr( XML_T xml, char* name, double value );
+XML_T xml_set_flag( XML_T xml, short flag );
+int xml_count( XML_T xml );
+int xml_count_all( XML_T xml );
+XML_T xml_cut( XML_T xml );
+
 #endif

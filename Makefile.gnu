@@ -20,7 +20,8 @@ SOURCES			= 	\
 				p_list.c \
 				p_build.c \
 				p_xml.c \
-				p_main.c
+				p_main.c \
+				xml.c
 
 all: unicc
 
