@@ -1,14 +1,12 @@
 /* -PARSER----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2015 by Phorward Software Technologies, Jan Max Meyer
-http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
+Copyright (C) 2006-2016 by Phorward Software Technologies, Jan Max Meyer
+http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
+All rights reserved. See LICENSE for more information.
 
 File:	p_parse.par
 Author:	Jan Max Meyer
 Usage:	Grammar definition parser
-
-You may use, modify and distribute this software under the terms and conditions
-of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
 
 #!mode			sensitive ;
@@ -39,7 +37,7 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 #parser					"UniCC Grammar Definition Language";
 #version				"1.5.1";
 #description			"Parser for UniCC parser definitions";
-#copyright				"Copyright (C) 2008-2013 by Jan Max Meyer, Phorward Software Technologies";
+#copyright				"Copyright (C) 2008-2016 by Jan Max Meyer, Phorward Software Technologies";
 
 /*
  * Parser configuration

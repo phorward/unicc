@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "UniCC LALR(1) Parser Generator"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.1.0"
 #define MyAppPublisher "Phorward Software Technologies"
 #define MyAppURL "http://unicc.phorward-software.com"
 
@@ -21,7 +21,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\UniCC
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
-OutputBaseFilename=unicc-1.0.0
+OutputBaseFilename=unicc-1.1.0
 Compression=lzma
 SolidCompression=yes
 ChangesEnvironment=yes

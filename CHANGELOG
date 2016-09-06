@@ -1,13 +1,12 @@
-:: UniCC LALR(1) Parser Generator
-:: Copyright (C) 2006-2015 by Phorward Software Technologies, Jan Max Meyer
-:: http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
-::
-:: CHANGELOG FILE
---------------------------------------------------------------------------------
-
 LEGEND:
 [+] New features
 [-] Bugfixes
+
+----------------------------------------
+v1.1.0 (changeset 322)
+----------------------------------------
+[+] Compiles with libphorward 0.18.0
+[+] Changed licensing from Artistic License 2.0 to 3-clause BSD-license
 
 ----------------------------------------
 v1.0.0 (changeset 295)

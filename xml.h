@@ -1,14 +1,12 @@
 /* -HEADER----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2015 by Phorward Software Technologies, Jan Max Meyer
-http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
+Copyright (C) 2006-2016 by Phorward Software Technologies, Jan Max Meyer
+http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
+All rights reserved. See LICENSE for more information.
 
 File:	xml.c
 Author:	Aaron Voisine, contributions and code-formatting by Jan Max Meyer
 Usage:	XML processing functions (based on ezXML)
-
-You may use, modify and distribute this software under the terms and conditions
-of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
 
 /* xml.h
@@ -75,7 +73,7 @@ struct xml
 
 #define xml_txt( xml ) \
 	( ( xml ) ? xml->txt : "" )
-	
+
 #define xml_line(xml) \
 	( ( xml ) ? (xml)->line : 0 )
 
@@ -103,14 +101,14 @@ struct xml
 		pstrdup( name ), \
 		pstrdup( value ) \
 	)
-	
+
 #define xml_add_child_f( xml, name, off ) \
 	xml_set_flag \
 	( \
 		xml_add_child( xml, name, off ), \
 		XML_NAMEM \
 	)
-	
+
 #define xml_set_txt_f( xml, txt ) \
 	xml_set_flag \
 	( \

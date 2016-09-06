@@ -1,16 +1,21 @@
-:: UniCC LALR(1) Parser Generator
-:: Copyright (C) 2006-2015 by Phorward Software Technologies, Jan Max Meyer
-:: http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
-::
-:: README FILE
---------------------------------------------------------------------------------
 
-*************
- DESCRIPTION 
-*************
+NAME
+====
 
-UniCC, standing as an acronym for Universal Compiler-Compiler, is a powerful
-LALR(1) Parser Generator and Development System for computer professionals.
+unicc - LALR(1) Parser Generator
+
+
+SYNOPSIS
+========
+
+unicc [OPTION]... FILE
+
+
+DESCRIPTION
+===========
+
+UniCC, standing as an acronym for universal compiler-compiler, is a powerful
+LALR(1) parser generator and development system for computer professionals.
 Its design-goal is to serve as an all-round design and build tool for any
 parsing-related issue, including production-quality compiler construction and
 the implementation of domains specific languages.
@@ -55,9 +60,8 @@ the latest news, documentation, updates and support on the UniCC LALR(1) Parser
 Generator.
 
 
-**********
- FEATURES 
-**********
+FEATURES
+========
 
 The UniCC LALR(1) Parser Generator features the following, unique tools and
 possibilities.
@@ -70,21 +74,19 @@ possibilities.
 - Anonymous nonterminals
 - Semantically determined symbols
 - Two parser construction modes allow the use of different algorithmic
-  approaches relating the whitespace handling
+    approaches relating the whitespace handling
 - Target-language independent parser development
 - Template-based program-module generator and XML-based parser description
-  file generator
+    file generator
 - Platform-independent (console-based)
 - Standard LALR(1) conflict resolution
 - Supporting the C programming language via the UniCC Standard C Parser
-  Template, providing many useful features like integrated Syntax Tree
-  Generator and Error Recovery
-- More target language templates for Java and C++ are planned in near future
+    Template, providing many useful features like integrated Syntax Tree
+    Generator and Error Recovery
 
 
-*******************
- ENVIRONMENT SETUP 
-*******************
+ENVIRONMENT SETUP
+=================
 
 To get UniCC work properly, the unicc executable must be in the PATH.
 It is also required to set an environment variable UNICC_TPLDIR that directs
@@ -93,9 +95,8 @@ not set, UniCC will automatically check for templates in $prefix/share/unicc/tlt
 on Linux/Unix.
 
 
-**********************
- COMMAND-LINE OPTIONS 
-**********************
+COMMAND-LINE OPTIONS
+====================
 
 The UniCC command-line interface supports various, combinable options to
 invoke, modify and specialize the parser generation process, or to trigger
@@ -187,89 +188,81 @@ further tasks.
 Errors and warnings are printed to STDERR, any other kind of output to STDOUT.
 
 
-****************************
- BUILDING UNICC FROM SOURCE 
-****************************
+BUILDING UNICC FROM SOURCE
+==========================
 
-UniCC is a product that was entirely established and developed on top of the
-Phorward Foundation Toolkit (to be more exactly, most parts of the Phorward
-Foundation Toolkit are having their origin in earlier development stages of
-the UniCC Parser Generator, but where moved into libraries for usage outside
-UniCC).
+UniCC is a software that was entirely established and developed on top of the
+Phorward Toolkit. 
 
-The Phorward Foundation Toolkit and its library libphorward provide many
-useful functions for general purpose and extended software-development tasks,
+The Phorward Toolkit and its library libphorward provide many useful
+functions for general purpose and extended software-development tasks,
 including standard data structures, a system-independent interface, extending
 data types and regular expression management functions, required by UniCC to
 construct the lexical analyzers.
 
-The Phorward Foundation Libraries are released under the BSD License, more
-information can be obtained from the official product website at
-http://phorward.phorward-software.com.
+The Phorward Toolkit is released under the BSD License, more information can 
+be obtained from the official product website at http://phorward-software.com.
 
-Before UniCC, can be built, ensure that the Phorward Foundation Toolkit is
-installed in its lates version.
+Before UniCC can be built, ensure that the Phorward Toolkit is installed in
+its latest version.
 
 Getting the latest version is simple using the Mercurial SCM with
 
-  hg clone http://hg.code.sf.net/p/unicc/code
+    hg clone https://bitbucket.org/codepilot/phorward
 
 then, change into the cloned directory and run
 
-  ./configure
-  make
-  make install
+    ./configure
+    make
+    make install
 
 After that, clone the following repositories. They provide the UniCC Parser
 Generator and XPL, a demonstration of a tiny programming language implementation
 written with UniCC.
 
-  hg clone http://hg.code.sf.net/p/unicc/unicc
-  hg clone http://hg.code.sf.net/p/unicc/xpl
+    hg clone https://bitbucket.org/codepilot/unicc
+    hg clone https://bitbucket.org/codepilot/xpl
 
 Optionally, if hacking the UniCC Standard C Parser Template is wanted, clone
 
-  hg clone http://hg.code.sf.net/p/unicc/Cparser
+    hg clone https://bitbucket.org/codepilot/cparser
 
 also.
 
 Change into the directory unicc and, again run
 
-  ./configure
-  make
-  make install
+    ./configure
+    make
+    make install
 
 After UniCC was successfully built and installed, xpl can be compiled
 out of the box without any configuration script.
 
 If the UniCC bootstrapping toolchain is wanted, configure UniCC with
 
-  ./configure --with-bootstrap
+    ./configure --with-bootstrap
 
 this will bootstrap the UniCC grammar parser with multiple generation states.
+
 When bootstraping toolchain is enabled, it is additionally required to install
 the min_lalr1 parser generator. This program can be obtained with
 
-  hg clone http://hg.code.sf.net/p/unicc/min_lalr1
+    hg clone https://bitbucket.org/codepilot/min_lalr1
 
 
-********
- AUTHOR 
-********
+AUTHOR
+======
 
-The UniCC LALR(1) Parser Generator and the UniCC Standard C Parser Template is
+The UniCC LALR(1) Parser Generator and all subsequent repositories and tools is
 written and maintained by Jan Max Meyer, Phorward Software Technologies.
 
 
-***********
- COPYRIGHT 
-***********
+COPYRIGHT
+=========
 
-Copyright (C) 2006-2015 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2016 by Phorward Software Technologies, Jan Max Meyer.
 
-You may use, modify and distribute this software under the terms and conditions
-of the Artistic License, version 2.
+You may use, modify and distribute this software under the terms and conditions of the 3-clause BSD license. The full license terms can be obtained from the file LICENSE.
 
-The full license terms can be obtained from the file LICENSE, provided
-with both the source and binary packages of UniCC.
+THIS SOFTWARE IS PROVIDED BY JAN MAX MEYER (PHORWARD SOFTWARE TECHNOLOGIES) AS IS AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL JAN MAX MEYER (PHORWARD SOFTWARE TECHNOLOGIES) BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 

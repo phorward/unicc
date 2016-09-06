@@ -101,16 +101,11 @@ unicc: $(unicc_OBJECTS) $(LIBPHORWARD)
 # Now documentation generation follows, using txt2tags.
 #
 
-doc: manpage README
+doc: README.md unicc.man
 
-manpage: unicc.man
-
-README: unicc.t2t
+README.md: unicc.t2t
 	-rm -f $@
-	txt2tags -t txt -H -o - $? | sed -E -n '1h;1!H;$${;g;s/ +([-A-Z ]+)\n +(=+)/\2==\n \1 \n\2==/g;p;}' | sed -e "/^=/s/=/*/g;1,15d" >$@.tmp
-	cat unicc.hdr $@.tmp >>$@
-	rm -f $@.tmp
-
+	txt2tags -t txt -H -o - $? | sed -E -n '1h;1!H;$${;g;s/ +([-A-Z ]+)\n +(=+)/\1\n\2/g;p;}' | sed 's/^  /    /g' >$@
 
 unicc.man: unicc.t2t
 	txt2tags -t man $?

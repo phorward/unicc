@@ -1,21 +1,20 @@
 /* -MODULE----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2015 by Phorward Software Technologies, Jan Max Meyer
-http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
+Copyright (C) 2006-2016 by Phorward Software Technologies, Jan Max Meyer
+http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
+All rights reserved. See LICENSE for more information.
 
 File:	p_keywords.c
 Author:	Jan Max Meyer
 Usage:	Turns regular expression definitions into deterministic state
 		machines, by using the Phorward regular expression library.
-
-You may use, modify and distribute this software under the terms and conditions
-of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
 
 /*
-	A note on history:
+	An historical notice:
+
 	Until UniCC v0.24, the keyword-only feature has been extended to
-	entrie regular expressions. Later on in UniCC 0.27, the term
+	entire regular expressions. Later on in UniCC 0.27, the term
 	"keyword" was renamed to "string", and the classification of the
 	various terminals was not that strong anymore than before. So this
 	is the reason why everything in here is still called "keyword",

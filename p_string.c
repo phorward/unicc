@@ -1,14 +1,12 @@
 /* -MODULE----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2015 by Phorward Software Technologies, Jan Max Meyer
-http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
+Copyright (C) 2006-2016 by Phorward Software Technologies, Jan Max Meyer
+http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
+All rights reserved. See LICENSE for more information.
 
 File:	p_string.c
 Author:	Jan Max Meyer
 Usage:	String-related management functions
-
-You may use, modify and distribute this software under the terms and conditions
-of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
 
 /*

@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="yes"?>
 <!--
 UniCC LALR(1) Parser Generator :: Standard C Parser Template
-Copyright (C) 2006-2012 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2016 by Phorward Software Technologies, Jan Max Meyer
 http://www.phorward-software.com ++ contact<<AT>>phorward-software<<DOT>>com
 All rights reserved. See license agreements below.
 
@@ -67,14 +67,6 @@ the UniCC Standard C Parser Template.
 
 LICENSE:
 ++++++++
-The UniCC  Standard C Parser Template distributed with UniCC software package
-is NOT part of the UniCC Parser Generator itself, and subjects to the following
-conditions:
-
-You may use, modify and distribute this parser template under the terms and
-conditions of the BSD License terms below. This license agreement ONLY fits
-to this single file.
-
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are
 met:
@@ -805,7 +797,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Description:	@@description
  *
  * UniCC Parser Template for C - Version 1.0
- * Copyright (C) 2006-2012 by Phorward Software Technologies, Jan Max Meyer
+ * Copyright (C) 2006-2016 by Phorward Software Technologies, Jan Max Meyer
  */
 
 #if @@prologue_len == 0
@@ -1111,8 +1103,6 @@ UNICC_STATIC UNICC_CHAR @@prefix_utf8_getchar( int (*getfn)() )
 
 UNICC_STATIC UNICC_CHAR @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offset )
 {
-	UNICC_CHAR	ch;
-
 #if UNICC_DEBUG	&gt; 2
 	fprintf( stderr, "%s: get input: pcb-&gt;buf + offset = %p pcb-&gt;bufend = %p\n",
 				UNICC_PARSER, pcb-&gt;buf + offset, pcb-&gt;bufend );
@@ -1299,16 +1289,16 @@ fprintf( stderr, "%s: lex: next = %d @@prefix_dfa_chars[ chr ] = %d, "
 #if UNICC_DEBUG	&gt; 1
 fprintf( stderr, "%s: lex: dfa_st = %d\n", UNICC_PARSER, dfa_st );
 #endif
-				if( @@prefix_dfa_accept[ mach ][ dfa_st ] &gt; -1 )
+				if( @@prefix_dfa_accept[ mach ][ dfa_st ] &gt; 0 )
 				{
+					pcb-&gt;len = len + 1;
+					pcb-&gt;sym = @@prefix_dfa_accept[ mach ][ dfa_st ] - 1;
+
 #if UNICC_DEBUG	&gt; 1
 fprintf( stderr, "%s: lex: new accepting symbol pcb-&gt;sym = %d greedy = %d\n",
-			UNICC_PARSER, @@prefix_dfa_accept[ mach ][ dfa_st ],
-				@@prefix_symbols[ pcb-&gt;sym ].greedy );
+			UNICC_PARSER, pcb-&gt;sym, @@prefix_symbols[ pcb-&gt;sym ].greedy );
 #endif
-					pcb-&gt;len = len + 1;
-					if( ( pcb-&gt;sym = @@prefix_dfa_accept[ mach ][ dfa_st ] )
-							== @@eof )
+					if( pcb-&gt;sym == @@eof )
 					{
 						dfa_st = -1; /* test! */
 						break;
@@ -1946,8 +1936,10 @@ int main( int argc, char** argv )
 	int				flags	= 0;
 	int				i;
 	@@prefix_pcb	pcb;
-	
+
+#ifdef LC_ALL
 	setlocale( LC_ALL, "" );
+#endif
 
 	/* Get command-line options */
 	for( i = 1; i &lt; argc; i++ )
@@ -2037,7 +2029,7 @@ int main( int argc, char** argv )
  * Description:	@@description
  *
  * UniCC Parser Template for C - Version 1.0
- * Copyright (C) 2006-2012 by Phorward Software Technologies, Jan Max Meyer
+ * Copyright (C) 2006-2016 by Phorward Software Technologies, Jan Max Meyer
  */
 
 #ifndef @@CBASENAME_H
@@ -2066,7 +2058,7 @@ int main( int argc, char** argv )
 #	define UNICC_CHAR				wchar_t
 #	define UNICC_CHAR_FORMAT		"%S"
 #else
-#	define UNICC_CHAR				unsigned char
+#	define UNICC_CHAR				char
 #	define UNICC_CHAR_FORMAT		"%s"
 #endif
 #endif /* UNICC_CHAR */
@@ -2077,7 +2069,7 @@ int main( int argc, char** argv )
 #	define UNICC_SCHAR				wchar_t
 #	define UNICC_SCHAR_FORMAT		"%S"
 #else
-#	define UNICC_SCHAR				unsigned char
+#	define UNICC_SCHAR				char
 #	define UNICC_SCHAR_FORMAT		"%s"
 #endif
 #endif /* UNICC_SCHAR */
@@ -2169,19 +2161,19 @@ int main( int argc, char** argv )
 /* Typedef for symbol information table */
 typedef struct
 {
-	unsigned char*		name;
-	short				type;
-	UNICC_BOOLEAN		lexem;
-	UNICC_BOOLEAN		whitespace;
-	UNICC_BOOLEAN		greedy;
+	char*			name;
+	short			type;
+	UNICC_BOOLEAN	lexem;
+	UNICC_BOOLEAN	whitespace;
+	UNICC_BOOLEAN	greedy;
 } @@prefix_syminfo;
 
 /* Typedef for production information table */
 typedef struct
 {
-	unsigned char*		definition;
-	int					length;
-	int					lhs;
+	char*	definition;
+	int		length;
+	int		lhs;
 } @@prefix_prodinfo;
 
 

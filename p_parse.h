@@ -2,11 +2,11 @@
  * File:        p_parse.h
  * Parser:		UniCC Grammar Definition Language
  * Version:		1.5.1
- * Copyright:	Copyright (C) 2008-2013 by Jan Max Meyer, Phorward Software Technologies
+ * Copyright:	Copyright (C) 2008-2016 by Jan Max Meyer, Phorward Software Technologies
  * Description:	Parser for UniCC parser definitions
  *
  * UniCC Parser Template for C - Version 1.0
- * Copyright (C) 2006-2013 by Phorward Software Technologies, Jan Max Meyer
+ * Copyright (C) 2006-2016 by Phorward Software Technologies, Jan Max Meyer
  */
 
 #ifndef P_PARSE_H

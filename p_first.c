@@ -1,14 +1,12 @@
 /* -MODULE----------------------------------------------------------------------
-UniCC LALR(1) Parser Generator 
-Copyright (C) 2006-2015 by Phorward Software Technologies, Jan Max Meyer
-http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
+UniCC LALR(1) Parser Generator
+Copyright (C) 2006-2016 by Phorward Software Technologies, Jan Max Meyer
+http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
+All rights reserved. See LICENSE for more information.
 
 File:	p_first.c
 Author:	Jan Max Meyer
 Usage:	First set computation
-
-You may use, modify and distribute this software under the terms and conditions
-of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
 
 /*
@@ -30,21 +28,21 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_first()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Computes the FIRST()-set for all symbols that are within the
 					global table of symbols.
-					
+
 	Parameters:		LIST*		symbols		List of symbols where the first
 											computation should be done for.
-	
+
 	Returns:		void
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 	23.08.2008	Jan Max Meyer	Uhh bad bug resolved here, in grammars like
-								
+
 								x$ -> y ;
 								y -> y 'a' | ;
 
@@ -70,7 +68,7 @@ void p_first( LIST* symbols )
 	{
 		pf = f;
 		f = 0;
-		
+
 		for( i = symbols; i; i = i->next )
 		{
 			s = (SYMBOL*)( i->pptr );
@@ -79,7 +77,7 @@ void p_first( LIST* symbols )
 				for( j = s->productions; j; j = j->next )
 				{
 					nullable = FALSE;
-					
+
 					p = (PROD*)( j->pptr );
 
 					if( p->rhs )
@@ -101,7 +99,7 @@ void p_first( LIST* symbols )
 					s->nullable |= nullable;
 				}
 			}
-			
+
 			f += list_count( s->first );
 		}
 	}
@@ -111,36 +109,36 @@ void p_first( LIST* symbols )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_rhs_first()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Performs a right-hand side FIRST()-set seek.
 					This is an individual FIRST()-set to be created within a
 					LR(1) closure as lookahead set.
-					
+
 	Parameters:		LIST*			first		Pointer where the individual
 												FIRST() set is stored to.
-													
+
 					LIST*			rhs			The right-hand side; This can
 												pointer to an element on the
 												right-hand side, and is used
 												as starting point.
-	
+
 	Returns:		int							TRUE if the whole right-hand
 												side is possibly nullable,
 												FALSE else.
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
 int p_rhs_first( LIST** first, LIST* rhs )
 {
 	SYMBOL*		sym		= (SYMBOL*)NULL;
-	
+
 	for( ; rhs; rhs = rhs->next )
 	{
 		sym = rhs->pptr;
-		
+
 		if( IS_TERMINAL( sym ) )
 		{
 			if( list_find( *first, sym ) == -1 )
@@ -150,12 +148,12 @@ int p_rhs_first( LIST** first, LIST* rhs )
 		else
 		{
 			*first = list_union( *first, sym->first );
-		
+
 			if( !( sym->nullable ) )
 				break;
 		}
 	}
-	
+
 	return sym->nullable;
 }
 

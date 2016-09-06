@@ -1,14 +1,12 @@
 /* -MODULE----------------------------------------------------------------------
-UniCC LALR(1) Parser Generator 
-Copyright (C) 2006-2015 by Phorward Software Technologies, Jan Max Meyer
-http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
+UniCC LALR(1) Parser Generator
+Copyright (C) 2006-2016 by Phorward Software Technologies, Jan Max Meyer
+http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
+All rights reserved. See LICENSE for more information.
 
 File:	p_util.c
 Author:	Jan Max Meyer
 Usage:	Utility functions
-
-You may use, modify and distribute this software under the terms and conditions
-of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
 
 /*
@@ -29,19 +27,19 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_derivation_name()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Creates a name derivation.
 					The derivation of a name is just a string, where an
 					character is appended to, and which is unique.
 
 	Parameters:		char*		name		Original name to be derived.
 					char		append_char	Character to be appended.
-					
+
 	Returns:		char*					The derived name; New allocated memory,
 											must be freed!
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -52,11 +50,11 @@ char* p_derivation_name( char* name, char append_char )
 
 	ret = (char*)pmalloc( ( strlen( name ) + 1 + 1 ) * sizeof( char ) );
 	strcpy( ret, name );
-	
+
 	len = strlen( ret );
 	ret[ len ] = append_char;
 	ret[ len + 1 ] = '\0';
-	
+
 	/* Some name styling - this is currently onle for one  case, the whitespace
 	symbol ... other cases should not appear... */
 	switch( append_char )
@@ -68,7 +66,7 @@ char* p_derivation_name( char* name, char append_char )
 				ret[ len ] = '\0';
 			}
 			break;
-			
+
 		default:
 			break;
 	}
@@ -78,9 +76,9 @@ char* p_derivation_name( char* name, char append_char )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_unescape_char()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Parses a single character, even escaped ones.
 
 	Parameters:		char*		str			Pointer where the character parse
@@ -88,9 +86,9 @@ char* p_derivation_name( char* name, char append_char )
 					char**		strfix		Optional return pointer for the
 											new position next to parsed character
 											definition.
-					
+
 	Returns:		int						The character value
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 	18.07.2009	Jan Max Meyer	Negative escaped characters
@@ -138,11 +136,11 @@ int p_unescape_char( char* str, char** strfix )
 			case '\'':
 				ch = '\'';
 				ptr++;
-				break;				
+				break;
 			case '\"':
 				ch = '\"';
 				ptr++;
-				break;	
+				break;
 			case '\\':
 				ch = '\\';
 				ptr++;
@@ -179,14 +177,14 @@ int p_unescape_char( char* str, char** strfix )
 					neg = TRUE;
 					ptr++;
 				}
-					
+
 				while( *ptr >= '0' && *ptr <= '9' )
 				{
 					ch *= 10;
 					ch += ( *ptr - '0' );
 					ptr++;
 				}
-				
+
 				if( neg && ch )
 					ch *= -1;
 
@@ -209,16 +207,16 @@ int p_unescape_char( char* str, char** strfix )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_find_base_symbol()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Finds out the base symbol for a possibly derived symbol,
 					and returns it.
-					
+
 	Parameters:		<type>		<identifier>		<description>
-	
+
 	Returns:		<type>							<description>
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */
@@ -232,15 +230,15 @@ SYMBOL* p_find_base_symbol( SYMBOL* sym )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_gen_c_identifier()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Construct a C-identifier from a file-name.
-					
+
 	Parameters:		<type>		<identifier>		<description>
-	
+
 	Returns:		<type>							<description>
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 ----------------------------------------------------------------------------- */

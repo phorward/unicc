@@ -1,14 +1,12 @@
 /* -MODULE----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2015 by Phorward Software Technologies, Jan Max Meyer
-http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
+Copyright (C) 2006-2016 by Phorward Software Technologies, Jan Max Meyer
+http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
+All rights reserved. See LICENSE for more information.
 
 File:	p_main.c (created on 28.01.2007)
 Author:	Jan Max Meyer
 Usage:	UniCC program entry / main function
-
-You may use, modify and distribute this software under the terms and conditions
-of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
 
 /*
@@ -146,15 +144,12 @@ void p_copyright( FILE* stream )
 
 	fprintf( stream, "UniCC LALR(1) Parser Generator v%s [build %s %s]\n",
 			p_version( TRUE ), __DATE__, __TIME__ );
-	fprintf( stream, "Copyright (C) 2006-2015 by "
+	fprintf( stream, "Copyright (C) 2006-2016 by "
 						"Phorward Software Technologies, Jan Max Meyer\n" );
 	fprintf( stream, "http://www.phorward-software.com ++ "
-						"contact<at>phorward<dash>software<dot>com\n\n" );
-
-	fprintf( stream, "You may use, modify and distribute this software under "
-				"the terms and\n" );
-	fprintf( stream, "conditions of the Artistic License, version 2.\n"
-				"Please see LICENSE for more information.\n" );
+						"contact<at>phorward<dash>software<dot>com\n" );
+	fprintf( stream, "All rights reserved. "
+						"See LICENSE for more information.\n" );
 
 }
 

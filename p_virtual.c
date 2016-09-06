@@ -1,14 +1,12 @@
 /* -MODULE----------------------------------------------------------------------
-UniCC LALR(1) Parser Generator 
-Copyright (C) 2006-2015 by Phorward Software Technologies, Jan Max Meyer
-http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
+UniCC LALR(1) Parser Generator
+Copyright (C) 2006-2016 by Phorward Software Technologies, Jan Max Meyer
+http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
+All rights reserved. See LICENSE for more information.
 
 File:	p_virtual.c
 Author:	Jan Max Meyer
 Usage:	Virtual production generation functions
-
-You may use, modify and distribute this software under the terms and conditions
-of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
 
 /*
@@ -29,18 +27,18 @@ of the Artistic License, version 2. Please see LICENSE for more information.
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_positive_closure()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Creates a positive closure for a symbol.
-					
+
 	Parameters:		PARSER*		parser				Parser information structure
 					SYMBOL*		base				Base symbol
-	
+
 	Returns:		SYMBOL*							Pointer to symbol
 													representing the closure
 													nonterminal.
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 	30.09.2010	Jan Max Meyer	Inherit defined_at information
@@ -70,7 +68,7 @@ SYMBOL* p_positive_closure( PARSER* parser, SYMBOL* base )
 			p = p_create_production( parser, s );
 			p_append_to_production( p, s, (char*)NULL );
 			p_append_to_production( p, base, (char*)NULL );
-			
+
 			p = p_create_production( parser, s );
 			p_append_to_production( p, base, (char*)NULL );
 		}
@@ -83,18 +81,18 @@ SYMBOL* p_positive_closure( PARSER* parser, SYMBOL* base )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_kleene_closure()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Creates a kleene closure for a symbol.
-					
+
 	Parameters:		PARSER*		parser				Parser information structure
 					SYMBOL*		base				Base symbol
-	
+
 	Returns:		SYMBOL*							Pointer to symbol
 													representing the closure
 													nonterminal.
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 	14.05.2008	Jan Max Meyer	Modified rework. Instead of
@@ -138,7 +136,7 @@ SYMBOL* p_kleene_closure( PARSER* parser, SYMBOL* base )
 			/*p_append_to_production( p, s, (char*)NULL );
 			p_append_to_production( p, base, (char*)NULL );*/
 			p_append_to_production( p, pos_s, (char*)NULL );
-		
+
 			p = p_create_production( parser, s );
 		}
 
@@ -150,18 +148,18 @@ SYMBOL* p_kleene_closure( PARSER* parser, SYMBOL* base )
 
 /* -FUNCTION--------------------------------------------------------------------
 	Function:		p_optional_closure()
-	
+
 	Author:			Jan Max Meyer
-	
+
 	Usage:			Creates an optional closure for a symbol.
-					
+
 	Parameters:		PARSER*		parser				Parser information structure
 					SYMBOL*		base				Base symbol
-	
+
 	Returns:		SYMBOL*							Pointer to symbol
 													representing the closure
 													nonterminal.
-  
+
 	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Date:		Author:			Note:
 	30.09.2010	Jan Max Meyer	Inherit defined_at information
@@ -190,7 +188,7 @@ SYMBOL* p_optional_closure( PARSER* parser, SYMBOL* base )
 
 			p = p_create_production( parser, s );
 			p_append_to_production( p, base, (char*)NULL );
-			
+
 			p = p_create_production( parser, s );
 		}
 

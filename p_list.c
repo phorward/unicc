@@ -1,20 +1,20 @@
 /* -MODULE----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2015 by Phorward Software Technologies, Jan Max Meyer
-http://unicc.phorward-software.com/ ++ unicc<<AT>>phorward-software<<DOT>>com
+Copyright (C) 2006-2016 by Phorward Software Technologies, Jan Max Meyer
+http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
+All rights reserved. See LICENSE for more information.
 
 File:	p_list.c
 Author:	Jan Max Meyer
 Usage:	Management functions for simple linked-lists.
-
-You may use, modify and distribute this software under the terms and conditions
-of the Artistic License, version 2. Please see LICENSE for more information.
 ----------------------------------------------------------------------------- */
 
 /*
+	March 24, 2014:
+
 	The linked list structure LIST (llist) came from libphorward, but
 	had been replaced there by the much more powerful plist objects.
-	
+
 	UniCC is the only program that still makes use of these older lists,
 	and a refactoring to use plist is too expensive.
 */
