@@ -16,7 +16,7 @@ man1_MANS = unicc.man
 uniccdir = $(datadir)/unicc
 tltdir = $(uniccdir)/tlt
 dist_tlt_DATA = tlt/C.tlt 
-dist_unicc_DATA = unicc.dtd LICENSE README
+dist_unicc_DATA = unicc.dtd LICENSE README.md
 
 AM_CPPFLAGS = -DTLTDIR=\"$(tltdir)\"
 
