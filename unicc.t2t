@@ -1,29 +1,30 @@
-UniCC
-UniCC 1.1
-September 2016
+UniCC LALR(1) Parser Generator
+Version 1.1.1
+May 2017
 
 = NAME =
 
-unicc - LALR(1) Parser Generator
+//unicc//: Universal LALR(1) Parser Generator
 
 = SYNOPSIS =
 
 unicc [OPTION]... FILE
 
-= DESCRIPTION =
+= ABOUT =
 
-UniCC, standing as an acronym for universal compiler-compiler, is a powerful
-LALR(1) parser generator and development system for computer professionals.
+UniCC is a LALR(1) parser generator and language development system.
+
 Its design-goal is to serve as an all-round design and build tool for any
 parsing-related issue, including production-quality compiler construction and
 the implementation of domains specific languages.
 
 UniCC unions an integrated generator for lexical analyzers and a powerful
-LALR(1) parser generator into one software solution.
-The programming interface is a rich, extendable and innovative EBNF-based
-grammar definition language, which gives any compiler-developer's task much
-more comfort and simplicity in implementing parsers than ever before. It comes
-with useful features for both grammar prototyping and design, parser
+LALR(1) parser generator into one software solution. UniCC interfaces a rich,
+extendable and innovative EBNF-based grammar definition language, which gives
+any compiler-developer's task much more comfort and simplicity in implementing
+parsers than ever before.
+
+It comes with useful features for both grammar prototyping and design, parser
 optimization, semantic augmentation and parser programming. Lexical symbols can
 be directly defined within productions, right-hand side items can be referenced
 by meaningful names within semantic actions, instead of only their offsets.
@@ -168,7 +169,7 @@ Errors and warnings are printed to STDERR, any other kind of output to STDOUT.
 = BUILDING UNICC FROM SOURCE =
 
 UniCC is a software that was entirely established and developed on top of the
-Phorward Toolkit. 
+Phorward Toolkit.
 
 The Phorward Toolkit and its library //libphorward// provide many useful
 functions for general purpose and extended software-development tasks,
@@ -176,7 +177,7 @@ including standard data structures, a system-independent interface, extending
 data types and regular expression management functions, required by UniCC to
 construct the lexical analyzers.
 
-The Phorward Toolkit is released under the BSD License, more information can 
+The Phorward Toolkit is released under the BSD License. More information can
 be obtained from the official product website at http://phorward-software.com.
 
 Before UniCC can be built, ensure that the Phorward Toolkit is installed in
@@ -184,7 +185,7 @@ its latest version.
 
 Getting the latest version is simple using the Mercurial SCM with
 
-``` hg clone https://bitbucket.org/codepilot/phorward
+``` git clone https://github.com/phorward/phorward.git
 
 then, change into the cloned directory and run
 
@@ -199,13 +200,13 @@ Generator and XPL, a demonstration of a tiny programming language implementation
 written with UniCC.
 
 ```
-hg clone https://bitbucket.org/codepilot/unicc
-hg clone https://bitbucket.org/codepilot/xpl
+git clone https://github.com/phorward/unicc.git
+git clone https://github.com/phorward/xpl.git
 ```
 
 Optionally, if hacking the UniCC Standard C Parser Template is wanted, clone
 
-``` hg clone https://bitbucket.org/codepilot/cparser
+``` git clone https://github.com/phorward/Cparser.git
 
 also.
 
@@ -229,12 +230,18 @@ this will bootstrap the UniCC grammar parser with multiple generation states.
 When bootstraping toolchain is enabled, it is additionally required to install
 the min_lalr1 parser generator. This program can be obtained with
 
-``` hg clone https://bitbucket.org/codepilot/min_lalr1
+``` git clone https://github.com/phorward/min_lalr1.git
 
 = AUTHOR =
 
 The UniCC LALR(1) Parser Generator and all subsequent repositories and tools is
 written and maintained by Jan Max Meyer, Phorward Software Technologies.
+
+Some other projects by the author are:
+
+- //pynetree// (http://pynetree.org): A light-weight parsing toolkit written in pure Python.
+- //phorward// (http://phorward.phorward-software.com): A free toolkit for parser development, lexical analysis, regular expressions and more.
+- //JS/CC// (http://jscc.brobston.com): The JavaScript parser generator.
 
 = COPYRIGHT =
 

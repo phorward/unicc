@@ -36,10 +36,6 @@ AS_IF([test "$with_bootstrap" = "yes"],
 		AC_MSG_ERROR([Cannot build without min_lalr1 parser generator; Install min_lalr1 first, or check your PATH.])
 	fi],[])
 
-# Check if txt2tags is installed here
-AC_CHECK_PROG([TXT2TAGS], [txt2tags], "yes", "no")
-AM_CONDITIONAL([WITH_TXT2TAGS],[test "$TXT2TAGS" = "yes"])
-
 # Checks for libraries.
 AC_CHECK_LIB([rt], [sprintf])
 AC_CHECK_LIB([phorward], [pmalloc], [], [AC_MSG_ERROR([Cannot build without libphorward; Install Phorward Foundation Toolkit first, or set your LDFLAGS correct.])])

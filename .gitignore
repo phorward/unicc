@@ -1,5 +1,3 @@
-syntax: glob
-
 p_parse.c
 p_parse.h
 p_parse.dbg

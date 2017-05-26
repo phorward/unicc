@@ -11,7 +11,7 @@ noinst_PROGRAMS = unicc_boot1$(EXEEXT) \
 					unicc_boot3$(EXEEXT)
 endif
 
-man1_MANS = unicc.man
+man1_MANS = unicc.1.man
 
 uniccdir = $(datadir)/unicc
 tltdir = $(uniccdir)/tlt
@@ -102,22 +102,5 @@ unicc_SOURCES = p_parse.c $(SOURCES)
 if WITH_BOOTSTRAP
 p_parse.c p_parse.h: p_parse.par unicc_boot3$(EXEEXT)
 	./unicc_boot3$(EXEEXT) -svwb p_parse p_parse.par
-endif
-
-if WITH_TXT2TAGS
-# --- UniCC Documentation ------------------------------------------------------
-#
-# Now documentation generation follows, using txt2tags.
-#
-
-doc: README.md unicc.man
-
-README.md: unicc.t2t
-	-rm -f $@
-	txt2tags -t txt -H -o - $? | sed -E -n '1h;1!H;$${;g;s/ +([-A-Z ]+)\n +(=+)/\1\n\2/g;p;}' | sed 's/^  /    /g' >$@
-
-unicc.man: unicc.t2t
-	txt2tags -t man $?
-
 endif
 

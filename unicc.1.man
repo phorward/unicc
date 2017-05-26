@@ -1,32 +1,35 @@
-.TH "UniCC" 1 "September 2016" "UniCC 1.1"
+.TH "UniCC LALR(1) Parser Generator" 1 "May 2017" "Version 1.1.1"
 
 
 .SH NAME
 
 .P
-unicc \- LALR(1) Parser Generator
+\fIunicc\fR: Universal LALR(1) Parser Generator
 
 .SH SYNOPSIS
 
 .P
 unicc [OPTION]... FILE
 
-.SH DESCRIPTION
+.SH ABOUT
 
 .P
-UniCC, standing as an acronym for universal compiler\-compiler, is a powerful
-LALR(1) parser generator and development system for computer professionals.
+UniCC is a LALR(1) parser generator and language development system.
+
+.P
 Its design\-goal is to serve as an all\-round design and build tool for any
 parsing\-related issue, including production\-quality compiler construction and
 the implementation of domains specific languages.
 
 .P
 UniCC unions an integrated generator for lexical analyzers and a powerful
-LALR(1) parser generator into one software solution.
-The programming interface is a rich, extendable and innovative EBNF\-based
-grammar definition language, which gives any compiler\-developer's task much
-more comfort and simplicity in implementing parsers than ever before. It comes
-with useful features for both grammar prototyping and design, parser
+LALR(1) parser generator into one software solution. UniCC interfaces a rich,
+extendable and innovative EBNF\-based grammar definition language, which gives
+any compiler\-developer's task much more comfort and simplicity in implementing
+parsers than ever before.
+
+.P
+It comes with useful features for both grammar prototyping and design, parser
 optimization, semantic augmentation and parser programming. Lexical symbols can
 be directly defined within productions, right\-hand side items can be referenced
 by meaningful names within semantic actions, instead of only their offsets.
@@ -255,7 +258,7 @@ Errors and warnings are printed to STDERR, any other kind of output to STDOUT.
 
 .P
 UniCC is a software that was entirely established and developed on top of the
-Phorward Toolkit. 
+Phorward Toolkit.
 
 .P
 The Phorward Toolkit and its library \fIlibphorward\fR provide many useful
@@ -265,7 +268,7 @@ data types and regular expression management functions, required by UniCC to
 construct the lexical analyzers.
 
 .P
-The Phorward Toolkit is released under the BSD License, more information can 
+The Phorward Toolkit is released under the BSD License. More information can
 be obtained from the official product website at http://phorward\-software.com.
 
 .P
@@ -276,7 +279,7 @@ its latest version.
 Getting the latest version is simple using the Mercurial SCM with
 
 .nf
-hg clone https://bitbucket.org/codepilot/phorward
+git clone https://github.com/phorward/phorward.git
 .fi
 
 
@@ -296,8 +299,8 @@ Generator and XPL, a demonstration of a tiny programming language implementation
 written with UniCC.
 
 .nf
-hg clone https://bitbucket.org/codepilot/unicc
-hg clone https://bitbucket.org/codepilot/xpl
+git clone https://github.com/phorward/unicc.git
+git clone https://github.com/phorward/xpl.git
 .fi
 
 
@@ -305,7 +308,7 @@ hg clone https://bitbucket.org/codepilot/xpl
 Optionally, if hacking the UniCC Standard C Parser Template is wanted, clone
 
 .nf
-hg clone https://bitbucket.org/codepilot/cparser
+git clone https://github.com/phorward/Cparser.git
 .fi
 
 
@@ -342,7 +345,7 @@ When bootstraping toolchain is enabled, it is additionally required to install
 the min_lalr1 parser generator. This program can be obtained with
 
 .nf
-hg clone https://bitbucket.org/codepilot/min_lalr1
+git clone https://github.com/phorward/min_lalr1.git
 .fi
 
 
@@ -352,16 +355,25 @@ hg clone https://bitbucket.org/codepilot/min_lalr1
 The UniCC LALR(1) Parser Generator and all subsequent repositories and tools is
 written and maintained by Jan Max Meyer, Phorward Software Technologies.
 
-.SH COPYRIGHT
-
 .P
+Some other projects by the author are:
+
+.RS
+.IP \(bu 3
+\fIpynetree\fR (http://pynetree.org): A light\-weight parsing toolkit written in pure Python.
+.IP \(bu 3
+\fIphorward\fR (http://phorward.phorward\-software.com): A free toolkit for parser development, lexical analysis, regular expressions and more.
+.IP \(bu 3
+\fIJS/CC\fR (http://jscc.brobston.com): The JavaScript parser generator.
+
+= COPYRIGHT =
+
 Copyright (C) 2006\-2016 by Phorward Software Technologies, Jan Max Meyer.
 
-.P
 You may use, modify and distribute this software under the terms and conditions of the 3\-clause BSD license. The full license terms can be obtained from the file LICENSE.
 
-.P
 THIS SOFTWARE IS PROVIDED BY JAN MAX MEYER (PHORWARD SOFTWARE TECHNOLOGIES) AS IS AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL JAN MAX MEYER (PHORWARD SOFTWARE TECHNOLOGIES) BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+.RE
 
 .\" man code generated by txt2tags 2.6 (http://txt2tags.org)
-.\" cmdline: txt2tags -t man unicc.t2t
+.\" cmdline: txt2tags -t man -o unicc.1.man unicc.t2t

@@ -101,12 +101,12 @@ unicc: $(unicc_OBJECTS) $(LIBPHORWARD)
 # Now documentation generation follows, using txt2tags.
 #
 
-doc: README.md unicc.man
+doc: README.md unicc.1.man
 
 README.md: unicc.t2t
 	-rm -f $@
-	txt2tags -t txt -H -o - $? | sed -E -n '1h;1!H;$${;g;s/ +([-A-Z ]+)\n +(=+)/\1\n\2/g;p;}' | sed 's/^  /    /g' >$@
+	pandoc -t markdown -o - $?  | tail -n+6 >$@
 
-unicc.man: unicc.t2t
-	txt2tags -t man $?
+unicc.1.man: unicc.t2t
+	txt2tags -t man -o $@ $?
 
