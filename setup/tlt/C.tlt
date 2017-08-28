@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="yes"?>
 <!--
 UniCC LALR(1) Parser Generator :: Standard C Parser Template
-Copyright (C) 2006-2016 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
 http://www.phorward-software.com ++ contact<<AT>>phorward-software<<DOT>>com
 All rights reserved. See license agreements below.
 
@@ -797,7 +797,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Description:	@@description
  *
  * UniCC Parser Template for C - Version 1.0
- * Copyright (C) 2006-2016 by Phorward Software Technologies, Jan Max Meyer
+ * Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
  */
 
 #if @@prologue_len == 0
@@ -2029,7 +2029,7 @@ int main( int argc, char** argv )
  * Description:	@@description
  *
  * UniCC Parser Template for C - Version 1.0
- * Copyright (C) 2006-2016 by Phorward Software Technologies, Jan Max Meyer
+ * Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
  */
 
 #ifndef @@CBASENAME_H
