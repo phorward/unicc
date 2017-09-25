@@ -185,46 +185,46 @@ its latest version.
 
 Getting the latest version is simple using the Mercurial SCM with
 
-git clone https://github.com/phorward/phorward.git
+    git clone https://github.com/phorward/phorward.git
 
 then, change into the cloned directory and run
 
-./configure
-make
-make install
+    ./configure
+    make
+    make install
 
 After that, clone the following repositories. They provide the UniCC Parser
 Generator and XPL, a demonstration of a tiny programming language implementation
 written with UniCC.
 
-git clone https://github.com/phorward/unicc.git
-git clone https://github.com/phorward/xpl.git
+    git clone https://github.com/phorward/unicc.git
+    git clone https://github.com/phorward/xpl.git
 
 Optionally, if hacking the UniCC Standard C Parser Template is wanted, clone
 
-git clone https://github.com/phorward/Cparser.git
+    git clone https://github.com/phorward/Cparser.git
 
 also.
 
 Change into the directory `unicc` and, again run
 
-./configure
-make
-make install
+    ./configure
+    make
+    make install
 
 After UniCC was successfully built and installed, `xpl` can be compiled
 out of the box without any configuration script.
 
 If the UniCC bootstrapping toolchain is wanted, configure UniCC with
 
-./configure --with-bootstrap
+    ./configure --with-bootstrap
 
 this will bootstrap the UniCC grammar parser with multiple generation states.
 
 When bootstraping toolchain is enabled, it is additionally required to install
 the min_lalr1 parser generator. This program can be obtained with
 
-git clone https://github.com/phorward/min_lalr1.git
+    git clone https://github.com/phorward/min_lalr1.git
 
 # AUTHOR 
 
