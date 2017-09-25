@@ -105,7 +105,7 @@ doc: README.md unicc.1.man
 
 README.md: unicc.t2t
 	-rm -f $@
-	pandoc -t markdown -o - $?  | tail -n+6 >$@
+	txt2tags -t md -H -o - $?  | tail -n+4 >$@
 
 unicc.1.man: unicc.t2t
 	txt2tags -t man -o $@ $?

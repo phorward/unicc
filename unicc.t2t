@@ -1,28 +1,30 @@
 UniCC LALR(1) Parser Generator
 Version 1.1.1
-May 2017
+Sept 2017
+%!postproc(md): '```(.?)' '```\1'
+%!postproc(md): '^    ([^-$])' '\1'
+%!postproc(md): '^ \* ' '- '
+%!postproc(md): '^  \* ' '  - '
+%!postproc(man): '```.?' ''
+%!postproc(man): '\[!.*\)' ''
 
 = NAME =
 
-//unicc//: Universal LALR(1) Parser Generator
-
+"""
+[![Build Status](https://travis-ci.org/phorward/unicc.svg?branch=master)](https://travis-ci.org/phorward/phorward)
+"""
+**UniCC** is a LALR(1) parser generator and language development system.
+ 
 = SYNOPSIS =
 
 unicc [OPTION]... FILE
 
-= ABOUT =
 
-UniCC is a LALR(1) parser generator and language development system.
+= ABOUT =
 
 Its design-goal is to serve as an all-round design and build tool for any
 parsing-related issue, including production-quality compiler construction and
 the implementation of domains specific languages.
-
-UniCC unions an integrated generator for lexical analyzers and a powerful
-LALR(1) parser generator into one software solution. UniCC interfaces a rich,
-extendable and innovative EBNF-based grammar definition language, which gives
-any compiler-developer's task much more comfort and simplicity in implementing
-parsers than ever before.
 
 It comes with useful features for both grammar prototyping and design, parser
 optimization, semantic augmentation and parser programming. Lexical symbols can
@@ -54,14 +56,13 @@ set up its environment. There is also additional documentation in form of a
 User's Manual available, which is included into the binary packages of UniCC
 and can be obtained from the Phorward Software Technologies website.
 
-Please check out http://unicc.phorward-software.com/ from time to time to get
-the latest news, documentation, updates and support on the UniCC LALR(1) Parser
-Generator.
+Please check out http://unicc.phorward-software.com/ to get latest news,
+documentation, updates and support on UniCC.
+
 
 = FEATURES =
 
-The UniCC LALR(1) Parser Generator features the following, unique tools and
-possibilities.
+UniCC features the following, unique tools and possibilities.
 
 - A powerful and inovative BNF-based grammar definition language
 - Full Unicode support
@@ -90,81 +91,97 @@ to a directory holding the UniCC target language templates. If UNICC_TPLDIR is
 not set, UniCC will automatically check for templates in $prefix/share/unicc/tlt
 on Linux/Unix.
 
+
 = COMMAND-LINE OPTIONS =
 
 The UniCC command-line interface supports various, combinable options to
 invoke, modify and specialize the parser generation process, or to trigger
 further tasks.
 
--a, --all-warnings
-	Runs UniCC to print all warnings that come up with the grammar. UniCC
-	normaly supresses some warning messages that raise up during the parse
-	table constructions according to their importance.
+== -a, --all-warnings ==
 
--b //NAME//, --basename //NAME//
-	Defines the specified basename //NAME// to be used for the output
-	file(s) instead of the one derived by the #prefix-directive or by the
-	name of the input filename. This basename is used for all output files
-	if the provided parser template causes the construction of multiple
-	files.
+Runs UniCC to print all warnings that come up with the grammar. UniCC
+normaly supresses some warning messages that raise up during the parse
+table constructions according to their importance.
 
--G, --grammar
-	Dumps an overview of the finally constructred grammar to stderr, right
-	before the parse-tables are generated.
+== -b NAME, --basename NAME ==
 
--h, --help
-	Prints a short overview about the command-line options and exists.
+Defines the specified basename //NAME// to be used for the output
+file(s) instead of the one derived by the #prefix-directive or by the
+name of the input filename. This basename is used for all output files
+if the provided parser template causes the construction of multiple
+files.
 
--n, --no-opt
-	Disables state optimization; By default, the resulting LALR(1) parse
-	states are optimized during table construction by introducing a special
-	SHIFT_REDUCE action which combines a shift and reduction, which is
-	possible when the last symbol of a production is shifted. Standard
-	LALR(1) parsers only support SHIFT or REDUCE, not both operations at the
-	same time. When this option is used, UniCC produces about 20-30% more
-	LALR(1) states.
+== -G, --grammar ==
 
--P, --production
-	Dumps an overview about the finally produced productions and their
-	semantic actions.
+Dumps an overview of the finally constructred grammar to stderr, right
+before the parse-tables are generated.
 
--s, --stats
-	Prints a statistics message to stderr when parser generation has
-	entirely been finished. This will automatically switched on when
-	using the verbose option.
+== -h, --help ==
 
--S, --states
-	Dumps the generated LALR(1) states that had been generated during the
-	parse table generation process.
+Prints a short overview about the command-line options and exists.
 
--t, --stdout
-	Print all code generator output to stdout instead as files.
+== -n, --no-opt ==
 
--T, --symbols
-	Dumps an overview of all used symbols.
+Disables state optimization; By default, the resulting LALR(1) parse
+states are optimized during table construction by introducing a special
+SHIFT_REDUCE action which combines a shift and reduction, which is
+possible when the last symbol of a production is shifted. Standard
+LALR(1) parsers only support SHIFT or REDUCE, not both operations at the
+same time. When this option is used, UniCC produces about 20-30% more
+LALR(1) states.
 
--v, --verbose
-	Prints process messages about the specific tasks during parser generation
-	process. Automatically switches on the stats option for statistics output.
+== -P, --production ==
 
--V, --version
-	Prints copyright and version information and exits.
+Dumps an overview about the finally produced productions and their
+semantic actions.
 
--w, --warnings
-	Print relevant warnings.
+== -s, --stats ==
 
--x, --xml
-	Triggers UniCC to run the parser description file generator additionally
-	to the program module generator. The parser description file generator
-	outputs an XML-based parser representation of the generated parse tables,
-	which can be used by third-party code generators or grammar analsys and
-	debugging tools.
+Prints a statistics message to stderr when parser generation has
+entirely been finished. This will automatically switched on when
+using the verbose option.
 
--X, --XML
-	Triggers UniCC to only run the parser description file generator
-	without running the program-module generator.
+== -S, --states ==
+
+Dumps the generated LALR(1) states that had been generated during the
+parse table generation process.
+
+== -t, --stdout ==
+
+Print all code generator output to stdout instead as files.
+
+== -T, --symbols ==
+
+Dumps an overview of all used symbols.
+
+== -v, --verbose ==
+
+Prints process messages about the specific tasks during parser generation
+process. Automatically switches on the stats option for statistics output.
+
+== -V, --version ==
+
+Prints copyright and version information and exits.
+
+== -w, --warnings ==
+
+Print relevant warnings.
+
+== -x, --xml ==
+
+Triggers UniCC to run the parser description file generator additionally
+to the program module generator. The parser description file generator
+outputs an XML-based parser representation of the generated parse tables,
+which can be used by third-party code generators or grammar analsys and
+debugging tools.
+
+== -X, --XML ==
+Triggers UniCC to only run the parser description file generator
+without running the program-module generator.
 
 Errors and warnings are printed to STDERR, any other kind of output to STDOUT.
+
 
 = BUILDING UNICC FROM SOURCE =
 
@@ -232,6 +249,7 @@ the min_lalr1 parser generator. This program can be obtained with
 
 ``` git clone https://github.com/phorward/min_lalr1.git
 
+
 = AUTHOR =
 
 The UniCC LALR(1) Parser Generator and all subsequent repositories and tools is
@@ -243,10 +261,10 @@ Some other projects by the author are:
 - //phorward// (http://phorward.phorward-software.com): A free toolkit for parser development, lexical analysis, regular expressions and more.
 - //JS/CC// (http://jscc.brobston.com): The JavaScript parser generator.
 
+
 = COPYRIGHT =
 
 Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer.
 
 You may use, modify and distribute this software under the terms and conditions of the 3-clause BSD license. The full license terms can be obtained from the file LICENSE.
 
-THIS SOFTWARE IS PROVIDED BY JAN MAX MEYER (PHORWARD SOFTWARE TECHNOLOGIES) ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL JAN MAX MEYER (PHORWARD SOFTWARE TECHNOLOGIES) BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

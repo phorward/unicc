@@ -1,33 +1,17 @@
-.TH "UniCC LALR(1) Parser Generator" 1 "May 2017" "Version 1.1.1"
-
+.TH "UniCC LALR(1) Parser Generator" 1 "Sept 2017" "Version 1.1.1"
 
 .SH NAME
 
 .P
-\fIunicc\fR: Universal LALR(1) Parser Generator
-
+\fBUniCC\fR is a LALR(1) parser generator and language development system.
 .SH SYNOPSIS
-
 .P
 unicc [OPTION]... FILE
-
 .SH ABOUT
-
-.P
-UniCC is a LALR(1) parser generator and language development system.
-
 .P
 Its design\-goal is to serve as an all\-round design and build tool for any
 parsing\-related issue, including production\-quality compiler construction and
 the implementation of domains specific languages.
-
-.P
-UniCC unions an integrated generator for lexical analyzers and a powerful
-LALR(1) parser generator into one software solution. UniCC interfaces a rich,
-extendable and innovative EBNF\-based grammar definition language, which gives
-any compiler\-developer's task much more comfort and simplicity in implementing
-parsers than ever before.
-
 .P
 It comes with useful features for both grammar prototyping and design, parser
 optimization, semantic augmentation and parser programming. Lexical symbols can
@@ -35,12 +19,10 @@ be directly defined within productions, right\-hand side items can be referenced
 by meaningful names within semantic actions, instead of only their offsets.
 Features like virtual\- and embedded\-productions finally help to rapidly build\-up
 iterative and optional grammatical structures.
-
 .P
 Standard features like automatic conflict resolution, terminal and production
 precedence association, state compression as well as parser trace and behavior
 modification trough semantic actions round up the whole system.
-
 .P
 UniCC is technically a target language independent parser generator, which
 means that it is not bound to a special programming language. Currently, only
@@ -48,7 +30,6 @@ support of the C programming language is given due the UniCC Standard C Parser
 Template. More standard templates for other languages like C++ and Java will be
 developed and released in future by Phorward Software Technologies, but are not
 available for now; Any help and support on this area is appreciated.
-
 .P
 UniCC has been developed since 2006 and has its origin at Phorward Software
 Technologies and is initially written and maintained by its 1985 born core
@@ -56,23 +37,17 @@ developer, Jan Max Meyer. Phorward Software Technologies is a software company
 from Dortmund, Germany, which focuses its business on compiler construction,
 scripting languages and software development tools, both in the area of open
 source and proprietary solutions.
-
 .P
 This document should serve as a quick reference note on how to use UniCC and
 set up its environment. There is also additional documentation in form of a
 User's Manual available, which is included into the binary packages of UniCC
 and can be obtained from the Phorward Software Technologies website.
-
 .P
-Please check out http://unicc.phorward\-software.com/ from time to time to get
-the latest news, documentation, updates and support on the UniCC LALR(1) Parser
-Generator.
-
+Please check out http://unicc.phorward\-software.com/ to get latest news,
+documentation, updates and support on UniCC.
 .SH FEATURES
-
 .P
-The UniCC LALR(1) Parser Generator features the following, unique tools and
-possibilities.
+UniCC features the following, unique tools and possibilities.
 
 .RS
 .IP \(bu 3
@@ -106,62 +81,41 @@ Supporting the C programming language via the UniCC Standard C Parser
 Template, providing many useful features like integrated Syntax Tree
 Generator and Error Recovery
 .RE
+.IP
 
 .SH ENVIRONMENT SETUP
-
 .P
 To get UniCC work properly, the \fBunicc\fR executable must be in the PATH.
 It is also required to set an environment variable UNICC_TPLDIR that directs
 to a directory holding the UniCC target language templates. If UNICC_TPLDIR is
 not set, UniCC will automatically check for templates in $prefix/share/unicc/tlt
 on Linux/Unix.
-
 .SH COMMAND-LINE OPTIONS
-
 .P
 The UniCC command\-line interface supports various, combinable options to
 invoke, modify and specialize the parser generation process, or to trigger
 further tasks.
-
+.SS -a, --all-warnings
 .P
-\-a, \-\-all\-warnings
-
-.RS
 Runs UniCC to print all warnings that come up with the grammar. UniCC
 normaly supresses some warning messages that raise up during the parse
 table constructions according to their importance.
-.RE
-
+.SS -b NAME, --basename NAME
 .P
-\-b \fINAME\fR, \-\-basename \fINAME\fR
-
-.RS
 Defines the specified basename \fINAME\fR to be used for the output
 file(s) instead of the one derived by the #prefix\-directive or by the
 name of the input filename. This basename is used for all output files
 if the provided parser template causes the construction of multiple
 files.
-.RE
-
+.SS -G, --grammar
 .P
-\-G, \-\-grammar
-
-.RS
 Dumps an overview of the finally constructred grammar to stderr, right
 before the parse\-tables are generated.
-.RE
-
+.SS -h, --help
 .P
-\-h, \-\-help
-
-.RS
 Prints a short overview about the command\-line options and exists.
-.RE
-
+.SS -n, --no-opt
 .P
-\-n, \-\-no\-opt
-
-.RS
 Disables state optimization; By default, the resulting LALR(1) parse
 states are optimized during table construction by introducing a special
 SHIFT_REDUCE action which combines a shift and reduction, which is
@@ -169,112 +123,64 @@ possible when the last symbol of a production is shifted. Standard
 LALR(1) parsers only support SHIFT or REDUCE, not both operations at the
 same time. When this option is used, UniCC produces about 20\-30% more
 LALR(1) states.
-.RE
-
+.SS -P, --production
 .P
-\-P, \-\-production
-
-.RS
 Dumps an overview about the finally produced productions and their
 semantic actions.
-.RE
-
+.SS -s, --stats
 .P
-\-s, \-\-stats
-
-.RS
 Prints a statistics message to stderr when parser generation has
 entirely been finished. This will automatically switched on when
 using the verbose option.
-.RE
-
+.SS -S, --states
 .P
-\-S, \-\-states
-
-.RS
 Dumps the generated LALR(1) states that had been generated during the
 parse table generation process.
-.RE
-
+.SS -t, --stdout
 .P
-\-t, \-\-stdout
-
-.RS
 Print all code generator output to stdout instead as files.
-.RE
-
+.SS -T, --symbols
 .P
-\-T, \-\-symbols
-
-.RS
 Dumps an overview of all used symbols.
-.RE
-
+.SS -v, --verbose
 .P
-\-v, \-\-verbose
-
-.RS
 Prints process messages about the specific tasks during parser generation
 process. Automatically switches on the stats option for statistics output.
-.RE
-
+.SS -V, --version
 .P
-\-V, \-\-version
-
-.RS
 Prints copyright and version information and exits.
-.RE
-
+.SS -w, --warnings
 .P
-\-w, \-\-warnings
-
-.RS
 Print relevant warnings.
-.RE
-
+.SS -x, --xml
 .P
-\-x, \-\-xml
-
-.RS
 Triggers UniCC to run the parser description file generator additionally
 to the program module generator. The parser description file generator
 outputs an XML\-based parser representation of the generated parse tables,
 which can be used by third\-party code generators or grammar analsys and
 debugging tools.
-.RE
-
+.SS -X, --XML
 .P
-\-X, \-\-XML
-
-.RS
 Triggers UniCC to only run the parser description file generator
 without running the program\-module generator.
-.RE
-
 .P
 Errors and warnings are printed to STDERR, any other kind of output to STDOUT.
-
 .SH BUILDING UNICC FROM SOURCE
-
 .P
 UniCC is a software that was entirely established and developed on top of the
 Phorward Toolkit.
-
 .P
 The Phorward Toolkit and its library \fIlibphorward\fR provide many useful
 functions for general purpose and extended software\-development tasks,
 including standard data structures, a system\-independent interface, extending
 data types and regular expression management functions, required by UniCC to
 construct the lexical analyzers.
-
 .P
 The Phorward Toolkit is released under the BSD License. More information can
 be obtained from the official product website at http://phorward\-software.com.
-
 .P
 Before UniCC can be built, ensure that the Phorward Toolkit is installed in
 its latest version.
-
 .P
 Getting the latest version is simple using the Mercurial SCM with
 
@@ -314,7 +220,6 @@ git clone https://github.com/phorward/Cparser.git
 
 .P
 also.
-
 .P
 Change into the directory unicc and, again run
 
@@ -328,7 +233,6 @@ make install
 .P
 After UniCC was successfully built and installed, xpl can be compiled
 out of the box without any configuration script.
-
 .P
 If the UniCC bootstrapping toolchain is wanted, configure UniCC with
 
@@ -339,7 +243,6 @@ If the UniCC bootstrapping toolchain is wanted, configure UniCC with
 
 .P
 this will bootstrap the UniCC grammar parser with multiple generation states.
-
 .P
 When bootstraping toolchain is enabled, it is additionally required to install
 the min_lalr1 parser generator. This program can be obtained with
@@ -350,11 +253,9 @@ git clone https://github.com/phorward/min_lalr1.git
 
 
 .SH AUTHOR
-
 .P
 The UniCC LALR(1) Parser Generator and all subsequent repositories and tools is
 written and maintained by Jan Max Meyer, Phorward Software Technologies.
-
 .P
 Some other projects by the author are:
 
@@ -365,15 +266,14 @@ Some other projects by the author are:
 \fIphorward\fR (http://phorward.phorward\-software.com): A free toolkit for parser development, lexical analysis, regular expressions and more.
 .IP \(bu 3
 \fIJS/CC\fR (http://jscc.brobston.com): The JavaScript parser generator.
+.RE
+.IP
 
-= COPYRIGHT =
-
-Copyright (C) 2006\-2016 by Phorward Software Technologies, Jan Max Meyer.
-
+.SH COPYRIGHT
+.P
+Copyright (C) 2006\-2017 by Phorward Software Technologies, Jan Max Meyer.
+.P
 You may use, modify and distribute this software under the terms and conditions of the 3\-clause BSD license. The full license terms can be obtained from the file LICENSE.
 
-THIS SOFTWARE IS PROVIDED BY JAN MAX MEYER (PHORWARD SOFTWARE TECHNOLOGIES) AS IS AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL JAN MAX MEYER (PHORWARD SOFTWARE TECHNOLOGIES) BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-.RE
-
-.\" man code generated by txt2tags 2.6 (http://txt2tags.org)
+.\" man code generated by txt2tags 2.6. (http://txt2tags.org)
 .\" cmdline: txt2tags -t man -o unicc.1.man unicc.t2t
