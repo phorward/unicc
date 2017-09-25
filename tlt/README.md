@@ -4,5 +4,5 @@ UniCC Standard C Parser Template.
 The sources of this parser template are maintained in an own repository
 that can be cloned with the following command:
 
-	hg clone https://bitbucket.org/codepilot/cparser
+	git clone https://github.com/phorward/Cparser.git
 
