@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/phorward/unicc.svg?branch=master)](https://travis-ci.org/phorward/phorward)
+[![Build Status](https://travis-ci.org/phorward/unicc.svg?branch=master)](https://travis-ci.org/phorward/unicc)
 
 **UniCC** is a LALR(1) parser generator and language development system.
 
