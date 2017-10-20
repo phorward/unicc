@@ -11,49 +11,24 @@ Usage:	The dynamic program module generator of the UniCC parser generator,
 		using a template.
 ----------------------------------------------------------------------------- */
 
-/*
- * Includes
- */
-#include "p_global.h"
-#include "p_error.h"
-#include "p_proto.h"
+#include "unicc.h"
 
-/*
- * Defines
- */
 #define	LEN_EXT		"_len"
 #define SYMBOL_VAR	"symbol"
 
-/*
- * Global variables
- */
 extern FILE*	status;
 
-/*
- * Functions
- */
+/** Escapes the input-string according to the parser template's
+escaping-sequence definitions. This function is used to print identifiers and
+character-class definitions to the target parser without getting trouble with
+the target language's escape characters (e.g. as in C - I love C!!!).
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_escape_for_target()
+//g// is the generator template structure,
+//str// is the source string
+//clear// is, if TRUE, str will be free'd, else not
 
-	Author:			Jan Max Meyer
-
-	Usage:			Escapes the input-string according to the parser template's
-					escaping-sequence definitions. This function is used to
-					print identifiers and character-class definitions to the
-					target parser without getting trouble with the target
-					language's escape characters (e.g. as in C - I love C!!!).
-
-	Parameters:		GENERATOR*	g					Generator template structure
-					char*		str					Source string
-					BOOLEAN		clear				If TRUE, str will be free'd,
-													else not
-
-	Returns:		char*							The final (escaped) string
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns a char*, which is the final (escaped) string
+*/
 char* p_escape_for_target( GENERATOR* g, char* str, BOOLEAN clear )
 {
 	int		i;
@@ -80,22 +55,11 @@ char* p_escape_for_target( GENERATOR* g, char* str, BOOLEAN clear )
 }
 
 #if 0
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_build_code_localizations()
+/** Expands all @@line macros to fullfill line number counting.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Expands all @@line macros to fullfill line number
-					counting.
-
-	Parameters:		char**		str					Target string to perform
-													replacement on.
-					GENERATOR*	g					Generator template structure
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//str// is the target string to perform replacement on.
+//g// is the generator template structure.
+*/
 static int 		line		= 0;
 static char*	genstr;
 
@@ -135,38 +99,17 @@ void p_build_code_localizations( char** str, GENERATOR* g )
 }
 #endif
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_build_action()
+/** Constructs target language code for production reduction code blocks.
 
-	Author:			Jan Max Meyer
+//parser// is the parser information structure,
+//g// is the generator template structure
+//p// is the production
+//base// is the code-base template for the reduction action
+//def_code// are the defines if the base-pointer is a default-code block or an
+individually coded one.
 
-	Usage:			Constructs target language code for production reduction
-					code blocks.
-
-	Parameters:		PARSER*		parser				Parser information structure
-					GENERATOR*	g					Generator template structure
-					PROD*		p					Production
-					char*		base				Code-base template for the
-													reduction action
-					BOOLEAN		def_code			Defines if the base-pointer
-													is a default-code block or
-													an individually coded one.
-
-	Returns:		char*							Pointer to the generated
-													code - must be freed by
-													caller.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
-	12.07.2010	Jan Max Meyer	Print warning if code symbol references to un-
-								defined symbol on the semantic rhs!
-	23.04.2011	Jan Max Meyer	Assignment of multiple left-hand sides
-	04.06.2011	Jan Max Meyer	In case of the default action code use, never
-								refer to the semantic right hand side if there
-								is one; This causes compiler warnings in the
-								resulting parser template (and unpredictable
-								results...)
------------------------------------------------------------------------------ */
+Returns a char*-pointer to the generated code - must be freed by the caller.
+*/
 char* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 			char* base, BOOLEAN def_code )
 {
@@ -426,20 +369,7 @@ char* p_build_action( PARSER* parser, GENERATOR* g, PROD* p,
 	RETURN( ret );
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_build_scan_action()
-
-	Author:			Jan Max Meyer
-
-	Usage:			Construct the scanner action code from templates.
-
-	Parameters:		<type>		<identifier>		<description>
-
-	Returns:		<type>							<description>
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+/** Construct the scanner action code from templates. */
 char* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s, char* base )
 {
 	plex*			lex;
@@ -574,20 +504,12 @@ char* p_build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s, char* base )
 	RETURN( ret );
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_mkproduction_str()
+/** Converts a production into a dynamic string.
 
-	Author:			Jan Max Meyer
+//p// is the production pointer
 
-	Usage:			Converts a production into a dynamic string.
-
-	Parameters:		PROD*		p					Production pointer
-
-	Returns:		char*							Generated string
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns a generated string.
+*/
 char* p_mkproduction_str( PROD* p )
 {
 	char*		ret;
@@ -637,26 +559,16 @@ char* p_mkproduction_str( PROD* p )
 	return ret;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_load_generator()
+/** Loads a XML-defined code generator into an adequate GENERATOR structure.
+Pointers are only set to the values mapped to the XML-structure, so no memory is
+wasted.
 
-	Author:			Jan Max Meyer
+//parser// is the parser information structure.
+//g// is the target generator.
+//genfile// is the path to generator file.
 
-	Usage:			Loads a XML-defined code generator into an adequate
-					GENERATOR structure. Pointers are only set to the
-					values mapped to the XML-structure, so no memory is
-					wasted.
-
-	Parameters:		PARSER*			parser			Parser information structure
-					GENERATOR*		g				The target generator
-					char*			genfile			Path to generator file
-
-	Returns:		BOOLEAN			TRUE			on success
-									FALSE			on error.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns TRUE on success, FALSE on error.
+*/
 BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, char* genfile )
 {
 	char*	name;
@@ -822,24 +734,13 @@ BOOLEAN p_load_generator( PARSER* parser, GENERATOR* g, char* genfile )
 }
 
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_build_code()
+/** This is the main function for the code-generator. It first reads a target
+language generator, and then constructs code segments, which are finally pasted
+into the parser template (which is defined within the <driver>-tag of the
+generator file).
 
-	Author:			Jan Max Meyer
-
-	Usage:			This is the main function for the code-generator.
-					It first reads a target language generator, and then
-					constructs code segments, which are finally pasted into
-					the parser template (which is defined within the
-					<driver>-tag of the generator file).
-
-	Parameters:		PARSER*		parser			Parser information structure
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//parser// is the parser information structure.
+*/
 void p_build_code( PARSER* parser )
 {
 	GENERATOR		generator;

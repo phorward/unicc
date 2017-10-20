@@ -9,40 +9,16 @@ Author:	Jan Max Meyer
 Usage:	Utility functions
 ----------------------------------------------------------------------------- */
 
-/*
- * Includes
- */
-#include "p_global.h"
-#include "p_proto.h"
-#include "p_error.h"
+#include "unicc.h"
 
-/*
- * Global variables
- */
+/** Creates a name derivation. The derivation of a name is just a string, where
+an character is appended to, and which is unique.
 
+//name// is the original name to be derived.
+//append_char// is the character to be appended.
 
-/*
- * Functions
- */
-
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_derivation_name()
-
-	Author:			Jan Max Meyer
-
-	Usage:			Creates a name derivation.
-					The derivation of a name is just a string, where an
-					character is appended to, and which is unique.
-
-	Parameters:		char*		name		Original name to be derived.
-					char		append_char	Character to be appended.
-
-	Returns:		char*					The derived name; New allocated memory,
-											must be freed!
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns the derived name; New allocated memory, must be freed!
+*/
 char* p_derivation_name( char* name, char append_char )
 {
 	char*		ret;
@@ -74,31 +50,24 @@ char* p_derivation_name( char* name, char append_char )
 	return ret;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_unescape_char()
+/** Parses a single character, even escaped ones.
 
-	Author:			Jan Max Meyer
+//str// is the Pointer where the character parse starts at.
+//strfix// is the optional return pointer for the new position next to parsed
+character definition.
 
-	Usage:			Parses a single character, even escaped ones.
-
-	Parameters:		char*		str			Pointer where the character parse
-											starts at.
-					char**		strfix		Optional return pointer for the
-											new position next to parsed character
-											definition.
-
-	Returns:		int						The character value
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
-	18.07.2009	Jan Max Meyer	Negative escaped characters
------------------------------------------------------------------------------ */
+Returns the character value */
 int p_unescape_char( char* str, char** strfix )
 {
 	char*	ptr = str;
 	int		ch = 0;
 	short	cnt = 0;
 	BOOLEAN	neg = FALSE;
+
+	/*
+	18.07.2009 Jan Max Meyer:
+	Negative escaped characters
+	*/
 
 	if( *ptr == '\\' )
 	{
@@ -205,21 +174,7 @@ int p_unescape_char( char* str, char** strfix )
 	return ch;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_find_base_symbol()
-
-	Author:			Jan Max Meyer
-
-	Usage:			Finds out the base symbol for a possibly derived symbol,
-					and returns it.
-
-	Parameters:		<type>		<identifier>		<description>
-
-	Returns:		<type>							<description>
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+/** Finds out the base symbol for a possibly derived symbol, and returns it. */
 SYMBOL* p_find_base_symbol( SYMBOL* sym )
 {
 	while( sym->derived_from )
@@ -228,20 +183,7 @@ SYMBOL* p_find_base_symbol( SYMBOL* sym )
 	return sym;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_gen_c_identifier()
-
-	Author:			Jan Max Meyer
-
-	Usage:			Construct a C-identifier from a file-name.
-
-	Parameters:		<type>		<identifier>		<description>
-
-	Returns:		<type>							<description>
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+/** Construct a C-identifier from a file-name. */
 char* p_gen_c_identifier( char* str, BOOLEAN to_upper )
 {
 	char*	p;

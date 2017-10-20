@@ -9,47 +9,21 @@ Author:	Jan Max Meyer
 Usage:	The XML-based Parser Definition code-generator.
 ----------------------------------------------------------------------------- */
 
-/*
- * Includes
- */
 #include "p_global.h"
 #include "p_error.h"
 #include "p_proto.h"
 
-/*
- * Defines
- */
 #define XML_YES		"yes"
 #define XML_NO		"no"
 
 #define SYMBOL_VAR	"symbol"
 
-/*
- * Global variables
- */
 extern char*	pmod[];
 
-/*
- * Functions
- */
+/** Dumps a character-class definition into an XML-structure.
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_xml_ccl()
-
-	Author:			Jan Max Meyer
-
-	Usage:			Dumps a character-class definition into an XML-structure.
-
-	Parameters:		XML_T		parent_xml			Parent element where the
-													character-class block will
-													be attached to.
-					pccl	ccl					The character-class.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//parent_xml// is the Parent element where the character-class block will be
+attached to. //ccl// is the character-class to be dumped. */
 static void p_xml_ccl( XML_T parent_xml, pccl* ccl )
 {
 	int			i;
@@ -79,25 +53,13 @@ static void p_xml_ccl( XML_T parent_xml, pccl* ccl )
 	VOIDRET;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_xml_raw_code()
+/** Utility function that generates a raw-code-tag from a string.
 
-	Author:			Jan Max Meyer
+//code_xml// is the parent element where the raw-code block will be attached to.
+//code// is the content of the raw code block.
 
-	Usage:			Utility function that generates a raw-code-tag from a
-					string.
-
-	Parameters:		XML_T		code_xml			Parent element where the
-													raw-code block will be
-													attached to.
-					char*		code				The content of the raw
-													code block.
-
-	Returns:		XML_T							Raw-code tag.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns a XML_T raw-code tag.
+*/
 static XML_T p_xml_raw_code( XML_T code_xml, char* code )
 {
 	XML_T	raw_code;
@@ -113,33 +75,19 @@ static XML_T p_xml_raw_code( XML_T code_xml, char* code )
 	return raw_code;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_xml_build_action()
+/** Constructs a XML-structure for a production's semantic action code, by
+splitting the original program code into XML-blocks, which can later be easier
+translated into the particular parser program.
 
-	Author:			Jan Max Meyer
+//code_xml// is the code-XML-node where elements will be attached to.
+//parser// is the parser information structure.
+//p// is the production.
+//base// is the code-base template for the reduction action.
+//def_code// defines if the base-pointer is a default-code block or an
+individually coded one.
 
-	Usage:			Constructs a XML-structure for a production's semantic
-					action code, by splitting the original program code into
-					XML-blocks, which can later be easier translated into the
-					particular parser program.
-
-	Parameters:		XML_T		code_xml			Code-XML-node where elements
-													will be attached to.
-					PARSER*		parser				Parser information structure
-					PROD*		p					Production
-					char*		base				Code-base template for the
-													reduction action
-					BOOLEAN		def_code			Defines if the base-pointer
-													is a default-code block or
-													an individually coded one.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
-	12.07.2010	Jan Max Meyer	Print warning if code symbol references to un-
-								defined symbol on the semantic rhs!
------------------------------------------------------------------------------ */
+Returns TRUE on success.
+*/
 static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 		char* base, BOOLEAN def_code )
 {
@@ -159,6 +107,13 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 	SYMBOL*			sym;
 	char*			raw;
 	XML_T			code;
+
+	/*
+	12.07.2010	Jan Max Meyer
+
+	Print warning if code symbol references to undefined symbol on the
+	semantic rhs!
+	*/
 
 	PROC( "p_xml_build_action" );
 	PARMS( "code_xml", "%p", code_xml );
@@ -398,20 +353,7 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 	RETURN( !on_error );
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_build_scan_action()
-
-	Author:			Jan Max Meyer
-
-	Usage:			<usage>
-
-	Parameters:		<type>		<identifier>		<description>
-
-	Returns:		<type>							<description>
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+/** Builds the scanner actions */
 static BOOLEAN p_xml_build_scan_action(
 	XML_T code_xml, PARSER* parser, SYMBOL* s, char* base )
 {
@@ -559,20 +501,7 @@ static BOOLEAN p_xml_build_scan_action(
 	RETURN( TRUE );
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_build_dfa()
-
-	Author:			Jan Max Meyer
-
-	Usage:			<usage>
-
-	Parameters:		<type>		<identifier>		<description>
-
-	Returns:		<type>							<description>
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+/** Builds the DFAs XML structure. */
 static void p_build_dfa( XML_T parent, pregex_dfa* dfa )
 {
 	pregex_dfa_st*	st;
@@ -1120,25 +1049,12 @@ static void p_xml_print_vtypes( PARSER* parser, XML_T par )
 	VOIDRET;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_build_xml()
+/** Serves a universal XML-code generator.
 
-	Author:			Jan Max Meyer
+//parser// is the parser information structure.
 
-	Usage:			Serves a universal XML-code generator.
-
-	Parameters:		PARSER*		parser			Parser information structure
-					BOOLEAN		finished		TRUE: Parser generation has
-														finished successful.
-												FALSE: Parser generation failed
-														because of parse
-															errors.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+If //finished// is the TRUE: Parser generation has finished successful.
+FALSE: Parser generation failed because of parse errors. */
 void p_build_xml( PARSER* parser, BOOLEAN finished )
 {
 	XML_T			par;

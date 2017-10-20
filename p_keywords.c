@@ -7,11 +7,11 @@ All rights reserved. See LICENSE for more information.
 File:	p_keywords.c
 Author:	Jan Max Meyer
 Usage:	Turns regular expression definitions into deterministic state
-		machines, by using the Phorward regular expression library.
+		machines, by using the libphorward regular expression tools.
 ----------------------------------------------------------------------------- */
 
 /*
-	An historical notice:
+	An note on history:
 
 	Until UniCC v0.24, the keyword-only feature has been extended to
 	entire regular expressions. Later on in UniCC 0.27, the term
@@ -22,39 +22,12 @@ Usage:	Turns regular expression definitions into deterministic state
 	put into one lexical analysis part, since UniCC 0.27.
 */
 
-/*
- * Includes
- */
-#include "p_global.h"
-#include "p_error.h"
-#include "p_proto.h"
+#include "unicc.h"
 
-/*
- * Global variables
- */
+/** Converts the keywords within the states into a DFA, and maybe re-uses state
+machines matching the same pool of keywords.
 
-
-/*
- * Functions
- */
-
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_keywords_to_dfa()
-
-	Author:			Jan Max Meyer
-
-	Usage:			Converts the keywords within the states into a DFA, and
-					maybe re-uses state machines matching the same pool of
-					keywords.
-
-	Parameters:		PARSER*		parser				Pointer to parser
-													information structure.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//parser// is the pointer to parser information structure. */
 void p_keywords_to_dfa( PARSER* parser )
 {
 	pregex_nfa*	nfa;
@@ -126,21 +99,9 @@ void p_keywords_to_dfa( PARSER* parser )
 	VOIDRET;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_single_lexer()
+/** Constructs a single DFA for a general token lexer.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Constructs a single DFA for a general token lexer.
-
-	Parameters:		PARSER*		parser				Pointer to parser
-													information structure.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//parser// is the pointer to parser information structure. */
 void p_single_lexer( PARSER* parser )
 {
 	pregex_nfa*			nfa;
@@ -191,33 +152,16 @@ void p_single_lexer( PARSER* parser )
 	VOIDRET;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_find_equal_dfa()
+/** Walks trough the DFA machines of the current parser definition and tests if
+the temporary generated DFA contains the same states than a one already defined
+in the parser.
 
-	Author:			Jan Max Meyer
+//parser// is the parser information structure.
+//ndfa// is the pointer to DFA that is compared with the other machine already
+integrated into the parser structure.
 
-	Usage:			Walks trough the DFA machines of the current parser
-					definition and tests if the temporary generated DFA contains
-					the same states than a one already defined in the parser.
-
-	Parameters:		PARSER*		parser				The parser information
-													structure.
-					pregex_dfa*	ndfa				Pointer to DFA that is
-													compared with the other
-													machine already integrated
-													into the parser structure.
-
-	Returns:		pregex_dfa*						Returns the pointer to a
-													matching DFA, else
-													(pregex_dfa*)NULL.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
-	19.11.2009	Jan Max Meyer	Revision of entire function, to work with
-								structures of the new regex-library.
-	16.01.2014	Jan Max Meyer	Fixed sources to run with libphorward v0.18
-								(current development version).
------------------------------------------------------------------------------ */
+Returns the pointer to a matching DFA, else (pregex_dfa*)NULL.
+*/
 pregex_dfa* p_find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
 {
 	LIST*			l;
@@ -230,6 +174,15 @@ pregex_dfa* p_find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
 	pregex_dfa_st*	dfa_st		[2];
 	pregex_dfa_tr*	dfa_ent		[2];
 	BOOLEAN			match;
+
+	/*
+	19.11.2009	Jan Max Meyer
+	Revision of entire function, to work with structures of the new
+	regex-library.
+
+	16.01.2014	Jan Max Meyer
+	Fixed sources to run with libphorward v0.18 (current development version).
+	*/
 
 	PROC( "p_find_equal_dfa" );
 	PARMS( "parser", "%p", parser );
@@ -294,27 +247,13 @@ pregex_dfa* p_find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
 	RETURN( (pregex_dfa*)NULL );
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_symbol_to_nfa()
+/** Converts a symbols regular expression pattern defininition into a
+NFA state machine.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Convers a symbol's regular expression pattern defininition
-					into a NFA state machine.
-
-	Parameters:		PARSER*		parser				Pointer to parser
-													information structure.
-					pregex_nfa*	nfa					Pointer to NFA structure,
-													that is extended by this
-													function.
-					SYMBOL*		sym					Symbol which is associated
-													with this NFA.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//parser// is the pointer to parser information structure.
+//nfa// is the pointer to NFA structure, that is extended by this function.
+//sym// is the symbol which is associated with this NFA.
+*/
 void p_symbol_to_nfa( PARSER* parser, pregex_nfa* nfa, SYMBOL* sym )
 {
 	PROC( "p_symbol_to_nfa" );

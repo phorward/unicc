@@ -10,59 +10,20 @@ Usage:	Memory maintenance and management functions for several datatypes used
 		in UniCC for symbol and state management.
 ----------------------------------------------------------------------------- */
 
-/*
- * Includes
- */
-#include "p_global.h"
-#include "p_proto.h"
-#include "p_error.h"
+#include "unicc.h"
 
-/*
- * Global variables
- */
+/** Creates a new grammar symbol, or returns the grammar symbol, if it already
+exists in the symbol table. A grammar symbol can either be a terminal symbol or
+a non-terminal symbol.
 
+//p// is the parser information structure
+//dfn// is the symbol definition; in case of a charclass terminal, this is a
+pointer to the ccl, else an identifying name.
+//type// is the symbol type.
+//atts// is the symbol attributes.
+//create// defines, if TRUE, create symbol if it does not exist!
 
-/*
- * Functions
- */
-
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_get_symbol()
-
-	Author:			Jan Max Meyer
-
-	Usage:			Creates a new grammar symbol, or returns the grammar symbol,
-					if it already exists in the symbol table.
-
-					A grammar symbol can either be a terminal symbol or a
-					non-terminal symbol.
-
-	Parameters:		PARSER*		p					Parser information structure
-					void*		dfn					Symbol definition; in case
-													of a charclass terminal,
-													this is a pointer to the
-													ccl, else an identifying
-													name.
-
-					int			type				Symbol type
-					int			atts				Symbol attributes
-					BOOLEAN		create				Create symbol if it does
-													not exist!
-
-	Returns:		SYMBOL*							Pointer to the SYMBOL
-													structure representing the
-													symbol.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
-	26.03.2008	Jan Max Meyer	Distinguish between the different symbol types
-								even in the hash-table, parameters added for
-								error symbol
-	11.11.2009	Jan Max Meyer	Changed name-parameter to dfn, to allow direct
-								charclass-assignments to p_get_symbol() instead
-								of a name that defines the charclass. Also,
-								added trace macros.
------------------------------------------------------------------------------ */
+Returns a SYMBOL*-pointer to the SYMBOL structure representing the symbol. */
 SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 {
 	char		keych;
@@ -70,6 +31,17 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 	char*		name		= (char*)dfn;
 	SYMBOL*		sym			= (SYMBOL*)NULL;
 	plistel*	e;
+
+	/*
+	26.03.2008	Jan Max Meyer
+	Distinguish between the different symbol types even in the hash-table,
+	parameters added for error symbol.
+
+	11.11.2009	Jan Max Meyer
+	Changed name-parameter to dfn, to allow direct charclass-assignments to
+	p_get_symbol() instead of a name that defines the charclass.
+	Also, added trace macros.
+	*/
 
 	PROC( "p_get_symbol" );
 	PARMS( "p", "%p", p );
@@ -203,20 +175,9 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 	RETURN( sym );
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_free_symbol()
+/** Frees a symbol structure and all its members.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Frees a symbol structure and all its members.
-
-	Parameters:		SYMBOL*			sym				Symbol to be freed.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//sym// is the symbol to be freed. */
 void p_free_symbol( SYMBOL* sym )
 {
 	pfree( sym->code );
@@ -236,26 +197,15 @@ void p_free_symbol( SYMBOL* sym )
 	pfree( sym );
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_create_production()
+/** Creates a production for an according left-hand side and inserts it into the
+global list of productions.
 
-	Author:			Jan Max Meyer
+//p// is the parser information structure.
+//lhs// is the pointer to the left-hand side the production belongs to.
+(SYMBOL*)NULL avoids a creation of a production.
 
-	Usage:			Creates a production for an according left-hand side and
-					inserts it into the global list of productions.
-
-	Parameters:		PARSER*			p				Parser information structure
-					SYMBOL*			lhs				Pointer to the left-hand
-													side the production belongs
-													to. (SYMBOL*)NULL avoids a
-													creation of a production.
-
-	Returns:		PROD*							Pointer to the production,
-													(PROD*)NULL in error case.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns a PROD*-pointer to the production, or (PROD*)NULL in error case.
+*/
 PROD* p_create_production( PARSER* p, SYMBOL* lhs )
 {
 	PROD*		prod		= (PROD*)NULL;
@@ -304,31 +254,21 @@ PROD* p_create_production( PARSER* p, SYMBOL* lhs )
 	return prod;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_append_to_production()
+/** Appends a symbol and a possible, semantic identifier to the right-hand side
+of a production.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Appends a symbol and a possible, semantic identifier to the
-					right-hand side of a production.
-
-	Parameters:		PROD*			p				Production
-					SYMBOL*			sym				Symbol to append to
-					 								production
-					char*			name			Optional semantic identifier
-													for the symbol on the
-													right-hand side, can be
-													(char*)NULL.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
-	11.07.2010	Jan Max Meyer	Use name of derived symbol in case of
-								virtual productions.
------------------------------------------------------------------------------ */
+//p// is the production to be extended.
+//sym// is the symbol to append to production.
+//name// is the optional semantic identifier for the symbol on the right-hand
+side, can be (char*)NULL.
+*/
 void p_append_to_production( PROD* p, SYMBOL* sym, char* name )
 {
+	/*
+	11.07.2010	Jan Max Meyer
+	Use name of derived symbol in case of virtual productions.
+	*/
+
 	if( p && sym )
 	{
 		if( !( p->rhs = list_push( p->rhs, sym ) ) )
@@ -356,20 +296,9 @@ void p_append_to_production( PROD* p, SYMBOL* sym, char* name )
 }
 
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_free_production()
+/** Frees a production structure and all its members.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Frees a production structure and all its members.
-
-	Parameters:		PROD*			prod			Production to be freed.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//prod// is the production to be freed. */
 void p_free_production( PROD* prod )
 {
 	LIST*	li		= (LIST*)NULL;
@@ -397,30 +326,18 @@ void p_free_production( PROD* prod )
 	pfree( prod );
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_create_item()
 
-	Author:			Jan Max Meyer
+/** Creates a new state item to be used for performing the closure.
 
-	Usage:			Creates a new state item to be used for performing the
-					closure.
+//st// is the state-pointer where to add the new item to.
 
-	Parameters:		STATE*		st					State-Pointer where to add
-													the new item to.
-					PROD*		p					Pointer to the production
-													that should be associated by
-													the item.
-					LIST*		lookahead			A possible list of lookahead
-													terminal symbol pointers.
-													This can be filled later.
+//p// is the pointer to the production that should be associated by the item.
 
-	Returns:		ITEM*							Pointer to the newly created
-													item, (ITEM*)NULL in error
-													case.
+//lookahead// is a possible list of lookahead terminal symbol pointers
+This can also be filled later.
 
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns an ITEM*-pointer to the newly created item, (ITEM*)NULL in error case.
+*/
 ITEM* p_create_item( STATE* st, PROD* p, LIST* lookahead )
 {
 	ITEM*		i		= (ITEM*)NULL;
@@ -447,45 +364,21 @@ ITEM* p_create_item( STATE* st, PROD* p, LIST* lookahead )
 	return i;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_free_item()
+/** Frees an item structure and all its members.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Frees an item structure and all its members.
-
-	Parameters:		ITEM*		it					Pointer to item structure to
-													be freed.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//it// is the pointer to item structure to be freed. */
 void p_free_item( ITEM* it )
 {
 	list_free( it->lookahead );
 	pfree( it );
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_create_state()
+/** Creates a new state.
 
-	Author:			Jan Max Meyer
+//p// is the parser information structure where the new state is added to.
 
-	Usage:			Creates a new state.
-
-	Parameters:		PARSER*			p				Parser information
-													structure where the new
-													state is added to.
-
-	Returns:		STATE*							Pointer to the newly created
-													state, (STATE*)NULL in error
-													case.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns a STATE* Pointer to the newly created state, (STATE*)NULL in error case.
+*/
 STATE* p_create_state( PARSER* p )
 {
 	STATE*		st		= (STATE*)NULL;
@@ -509,21 +402,9 @@ STATE* p_create_state( PARSER* p )
 	return st;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_free_state()
+/** Frees a state structure and all its members.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Frees a state structure and all its members.
-
-	Parameters:		STATE*		st					Pointer to state structure
-													to be freed.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//st// is the Pointer to state structure to be freed. */
 void p_free_state( STATE* st )
 {
 	LIST*	li		= (LIST*)NULL;
@@ -548,39 +429,19 @@ void p_free_state( STATE* st )
 	pfree( st );
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_create_tabcol()
+/** Creates a table column to be added to a state's goto-table or action-table
+row.
 
-	Author:			Jan Max Meyer
+//sym// is the pointer to the symbol on which the desired action or goto is
+performed on.
+//action// is the action to be performed in context of the symbol.
+//idx// is the index for the action. At SHIFT, this is the next state, at REDUCE
+and SHIFT_REDUCE the index of the rule to be reduced.
+//item// is the item, which caused the tab entry. This is only required for
+reductions.
 
-	Usage:			Creates a table column to be added to a state's goto-table
-					or action-table row.
-
-	Parameters:		SYMBOL*		sym						Pointer to the symbol on
-														which the desired action
-														or goto is performed on
-					int			action					The action to be
-														performed in context of
-														the symbol.
-					int			idx						The index for the
-														action. At SHIFT, this
-														is the next state, at
-														REDUCE and SHIFT_REDUCE
-														the index of the rule
-														to be reduced.
-					ITEM*		item					The item, which caused
-														the tab entry. This is
-														only required for
-														reductions.
-
-	Returns:		TABCOL*								Pointer to the new
-														action item. On error,
-														(TABCOL*)NULL is
-														returned.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns a TABCOL* Pointer to the new action item. On error, (TABCOL*)NULL is
+returned. */
 TABCOL* p_create_tabcol( SYMBOL* sym, short action, int idx, ITEM* item )
 {
 	TABCOL*		act		= (TABCOL*)NULL;
@@ -601,51 +462,25 @@ TABCOL* p_create_tabcol( SYMBOL* sym, short action, int idx, ITEM* item )
 	return act;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_free_tabcol()
+/** Frees an TABCOL-structure and all its members.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Frees an TABCOL-structure and all its members.
-
-	Parameters:		TABCOL*		act						Pointer to action
-														element to be freed.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//act// is the pointer to action element to be freed.
+*/
 void p_free_tabcol( TABCOL* act )
 {
 	pfree( act );
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_find_tabcol()
+/** Tries to find the entry for a specified symbol within a state's action- or
+goto-table row.
 
-	Author:			Jan Max Meyer
+//row// is the row where the entry should be found in.
+//sym// is the pointer to the symbol; if there is an entry on this symbol, it
+will be returned.
 
-	Usage:			Tries to find the entry for a specified symbol within
-					a state's action- or goto-table row.
-
-	Parameters:		LIST*		row						The row where the entry
-														should be found in.
-					SYMBOL*		sym						Pointer to the symbol;
-														if there is an entry on
-														this symbol, it will be
-														returned.
-
-	Returns:		TABCOL*								Pointer to the action
-														item. If no action item
-														was found when searching
-														on the row,
-														(TABCOL*)NULL is
-														returned.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns a TABCOL* Pointer to the action item. If no action item was found when
+searching on the row, (TABCOL*)NULL is returned.
+*/
 TABCOL* p_find_tabcol( LIST* row, SYMBOL* sym )
 {
 	TABCOL*		act		= (TABCOL*)NULL;
@@ -660,26 +495,15 @@ TABCOL* p_find_tabcol( LIST* row, SYMBOL* sym )
 	return (TABCOL*)NULL;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_create_opt()
+/** Creates an option data structure and optionally inserts it into a
+hash-table.
 
-	Author:			Jan Max Meyer
+//opts// is the hash-table of options.
+//opt// is the identifiying option name
+//def// is the option definition; Can be left (char*)NULL.
 
-	Usage:			Creates an option data structure and optionally inserts it
-					into a hash-table.
-
-	Parameters:		plist*		opts			Hash-table of options.
-					char*		opt				Identifiying option name
-					char*		def				Option definition; Can be
-												left (char*)NULL.
-
-	Returns:		OPT*						Pointer to the newly created
-												OPT-structure, (OPT*)NULL
-												in error case.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns a OPT* Pointer to the newly created OPT-structure, (OPT*)NULL in error
+case. */
 OPT* p_create_opt( plist* options, char* opt, char* def )
 {
 	OPT			option;
@@ -703,20 +527,11 @@ OPT* p_create_opt( plist* options, char* opt, char* def )
 	return (OPT*)plist_access( e );
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_free_opts()
+/** Frees the entire options list and its options.
 
-	Author:			Jan Max Meyer
+//options// is the options list
 
-	Usage:			Frees an entire list and its options.
-
-	Parameters:		plist*	options				Options list
-
-	Returns:		Always returns (plist
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Always returns (plist*)NULL */
 plist* p_free_opts( plist* options )
 {
 	OPT		opt;
@@ -733,22 +548,11 @@ plist* p_free_opts( plist* options )
 	return plist_free( options );
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_create_parser()
+/** Allocates and initializes a new parser information structure.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Allocates and initializes a new parser information strucure.
-
-	Parameters:		void
-
-	Returns:		PARSER*						Pointer to the newly created
-												PARSER-structure, (PARSER*)NULL
-												in error case.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns a PARSER* Pointer to the newly created PARSER-structure,
+(PARSER*)NULL in error case.
+*/
 PARSER* p_create_parser( void )
 {
 	PARSER*		pptr	= (PARSER*)NULL;
@@ -779,20 +583,9 @@ PARSER* p_create_parser( void )
 	return pptr;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_free_parser()
+/** Frees a parser structure and all its members.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Frees a parser structure and all its members.
-
-	Parameters:		PARSER*		parser			Parser structure to be freed.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//parser// is the Parser structure to be freed. */
 void p_free_parser( PARSER* parser )
 {
 	LIST*		it			= (LIST*)NULL;
@@ -846,24 +639,14 @@ void p_free_parser( PARSER* parser )
 	pfree( parser );
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_find_vtype()
+/** Seaches for a value stack type.
 
-	Author:			Jan Max Meyer
+//p// is the parser information structure
+//name// is the value type name
 
-	Usage:			Seaches for a value stack type.
-
-	Parameters:		PARSER*		p					Parser information structure
-					char*		name				Value type name
-
-	Returns:		VTYPE*							Pointer to the VTYPE
-													structure representing the
-													value type, if a matching
-													type has been found.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns a VTYPE* Pointer to the VTYPE structure representing the value type, if
+a matching type has been found.
+*/
 VTYPE* p_find_vtype( PARSER* p, char* name )
 {
 	VTYPE*	vt;
@@ -890,24 +673,13 @@ VTYPE* p_find_vtype( PARSER* p, char* name )
 	return (VTYPE*)NULL;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_create_vtype()
+/** Creates a new value stack type, or returns an existing one, if it does
+already exists.
 
-	Author:			Jan Max Meyer
+//p// is the parser information structure
+//name// is the value type name.
 
-	Usage:			Creates a new value stack type, or returns an existing one,
-					if it does already exist.
-
-	Parameters:		PARSER*		p					Parser information structure
-					char*		name				Value type name
-
-	Returns:		VTYPE*							Pointer to the VTYPE
-													structure representing the
-													value type.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns a VTYPE*-pointer to the VTYPE structure representing the value type. */
 VTYPE* p_create_vtype( PARSER* p, char* name )
 {
 	VTYPE*	vt;
@@ -941,20 +713,9 @@ VTYPE* p_create_vtype( PARSER* p, char* name )
 	return vt;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_free_vtype()
+/** Frees a VTYPE-structure.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Frees a VTYPE-structure.
-
-	Parameters:		VTYPE*	vt					VTYPE-Structure to be deleted.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//vt// is the VTYPE-Structure to be deleted. */
 void p_free_vtype( VTYPE* vt )
 {
 	pfree( vt->int_name );

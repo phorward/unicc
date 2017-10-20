@@ -33,27 +33,10 @@ Usage:	XML processing functions (based on ezXML)
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/*
- * Includes
- */
-#include "p_global.h"
-#include "p_error.h"
-#include "p_proto.h"
-
-/*
- * Global variables
- */
-
-/*
- * Defines
- */
+#include "unicc.h"
 
 #define XML_WS		"\t\r\n "	/* whitespace */
 #define XML_ERRL	128			/* maximum error string length */
-
-/*
- * Functions
- */
 
 typedef struct xml_root*	xml_root_t;
 struct xml_root

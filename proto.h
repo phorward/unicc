@@ -21,7 +21,7 @@ void p_generate_tables( PARSER* parser );
 void p_detect_default_productions( PARSER* parser );
 
 /* p_error.c */
-void p_error( PARSER* parser, int err_id, int err_style, ... );
+void p_error( PARSER* parser, ERRORCODE err_id, int err_style, ... );
 
 /* p_mem.c */
 SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create );
@@ -102,15 +102,11 @@ LIST* list_push( LIST* list, void* ptr );
 LIST* list_pop( LIST* list, void** ptr );
 LIST* list_remove( LIST* list, void* ptr );
 LIST* list_free( LIST* list );
-void list_print( LIST* list, void (*callback)( void* ) );
 LIST* list_dup( LIST* src );
 int list_find( LIST* list, void* ptr );
 void* list_getptr( LIST* list, int cnt );
-int list_diff( LIST* first, LIST* second );
 LIST* list_union( LIST* first, LIST* second );
 int list_count( LIST* list );
-pboolean list_subset( LIST* list, LIST* subset );
-LIST* list_sort( LIST* list, int (*sf)( void*, void* ) );
 
 /* p_build.c */
 void p_build_code( PARSER* parser );

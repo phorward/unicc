@@ -16,10 +16,10 @@ Usage:	Management functions for simple linked-lists.
 	had been replaced there by the much more powerful plist objects.
 
 	UniCC is the only program that still makes use of these older lists,
-	and a refactoring to use plist is too expensive.
+	and a refactoring to use plist is too expensive right now.
 */
 
-#include "p_global.h"
+#include "unicc.h"
 
 /** Pushes a pointer of any type to a linked list of pointers. Therefore, the
 list can act as a stack when using the function list_pop() to pop items off
@@ -167,24 +167,6 @@ LIST* list_free( LIST* list )
 	return (LIST*)NULL;
 }
 
-/** Prints the items of a linked list of elements for debug purposes.
-This function expects a callback-function which then performs the output of the
-pointer that is associated with the list element.
-
-//list// is the linked list to be printed. //(*callback)(void*)// is the
-callback function that is called for each element.
-*/
-void list_print( LIST* list, void (*callback)( void* ) )
-{
-	LIST*	item	= list;
-
-	while( item )
-	{
-		callback( list->pptr );
-		item = item->next;
-	}
-}
-
 /** Duplicates a list in a 1:1 copy.
 
 //src// is the linked list to be copied.
@@ -200,6 +182,22 @@ LIST* list_dup( LIST* src )
 		tar = list_push( tar, item->pptr );
 
 	return tar;
+}
+
+/** Counts the elements in a list.
+
+//list// is the list start point which items should be counted.
+
+Returns the number of items contained by the list.
+*/
+int list_count( LIST* list )
+{
+	int		count		= 0;
+
+	for( ; list; list = list->next )
+		count++;
+
+	return count;
 }
 
 /** Searches for a pointer in a linked list.
@@ -256,42 +254,6 @@ void* list_getptr( LIST* list, int cnt )
 	return (void*)NULL;
 }
 
-/** Compares two lists if they contain the same pointers.
-
-//first// is the first linked list to be compared. //second// is the second
-linked list to be compated with //first//.
-
-Returns 1 if indifferent, 0 if different
-*/
-int list_diff( LIST* first, LIST* second )
-{
-	int		first_cnt	= 0;
-	int		second_cnt	= 0;
-	LIST*	item;
-
-	for( item = first; item; item = item->next )
-		first_cnt++;
-	for( item = second; item; item = item->next )
-		second_cnt++;
-
-	if( first_cnt == second_cnt && first_cnt > 0 )
-	{
-		for( item = first; item; item = item->next )
-		{
-			first_cnt--;
-			if( list_find( second, item->pptr ) >= 0 )
-				second_cnt--;
-		}
-
-		if( first_cnt != second_cnt  )
-			return 0;
-
-		return 1;
-	}
-
-	return 0;
-}
-
 /** Unions two list to a huger new one.
 
 //first// is the first linked list. //second// is the second linked list that
@@ -318,94 +280,3 @@ LIST* list_union( LIST* first, LIST* second )
 	return ret;
 }
 
-/** Counts the elements in a list.
-
-//list// is the list start point which items should be counted.
-
-Returns the number of items contained by the list.
-*/
-int list_count( LIST* list )
-{
-	int		count		= 0;
-
-	for( ; list; list = list->next )
-		count++;
-
-	return count;
-}
-
-/** Checks if a list contains a subset of another list.
-
-//list// is the first linked list. //subset// is the possible subset list.
-
-Returns TRUE if there is a subset, else FALSE.
-*/
-pboolean list_subset( LIST* list, LIST* subset )
-{
-	LIST*	current	= (LIST*)NULL;
-
-	if( list )
-	{
-		for( current = subset; current; current = current->next )
-			if( list_find( list, current->pptr ) < 0 )
-				break;
-
-		if( !current )
-			return TRUE;
-	}
-
-	return FALSE;
-}
-
-/** Sorts a list according to a callback-function using the bubble-sort
-algorithm.
-
-//list// is the linked list to be sorted. //int (*sf)(void*,void*)// is a
-pointer to callback-function to compare items. The functions shall return a
-value lower than 0 if a<b, greater 0 if a>b and 0 if a==b.
-
-Returns the new beginning pointer to the sorted list //list//.
-*/
-LIST* list_sort( LIST* list, int (*sf)( void*, void* ) )
-{
-	LIST*		current;
-	int			ret;
-	BOOLEAN		changes;
-	void*		tmp;
-
-	if( !sf )
-	{
-		WRONGPARAM;
-		return list; /* Can't sort anything */
-	}
-
-	do
-	{
-		changes = FALSE;
-
-		for( current = list; list_next( current );
-				current = list_next( current ) )
-		{
-			if( ( ret = (*sf)( list_access( current ),
-							list_access( list_next( current ) ) ) ) < 0 )
-			{
-				tmp = list_access( list_next( current ) );
-				current->next->pptr = list_access( current );
-				current->pptr = tmp;
-
-				changes = TRUE;
-			}
-			else if( ret > 0 )
-			{
-				tmp = list_access( current );
-				current->pptr = list_access( list_next( current ) );
-				current->next->pptr = tmp;
-
-				changes = TRUE;
-			}
-		}
-	}
-	while( changes );
-
-	return list;
-}

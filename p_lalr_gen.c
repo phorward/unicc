@@ -9,40 +9,16 @@ Author:	Jan Max Meyer
 Usage:	Performs the LALR(1) parse table construction algorithm
 ----------------------------------------------------------------------------- */
 
-/*
- * Includes
- */
-#include "p_global.h"
-#include "p_proto.h"
-#include "p_error.h"
-
+#include "unicc.h"
 
 #define ON_ALGORITHM_DEBUG 0
 
-/*
- * Global variables
- */
+/** Performs a test on two kernel item sets if they are equal.
 
-/*
- * Functions
- */
+//kernel1// is the The first kernel item set.
+//kernel2// is the The second kernel item set.
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_same_kernel()
-
-	Author:			Jan Max Meyer
-
-	Usage:			Performs a test on two kernel item sets if they are equal.
-
-	Parameters:		LIST*		kernel1				The first kernel item set.
-					LIST*		kernel2				The second kernel item set.
-
-	Returns:		int								TRUE if the item sets are
-													equal, else FALSE.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns a int TRUE if the item sets are equal, else FALSE. */
 static int p_same_kernel( LIST* kernel1, LIST* kernel2 )
 {
 	int		ret			= FALSE;
@@ -62,12 +38,9 @@ static int p_same_kernel( LIST* kernel1, LIST* kernel2 )
 			{
 				item2 = j->pptr;
 
-				/* memcmp( i->pptr, j->pptr, sizeof( ITEM ) ) == 0 */
 				if( item1->prod == item2->prod
 					&& item1->dot_offset == item2->dot_offset
-						&& item1->next_symbol == item1->next_symbol
-							/* && list_diff( ((ITEM*)(i->pptr))->lookahead,
-								((ITEM*)(j->pptr))->lookahead ) */ )
+						&& item1->next_symbol == item1->next_symbol )
 				{
 					checklist = list_push( checklist, j->pptr );
 				}
@@ -83,27 +56,14 @@ static int p_same_kernel( LIST* kernel1, LIST* kernel2 )
 	return ret;
 }
 
+/** Gets the next undone state to be closed from the global states array, which
+contains all states of the LALR(1) parse table.
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_get_undone()
+//lalr_states// is the list of LALR(1) states.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Gets the next undone state to be closed from the global
-					states array, which contains all states of the LALR(1)
-					parse table.
-
-	Parameters:		LIST*		lalr_states				List of LALR(1) states
-
-	Returns:		STATE*								Pointer to the next
-														state item, if no more
-														undone states are found,
-														(STATE*)NULL is
-														returned.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns a STATE*-pointer to the next state item, if no more undone states are
+found, (STATE*)NULL is returned.
+*/
 static STATE* p_get_undone( LIST* lalr_states )
 {
 	STATE*		st		= (STATE*)NULL;
@@ -119,25 +79,14 @@ static STATE* p_get_undone( LIST* lalr_states )
 	return (STATE*)NULL;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_item_closure()
+/** This is the key function which performs the major closure from one kernel
+item seed to a closure set.
 
-	Author:			Jan Max Meyer
-
-	Usage:			This is the key function which performs the major closure
-					from one kernel item seed to a closure set.
-
-	Parameters:		LIST*		productions		List of all available
-												productions.
-					ITEM		it				Item to be closed.
-					LIST**		closure_set		Pointer to the closure set list
-												which can possibly be enhanced.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//productions// is the list of all available productions.
+//it// is the item to be closed.
+//closure_set// is the pointer to the closure set list which can possibly
+be enhanced.
+*/
 static void p_item_closure( LIST* productions, ITEM* it, LIST** closure_set )
 {
 	LIST*		j		= (LIST*)NULL;
@@ -254,20 +203,12 @@ static void p_item_closure( LIST* productions, ITEM* it, LIST** closure_set )
 	}
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_drop_item_list()
+/** Drops and frees a list of items.
 
-	Author:			Jan Max Meyer
+//list// is the item list.
 
-	Usage:			Drops and frees a list of items.
-
-	Parameters:		LIST*		list				The item list
-
-	Returns:		LIST*(NULL)						always
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns LIST*(NULL) always.
+*/
 static LIST* p_drop_item_list( LIST* list )
 {
 	LIST*		l;
@@ -285,26 +226,12 @@ static LIST* p_drop_item_list( LIST* list )
 	return (LIST*)NULL;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_lalr1_closure()
+/** Performs an LR(1) closure and merges the lookahead-symbols of items with the
+same right-hand side, dot position, and lookahead-subset, making it a LALR(1)
+closure.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Performs an LR(1) closure and merges the lookahead-symbols
-					of items with the same right-hand side, dot position, and
-					lookahead-subset, making it a LALR(1) closure.
-
-	Parameters:		PARSER*		parser			Pointer to the parser
-												information structure.
-					STATE*		st				State to be closed.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
-	03.03.2008	Jan Max Meyer	Added new SHIFT_REDUCE-transition to build
-								lesser states (up to 30% lesser states!)
------------------------------------------------------------------------------ */
+//parser// is the pointer to the parser information structure.
+//st// is the state to be closed. */
 static void p_lalr1_closure( PARSER* parser, STATE* st )
 {
 	LIST*		closure_start		= st->kernel;
@@ -322,6 +249,12 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 
 	int			prev_cnt			= 0;
 	int			cnt					= 0;
+
+	/*
+		03.03.2008	Jan Max Meyer
+		Added new SHIFT_REDUCE-transition to build lesser states
+		(up to 30% lesser states!)
+	*/
 
 #if ON_ALGORITHM_DEBUG
 	fprintf( stderr, "================\n");
@@ -681,44 +614,29 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 }
 
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_reduce_item()
+/** Performs reduction entries into the parse-table and determines shift-reduce
+or reduce-reduce conflicts. The reduction-entries can only be added when all
+states are closed completely, so this operations must be called as the last
+step on creating the parse-tables.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Performs reduction entries into the parse-table and deter-
-					mines Shift-Reduce or Reduce-Reduce conflicts.
-
-					The reduction-entries can only be added when all states
-					are closed completely, so this operations must be called as
-					the last step on creating the parse-tables.
-
-	Parameters:		PARSER*		parser				Pointer to parser structure
-					STATE*		st					State pointer, defining
-													the state where reduce-
-													entries should be created
-													for.
-					ITEM*		it					The item where the reduce-
-													entries should be created
-													for.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
-	02.03.2011	Jan Max Meyer	In case of non-associative symbols, write a
-								special error action into the parse table. The
-								parser template also had to be changed for this.
-								Due the default-production feature, the old way
-								on removing the table entry did not work
-								anymore.
------------------------------------------------------------------------------ */
+//parser// is the pointer to parser structure.
+//st// is the state pointer, defining the state where reduce-entries should be
+created for.
+//it// is the item where the reduce-entries should be created for. */
 static void p_reduce_item( PARSER* parser, STATE* st, ITEM* it )
 {
 	LIST*		i		= (LIST*)NULL;
 	SYMBOL*		sym		= (SYMBOL*)NULL;
 	TABCOL*		act		= (TABCOL*)NULL;
 	int			resolved;
+
+	/*
+	02.03.2011	Jan Max Meyer
+	In case of non-associative symbols, write a special error action into the
+	parse table. The parser template also had to be changed for this. Due the
+	default-production feature, the old way on removing the table entry did not
+	work anymore.
+	*/
 
 	if( it->next_symbol == (SYMBOL*)NULL )
 	{
@@ -809,26 +727,12 @@ static void p_reduce_item( PARSER* parser, STATE* st, ITEM* it )
 }
 
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_perform_reductions()
+/** This is the entry function for performing the table reduction entry
+creation. This must be called as the last step on computing the parse tables.
 
-	Author:			Jan Max Meyer
-
-	Usage:			This is the entry function for performing the table
-	 				reduction entry creation. This must be called as the last
-	 				step on computing the parse tables.
-
-	Parameters:		PARSER*		parser					Pointer to parser
-														structure
-					STATE*		st						State pointer, defining
-														the state where reduce-
-														entries should be
-														created for.
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//parser// is the pointer to parser structure
+//st// is the state pointer, defining the state where reduce-entries should be
+created for. */
 static void p_perform_reductions( PARSER* parser, STATE* st )
 {
 	LIST*	i;
@@ -842,22 +746,10 @@ static void p_perform_reductions( PARSER* parser, STATE* st )
 }
 
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_generate_tables()
+/** This is the entry function for generating the LALR(1) parse tables for a
+parsed grammar definition.
 
-	Author:			Jan Max Meyer
-
-	Usage:			This is the entry function for generating the LALR(1)
-					parse tables for a parsed grammar definition.
-
-	Parameters:		PARSER*		parser			Pointer to the parser
-	 											information structure.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//parser// is the pointer to the parser information structure. */
 void p_generate_tables( PARSER* parser )
 {
 	STATE*	st		= (STATE*)NULL;
@@ -889,24 +781,11 @@ void p_generate_tables( PARSER* parser )
 		p_perform_reductions( parser, i->pptr );
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_detect_default_productions()
+/** Performs a default production detection. This must be done immediatelly
+before the code is generated, but behind all the other stuff, e.g. state-based
+lexical analysis generation.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Performs a default production detection. This must be done
-					immediatelly before the code is generated, but behind all
-					the other stuff, e.g. state-based lexical analysis
-					generation.
-
-	Parameters:		PARSER*		parser			Pointer to the parser
-												information structure.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//parser// is the pointer to the parser information structure. */
 void p_detect_default_productions( PARSER* parser )
 {
 	STATE*	st;

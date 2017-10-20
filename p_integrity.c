@@ -9,38 +9,13 @@ Author:	Jan Max Meyer
 Usage:	Grammar integrity checking functions
 ----------------------------------------------------------------------------- */
 
-/*
- * Includes
- */
-#include "p_global.h"
-#include "p_proto.h"
-#include "p_error.h"
+#include "unicc.h"
 
-/*
- * Global variables
- */
+/** Checks for undefined but called, and/or defined but uncalled symbols.
 
-/*
- * Functions
- */
+//parser// is the pointer to the parser information structure.
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_undef_or_unused()
-
-	Author:			Jan Max Meyer
-
-	Usage:			Checks for undefined but called, and/or defined but
-					uncalled symbols.
-
-	Parameters:		PARSER*		parser		Pointer to the parser information
-											structure.
-
-	Returns:		BOOLEAN					TRUE if undefined or unused
-											symbols are found, else FALSE.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns a TRUE if undefined or unused symbols are found, else FALSE. */
 BOOLEAN p_undef_or_unused( PARSER* parser )
 {
 	LIST*		l;
@@ -72,35 +47,20 @@ BOOLEAN p_undef_or_unused( PARSER* parser )
 	return ret;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_nfa_transition_on_ccl()
+/** This function is required to test if a given character class will be
+consumed by a NFA machine state.
 
-	Author:			Jan Max Meyer
+//nfa// is the NFA to work on.
 
-	Usage:			This function is required to test if a given character
-					class will be consumed by a NFA machine state.
+//res// defines the closure set of NFA states required for the next transition.
+(plist*)NULL causes the NFA to be startet from initial state.
 
-	Parameters:		pregex_nfa*		nfa				The NFA to work on.
-					LIST*			res				Defines the closure set
-													of NFA states required
-													for the next transition.
-													(LIST*)NULL causes the
-													NFA to be startet from
-													initial state.
-					int*			accept			Return pointer for the
-													accepting ID of the
-													NFA.
-					pccl*		check_with		Character-class to test
-													transitions on.
+//accept// is the return pointer for the accepting ID of the NFA.
 
-	Returns:		LIST*							The result of the
-													transition on the given
-													character class, (LIST*)NULL
-													if there is no transition.
+//check_with// is the character-class to test transitions on.
 
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns the result of the transition on the given character class,
+0 if there is no transition. */
 static int p_nfa_transition_on_ccl(
 	pregex_nfa* nfa, plist* res, int* accept, pccl* check_with )
 {
@@ -151,40 +111,23 @@ static int p_nfa_transition_on_ccl(
 	return plist_count( res );
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_nfa_matches_parser()
 
-	Author:			Jan Max Meyer
+/** Tries to parse along an NFA state machine using character class terminals
+from a given LALR(1) state.
 
-	Usage:			Tries to parse along an NFA state machine using character
-					class terminals from a given LALR(1) state. It should prove
-					if the grammar is capable to match the string the regular
-					expression matches. It is used for the regex anomaly
-					detection.
+It should prove if the grammar is capable to match the string the regular
+expression matches. It is used for the regex anomaly detection.
 
-	Parameters:		PARSER*		parser		Pointer to the parser information
-											structure.
-					char*		str			String to be recognized (the key-
-											word)
-					int			start		The start state; This is the state
-											where parsing is immediatelly
-											stated.
+//parser// is the pointer to the parser information structure.
 
-	Returns:		TRUE if the parse succeeded (when str was completely
-					absorbed), FALSE else.
+//nfa// is the NFA to be recognized.
 
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
-	06.03.2008	Jan Max Meyer	Changes on the algorithm because of new
-								SHIFT_REDUCE-transitions. They are either
-								reduces.
-	30.01.2011	Jan Max Meyer	Renamed to p_nfa_matches_parser(), the
-								function now tries to parse along a NFA
-								state machine which must not have its
-								origin in a keyword terminal.
-	16.01.2014	Jan Max Meyer	Fixed sources to run with libphorward v0.18
-								(current development version).
------------------------------------------------------------------------------ */
+//start// is the start state; This is the state where parsing is immediatelly
+started.
+
+Returns a TRUE if the parse succeeded (when str was completely absorbed),
+FALSE else.
+*/
 static BOOLEAN p_nfa_matches_parser(
 	PARSER* parser, pregex_nfa* nfa, plist* start_res, int start )
 {
@@ -202,10 +145,21 @@ static BOOLEAN p_nfa_matches_parser(
 	LIST*		l;
 
 	/*
+		06.03.2008	Jan Max Meyer
+		Changes on the algorithm because of new SHIFT_REDUCE-transitions.
+		They are either reduces.
+
+		30.01.2011	Jan Max Meyer
+		Renamed to p_nfa_matches_parser(), the function now tries to parse along
+		an NFA state machine which must not have its origin in a keyword
+		terminal.
+
+		16.01.2014	Jan Max Meyer
+		Fixed sources to run with libphorward v0.18 and newer.
+
 		TODO:
-		This part of UniCC is programmed very rude, should be
-		changed somewhere in the future. But for now, it does
-		its job.
+		This part of UniCC is programmed very rudely, and should be changed
+		somewhere in the future. But for now, it does its job.
 
 		Nelson: "Haaahaaaa" ... never! I think... ;)
 	*/
@@ -312,51 +266,29 @@ static BOOLEAN p_nfa_matches_parser(
 	return ret;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_regex_anomalies()
 
-	Author:			Jan Max Meyer
+/** Checks for regex anomalies in the resulting parse tables.
 
-	Usage:			Checks for regex anomalies in the resulting parse tables.
-					Such regex anomalies occur, when the parser can reduce both
-					by a regular expression based terminal and by a character,
-					so it decides for the regular expression.
+Such regex anomalies occur, when the parser can reduce both by a regular
+expression based terminal and by a character, so it decides for the regular
+expression.
 
-					Under some circumstances, the token to be shifted is
-					NOT the regex it was reduced for, and the parse fails.
+Under some circumstances, the token to be shifted is NOT the regex it was
+reduced for, and the parse fails.
 
-					A demonstation grammar for a keyword anomaly is the
-					following:
+A demonstation grammar for a keyword anomaly is the following:
 
-					start$ -> a;
-					a -> b "PRINT";
-					b -> c | '[' b ']';
-					c -> 'A-Z' | c 'A-Z';
+	start$ -> a;
+	a -> b "PRINT";
+	b -> c | '[' b ']';
+	c -> 'A-Z' | c 'A-Z';
 
-					At the input "[HALLOPRINT]", which is valid, the parser
-					will fail after successfully parsing "[HALLO", expecting a
-					"]".
+At the input "[HALLOPRINT]", which is valid, the parser will fail after
+successfully parsing "[HALLO", expecting a "]".
 
-	Parameters:		PARSER*		parser		Pointer to the parser information
-											structure.
+//parser// is the pointer to the parser information structure.
 
-	Returns:		BOOLEAN					TRUE if regex anomalies where
-											found, FALSE if not.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
-	06.03.2008	Jan Max Meyer	Changes on the algorithm because of new
-								SHIFT_REDUCE-transitions. They are either
-								reduces.
-	12.06.2010	Jan Max Meyer	Changed to new regular expression library
-								functions, which can handle entire sets of
-								characters from 0x0 - 0xFFFF.
-	31.01.2011	Jan Max Meyer	Renamed the function to p_regex_anomalies()
-								because not only keywords are tested now, also
-								entire regular expressions.
-	29.11.2011	Jan Max Meyer	Changed to new regular expression handling with
-								the pregex_ptn-structure.
------------------------------------------------------------------------------ */
+Returns TRUE if regex anomalies where found, FALSE otherwise. */
 BOOLEAN p_regex_anomalies( PARSER* parser )
 {
 	STATE*			st;
@@ -376,6 +308,23 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 	plist*			res;
 	pregex_nfa*		nfa;
 	int				accept;
+
+	/*
+	06.03.2008	Jan Max Meyer
+	Changes on the algorithm because of new SHIFT_REDUCE-transitions.
+	They are either reduces.
+
+	12.06.2010	Jan Max Meyer
+	Changed to new regular expression library functions, which can handle entire
+	sets of characters from 0x0 - 0xFFFF.
+
+	31.01.2011	Jan Max Meyer
+	Renamed the function to p_regex_anomalies() because not only keywords are
+	tested now, also entire regular expressions.
+
+	29.11.2011	Jan Max Meyer
+	Changed to new regular expression handling with the pregex_ptn-structure.
+	*/
 
 	res = plist_create( 0, PLIST_MOD_PTR | PLIST_MOD_RECYCLE );
 
@@ -544,24 +493,14 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 }
 
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_stupid_productions()
+/** Checks for productions resulting in circular definitions, empty recursions
+or with wrong FIRST-sets.
 
-	Author:			Jan Max Meyer
+//parser// is the pointer to the parser information structure.
 
-	Usage:			Checks for productions resulting in circular definitions,
-					empty recursions or with wrong FIRST-sets.
-
-	Parameters:		PARSER*		parser			Pointer to the parser
-												information structure.
-
-	Returns:		BOOLEAN		TRUE			In case if stupid productions
-												where detected,
-								FALSE			if all is fine :D
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns TRUE In case if stupid productions where detected,
+FALSE if all is fine :D.
+*/
 BOOLEAN p_stupid_productions( PARSER* parser )
 {
 	LIST*	l;
@@ -626,4 +565,3 @@ BOOLEAN p_stupid_productions( PARSER* parser )
 
 	return stupid;
 }
-

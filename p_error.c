@@ -9,16 +9,8 @@ Author:	Jan Max Meyer
 Usage:	Error message handling
 ----------------------------------------------------------------------------- */
 
-/*
- * Includes
- */
-#include "p_global.h"
-#include "p_proto.h"
-#include "p_error.h"
+#include "unicc.h"
 
-/*
- * Global variables
- */
 char* error_txt[128] =
 {
 	"Memory allocation error (out of memory?) in %s, line %d",
@@ -38,7 +30,6 @@ char* error_txt[128] =
 	"Terminal-symbol \'%s\' is defined but never used",
 	"Reduce-reduce conflict on lookahead: ",
 	"Shift-reduce conflict on lookahead: ",
-	/* "Nonassociativity conflict on lookahead: ", */
 	"Terminal anomaly at shift on \'%s\' and reduce on \'%s\'",
 	"Unimplemented template \'%s\' for code generator",
 	"Undefined value type for \'%s\' in reduction code of rule %d, \'%.*s\'",
@@ -70,30 +61,16 @@ extern	BOOLEAN		first_progress;
 extern	BOOLEAN		no_warnings;
 char*				progname;
 
-/*
- * Functions
- */
+/** Prints an error message.
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_error()
-
-	Author:			Jan Max Meyer
-
-	Usage:			Prints an error message.
-
-	Parameters:		PARSER*		parser			Parser information structure
-					int			err_id			Error ID
-					int			err_style		Error message behavior
-					...							Additional parameters depending
-												on error message text and
-												error message style.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
-void p_error( PARSER* parser, int err_id, int err_style, ... )
+//parser// is the parser information structure.
+//err_id// is the errorcode.
+//err_style// is the error message behavior, as stated in the ERRSTYLE-defines
+from p_error.h.
+//...// are additional parameters depending on error message text and error
+message style.
+*/
+void p_error( PARSER* parser, ERRORCODE err_id, int err_style, ... )
 {
 	va_list		params;
 	char*		filename 	= (char*)NULL;

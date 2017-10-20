@@ -4,13 +4,10 @@ Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
-File:	p_global.h
+File:	unicc.h
 Author:	Jan Max Meyer
 Usage:	Global declarations, structures and includes
 ----------------------------------------------------------------------------- */
-
-#ifndef P_GLOBAL_H
-#define P_GLOBAL_H
 
 #ifdef _WIN32
 #pragma warning( disable: 4996 )
@@ -23,13 +20,34 @@ Usage:	Global declarations, structures and includes
 /* Including the Phorward Foundation Library */
 #include <phorward.h>
 
-/* Internal includes */
+/* ezXML Library */
 #include "xml.h"
-#include "p_defs.h"
 
 /*
  * Defines
  */
+
+/* Special symbol names */
+#define P_WHITESPACE			"&whitespace"
+#define P_ERROR_RESYNC			"&error"
+#define P_END_OF_FILE			"&eof"
+#define P_EMBEDDED				"&embedded_%d"
+
+/* Characters for virtual nonterminal names */
+#define P_POSITIVE_CLOSURE		'+'
+#define P_KLEENE_CLOSURE		'*'
+#define P_OPTIONAL_CLOSURE		'?'
+
+/* Character for rewritten virtual nonterminal */
+#define P_REWRITTEN_TOKEN		"\'"
+#define P_REWRITTEN_CCL			"#"
+#define P_REWRITTEN_KW			"~"
+
+/* Regular expression terminals */
+#define P_PREGEX_AUTO_NAME		"regex"
+
+/* Default End-of-Input string */
+#define P_DEF_EOF_SYMBOL		"\\0"
 
 /* Symbol types */
 #define SYM_UNDEFINED			-1
@@ -128,7 +146,6 @@ struct _list
 
 #define list_access( ll )		( (ll) ? (ll)->pptr : (void*)NULL )
 #define list_next( ll )			( (ll) ? (ll)->next : (LIST*)NULL )
-#define list_replace( ll, ptr )	( (ll) ? (ll)->pptr = (ptr) : 0 )
 
 #define LISTFOR( ll, cc )		for( (cc) = (ll); (cc); (cc) = list_next(cc) )
 
@@ -443,5 +460,60 @@ struct _generator
 	XML_T		xml;						/* XML root node */
 };
 
-#endif
+/* Error styles */
 
+#define ERRSTYLE_NONE				0
+#define ERRSTYLE_FATAL				1
+#define ERRSTYLE_WARNING			2
+#define ERRSTYLE_FILEINFO			4
+#define ERRSTYLE_STATEINFO			8
+#define ERRSTYLE_LINEINFO			16
+#define ERRSTYLE_PRODUCTION			32
+#define ERRSTYLE_SYMBOL				64
+
+/* Error codes */
+
+typedef enum
+{
+	ERR_MEMORY_ERROR,
+	ERR_CMD_LINE,
+	ERR_CMD_OPT,
+	ERR_PARSE_ERROR,
+	ERR_PARSE_ERROR_EXPECT,
+	ERR_MULTIPLE_GOAL_DEF,
+	ERR_GOAL_ONE_RHS,
+	ERR_NO_GOAL_SYMBOL,
+	ERR_DOUBLE_TERMINAL_DEF,
+	ERR_UNKNOWN_DIRECTIVE,
+	ERR_WHITESPACE_TOKEN,
+	ERR_UNDEFINED_NONTERM,
+	ERR_UNDEFINED_TERM,
+	ERR_UNUSED_NONTERM,
+	ERR_UNUSED_TERM,
+	ERR_REDUCE_REDUCE,
+	ERR_SHIFT_REDUCE,
+	ERR_KEYWORD_ANOMALY,
+	ERR_UNKNOWN_TARGET_LANG,
+	ERR_NO_VALUE_TYPE,
+	ERR_OPEN_OUTPUT_FILE,
+	ERR_OPEN_INPUT_FILE,
+	ERR_NO_GENERATOR_FILE,
+	ERR_TAG_NOT_FOUND,
+	ERR_XML_ERROR,
+	ERR_XML_INCOMPLETE,
+	ERR_DUPLICATE_ESCAPE_SEQ,
+	ERR_CIRCULAR_DEFINITION,
+	ERR_EMPTY_RECURSION,
+	ERR_USELESS_RULE,
+	ERR_NO_EFFECT_IN_MODE,
+	ERR_NONTERM_WS_NOT_ALLOWED,
+	ERR_INVALID_CHAR_UNIVERSE,
+	ERR_CHARCLASS_OVERLAP,
+	ERR_UNDEFINED_SYMREF,
+	ERR_UNDEFINED_LHS,
+	ERR_UNDEFINED_TERMINAL,
+	ERR_NO_TARGET_TPL_SUPPLY,
+	ERR_DIRECTIVE_ALREADY_USED
+} ERRORCODE;
+
+#include "proto.h"

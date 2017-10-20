@@ -9,49 +9,14 @@ Author:	Jan Max Meyer
 Usage:	First set computation
 ----------------------------------------------------------------------------- */
 
-/*
- * Includes
- */
-#include "p_global.h"
-#include "p_proto.h"
-#include "p_error.h"
+#include "unicc.h"
 
-/*
- * Global variables
- */
+/** Computes the FIRST()-set for all symbols that are within the global table
+of symbols.
 
-
-/*
- * Functions
- */
-
-
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_first()
-
-	Author:			Jan Max Meyer
-
-	Usage:			Computes the FIRST()-set for all symbols that are within the
-					global table of symbols.
-
-	Parameters:		LIST*		symbols		List of symbols where the first
-											computation should be done for.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
-	23.08.2008	Jan Max Meyer	Uhh bad bug resolved here, in grammars like
-
-								x$ -> y ;
-								y -> y 'a' | ;
-
-								The first set of y and x was always empty!
-								Very, very bad...now it's resolved, due
-								uncommenting "if( !k )" in one line below...
-								Prototype generator "min_lalr1" did it the
-								correct way.
------------------------------------------------------------------------------ */
+//symbols// is the list of symbols where the first computation should be done
+for.
+*/
 void p_first( LIST* symbols )
 {
 	LIST*		i			= (LIST*)NULL;
@@ -64,6 +29,20 @@ void p_first( LIST* symbols )
 	int			f			= 0;
 	int			pf			= 0;
 
+	/*
+		23.08.2008	Jan Max Meyer
+
+		Uhh bad bug resolved here, in grammars like
+
+		x$ -> y ;
+		y -> y 'a' | ;
+
+		The first set of y and x was always empty!
+		Very, very bad...now it's resolved, due
+		uncommenting "if( !k )" in one line below...
+		Prototype generator "min_lalr1" did it the
+		correct way
+	*/
 	do
 	{
 		pf = f;
@@ -107,30 +86,15 @@ void p_first( LIST* symbols )
 }
 
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_rhs_first()
+/** Performs a right-hand side FIRST()-set seek. This is an individual
+FIRST()-set to be created within a LR(1) closure as lookahead set.
 
-	Author:			Jan Max Meyer
+//first// is the pointer where the individual FIRST() set is stored to.
+//rhs// is the right-hand side to be processed; This can be a pointer to an
+element on the right-hand side, and is used as starting point.
 
-	Usage:			Performs a right-hand side FIRST()-set seek.
-					This is an individual FIRST()-set to be created within a
-					LR(1) closure as lookahead set.
-
-	Parameters:		LIST*			first		Pointer where the individual
-												FIRST() set is stored to.
-
-					LIST*			rhs			The right-hand side; This can
-												pointer to an element on the
-												right-hand side, and is used
-												as starting point.
-
-	Returns:		int							TRUE if the whole right-hand
-												side is possibly nullable,
-												FALSE else.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns TRUE if the whole right-hand side is possibly nullable, FALSE else.
+*/
 int p_rhs_first( LIST** first, LIST* rhs )
 {
 	SYMBOL*		sym		= (SYMBOL*)NULL;

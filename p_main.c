@@ -9,16 +9,10 @@ Author:	Jan Max Meyer
 Usage:	UniCC program entry / main function
 ----------------------------------------------------------------------------- */
 
-/*
- * Includes
- */
 #include "p_global.h"
 #include "p_error.h"
 #include "p_proto.h"
 
-/*
- * Global variables
- */
 FILE*			status;
 BOOLEAN			first_progress		= FALSE;
 BOOLEAN 		no_warnings			= TRUE;
@@ -33,13 +27,7 @@ char* 			pmod[] =
 	"insensitive"
 };
 
-/*
- * Defines
- */
-
-/*
- * Verbose Macros (Main only)
- */
+/* Verbose Macros (Main only) */
 #define PROGRESS( txt )		if( parser->verbose ) \
 							{ \
 								fprintf( status, "%s...", (txt) ); \
@@ -53,28 +41,13 @@ char* 			pmod[] =
 #define SUCCESS()			p_status( parser, "Succeeded\n", (char*)NULL );
 #define SKIPPED( why )		p_status( parser, "Skipped: %s\n", why );
 
-/*
- * Functions
- */
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_status()
+/** Internal function to print verbose status messages.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Internal function to print verbose status messages.
-
-	Parameters:		PARSER* 		parser			Parser info struct
-					char*			status_msg		Status info/Format string
-					char*			reason			One parameter to be inserted
-													by the fprintf( status ... )
-													have fun!
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//parser// is the parser info struct.
+//status_msg// is the status info, respective format string.
+//reason// is one parameter to be inserted.
+*/
 static void p_status( PARSER* parser, char* status_msg, char* reason )
 {
 	if( !parser->verbose )
@@ -88,22 +61,10 @@ static void p_status( PARSER* parser, char* status_msg, char* reason )
 	first_progress = FALSE;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_version()
+/** Generates and returns the UniCC version number string.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Generates and returns the UniCC version number string.
-
-	Parameters:		BOOLEAN		long_version		If TRUE, prints a long
-													version string with
-													patchlevel information.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//long_version// is the If TRUE, prints a long version string with patchlevel
+information. */
 char* p_version( BOOLEAN long_version )
 {
 	static char	version [ ONE_LINE + 1 ];
@@ -119,24 +80,10 @@ char* p_version( BOOLEAN long_version )
 	return version;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_copyright()
+/** Prints a program copyright info message to a desired file or stream.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Prints a program copyright info message to a desired file
-					or stream.
-
-	Parameters:		FILE*		stream				Stream where the message is
-													printed to. If this is
-													(FILE*)NULL, stdout will be
-													used.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//stream// is the stream where the message is printed to.
+If this is (FILE*)NULL, stdout will be used. */
 void p_copyright( FILE* stream )
 {
 	if( !stream )
@@ -153,24 +100,10 @@ void p_copyright( FILE* stream )
 
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_usage()
+/** Prints the program usage message.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Prints the program usage message.
-
-	Parameters:		FILE*		stream				Stream where the message is
-													printed to. If this is
-													(FILE*)NULL, stdout will be
-													used.
-					char*		progname			Name of the executable.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//stream// is the stream where the message is printed to. If this is
+(FILE*)NULL, stdout will be used. //progname// is the name of the executable. */
 void p_usage( FILE* stream, char* progname )
 {
 	if( !stream )
@@ -201,26 +134,15 @@ void p_usage( FILE* stream, char* progname )
 		"", progname );
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_get_command_line()
+/** Analyzes the command line parameters passed to the parser generator.
 
-	Author:			Jan Max Meyer
+//argc// is the argument count from main().
+//argv// is the argument values from main().
+//filename// is the return pointer for the name of the parser source file.
+//output// is the return pointer for the name of a possible output file.
+//parser// is the parser structure.
 
-	Usage:			Analyzes the command line parameters passed to the
-					parser generator.
-
-	Parameters:		int			argc		Argument count from main()
-					char**		argv		Argument values from main()
-					char**		filename	Name of the parser source file
-					char**		output		Name of a possible output file
-					PARSER*		parser		Parser structure
-
-	Returns:		BOOLEAN					TRUE, if command-line parameters
-											are correct, FALSE else.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns a TRUE, if command-line parameters are correct, FALSE otherwise. */
 BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 		char** output, PARSER* parser )
 {
@@ -303,22 +225,13 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 	return ( *filename ? TRUE : FALSE );
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		main()
+/** Global program entry.
 
-	Author:			Jan Max Meyer
+//argc// is the argument count.
+//argv// is the argument values.
 
-	Usage:			Global program entry
-
-	Parameters:		int			argc				Argument count
-					char**		argv				Argument values
-
-	Returns:		int								Number of errors count,
-													0 = all right :D
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns the number of errors count, 0 = all right :D
+*/
 int main( int argc, char** argv )
 {
 	char*	filename	= (char*)NULL;
@@ -334,7 +247,7 @@ int main( int argc, char** argv )
 #ifdef UNICC_BOOTSTRAP
 	/* On bootstrap build, print a warning message */
 	printf( "*** WARNING: YOU'RE RUNNING A BOOTSTRAP BUILD OF UNICC!\n" );
-	printf( "*** Some features may not work as you would expect.\n\n" );
+	printf( "*** Some features may not work as you would expect them.\n\n" );
 #endif
 
 	if( p_get_command_line( argc, argv, &filename, &base_name, parser ) )

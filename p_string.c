@@ -9,36 +9,16 @@ Author:	Jan Max Meyer
 Usage:	String-related management functions
 ----------------------------------------------------------------------------- */
 
-/*
- * Includes
- */
 #include "p_global.h"
 #include "p_proto.h"
 
-/*
- * Global variables
- */
+/** Returns an allocated string which contains the string-representation of an
+int value, for code generation purposes.
 
+//val// is the value to be converted.
 
-/*
- * Functions
- */
-
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_int_to_str()
-
-	Author:			Jan Max Meyer
-
-	Usage:			Returns an allocated string which contains the string-repre-
-					sentation of an int value, for code generation purposes.
-
-	Parameters:		int		val					Value to be converted
-
-	Returns:		char*						Pointer to allocated string
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns a char*-pointer to allocated string. This must bee freed later on.
+*/
 char* p_int_to_str( int val )
 {
 	char*	ret;
@@ -49,21 +29,13 @@ char* p_int_to_str( int val )
 	return ret;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_long_to_str()
+/** Returns an allocated string which contains the string-representation of a
+long value, for code generation purposes.
 
-	Author:			Jan Max Meyer
+//val// is the value to be converted.
 
-	Usage:			Returns an allocated string which contains the string-repre-
-					sentation of a long value, for code generation purposes.
-
-	Parameters:		long	val					Value to be converted
-
-	Returns:		char*						Pointer to allocated string
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns a char*-pointer to allocated string. This must bee freed later on.
+*/
 char* p_long_to_str( long val )
 {
 	char*	ret;
@@ -74,21 +46,13 @@ char* p_long_to_str( long val )
 	return ret;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_str_no_whitespace()
+/** Removes all whitespaces from a string (including inline ones!) and returns
+the resulting string.
 
-	Author:			Jan Max Meyer
+//str// is the acts both as input and output-string.
 
-	Usage:			Removes all whitespaces from a string (including inline
-					ones!) and returns the resulting string.
-
-	Parameters:		char*	str			Acts both as input and output-string.
-
-	Returns:		Pointer to the input string.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+Returns a pointer to the input string.
+*/
 char* p_str_no_whitespace( char* str )
 {
 	char*	ptr		= str;

@@ -9,45 +9,24 @@ Author:	Jan Max Meyer
 Usage:	Virtual production generation functions
 ----------------------------------------------------------------------------- */
 
-/*
- * Includes
- */
-#include "p_global.h"
-#include "p_error.h"
-#include "p_proto.h"
+#include "unicc.h"
 
-/*
- * Global variables
- */
+/** Creates a positive closure for a symbol.
 
+//parser// is the Parser information structure.
+//base// is the base symbol.
 
-/*
- * Functions
- */
-
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_positive_closure()
-
-	Author:			Jan Max Meyer
-
-	Usage:			Creates a positive closure for a symbol.
-
-	Parameters:		PARSER*		parser				Parser information structure
-					SYMBOL*		base				Base symbol
-
-	Returns:		SYMBOL*							Pointer to symbol
-													representing the closure
-													nonterminal.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
-	30.09.2010	Jan Max Meyer	Inherit defined_at information
------------------------------------------------------------------------------ */
+Returns a SYMBOL* sointer to the symbol representing the closure nonterminal. */
 SYMBOL* p_positive_closure( PARSER* parser, SYMBOL* base )
 {
 	char*	deriv_str;
 	PROD*	p;
 	SYMBOL*	s			= (SYMBOL*)NULL;
+
+	/*
+	30.09.2010	Jan Max Meyer:
+	Inherit defined_at information
+	*/
 
 	if( base )
 	{
@@ -79,38 +58,34 @@ SYMBOL* p_positive_closure( PARSER* parser, SYMBOL* base )
 	return s;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_kleene_closure()
+/** Creates a kleene closure for a symbol.
 
-	Author:			Jan Max Meyer
+//parser// is the parser information structure.
+//base// is the base symbol.
 
-	Usage:			Creates a kleene closure for a symbol.
-
-	Parameters:		PARSER*		parser				Parser information structure
-					SYMBOL*		base				Base symbol
-
-	Returns:		SYMBOL*							Pointer to symbol
-													representing the closure
-													nonterminal.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
-	14.05.2008	Jan Max Meyer	Modified rework. Instead of
-
-								s* -> s* base | ;
-
-								this will now create
-
-								s+ -> s+ base | base;
-								s* -> s+ | ;
-	30.09.2010	Jan Max Meyer	Inherit defined_at information
------------------------------------------------------------------------------ */
+Returns a SYMBOL* Pointer to symbol representing the closure nonterminal. */
 SYMBOL* p_kleene_closure( PARSER* parser, SYMBOL* base )
 {
 	char*	deriv_str;
 	PROD*	p;
 	SYMBOL*	s			= (SYMBOL*)NULL;
 	SYMBOL*	pos_s		= (SYMBOL*)NULL;
+
+	/*
+	14.05.2008	Jan Max Meyer
+	Modified rework. Instead of
+
+		s* -> s* base | ;
+
+	this will now create
+
+		s+ -> s+ base | base;
+		s* -> s+ | ;
+
+
+	30.09.2010	Jan Max Meyer
+	Inherit defined_at information
+	*/
 
 	if( base )
 	{
@@ -146,29 +121,23 @@ SYMBOL* p_kleene_closure( PARSER* parser, SYMBOL* base )
 	return s;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_optional_closure()
+/** Creates an optional closure for a symbol.
 
-	Author:			Jan Max Meyer
+//parser// is the parser information structure.
+//base// is the base symbol.
 
-	Usage:			Creates an optional closure for a symbol.
-
-	Parameters:		PARSER*		parser				Parser information structure
-					SYMBOL*		base				Base symbol
-
-	Returns:		SYMBOL*							Pointer to symbol
-													representing the closure
-													nonterminal.
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
-	30.09.2010	Jan Max Meyer	Inherit defined_at information
------------------------------------------------------------------------------ */
+Returns a SYMBOL* Pointer to symbol representing the closure nonterminal.
+*/
 SYMBOL* p_optional_closure( PARSER* parser, SYMBOL* base )
 {
 	char*	deriv_str;
 	PROD*	p;
 	SYMBOL*	s			= (SYMBOL*)NULL;
+
+	/*
+	30.09.2010	Jan Max Meyer:
+	Inherit defined_at information
+	*/
 
 	if( base )
 	{

@@ -26,9 +26,7 @@ Usage:	Grammar definition parser - FOR BOOTSTRAPPING ONLY!!
 /*
  * Includes
  */
-#include "p_global.h"
-#include "p_proto.h"
-#include "p_error.h"
+#include "unicc.h"
 #undef ERROR /* min_lalr1 defines its own ERROR! */
 
 /*

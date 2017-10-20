@@ -55,22 +55,13 @@ Usage:	Grammar definition parser
 //Begin of Prologue ------------------------------------------------------------
 #prologue		[*
 
-/*
- * Includes
- */
-#include "p_global.h"
-#include "p_proto.h"
-#include "p_error.h"
+#include "unicc.h"
 
 /*
 #ifndef UNICC_BOOTSTRAP
 #define UNICC_DEBUG 1
 #endif
 */
-
-/*
- * Global variables
- */
 
 struct @@prefix_rhs_item
 {
@@ -103,10 +94,6 @@ extern int	error_count;
 
 char*		strbuf			= (char*)NULL;
 char*		regex			= (char*)NULL;
-
-/*
- * Functions
- */
 
 /* DEBUG */
 static int getinput( void )

@@ -9,44 +9,15 @@ Author:	Jan Max Meyer
 Usage:	Grammar revision functions
 ----------------------------------------------------------------------------- */
 
-/*
- * Includes
- */
 #include "p_global.h"
 #include "p_error.h"
 #include "p_proto.h"
 
-/*
- * Global variables
- */
+/** Rewrites the grammar.
 
-/*
- * Functions
- */
+The revision is done to simulate tokens which are separated by whitespaces.
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_rewrite_grammar()
-
-	Author:			Jan Max Meyer
-
-	Usage:			Rewrites the grammar. The revision is done to simulate
-					tokens which are separated by whitespaces.
-
-	Parameters:		PARSER*		parser				Pointer to parser informa-
-													tion structure
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
-	26.03.2008	Jan Max Meyer	Use keyname with special type prefix for hash
-								table access
-	20.08.2011	Jan Max Meyer	Mark productions a rewritten if they are
-								already done, to avoid problems with multiple
-								left-hand sides (they caused a problem that
-								rewritten productions would be rewritten
-								multiple times)
------------------------------------------------------------------------------ */
+//parser// is the pointer to parser information structure. */
 void p_rewrite_grammar( PARSER* parser )
 {
 	LIST	*	l,
@@ -61,6 +32,16 @@ void p_rewrite_grammar( PARSER* parser )
 			*	nsym;
 	PROD	*	p;
 	char	*	deriv;
+
+	/*
+	26.03.2008	Jan Max Meyer
+	Use keyname with special type prefix for hash table access
+
+	20.08.2011	Jan Max Meyer
+	Mark productions a rewritten if they are already done, to avoid problems
+	with multiple left-hand sides (they caused a problem that rewritten
+	productions would be rewritten multiple times)
+	*/
 
 	/* Create productions for all whitespaces */
 	for( l = parser->symbols; l; l = l->next )
@@ -265,25 +246,11 @@ void p_rewrite_grammar( PARSER* parser )
 	parser->goal = sym;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_unique_charsets()
+/** Rewrites the grammar to work with uniquely identifyable character sets
+instead of overlapping ones. This function was completely rewritten in Nov 2009.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Rewrites the grammar to work with uniquely identifyable
-					character sets instead of overlapping ones. This function
-					was completely rewritten in Nov 2009.
-
-	Parameters:		PARSER*		parser			Pointer to parser to be
-												rewritten
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
-	11.11.2009	Jan Max Meyer	Redesign of function, to work with full
-								Unicode-range character classes.
------------------------------------------------------------------------------ */
+//parser// is the pointer to parser to be rewritten.
+*/
 void p_unique_charsets( PARSER* parser )
 {
 	LIST*		l;
@@ -293,9 +260,15 @@ void p_unique_charsets( PARSER* parser )
 	SYMBOL*		nsym;
 	SYMBOL*		rsym;
 	PROD*		p;
-	pccl*	inter;
-	pccl*	diff;
+	pccl*		inter;
+	pccl*		diff;
 	int			old_prod_cnt;
+
+	/*
+	11.11.2009	Jan Max Meyer
+	Entire redesign of function, to work with full
+	Unicode-range character classes.
+	*/
 
 	PROC( "p_unique_charsets" );
 
@@ -416,21 +389,10 @@ void p_unique_charsets( PARSER* parser )
 	VOIDRET;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_fix_precedences()
+/** Fixes the precedence and associativity information of the current grammar
+to be prepared for LALR(1) table generation.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Fixes the precedence and associativity information of the
-					current grammar to be prepared for LALR(1) table generation.
-
-	Parameters:		<type>		<identifier>		<description>
-
-	Returns:		<type>							<description>
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//parser// is the pointer to parser information structure. */
 void p_fix_precedences( PARSER* parser )
 {
 	PROD*	p;
@@ -505,24 +467,10 @@ void p_fix_precedences( PARSER* parser )
 	}
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_inherit_fixiations()
+/** Inherits the fixiation definitions once done with "fixate" parser directive.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Inherits the fixiation definitions once done with "fixate"
-					parser directive.
-
-	Parameters:		PARSER*		parser				Pointer to parser
-													information structure;
-													This huge shit of data,
-													holding everything :)
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//parser// is the pointer to parser information structure; This huge shit of
+data, holding everything :) */
 void p_inherit_fixiations( PARSER* parser )
 {
 	LIST*		l;
@@ -570,23 +518,10 @@ void p_inherit_fixiations( PARSER* parser )
 	list_free( done );
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_inherit_vtypes()
+/** Inherits value types of rewritten symbols from their base.
 
-	Author:			Jan Max Meyer
-
-	Usage:			Inherits value types of rewritten symbols from their
-					base. This is required for symbols that where generated
-					before their definition in the code - where a possible
-					value type is still unknown.
-
-	Parameters:		<type>		<identifier>		<description>
-
-	Returns:		<type>							<description>
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+This is required for symbols that where generated before their definition in
+the code - where a possible value type is still unknown. */
 void p_inherit_vtypes( PARSER* parser )
 {
 	SYMBOL*	sym;
@@ -601,20 +536,7 @@ void p_inherit_vtypes( PARSER* parser )
 	}
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_setup_single_goal()
-
-	Author:			Jan Max Meyer
-
-	Usage:			Sets up a single goal symbol, if necessary.
-
-	Parameters:		<type>		<identifier>		<description>
-
-	Returns:		<type>							<description>
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+/** Sets up a single goal symbol, if necessary. */
 void p_setup_single_goal( PARSER* parser )
 {
 	SYMBOL*	sym;
@@ -666,35 +588,17 @@ void p_setup_single_goal( PARSER* parser )
 	parser->goal = sym;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_symbol_order()
+/** Re-orders all parser symbols after all parsing and revision steps are done
+according to the following order:
 
-	Author:			Jan Max Meyer
+# Keywords-Terminals
+# Regex-Terminals
+# Character-Class Terminals
+# Nonterminals
 
-	Usage:			Re-orders all parser symbols after all parsing and revision
-					steps are done according to the following order:
+After this, id's are re-assigned.
 
-					- Keywords-Terminals
-					- Regex-Terminals
-					- Character-Class Terminals
-					- Nonterminals
-
-					After this, id's are re-assigned.
-
-	Parameters:		PARSER*		parser			Pointer to the parser
-												information structure.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
-	17.01.2011	Jan Max Meyer	Sort keyword regex terminals before any
-								other kind of terminal... hmm ... in the past,
-								keywords where of type SYM_KW_TERMINAL, now
-								they are SYM_REGEX_TERMINAL, so this must be
-								hard-coded here, check for it if one's like
-								to change this (be careful!!)
------------------------------------------------------------------------------ */
+//parser// is the pointer to the parser information structure. */
 void p_symbol_order( PARSER* parser )
 {
 	LIST*			new_order		= (LIST*)NULL;
@@ -714,6 +618,14 @@ void p_symbol_order( PARSER* parser )
 										};
 	int				i;
 	int				id				= 0;
+
+	/*
+	17.01.2011	Jan Max Meyer
+	Sort keyword regex terminals before any other kind of terminal... hmm ...
+	in the past, keywords where of type SYM_KW_TERMINAL, now they are
+	SYM_REGEX_TERMINAL, so this must be hard-coded here, check for it if one's
+	like to change this (be careful!!)
+	*/
 
 	/* Sort symbols according above sort order into a new list */
 	for( i = 0; i < sizeof( sort_order ) / sizeof( *sort_order ); i++ )
@@ -744,24 +656,13 @@ void p_symbol_order( PARSER* parser )
 	parser->symbols = new_order;
 }
 
-/* -FUNCTION--------------------------------------------------------------------
-	Function:		p_charsets_to_ptn()
+/** Turns character-classes into patterns, to be later integrated into lexical
+analyzers.
 
-	Author:			Jan Max Meyer
+This step can only be done after all grammar-related revisions had been
+finished, and no more character classes are added.
 
-	Usage:			Turns character-classes into patterns, to be later
-					integrated into lexical analyzers. This step can only be
-					done after all grammar-related revisions had been finished,
-					and no more character classes are added.
-
-	Parameters:		PARSER*		parser			Pointer to the parser
-												information structure.
-
-	Returns:		void
-
-	~~~ CHANGES & NOTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	Date:		Author:			Note:
------------------------------------------------------------------------------ */
+//parser// is the Pointer to the parser information structure. */
 void p_charsets_to_ptn( PARSER* parser )
 {
 	SYMBOL*			sym;
@@ -780,4 +681,3 @@ void p_charsets_to_ptn( PARSER* parser )
 
 	VOIDRET;
 }
-
