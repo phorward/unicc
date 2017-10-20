@@ -9,8 +9,7 @@ Author:	Jan Max Meyer
 Usage:	String-related management functions
 ----------------------------------------------------------------------------- */
 
-#include "p_global.h"
-#include "p_proto.h"
+#include "unicc.h"
 
 /** Returns an allocated string which contains the string-representation of an
 int value, for code generation purposes.

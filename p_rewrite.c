@@ -9,9 +9,7 @@ Author:	Jan Max Meyer
 Usage:	Grammar revision functions
 ----------------------------------------------------------------------------- */
 
-#include "p_global.h"
-#include "p_error.h"
-#include "p_proto.h"
+#include "unicc.h"
 
 /** Rewrites the grammar.
 

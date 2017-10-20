@@ -9,9 +9,7 @@ Author:	Jan Max Meyer
 Usage:	UniCC program entry / main function
 ----------------------------------------------------------------------------- */
 
-#include "p_global.h"
-#include "p_error.h"
-#include "p_proto.h"
+#include "unicc.h"
 
 FILE*			status;
 BOOLEAN			first_progress		= FALSE;

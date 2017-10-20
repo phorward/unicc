@@ -9,9 +9,7 @@ Author:	Jan Max Meyer
 Usage:	The XML-based Parser Definition code-generator.
 ----------------------------------------------------------------------------- */
 
-#include "p_global.h"
-#include "p_error.h"
-#include "p_proto.h"
+#include "unicc.h"
 
 #define XML_YES		"yes"
 #define XML_NO		"no"
