@@ -19,7 +19,7 @@ extern	BOOLEAN		first_progress;
 (FILE*)NULL, output is written to stderr.
 //sym// is the symbol pointer to be printed.
 */
-void p_print_symbol( FILE* stream, SYMBOL* sym )
+void print_symbol( FILE* stream, SYMBOL* sym )
 {
 	if( !stream )
 		stream = stderr;
@@ -43,7 +43,7 @@ in an ASCII-based view.
 (FILE*)NULL, output is written to stderr.
 //parser// is the parser information structure pointer.
 */
-void p_dump_grammar( FILE* stream, PARSER* parser )
+void dump_grammar( FILE* stream, PARSER* parser )
 {
 	LIST*		i		= (LIST*)NULL;
 	LIST*		j		= (LIST*)NULL;
@@ -69,7 +69,7 @@ void p_dump_grammar( FILE* stream, PARSER* parser )
 		if( s->type == SYM_NON_TERMINAL )
 		{
 			fprintf( stream, "    " );
-			p_print_symbol( stream, s );
+			print_symbol( stream, s );
 			fprintf( stream, " " );
 
 			/* Printing the FIRST-set */
@@ -78,7 +78,7 @@ void p_dump_grammar( FILE* stream, PARSER* parser )
 			{
 				sym = j->pptr;
 
-				p_print_symbol( stream, sym );
+				print_symbol( stream, sym );
 				fprintf( stream, " " );
 			}
 
@@ -94,7 +94,7 @@ void p_dump_grammar( FILE* stream, PARSER* parser )
 				{
 					p = j->pptr;
 					fprintf( stream, "      (%d) -> ", p->id );
-					p_dump_production( stream, p, FALSE, FALSE );
+					dump_production( stream, p, FALSE, FALSE );
 				}
 			}
 			else
@@ -117,7 +117,7 @@ void p_dump_grammar( FILE* stream, PARSER* parser )
 output is written to stderr.
 //parser// is the parser information structure pointer.
 */
-void p_dump_symbols( FILE* stream, PARSER* parser )
+void dump_symbols( FILE* stream, PARSER* parser )
 {
 	LIST*		i		= (LIST*)NULL;
 	SYMBOL*		s		= (SYMBOL*)NULL;
@@ -140,7 +140,7 @@ void p_dump_symbols( FILE* stream, PARSER* parser )
 		fprintf( stream, "%c%d: ",
 			( IS_TERMINAL( s ) ? 'T' : 'N' ), s->id );
 
-		p_print_symbol( stream, s );
+		print_symbol( stream, s );
 
 		fprintf( stream, " [" );
 
@@ -197,7 +197,7 @@ output is written to stderr.
 //title// is the title of the item set.
 //list// is the item set linked-list itself.
 */
-void p_dump_item_set( FILE* stream, char* title, LIST* list )
+void dump_item_set( FILE* stream, char* title, LIST* list )
 {
 	ITEM*		it		= (ITEM*)NULL;
 	LIST*		i		= (LIST*)NULL;
@@ -232,7 +232,7 @@ void p_dump_item_set( FILE* stream, char* title, LIST* list )
 				if( cnt == it->dot_offset )
 					fprintf( stream, "." );
 
-				p_print_symbol( stream, sym );
+				print_symbol( stream, sym );
 				fprintf( stream, " " );
 
 				cnt++;
@@ -245,7 +245,7 @@ void p_dump_item_set( FILE* stream, char* title, LIST* list )
 				for( j = it->lookahead; j; j = j->next )
 				{
 					sym = j->pptr;
-					p_print_symbol( stream, sym );
+					print_symbol( stream, sym );
 					fprintf( stream, " " );
 				}
 				fprintf( stream, "}" );
@@ -264,7 +264,7 @@ void p_dump_item_set( FILE* stream, char* title, LIST* list )
 output is written to stdout.
 //parser// is the parser information structure.
 */
-void p_dump_lalr_states( FILE* stream, PARSER* parser )
+void dump_lalr_states( FILE* stream, PARSER* parser )
 {
 	LIST*	l;
 	STATE*	st;
@@ -285,8 +285,8 @@ void p_dump_lalr_states( FILE* stream, PARSER* parser )
 		st = (STATE*)(l->pptr);
 
 		fprintf( stream, "  State %d:\n", st->state_id );
-		p_dump_item_set( stream, "Kernel:", st->kernel );
-		p_dump_item_set( stream, "Epsilon:", st->epsilon );
+		dump_item_set( stream, "Kernel:", st->kernel );
+		dump_item_set( stream, "Epsilon:", st->epsilon );
 		fprintf( stream, "\n" );
 	}
 }
@@ -297,7 +297,7 @@ void p_dump_lalr_states( FILE* stream, PARSER* parser )
 (FILE*)NULL, output is written to stderr.
 //parser// is the parser information structure pointer.
 */
-void p_dump_productions( FILE* stream, PARSER* parser )
+void dump_productions( FILE* stream, PARSER* parser )
 {
 	PROD*		p;
 	LIST*		l;
@@ -314,7 +314,7 @@ void p_dump_productions( FILE* stream, PARSER* parser )
 	for( l = parser->productions; l; l = l->next )
 	{
 		p = (PROD*)( l->pptr );
-		p_dump_production( stream, p, TRUE, TRUE );
+		dump_production( stream, p, TRUE, TRUE );
 		fprintf( stream, "\n" );
 	}
 
@@ -329,7 +329,7 @@ void p_dump_productions( FILE* stream, PARSER* parser )
 //with_lhs// prints production's lhs and a "->" between rhs
 //semantics// is the If TRUE, production-related semantics are even printed.
 */
-void p_dump_production( FILE* stream, PROD* p,
+void dump_production( FILE* stream, PROD* p,
 	BOOLEAN with_lhs, BOOLEAN semantics )
 {
 	LIST*	s;
@@ -370,7 +370,7 @@ void p_dump_production( FILE* stream, PROD* p,
 		else
 		{
 			sym = (SYMBOL*)( l->pptr );
-			p_print_symbol( stream, sym );
+			print_symbol( stream, sym );
 		}
 
 		ident = (char*)( m->pptr );

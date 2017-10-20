@@ -16,7 +16,7 @@ Usage:	Grammar revision functions
 The revision is done to simulate tokens which are separated by whitespaces.
 
 //parser// is the pointer to parser information structure. */
-void p_rewrite_grammar( PARSER* parser )
+void rewrite_grammar( PARSER* parser )
 {
 	LIST	*	l,
 			*	m,
@@ -50,14 +50,14 @@ void p_rewrite_grammar( PARSER* parser )
 		{
 			if( !ws_all )
 			{
-				ws_all = p_get_symbol( parser, P_WHITESPACE,
+				ws_all = get_symbol( parser, P_WHITESPACE,
 						SYM_NON_TERMINAL, TRUE );
 				ws_all->lexem = TRUE;
 				ws_all->generated = TRUE;
 			}
 
-			p = p_create_production( parser, ws_all );
-			p_append_to_production( p, sym, (char*)NULL );
+			p = create_production( parser, ws_all );
+			append_to_production( p, sym, (char*)NULL );
 		}
 	}
 
@@ -66,11 +66,11 @@ void p_rewrite_grammar( PARSER* parser )
 
 	ws_all->whitespace = TRUE;
 
-	ws_list = p_positive_closure( parser, ws_all );
+	ws_list = positive_closure( parser, ws_all );
 	ws_list->lexem = TRUE;
 	ws_list->whitespace = TRUE;
 
-	ws_optlist = p_optional_closure( parser, ws_list );
+	ws_optlist = optional_closure( parser, ws_list );
 	ws_optlist->lexem = TRUE;
 	ws_optlist->whitespace = TRUE;
 
@@ -166,7 +166,7 @@ void p_rewrite_grammar( PARSER* parser )
 						{
 							deriv = pstrcatstr( deriv,
 										P_REWRITTEN_TOKEN, FALSE );
-							nsym = p_get_symbol( parser, deriv,
+							nsym = get_symbol( parser, deriv,
 										SYM_NON_TERMINAL, FALSE );
 						}
 						while( nsym && nsym->derived_from != sym );
@@ -174,15 +174,15 @@ void p_rewrite_grammar( PARSER* parser )
 						/* If you already found a symbol, don't do anything! */
 						if( !nsym )
 						{
-							nsym = p_get_symbol( parser, deriv,
+							nsym = get_symbol( parser, deriv,
 										SYM_NON_TERMINAL, TRUE );
 
-							p = p_create_production( parser, nsym );
-							p_append_to_production( p, sym, (char*)NULL );
-							p_append_to_production( p, ws_optlist,
+							p = create_production( parser, nsym );
+							append_to_production( p, sym, (char*)NULL );
+							append_to_production( p, ws_optlist,
 															(char*)NULL );
 
-							/* p_dump_production( stdout, p, TRUE, FALSE ); */
+							/* dump_production( stdout, p, TRUE, FALSE ); */
 
 							nsym->prec = sym->prec;
 							nsym->assoc = sym->assoc;
@@ -218,11 +218,11 @@ void p_rewrite_grammar( PARSER* parser )
 	do
 	{
 		deriv = pstrcatstr( deriv, P_REWRITTEN_TOKEN, FALSE );
-		sym = p_get_symbol( parser, deriv, SYM_NON_TERMINAL, FALSE );
+		sym = get_symbol( parser, deriv, SYM_NON_TERMINAL, FALSE );
 	}
 	while( sym && sym->derived_from != parser->goal );
 
-	sym = p_get_symbol( parser, deriv, SYM_NON_TERMINAL, TRUE );
+	sym = get_symbol( parser, deriv, SYM_NON_TERMINAL, TRUE );
 	if( !sym )
 	{
 		OUTOFMEM;
@@ -232,15 +232,15 @@ void p_rewrite_grammar( PARSER* parser )
 	sym->generated = TRUE;
 	pfree( deriv );
 
-	p = p_create_production( parser, sym );
+	p = create_production( parser, sym );
 	if( !p )
 	{
 		OUTOFMEM;
 		return;
 	}
 
-	p_append_to_production( p, ws_optlist, (char*)NULL );
-	p_append_to_production( p, parser->goal, (char*)NULL );
+	append_to_production( p, ws_optlist, (char*)NULL );
+	append_to_production( p, parser->goal, (char*)NULL );
 	parser->goal = sym;
 }
 
@@ -249,7 +249,7 @@ instead of overlapping ones. This function was completely rewritten in Nov 2009.
 
 //parser// is the pointer to parser to be rewritten.
 */
-void p_unique_charsets( PARSER* parser )
+void unique_charsets( PARSER* parser )
 {
 	LIST*		l;
 	LIST*		m;
@@ -268,7 +268,7 @@ void p_unique_charsets( PARSER* parser )
 	Unicode-range character classes.
 	*/
 
-	PROC( "p_unique_charsets" );
+	PROC( "unique_charsets" );
 
 	do
 	{
@@ -330,7 +330,7 @@ void p_unique_charsets( PARSER* parser )
 					/* Disallow intersections in context-sensitive model */
 					if( parser->p_mode == MODE_INSENSITIVE )
 					{
-						p_error( parser, ERR_CHARCLASS_OVERLAP,
+						print_error( parser, ERR_CHARCLASS_OVERLAP,
 									ERRSTYLE_FATAL,
 										p_ccl_to_str( inter, TRUE ));
 
@@ -339,10 +339,10 @@ void p_unique_charsets( PARSER* parser )
 					}
 
 					/* Create charclass-symbol for intersecting symbols */
-					if( !( nsym = p_get_symbol( parser, (void*)inter,
+					if( !( nsym = get_symbol( parser, (void*)inter,
 									SYM_CCL_TERMINAL, FALSE ) ) )
 					{
-						nsym = p_get_symbol( parser, (void*)inter,
+						nsym = get_symbol( parser, (void*)inter,
 										SYM_CCL_TERMINAL, TRUE );
 						nsym->used = TRUE;
 						nsym->defined = TRUE;
@@ -350,7 +350,7 @@ void p_unique_charsets( PARSER* parser )
 					else
 						inter = p_ccl_free( inter );
 
-					rsym = p_get_symbol( parser, (void*)diff,
+					rsym = get_symbol( parser, (void*)diff,
 									SYM_CCL_TERMINAL, TRUE );
 					rsym->used = TRUE;
 					rsym->defined = TRUE;
@@ -363,11 +363,11 @@ void p_unique_charsets( PARSER* parser )
 					tsym->first = list_free( tsym->first );
 
 					/* Create & append productions */
-					p = p_create_production( parser, tsym );
-					p_append_to_production( p, nsym, (char*)NULL );
+					p = create_production( parser, tsym );
+					append_to_production( p, nsym, (char*)NULL );
 
-					p = p_create_production( parser, tsym );
-					p_append_to_production( p, rsym, (char*)NULL );
+					p = create_production( parser, tsym );
+					append_to_production( p, rsym, (char*)NULL );
 				}
 				else
 				{
@@ -378,7 +378,7 @@ void p_unique_charsets( PARSER* parser )
 
 		/*
 		fprintf( stderr, "-----\nCURRENT GRAMMAR:\n" );
-		p_dump_grammar( stderr, parser );
+		dump_grammar( stderr, parser );
 		getchar();
 		*/
 	}
@@ -391,7 +391,7 @@ void p_unique_charsets( PARSER* parser )
 to be prepared for LALR(1) table generation.
 
 //parser// is the pointer to parser information structure. */
-void p_fix_precedences( PARSER* parser )
+void fix_precedences( PARSER* parser )
 {
 	PROD*	p;
 	int		i;
@@ -469,7 +469,7 @@ void p_fix_precedences( PARSER* parser )
 
 //parser// is the pointer to parser information structure; This huge shit of
 data, holding everything :) */
-void p_inherit_fixiations( PARSER* parser )
+void inherit_fixiations( PARSER* parser )
 {
 	LIST*		l;
 	LIST*		m;
@@ -520,7 +520,7 @@ void p_inherit_fixiations( PARSER* parser )
 
 This is required for symbols that where generated before their definition in
 the code - where a possible value type is still unknown. */
-void p_inherit_vtypes( PARSER* parser )
+void inherit_vtypes( PARSER* parser )
 {
 	SYMBOL*	sym;
 	LIST*	l;
@@ -535,7 +535,7 @@ void p_inherit_vtypes( PARSER* parser )
 }
 
 /** Sets up a single goal symbol, if necessary. */
-void p_setup_single_goal( PARSER* parser )
+void setup_single_goal( PARSER* parser )
 {
 	SYMBOL*	sym;
 	PROD*	p;
@@ -563,7 +563,7 @@ void p_setup_single_goal( PARSER* parser )
 	deriv = pstrcatstr( pstrdup( parser->goal->name ),
 				P_REWRITTEN_TOKEN, FALSE );
 
-	if( !( sym = p_get_symbol( parser, deriv, SYM_NON_TERMINAL, TRUE ) ) )
+	if( !( sym = get_symbol( parser, deriv, SYM_NON_TERMINAL, TRUE ) ) )
 	{
 		OUTOFMEM;
 		return;
@@ -574,14 +574,14 @@ void p_setup_single_goal( PARSER* parser )
 
 	pfree( deriv );
 
-	if( !( p = p_create_production( parser, sym ) ) )
+	if( !( p = create_production( parser, sym ) ) )
 	{
 		OUTOFMEM;
 		return;
 	}
 
-	p_append_to_production( p, parser->goal, (char*)NULL );
-	p_append_to_production( p, parser->end_of_input, (char*)NULL );
+	append_to_production( p, parser->goal, (char*)NULL );
+	append_to_production( p, parser->end_of_input, (char*)NULL );
 
 	parser->goal = sym;
 }
@@ -597,7 +597,7 @@ according to the following order:
 After this, id's are re-assigned.
 
 //parser// is the pointer to the parser information structure. */
-void p_symbol_order( PARSER* parser )
+void sort_symbols( PARSER* parser )
 {
 	LIST*			new_order		= (LIST*)NULL;
 	LIST*			l;
@@ -661,12 +661,12 @@ This step can only be done after all grammar-related revisions had been
 finished, and no more character classes are added.
 
 //parser// is the Pointer to the parser information structure. */
-void p_charsets_to_ptn( PARSER* parser )
+void charsets_to_ptn( PARSER* parser )
 {
 	SYMBOL*			sym;
 	LIST*			l;
 
-	PROC( "p_charsets_to_ptn" );
+	PROC( "charsets_to_ptn" );
 	PARMS( "parser", "%p", parser );
 
 	LISTFOR( parser->symbols, l )

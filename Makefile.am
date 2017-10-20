@@ -6,7 +6,8 @@
 bin_PROGRAMS = unicc$(EXEEXT)
 
 if WITH_BOOTSTRAP
-noinst_PROGRAMS = unicc_boot1$(EXEEXT) \
+noinst_PROGRAMS = boot_min_lalr1$(EXEEXT) \
+					unicc_boot1$(EXEEXT) \
 					unicc_boot2$(EXEEXT) \
 					unicc_boot3$(EXEEXT)
 endif
@@ -50,7 +51,16 @@ BUILT_SOURCES	=	\
 				p_parse_boot2.h \
 				p_parse_boot3.c \
 				p_parse_boot3.h
-				
+
+# --- UniCC Bootstrap phase 0 --------------------------------------------------
+#
+# First we need to compile min_lalr1, which is a stand-alone parser generator
+# that was written for experimental reasons before UniCC, but is needed by
+# UniCC to bootstrap.
+#
+
+boot_min_lalr1_SOURCES = min_lalr1/min_lalr1.c
+
 # --- UniCC Bootstrap phase 1 --------------------------------------------------
 #
 # This phase uses the experimental min_lalr1 Parser Generator to build a
@@ -60,8 +70,8 @@ BUILT_SOURCES	=	\
 unicc_boot1_SOURCES = p_parse_boot1.c $(SOURCES)
 unicc_boot1_CFLAGS = -DUNICC_BOOTSTRAP=1
 
-p_parse_boot1.c: p_parse.syn
-	min_lalr1$(EXEEXT) $? >$@ 2>/dev/null
+p_parse_boot1.c: p_parse.syn boot_min_lalr1$(EXEEXT)
+	./boot_min_lalr1$(EXEEXT) p_parse.syn >$@ 2>/dev/null
 
 # --- UniCC Bootstrap phase 2 --------------------------------------------------
 #

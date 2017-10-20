@@ -16,7 +16,7 @@ Usage:	Grammar integrity checking functions
 //parser// is the pointer to the parser information structure.
 
 Returns a TRUE if undefined or unused symbols are found, else FALSE. */
-BOOLEAN p_undef_or_unused( PARSER* parser )
+BOOLEAN find_undef_or_unused( PARSER* parser )
 {
 	LIST*		l;
 	SYMBOL*		sym;
@@ -27,7 +27,7 @@ BOOLEAN p_undef_or_unused( PARSER* parser )
 		sym = l->pptr;
 		if( sym->generated == FALSE && sym->defined == FALSE )
 		{
-			p_error( parser, (sym->type == SYM_NON_TERMINAL ) ?
+			print_error( parser, (sym->type == SYM_NON_TERMINAL ) ?
 				ERR_UNDEFINED_NONTERM : ERR_UNDEFINED_TERM,
 					ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
 						parser->filename, sym->line, sym->name );
@@ -37,7 +37,7 @@ BOOLEAN p_undef_or_unused( PARSER* parser )
 
 		if( sym->generated == FALSE && sym->used == FALSE )
 		{
-			p_error( parser, (sym->type == SYM_NON_TERMINAL ) ?
+			print_error( parser, (sym->type == SYM_NON_TERMINAL ) ?
 				ERR_UNUSED_NONTERM : ERR_UNUSED_TERM,
 					ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 						parser->filename, sym->line, sym->name );
@@ -61,7 +61,7 @@ consumed by a NFA machine state.
 
 Returns the result of the transition on the given character class,
 0 if there is no transition. */
-static int p_nfa_transition_on_ccl(
+static int nfa_transition_on_ccl(
 	pregex_nfa* nfa, plist* res, int* accept, pccl* check_with )
 {
 	pregex_accept	acc;
@@ -128,7 +128,7 @@ started.
 Returns a TRUE if the parse succeeded (when str was completely absorbed),
 FALSE else.
 */
-static BOOLEAN p_nfa_matches_parser(
+static BOOLEAN check_nfa_matches_parser(
 	PARSER* parser, pregex_nfa* nfa, plist* start_res, int start )
 {
 	int			stack[ 1024 ];
@@ -150,7 +150,7 @@ static BOOLEAN p_nfa_matches_parser(
 		They are either reduces.
 
 		30.01.2011	Jan Max Meyer
-		Renamed to p_nfa_matches_parser(), the function now tries to parse along
+		Renamed to check_nfa_matches_parser(), the function now tries to parse along
 		an NFA state machine which must not have its origin in a keyword
 		terminal.
 
@@ -188,7 +188,7 @@ static BOOLEAN p_nfa_matches_parser(
 					plist_push( res, plist_access( e ) );
 
 
-				if( p_nfa_transition_on_ccl( nfa, res,
+				if( nfa_transition_on_ccl( nfa, res,
 						&accept, col->symbol->ccl ) > 0 )
 				{
 					act = col->action;
@@ -229,7 +229,7 @@ static BOOLEAN p_nfa_matches_parser(
 			/*
 			fprintf( stderr, "tos = %d, reducing production %d, %d\n",
 				tos, idx, list_count( rprod->rhs ) );
-			p_dump_production( stderr, rprod, FALSE, FALSE );
+			dump_production( stderr, rprod, FALSE, FALSE );
 			*/
 
 			tos -= list_count( rprod->rhs );
@@ -289,7 +289,7 @@ successfully parsing "[HALLO", expecting a "]".
 //parser// is the pointer to the parser information structure.
 
 Returns TRUE if regex anomalies where found, FALSE otherwise. */
-BOOLEAN p_regex_anomalies( PARSER* parser )
+BOOLEAN check_regex_anomalies( PARSER* parser )
 {
 	STATE*			st;
 	LIST*			l;
@@ -319,7 +319,7 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 	sets of characters from 0x0 - 0xFFFF.
 
 	31.01.2011	Jan Max Meyer
-	Renamed the function to p_regex_anomalies() because not only keywords are
+	Renamed the function to check_regex_anomalies() because not only keywords are
 	tested now, also entire regular expressions.
 
 	29.11.2011	Jan Max Meyer
@@ -376,7 +376,7 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 				pregex_ptn_to_nfa( nfa, col->symbol->ptn );
 
 				/*
-					p_nfa_matches_parser() can either be called here;
+					check_nfa_matches_parser() can either be called here;
 					But to be sure, we have a try if there are shifts on
 					the same character, and then we try to parse the using
 					the existing parse tables. This will even be more
@@ -406,18 +406,18 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 							keyword. This is not the problem if there is only
 							one reduce, but if there are more, output a warning!
 						*/
-						if( p_nfa_transition_on_ccl(
+						if( nfa_transition_on_ccl(
 									nfa, res, &accept,
 										ccol->symbol->ccl ) )
 						{
 							/*
 							printf( "state %d\n", st->state_id );
-							p_dump_item_set( stderr, (char*)NULL, st->kernel );
-							p_dump_item_set( stderr, (char*)NULL, st->epsilon );
+							dump_item_set( stderr, (char*)NULL, st->kernel );
+							dump_item_set( stderr, (char*)NULL, st->epsilon );
 							getchar();
 							*/
 
-							if( p_nfa_matches_parser( parser, nfa, res,
+							if( check_nfa_matches_parser( parser, nfa, res,
 									st->state_id ) && cnt > 1 )
 							{
 								/*
@@ -452,7 +452,7 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 													break;
 												/*
 												fprintf( stderr, "sym = " );
-												p_print_symbol( stderr, sym );
+												print_symbol( stderr, sym );
 												fprintf( stderr, " %d %d\n",
 													list_find( sym->first,
 														col->symbol ),
@@ -462,7 +462,7 @@ BOOLEAN p_regex_anomalies( PARSER* parser )
 														col->symbol ) == -1
 													&& !sym->nullable )
 												{
-													p_error( parser,
+													print_error( parser,
 														ERR_KEYWORD_ANOMALY,
 														ERRSTYLE_WARNING |
 														ERRSTYLE_STATEINFO,
@@ -501,7 +501,7 @@ or with wrong FIRST-sets.
 Returns TRUE In case if stupid productions where detected,
 FALSE if all is fine :D.
 */
-BOOLEAN p_stupid_productions( PARSER* parser )
+BOOLEAN check_stupid_productions( PARSER* parser )
 {
 	LIST*	l;
 	LIST*	m;
@@ -518,7 +518,7 @@ BOOLEAN p_stupid_productions( PARSER* parser )
 		if( list_count( p->rhs ) == 1 &&
 				(SYMBOL*)( p->rhs->pptr ) == p->lhs )
 		{
-			p_error( parser, ERR_CIRCULAR_DEFINITION,
+			print_error( parser, ERR_CIRCULAR_DEFINITION,
 				ERRSTYLE_WARNING | ERRSTYLE_PRODUCTION | ERRSTYLE_FILEINFO,
 					parser->filename, p->line, p );
 			stupid = TRUE;
@@ -542,7 +542,7 @@ BOOLEAN p_stupid_productions( PARSER* parser )
 
 			if( possible )
 			{
-				p_error( parser, ERR_EMPTY_RECURSION,
+				print_error( parser, ERR_EMPTY_RECURSION,
 					ERRSTYLE_WARNING | ERRSTYLE_FILEINFO | ERRSTYLE_PRODUCTION,
 						parser->filename, p->line, p );
 				stupid = TRUE;
@@ -553,9 +553,9 @@ BOOLEAN p_stupid_productions( PARSER* parser )
 			this can't be possible */
 		if( p->rhs )
 		{
-			p_rhs_first( &first_check, p->rhs );
+			seek_rhs_first( &first_check, p->rhs );
 			if( list_count( first_check ) == 0 )
-				p_error( parser, ERR_USELESS_RULE,
+				print_error( parser, ERR_USELESS_RULE,
 					ERRSTYLE_WARNING | ERRSTYLE_PRODUCTION | ERRSTYLE_FILEINFO,
 						parser->filename, p->line, p );
 

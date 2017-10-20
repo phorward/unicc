@@ -34,10 +34,10 @@ char* 			pmod[] =
 							} \
 							else \
 								first_progress = FALSE;
-#define DONE()				p_status( parser, "Done\n", (char*)NULL );
-#define FAIL()				p_status( parser, "Failed\n", (char*)NULL );
-#define SUCCESS()			p_status( parser, "Succeeded\n", (char*)NULL );
-#define SKIPPED( why )		p_status( parser, "Skipped: %s\n", why );
+#define DONE()				print_status( parser, "Done\n", (char*)NULL );
+#define FAIL()				print_status( parser, "Failed\n", (char*)NULL );
+#define SUCCESS()			print_status( parser, "Succeeded\n", (char*)NULL );
+#define SKIPPED( why )		print_status( parser, "Skipped: %s\n", why );
 
 
 /** Internal function to print verbose status messages.
@@ -46,7 +46,7 @@ char* 			pmod[] =
 //status_msg// is the status info, respective format string.
 //reason// is one parameter to be inserted.
 */
-static void p_status( PARSER* parser, char* status_msg, char* reason )
+static void print_status( PARSER* parser, char* status_msg, char* reason )
 {
 	if( !parser->verbose )
 		return;
@@ -63,7 +63,7 @@ static void p_status( PARSER* parser, char* status_msg, char* reason )
 
 //long_version// is the If TRUE, prints a long version string with patchlevel
 information. */
-char* p_version( BOOLEAN long_version )
+char* print_version( BOOLEAN long_version )
 {
 	static char	version [ ONE_LINE + 1 ];
 
@@ -82,13 +82,13 @@ char* p_version( BOOLEAN long_version )
 
 //stream// is the stream where the message is printed to.
 If this is (FILE*)NULL, stdout will be used. */
-void p_copyright( FILE* stream )
+void print_copyright( FILE* stream )
 {
 	if( !stream )
 		stream = stdout;
 
 	fprintf( stream, "UniCC LALR(1) Parser Generator v%s [build %s %s]\n",
-			p_version( TRUE ), __DATE__, __TIME__ );
+			print_version( TRUE ), __DATE__, __TIME__ );
 	fprintf( stream, "Copyright (C) 2006-2017 by "
 						"Phorward Software Technologies, Jan Max Meyer\n" );
 	fprintf( stream, "http://www.phorward-software.com ++ "
@@ -102,7 +102,7 @@ void p_copyright( FILE* stream )
 
 //stream// is the stream where the message is printed to. If this is
 (FILE*)NULL, stdout will be used. //progname// is the name of the executable. */
-void p_usage( FILE* stream, char* progname )
+void print_usage( FILE* stream, char* progname )
 {
 	if( !stream )
 		stream = stdout;
@@ -141,7 +141,7 @@ void p_usage( FILE* stream, char* progname )
 //parser// is the parser structure.
 
 Returns a TRUE, if command-line parameters are correct, FALSE otherwise. */
-BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
+BOOLEAN get_command_line( int argc, char** argv, char** filename,
 		char** output, PARSER* parser )
 {
 	int		i;
@@ -163,7 +163,7 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 			|| !strcmp( opt, "basename" ) || !strcmp( opt, "b" ) )
 		{
 			if( !param )
-				p_error( parser, ERR_CMD_LINE, ERRSTYLE_FATAL, opt );
+				print_error( parser, ERR_CMD_LINE, ERRSTYLE_FATAL, opt );
 			else
 				*output = param;
 		}
@@ -198,12 +198,12 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 		}
 		else if( !strcmp( opt, "version" ) || !strcmp( opt, "V" ) )
 		{
-			p_copyright( stdout );
+			print_copyright( stdout );
 			exit( EXIT_SUCCESS );
 		}
 		else if( !strcmp( opt, "help" ) || !strcmp( opt, "h" ) )
 		{
-			p_usage( stdout, *argv );
+			print_usage( stdout, *argv );
 			exit( EXIT_SUCCESS );
 		}
 		else if( !strcmp( opt, "xml" ) || !strcmp( opt, "x" ) )
@@ -218,7 +218,7 @@ BOOLEAN p_get_command_line( int argc, char** argv, char** filename,
 	if( rc == 1 )
 		*filename = param;
 	else if( rc < 0 && param )
-		p_error( parser, ERR_CMD_OPT, ERRSTYLE_FATAL, param );
+		print_error( parser, ERR_CMD_OPT, ERRSTYLE_FATAL, param );
 
 	return ( *filename ? TRUE : FALSE );
 }
@@ -240,7 +240,7 @@ int main( int argc, char** argv )
 	BOOLEAN	def_lang	= FALSE;
 
 	status = stdout;
-	parser = p_create_parser();
+	parser = create_parser();
 
 #ifdef UNICC_BOOTSTRAP
 	/* On bootstrap build, print a warning message */
@@ -248,12 +248,12 @@ int main( int argc, char** argv )
 	printf( "*** Some features may not work as you would expect them.\n\n" );
 #endif
 
-	if( p_get_command_line( argc, argv, &filename, &base_name, parser ) )
+	if( get_command_line( argc, argv, &filename, &base_name, parser ) )
 	{
 		if( !pfiletostr( &parser->source, ( parser->filename = filename ) ) )
 		{
-			p_error( parser, ERR_OPEN_INPUT_FILE, ERRSTYLE_FATAL, filename );
-			p_free_parser( parser );
+			print_error( parser, ERR_OPEN_INPUT_FILE, ERRSTYLE_FATAL, filename );
+			free_parser( parser );
 
 			return error_count;
 		}
@@ -269,12 +269,12 @@ int main( int argc, char** argv )
 			parser->p_basename = base_name;
 
 		if( parser->verbose )
-			fprintf( status, "UniCC version: %s\n", p_version( FALSE ) );
+			fprintf( status, "UniCC version: %s\n", print_version( FALSE ) );
 
 		PROGRESS( "Parsing grammar" )
 
 		/* Parse grammar structure */
-		if( p_parse( parser, parser->source ) == 0 )
+		if( parse_grammar( parser, parser->source ) == 0 )
 		{
 			DONE()
 
@@ -290,57 +290,57 @@ int main( int argc, char** argv )
 
 				/* Single goal revision, if necessary */
 				PROGRESS( "Setting up single goal symbol" )
-				p_setup_single_goal( parser );
+				setup_single_goal( parser );
 				DONE()
 
 				/* Rewrite the grammar, if required */
 				PROGRESS( "Rewriting grammar" )
 				if( parser->p_mode == MODE_SENSITIVE )
-					p_rewrite_grammar( parser );
+					rewrite_grammar( parser );
 
-				p_unique_charsets( parser );
-				p_symbol_order( parser );
-				p_charsets_to_ptn( parser );
+				unique_charsets( parser );
+				sort_symbols( parser );
+				charsets_to_ptn( parser );
 
 				if( parser->p_mode == MODE_SENSITIVE )
-					p_inherit_fixiations( parser );
+					inherit_fixiations( parser );
 				DONE()
 
 				/* Precedence fixup */
 				PROGRESS( "Fixing precedences" )
-				p_fix_precedences( parser );
+				fix_precedences( parser );
 				DONE()
 
 				/* FIRST-set computation */
 				PROGRESS( "Computing FIRST-sets" )
-				p_first( parser->symbols );
+				compute_first( parser->symbols );
 				DONE()
 
 				if( parser->show_grammar )
-					p_dump_grammar( status, parser );
+					dump_grammar( status, parser );
 
 				if( parser->show_symbols )
-					p_dump_symbols( status, parser );
+					dump_symbols( status, parser );
 
 				if( parser->show_productions )
-					p_dump_productions( status, parser );
+					dump_productions( status, parser );
 
 				/* Stupid production recognition */
 				PROGRESS( "Validating rule integrity" )
 
-				if( !p_undef_or_unused( parser ) )
+				if( !find_undef_or_unused( parser ) )
 				{
-					if( p_stupid_productions( parser ) )
+					if( check_stupid_productions( parser ) )
 						recursions = TRUE;
 
 					DONE()
 
 					/* Parse table generator */
 					PROGRESS( "Building parse tables" )
-					p_generate_tables( parser );
+					generate_tables( parser );
 
 					if( parser->show_states )
-						p_dump_lalr_states( status, parser );
+						dump_lalr_states( status, parser );
 
 					DONE()
 
@@ -358,7 +358,7 @@ int main( int argc, char** argv )
 						}
 						else
 						{
-							p_regex_anomalies( parser );
+							check_regex_anomalies( parser );
 							DONE()
 						}
 					}
@@ -371,15 +371,15 @@ int main( int argc, char** argv )
 					PROGRESS( "Constructing lexical analyzer" )
 
 					if( parser->p_mode == MODE_SENSITIVE )
-						p_keywords_to_dfa( parser );
+						merge_symbols_to_dfa( parser );
 					else if( parser->p_mode == MODE_INSENSITIVE )
-						p_single_lexer( parser );
+						construct_single_lexer( parser );
 
 					DONE()
 
 					/* Default production detection */
 					PROGRESS( "Detecting default rules" )
-					p_detect_default_productions( parser );
+					detect_default_productions( parser );
 					DONE()
 
 					/* Code generator */
@@ -397,14 +397,14 @@ int main( int argc, char** argv )
 									( def_lang ? " (default)" : "" ) );
 
 						PROGRESS( "Invoking code generator" )
-						p_build_code( parser );
+						build_code( parser );
 						DONE()
 					}
 
 					if( parser->gen_xml )
 					{
 						PROGRESS( "Generating parser description file" )
-						p_build_xml( parser, TRUE );
+						build_xml( parser, TRUE );
 						DONE()
 					}
 				}
@@ -416,7 +416,7 @@ int main( int argc, char** argv )
 			else
 			{
 				FAIL()
-				p_error( parser, ERR_NO_GOAL_SYMBOL, ERRSTYLE_FATAL );
+				print_error( parser, ERR_NO_GOAL_SYMBOL, ERRSTYLE_FATAL );
 			}
 
 			if( parser->stats )
@@ -436,13 +436,13 @@ int main( int argc, char** argv )
 		}
 
 		if( error_count && parser->gen_xml )
-			p_build_xml( parser, FALSE );
+			build_xml( parser, FALSE );
 
-		p_free_parser( parser );
+		free_parser( parser );
 	}
 	else if( !error_count )
 	{
-		p_usage( status, *argv );
+		print_usage( status, *argv );
 		error_count++;
 	}
 

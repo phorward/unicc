@@ -109,7 +109,7 @@ Usage:	Global declarations, structures and includes
 									"%s, %d: Memory allocation failure; " \
 										"UniCC possibly ran out of memory!\n", \
 											__FILE__, __LINE__ ), \
-								p_error( (PARSER*)NULL, ERR_MEMORY_ERROR,\
+								print_error( (PARSER*)NULL, ERR_MEMORY_ERROR,\
 									ERRSTYLE_FATAL, __FILE__, __LINE__ ), \
 								exit( EXIT_FAILURE )
 
@@ -321,8 +321,8 @@ struct _parser
 	char*		p_name;			/* Parser name */
 	char*		p_desc;			/* Parser description */
 	char*		p_template;		/* Parser target template */
-	char*		p_copyright;	/* Parser copyright notice */
-	char*		p_version;		/* Parser version */
+	char*		print_copyright;	/* Parser copyright notice */
+	char*		print_version;		/* Parser version */
 	char*		p_prefix;		/* Parser symbol prefix */
 	char*		p_basename;		/* Parser file basename */
 	char*		p_def_action;	/* Default reduce action */

@@ -17,7 +17,7 @@ Usage:	Virtual production generation functions
 //base// is the base symbol.
 
 Returns a SYMBOL* sointer to the symbol representing the closure nonterminal. */
-SYMBOL* p_positive_closure( PARSER* parser, SYMBOL* base )
+SYMBOL* positive_closure( PARSER* parser, SYMBOL* base )
 {
 	char*	deriv_str;
 	PROD*	p;
@@ -30,12 +30,12 @@ SYMBOL* p_positive_closure( PARSER* parser, SYMBOL* base )
 
 	if( base )
 	{
-		deriv_str = p_derivation_name( base->name, P_POSITIVE_CLOSURE );
+		deriv_str = derive_name( base->name, P_POSITIVE_CLOSURE );
 
-		if( !( s = p_get_symbol( parser, deriv_str,
+		if( !( s = get_symbol( parser, deriv_str,
 						SYM_NON_TERMINAL, FALSE ) ) )
 		{
-			s = p_get_symbol( parser, deriv_str,
+			s = get_symbol( parser, deriv_str,
 					SYM_NON_TERMINAL, TRUE );
 			s->generated = TRUE;
 			s->used = TRUE;
@@ -44,12 +44,12 @@ SYMBOL* p_positive_closure( PARSER* parser, SYMBOL* base )
 			s->derived_from = base;
 			s->line = base->line;
 
-			p = p_create_production( parser, s );
-			p_append_to_production( p, s, (char*)NULL );
-			p_append_to_production( p, base, (char*)NULL );
+			p = create_production( parser, s );
+			append_to_production( p, s, (char*)NULL );
+			append_to_production( p, base, (char*)NULL );
 
-			p = p_create_production( parser, s );
-			p_append_to_production( p, base, (char*)NULL );
+			p = create_production( parser, s );
+			append_to_production( p, base, (char*)NULL );
 		}
 
 		pfree( deriv_str );
@@ -64,7 +64,7 @@ SYMBOL* p_positive_closure( PARSER* parser, SYMBOL* base )
 //base// is the base symbol.
 
 Returns a SYMBOL* Pointer to symbol representing the closure nonterminal. */
-SYMBOL* p_kleene_closure( PARSER* parser, SYMBOL* base )
+SYMBOL* kleene_closure( PARSER* parser, SYMBOL* base )
 {
 	char*	deriv_str;
 	PROD*	p;
@@ -89,16 +89,16 @@ SYMBOL* p_kleene_closure( PARSER* parser, SYMBOL* base )
 
 	if( base )
 	{
-		pos_s = p_positive_closure( parser, base );
+		pos_s = positive_closure( parser, base );
 		if( !pos_s )
 			return s;
 
-		deriv_str = p_derivation_name( base->name, P_KLEENE_CLOSURE );
+		deriv_str = derive_name( base->name, P_KLEENE_CLOSURE );
 
-		if( !( s = p_get_symbol( parser, deriv_str,
+		if( !( s = get_symbol( parser, deriv_str,
 					SYM_NON_TERMINAL, FALSE ) ) )
 		{
-			s = p_get_symbol( parser, deriv_str,
+			s = get_symbol( parser, deriv_str,
 					SYM_NON_TERMINAL, TRUE );
 			s->generated = TRUE;
 			s->used = TRUE;
@@ -107,12 +107,12 @@ SYMBOL* p_kleene_closure( PARSER* parser, SYMBOL* base )
 			s->derived_from = base;
 			s->line = base->line;
 
-			p = p_create_production( parser, s );
-			/*p_append_to_production( p, s, (char*)NULL );
-			p_append_to_production( p, base, (char*)NULL );*/
-			p_append_to_production( p, pos_s, (char*)NULL );
+			p = create_production( parser, s );
+			/*append_to_production( p, s, (char*)NULL );
+			append_to_production( p, base, (char*)NULL );*/
+			append_to_production( p, pos_s, (char*)NULL );
 
-			p = p_create_production( parser, s );
+			p = create_production( parser, s );
 		}
 
 		pfree( deriv_str );
@@ -128,7 +128,7 @@ SYMBOL* p_kleene_closure( PARSER* parser, SYMBOL* base )
 
 Returns a SYMBOL* Pointer to symbol representing the closure nonterminal.
 */
-SYMBOL* p_optional_closure( PARSER* parser, SYMBOL* base )
+SYMBOL* optional_closure( PARSER* parser, SYMBOL* base )
 {
 	char*	deriv_str;
 	PROD*	p;
@@ -141,12 +141,12 @@ SYMBOL* p_optional_closure( PARSER* parser, SYMBOL* base )
 
 	if( base )
 	{
-		deriv_str = p_derivation_name( base->name, P_OPTIONAL_CLOSURE );
+		deriv_str = derive_name( base->name, P_OPTIONAL_CLOSURE );
 
-		if( !(s = p_get_symbol( parser, deriv_str,
+		if( !(s = get_symbol( parser, deriv_str,
 					SYM_NON_TERMINAL, FALSE ) ) )
 		{
-			s = p_get_symbol( parser, deriv_str,
+			s = get_symbol( parser, deriv_str,
 					SYM_NON_TERMINAL, TRUE );
 			s->generated = TRUE;
 			s->used = TRUE;
@@ -155,10 +155,10 @@ SYMBOL* p_optional_closure( PARSER* parser, SYMBOL* base )
 			s->derived_from = base;
 			s->line = base->line;
 
-			p = p_create_production( parser, s );
-			p_append_to_production( p, base, (char*)NULL );
+			p = create_production( parser, s );
+			append_to_production( p, base, (char*)NULL );
 
-			p = p_create_production( parser, s );
+			p = create_production( parser, s );
 		}
 
 		pfree( deriv_str );

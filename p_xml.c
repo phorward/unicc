@@ -22,7 +22,7 @@ extern char*	pmod[];
 
 //parent_xml// is the Parent element where the character-class block will be
 attached to. //ccl// is the character-class to be dumped. */
-static void p_xml_ccl( XML_T parent_xml, pccl* ccl )
+static void build_xml_ccl( XML_T parent_xml, pccl* ccl )
 {
 	int			i;
 	wchar_t		beg;
@@ -30,7 +30,7 @@ static void p_xml_ccl( XML_T parent_xml, pccl* ccl )
 	XML_T		ccl_xml;
 	XML_T		range_xml;
 
-	PROC( "p_xml_ccl" );
+	PROC( "build_xml_ccl" );
 	PARMS( "parent_xml", "%p", parent_xml );
 	PARMS( "ccl", "%p", ccl );
 
@@ -58,7 +58,7 @@ static void p_xml_ccl( XML_T parent_xml, pccl* ccl )
 
 Returns a XML_T raw-code tag.
 */
-static XML_T p_xml_raw_code( XML_T code_xml, char* code )
+static XML_T build_xml_raw_code( XML_T code_xml, char* code )
 {
 	XML_T	raw_code;
 
@@ -86,7 +86,7 @@ individually coded one.
 
 Returns TRUE on success.
 */
-static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
+static BOOLEAN build_xml_action( XML_T code_xml, PARSER* parser, PROD* p,
 		char* base, BOOLEAN def_code )
 {
 	plex*			lex;
@@ -113,7 +113,7 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 	semantic rhs!
 	*/
 
-	PROC( "p_xml_build_action" );
+	PROC( "build_xml_action" );
 	PARMS( "code_xml", "%p", code_xml );
 	PARMS( "parser", "%p", parser );
 	PARMS( "p", "%p", p );
@@ -162,7 +162,7 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 					(char*)NULL, last, start - last ) ) )
 				OUTOFMEM;
 
-			p_xml_raw_code( code_xml, raw );
+			build_xml_raw_code( code_xml, raw );
 
 			VARS( "end", "%s", end );
 		}
@@ -198,7 +198,7 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 
 				if( !l )
 				{
-					p_error( parser, ERR_UNDEFINED_SYMREF, ERRSTYLE_WARNING,
+					print_error( parser, ERR_UNDEFINED_SYMREF, ERRSTYLE_WARNING,
 										end - start, start  );
 					off = 0;
 
@@ -280,7 +280,7 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 				{
 					MSG( "No match found..." );
 
-					p_error( parser, ERR_UNDEFINED_LHS, ERRSTYLE_WARNING, tmp );
+					print_error( parser, ERR_UNDEFINED_LHS, ERRSTYLE_WARNING, tmp );
 					pfree( tmp );
 
 					if( !( tmp = pstrdup( start ) ) )
@@ -330,8 +330,8 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 			{
 				if( !def_code )
 				{
-					p_error( parser, ERR_NO_VALUE_TYPE, ERRSTYLE_FATAL,
-							p_find_base_symbol( sym )->name,
+					print_error( parser, ERR_NO_VALUE_TYPE, ERRSTYLE_FATAL,
+							find_base_symbol( sym )->name,
 								p->id, end - start + 1, start );
 				}
 
@@ -340,11 +340,11 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 		}
 
 		if( tmp )
-			p_xml_raw_code( code_xml, tmp );
+			build_xml_raw_code( code_xml, tmp );
 	}
 
 	if( last && *last )
-		p_xml_raw_code( code_xml, pstrdup( last ) );
+		build_xml_raw_code( code_xml, pstrdup( last ) );
 
 	plex_free( lex );
 
@@ -352,7 +352,7 @@ static BOOLEAN p_xml_build_action( XML_T code_xml, PARSER* parser, PROD* p,
 }
 
 /** Builds the scanner actions */
-static BOOLEAN p_xml_build_scan_action(
+static BOOLEAN build_xml_scan_action(
 	XML_T code_xml, PARSER* parser, SYMBOL* s, char* base )
 {
 	plex*			lex;
@@ -366,7 +366,7 @@ static BOOLEAN p_xml_build_scan_action(
 	SYMBOL*			sym;
 	LIST*			l;
 
-	PROC( "p_build_scan_action" );
+	PROC( "build_scan_action" );
 	PARMS( "code_xml", "%p", code_xml );
 	PARMS( "parser", "%p", parser );
 	PARMS( "s", "%p", s );
@@ -393,7 +393,7 @@ static BOOLEAN p_xml_build_scan_action(
 					(char*)NULL, last, start - last ) ) )
 				OUTOFMEM;
 
-			p_xml_raw_code( code_xml, raw );
+			build_xml_raw_code( code_xml, raw );
 
 			VARS( "raw", "%s", raw );
 		}
@@ -478,7 +478,7 @@ static BOOLEAN p_xml_build_scan_action(
 				{
 					MSG( "No match found..." );
 
-					p_error( parser, ERR_UNDEFINED_TERMINAL,
+					print_error( parser, ERR_UNDEFINED_TERMINAL,
 								ERRSTYLE_WARNING, tmp );
 				}
 
@@ -492,7 +492,7 @@ static BOOLEAN p_xml_build_scan_action(
 	}
 
 	if( last && *last )
-		p_xml_raw_code( code_xml, pstrdup( last ) );
+		build_xml_raw_code( code_xml, pstrdup( last ) );
 
 	plex_free( lex );
 
@@ -500,7 +500,7 @@ static BOOLEAN p_xml_build_scan_action(
 }
 
 /** Builds the DFAs XML structure. */
-static void p_build_dfa( XML_T parent, pregex_dfa* dfa )
+static void build_xml_dfa( XML_T parent, pregex_dfa* dfa )
 {
 	pregex_dfa_st*	st;
 	pregex_dfa_tr*	tr;
@@ -510,7 +510,7 @@ static void p_build_dfa( XML_T parent, pregex_dfa* dfa )
 	XML_T			state;
 	XML_T			trans;
 
-	PROC( "p_build_dfa" );
+	PROC( "build_xml_dfa" );
 
 	for( e = plist_first( dfa->states ), i = 0; e; e = plist_next( e ), i++ )
 	{
@@ -541,14 +541,14 @@ static void p_build_dfa( XML_T parent, pregex_dfa* dfa )
 			if( !( xml_set_int_attr( trans, "goto", tr->go_to ) ) )
 				OUTOFMEM;
 
-			p_xml_ccl( trans, tr->ccl );
+			build_xml_ccl( trans, tr->ccl );
 		}
 	}
 
 	VOIDRET;
 }
 
-static void p_xml_print_options( plist* opts, XML_T append_to )
+static void print_xml_options( plist* opts, XML_T append_to )
 {
 	plistel*	e;
 	OPT*		opt;
@@ -574,7 +574,7 @@ static void p_xml_print_options( plist* opts, XML_T append_to )
 }
 
 
-static void p_xml_print_symbols( PARSER* parser, XML_T par )
+static void print_xml_symbols( PARSER* parser, XML_T par )
 {
 	LIST*			l;
 	SYMBOL*			sym;
@@ -588,7 +588,7 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 	XML_T			lex;
 	XML_T			regex;
 
-	PROC( "p_xml_print_symbols" );
+	PROC( "print_xml_symbols" );
 	MSG( "Printing symbol table" );
 
 	if( !( sym_tab = xml_add_child( par, "symbols", 0 ) ) )
@@ -612,7 +612,7 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 			{
 				case SYM_CCL_TERMINAL:
 					tmp = "character-class";
-					p_xml_ccl( symbol, sym->ccl );
+					build_xml_ccl( symbol, sym->ccl );
 					break;
 				case SYM_REGEX_TERMINAL:
 					if( sym->keyword )
@@ -647,7 +647,7 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 						if( !( lex = xml_add_child( symbol, "dfa", 0 ) ) )
 							OUTOFMEM;
 
-						p_build_dfa( lex, tmp_dfa );
+						build_xml_dfa( lex, tmp_dfa );
 						tmp_nfa = pregex_nfa_free( tmp_nfa );
 						tmp_dfa = pregex_dfa_free( tmp_dfa );
 					}
@@ -677,7 +677,7 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 				if( sym->code_at > 0 )
 					xml_set_int_attr( code, "defined-at", sym->code_at );
 
-				p_xml_build_scan_action( code, parser, sym, sym->code );
+				build_xml_scan_action( code, parser, sym, sym->code );
 			}
 		}
 		else
@@ -708,13 +708,13 @@ static void p_xml_print_symbols( PARSER* parser, XML_T par )
 			xml_set_int_attr( symbol, "defined-at", sym->line );
 
 		/* Set symbol options */
-		p_xml_print_options( sym->options, symbol );
+		print_xml_options( sym->options, symbol );
 	}
 
 	VOIDRET;
 }
 
-static void p_xml_print_productions( PARSER* parser, XML_T par )
+static void print_xml_productions( PARSER* parser, XML_T par )
 {
 	LIST*			l;
 	LIST*			m;
@@ -732,7 +732,7 @@ static void p_xml_print_productions( PARSER* parser, XML_T par )
 	XML_T			rhs;
 	XML_T			code;
 
-	PROC( "p_xml_print_productions" );
+	PROC( "print_xml_productions" );
 	MSG( "Printing production table" );
 
 	if( !( prod_tab = xml_add_child( par, "productions", 0 ) ) )
@@ -797,7 +797,7 @@ static void p_xml_print_productions( PARSER* parser, XML_T par )
 		}
 
 		/* Set productions options */
-		p_xml_print_options( p->options, prod );
+		print_xml_options( p->options, prod );
 
 		/* Code */
 		is_default_code = FALSE;
@@ -837,14 +837,14 @@ static void p_xml_print_productions( PARSER* parser, XML_T par )
 			if( p->code_at > 0 )
 				xml_set_int_attr( code, "defined-at", p->code_at );
 
-			p_xml_build_action( code, parser, p, act, is_default_code );
+			build_xml_action( code, parser, p, act, is_default_code );
 		}
 	}
 
 	VOIDRET;
 }
 
-static void p_xml_print_states( PARSER* parser, XML_T par )
+static void print_xml_states( PARSER* parser, XML_T par )
 {
 	LIST*			l;
 	LIST*			m;
@@ -860,7 +860,7 @@ static void p_xml_print_states( PARSER* parser, XML_T par )
 	XML_T			go_to;
 	XML_T			action;
 
-	PROC( "p_xml_print_states" );
+	PROC( "print_xml_states" );
 
 	MSG( "State table" );
 
@@ -983,7 +983,7 @@ static void p_xml_print_states( PARSER* parser, XML_T par )
 	VOIDRET;
 }
 
-static void p_xml_print_lexers( PARSER* parser, XML_T par )
+static void print_xml_lexers( PARSER* parser, XML_T par )
 {
 	LIST*			l;
 	int				i;
@@ -992,7 +992,7 @@ static void p_xml_print_lexers( PARSER* parser, XML_T par )
 	XML_T			lex_tab;
 	XML_T			lex;
 
-	PROC( "p_xml_print_lexers" );
+	PROC( "print_xml_lexers" );
 
 	if( !( lex_tab = xml_add_child( par, "lexers", 0 ) ) )
 		OUTOFMEM;
@@ -1008,13 +1008,13 @@ static void p_xml_print_lexers( PARSER* parser, XML_T par )
 			!( xml_set_int_attr( lex, "id", i ) ) )
 				OUTOFMEM;
 
-		p_build_dfa( lex, dfa );
+		build_xml_dfa( lex, dfa );
 	}
 
 	VOIDRET;
 }
 
-static void p_xml_print_vtypes( PARSER* parser, XML_T par )
+static void print_xml_vtypes( PARSER* parser, XML_T par )
 {
 	LIST*			l;
 	VTYPE*			vt;
@@ -1022,7 +1022,7 @@ static void p_xml_print_vtypes( PARSER* parser, XML_T par )
 	XML_T			vartype_tab;
 	XML_T			vartype;
 
-	PROC( "p_xml_print_vtypes" );
+	PROC( "print_xml_vtypes" );
 
 	if( !( vartype_tab = xml_add_child( par, "value-types", 0 ) ) )
 		OUTOFMEM;
@@ -1053,7 +1053,7 @@ static void p_xml_print_vtypes( PARSER* parser, XML_T par )
 
 If //finished// is the TRUE: Parser generation has finished successful.
 FALSE: Parser generation failed because of parse errors. */
-void p_build_xml( PARSER* parser, BOOLEAN finished )
+void build_xml( PARSER* parser, BOOLEAN finished )
 {
 	XML_T			par;
 
@@ -1065,7 +1065,7 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 
 	char*			xmlstr;
 
-	PROC( "p_build_xml" );
+	PROC( "build_xml" );
 	PARMS( "parser", "%p", parser );
 	PARMS( "finished", "%s", BOOLEAN_STR( finished ) );
 
@@ -1074,7 +1074,7 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 		OUTOFMEM;
 
 	/* UniCC version */
-	xml_set_attr( par, "unicc-version", p_version( TRUE ) );
+	xml_set_attr( par, "unicc-version", print_version( TRUE ) );
 
 	/* Parser model */
 	xml_set_attr( par, "mode", pmod[ parser->p_mode ] );
@@ -1097,21 +1097,21 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 		OUTOFMEM;
 
 	/* Set additional parser attributes */
-	if( parser->p_version )
+	if( parser->print_version )
 	{
 		if( !( attrib = xml_add_child( par, "version", 0 ) ) )
 			OUTOFMEM;
 
-		if( !( xml_set_txt( attrib, parser->p_version ) ) )
+		if( !( xml_set_txt( attrib, parser->print_version ) ) )
 			OUTOFMEM;
 	}
 
-	if( parser->p_copyright )
+	if( parser->print_copyright )
 	{
 		if( !( attrib = xml_add_child( par, "copyright", 0 ) ) )
 			OUTOFMEM;
 
-		if( !( xml_set_txt( attrib, parser->p_copyright ) ) )
+		if( !( xml_set_txt( attrib, parser->print_copyright ) ) )
 			OUTOFMEM;
 	}
 
@@ -1130,24 +1130,24 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 		OUTOFMEM;
 
 	/* Print parser's options */
-	p_xml_print_options( parser->options, par );
+	print_xml_options( parser->options, par );
 
 	VARS( "finished", "%s", BOOLEAN_STR( finished ) );
 	if( finished )
 	{
 		/* Build table of symbols --------------------------------------- */
-		p_xml_print_symbols( parser, par );
+		print_xml_symbols( parser, par );
 
 		/* Build table of productions ----------------------------------- */
-		p_xml_print_productions( parser, par );
+		print_xml_productions( parser, par );
 
 		/* Build state table -------------------------------------------- */
-		p_xml_print_states( parser, par );
+		print_xml_states( parser, par );
 
 		/* Build keyword/regular expression matching lexers ------------- */
-		p_xml_print_lexers( parser, par );
+		print_xml_lexers( parser, par );
 
-		p_xml_print_vtypes( parser, par );
+		print_xml_vtypes( parser, par );
 	}
 
 	/* Put prologue code */
@@ -1189,7 +1189,7 @@ void p_build_xml( PARSER* parser, BOOLEAN finished )
 		{
 			if( !( out = fopen( outname, "wb" ) ) )
 			{
-				p_error( parser, ERR_OPEN_OUTPUT_FILE,
+				print_error( parser, ERR_OPEN_OUTPUT_FILE,
 					ERRSTYLE_WARNING, outname );
 
 				out = stdout;

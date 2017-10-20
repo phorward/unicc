@@ -4,7 +4,7 @@ Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
-File:	p_error.c
+File:	print_error.c
 Author:	Jan Max Meyer
 Usage:	Error message handling
 ----------------------------------------------------------------------------- */
@@ -66,11 +66,11 @@ char*				progname;
 //parser// is the parser information structure.
 //err_id// is the errorcode.
 //err_style// is the error message behavior, as stated in the ERRSTYLE-defines
-from p_error.h.
+from print_error.h.
 //...// are additional parameters depending on error message text and error
 message style.
 */
-void p_error( PARSER* parser, ERRORCODE err_id, int err_style, ... )
+void print_error( PARSER* parser, ERRORCODE err_id, int err_style, ... )
 {
 	va_list		params;
 	char*		filename 	= (char*)NULL;
@@ -182,19 +182,19 @@ void p_error( PARSER* parser, ERRORCODE err_id, int err_style, ... )
 		vfprintf( stderr, error_txt[ err_id ], params );
 
 		if( err_style & ERRSTYLE_SYMBOL )
-			p_print_symbol( stderr, s );
+			print_symbol( stderr, s );
 
 		fprintf( stderr, "\n" );
 
 		if( err_style & ERRSTYLE_STATEINFO )
 		{
-			p_dump_item_set( stderr, (char*)NULL, state->kernel );
-			p_dump_item_set( stderr, (char*)NULL, state->epsilon );
+			dump_item_set( stderr, (char*)NULL, state->kernel );
+			dump_item_set( stderr, (char*)NULL, state->epsilon );
 		}
 		else if( err_style & ERRSTYLE_PRODUCTION )
 		{
 			fprintf( stderr, "  " );
-			p_dump_production( stderr, p, TRUE, FALSE );
+			dump_production( stderr, p, TRUE, FALSE );
 		}
 	}
 

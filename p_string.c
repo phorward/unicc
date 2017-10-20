@@ -18,7 +18,7 @@ int value, for code generation purposes.
 
 Returns a char*-pointer to allocated string. This must bee freed later on.
 */
-char* p_int_to_str( int val )
+char* int_to_str( int val )
 {
 	char*	ret;
 
@@ -35,7 +35,7 @@ long value, for code generation purposes.
 
 Returns a char*-pointer to allocated string. This must bee freed later on.
 */
-char* p_long_to_str( long val )
+char* long_to_str( long val )
 {
 	char*	ret;
 
@@ -52,7 +52,7 @@ the resulting string.
 
 Returns a pointer to the input string.
 */
-char* p_str_no_whitespace( char* str )
+char* str_no_whitespace( char* str )
 {
 	char*	ptr		= str;
 	char*	start	= str;

@@ -5,7 +5,7 @@ Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
-File:	p_parse.syn/p_parse.c
+File:	parse_grammar.syn/parse_grammar.c
 Author:	Jan Max Meyer
 Usage:	Grammar definition parser - FOR BOOTSTRAPPING ONLY!!
 ----------------------------------------------------------------------------- */
@@ -15,7 +15,7 @@ Usage:	Grammar definition parser - FOR BOOTSTRAPPING ONLY!!
  * -------------------------------------
  * This parser is only used for bootstrapping UniCC, and is not be tended any-
  * more with new features. Instead, implement new language-oriented features
- * into the final UniCC parser, p_parse.par. This grammar uses the min_lalr1
+ * into the final UniCC parser, parse_grammar.par. This grammar uses the min_lalr1
  * experimental and testing purpose parser generator to build a first running
  * parser for UniCC. min_lalr1 served as UniCC prototype in the past! :)
  *
@@ -176,7 +176,7 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 																			parser->p_mode !=
 																				MODE_SENSITIVE )
 																		{
-																			p_error( parser, ERR_NONTERM_WS_NOT_ALLOWED,
+																			print_error( parser, ERR_NONTERM_WS_NOT_ALLOWED,
 																				ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
 																						parser->filename, line,
 																							s->name );
@@ -191,7 +191,7 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 																		is effectless */
 																	if( parser->p_mode != MODE_SENSITIVE )
 																	{
-																		p_error( parser, ERR_NO_EFFECT_IN_MODE,
+																		print_error( parser, ERR_NO_EFFECT_IN_MODE,
 																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 																				parser->filename, line,
 																					"lexem separation" );
@@ -206,7 +206,7 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 																		is effectless */
 																	if( parser->p_mode != MODE_SENSITIVE )
 																	{
-																		p_error( parser, ERR_NO_EFFECT_IN_MODE,
+																		print_error( parser, ERR_NO_EFFECT_IN_MODE,
 																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 																				parser->filename, line, "lexeme" );
 																	}
@@ -229,7 +229,7 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 																		is effectless */
 																	if( parser->p_mode != MODE_SENSITIVE )
 																	{
-																		p_error( parser, ERR_NO_EFFECT_IN_MODE,
+																		print_error( parser, ERR_NO_EFFECT_IN_MODE,
 																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 																				parser->filename, line, "fixate" );
 																	}
@@ -252,11 +252,11 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 																		parser->p_name = pstrdup( strbuf );	}
 				| "description"		string						{	if( !( parser->p_desc ) )
 																		parser->p_desc = pstrdup( strbuf );	}
-				| "copyright"		string						{	if( !( parser->p_copyright ) )
-																		parser->p_copyright = pstrdup( strbuf );
+				| "copyright"		string						{	if( !( parser->print_copyright ) )
+																		parser->print_copyright = pstrdup( strbuf );
 																}
-				| "version"			string						{	if( !( parser->p_version ) )
-																		parser->p_version= pstrdup( strbuf );	}
+				| "version"			string						{	if( !( parser->print_version ) )
+																		parser->print_version= pstrdup( strbuf );	}
 				| "prefix"			string						{	if( !( parser->p_prefix ) )
 																		parser->p_prefix = pstrdup( strbuf );	}
 				| "default action"	code						{	if( !( parser->p_def_action ) )
@@ -291,7 +291,7 @@ definition:		lhs goal_mark type "->" productions				{
 																	{
 																		if( parser->goal )
 																		{
-																			p_error( parser, ERR_MULTIPLE_GOAL_DEF,
+																			print_error( parser, ERR_MULTIPLE_GOAL_DEF,
 																				ERRSTYLE_FATAL,
 																					parser->goal->name );
 																		}
@@ -314,7 +314,7 @@ definition:		lhs goal_mark type "->" productions				{
 																	{
 																		VTYPE*	vt;
 
-																		vt = p_create_vtype( parser,
+																		vt = create_vtype( parser,
 																				(char*)(#3.ptr) );
 																		((SYMBOL*)(#1.ptr))->vtype = vt;
 
@@ -322,7 +322,7 @@ definition:		lhs goal_mark type "->" productions				{
 																	}
 																}
 				| '@' identifier_copy type regex code_opt		{	SYMBOL* s;
-																	s = p_get_symbol( parser,
+																	s = get_symbol( parser,
 																			#2.str, SYM_REGEX_TERMINAL, TRUE );
 
 																	pfree( #2.str );
@@ -343,7 +343,7 @@ definition:		lhs goal_mark type "->" productions				{
 																	{
 																		VTYPE*	vt;
 
-																		vt = p_create_vtype( parser,
+																		vt = create_vtype( parser,
 																				(char*)(#3.ptr) );
 																		s->vtype = vt;
 																		pfree( #3.ptr );
@@ -355,7 +355,7 @@ definition:		lhs goal_mark type "->" productions				{
 				;
 
 lhs:			identifier										{	SYMBOL* s;
-																	s = p_get_symbol( parser,
+																	s = get_symbol( parser,
 																			strbuf, SYM_NON_TERMINAL, TRUE );
 																	s->defined = TRUE;
 
@@ -379,12 +379,12 @@ productions:	productions '|' rhs code_opt					{	if( *strbuf != '\0' )
 																}
 				;
 
-rhs:			rhs symbol access_name							{	p_append_to_production( #1.ptr, #2.ptr,
+rhs:			rhs symbol access_name							{	append_to_production( #1.ptr, #2.ptr,
 																		( *strbuf == '\0' ? (char*)NULL :
 																			pstrdup( strbuf ) ) );
 																	##.ptr = #1.ptr;
 																}
-				|												{	##.ptr = p_create_production( parser,
+				|												{	##.ptr = create_production( parser,
 																		(SYMBOL*)NULL ); }
 				;
 
@@ -392,15 +392,15 @@ symbol:			sym modifier 									{
 																	switch( #2.ch )
 																	{
 																		case '*':
-																			##.ptr = p_kleene_closure( parser,
+																			##.ptr = kleene_closure( parser,
 																				#1.ptr );
 																			break;
 																		case '+':
-																			##.ptr = p_positive_closure( parser,
+																			##.ptr = positive_closure( parser,
 																				#1.ptr );
 																			break;
 																		case '?':
-																			##.ptr = p_optional_closure( parser,
+																			##.ptr = optional_closure( parser,
 																				#1.ptr );
 																			break;
 																		default:
@@ -409,14 +409,14 @@ symbol:			sym modifier 									{
 																	}
 																}
 				|	"&error"									{	SYMBOL* sym;
-																	sym = p_get_symbol( parser,
+																	sym = get_symbol( parser,
 																			P_ERROR_RESYNC, SYM_SYSTEM_TERMINAL,
 																				TRUE );
 																	##.ptr = sym;
 																}
 
 				|	"&eof"										{	SYMBOL* sym;
-																	sym = p_get_symbol( parser,
+																	sym = get_symbol( parser,
 																			P_END_OF_FILE, SYM_SYSTEM_TERMINAL,
 																				TRUE );
 																	##.ptr = sym;
@@ -425,7 +425,7 @@ symbol:			sym modifier 									{
 
 sym:			terminal										{	##.ptr = #1.ptr; 	}
 				| identifier									{	SYMBOL* s;
-																	s = p_get_symbol( parser,
+																	s = get_symbol( parser,
 																			strbuf, SYM_NON_TERMINAL, TRUE );
 																	s->used = TRUE;
 																	##.ptr = s;
@@ -441,7 +441,7 @@ terminal:		ccl												{ 	SYMBOL* s;
 																		p_ccl_negate( ccl );
 
 
-																	s = p_get_symbol( parser,
+																	s = get_symbol( parser,
 																			(void*)ccl,
 																				SYM_CCL_TERMINAL, TRUE );
 
@@ -452,7 +452,7 @@ terminal:		ccl												{ 	SYMBOL* s;
 				| kw											{ 	SYMBOL* s;
 
 
-																	s = p_get_symbol( parser,
+																	s = get_symbol( parser,
 																			strbuf, SYM_REGEX_TERMINAL, TRUE );
 
 																	s->used = TRUE;
@@ -467,7 +467,7 @@ terminal:		ccl												{ 	SYMBOL* s;
 																	##.ptr = s;
 																}
 				| '@' identifier								{	SYMBOL* s;
-																	s = p_get_symbol( parser,
+																	s = get_symbol( parser,
 																			strbuf, SYM_REGEX_TERMINAL, FALSE );
 
 																	s->used = TRUE;
@@ -476,7 +476,7 @@ terminal:		ccl												{ 	SYMBOL* s;
 																	##.ptr = s;
 																}
 				/*
-				| '~'											{	##.ptr = p_get_symbol( parser,
+				| '~'											{	##.ptr = get_symbol( parser,
 																			"", SYM_ERROR, TRUE );
 																}
 				*/
@@ -655,7 +655,7 @@ code_opt:	code
 code:		"[*" inner_code "*]"								{
 																	if( !parser->p_template )
 																	{
-																		p_error( parser,
+																		print_error( parser,
 																			ERR_NO_TARGET_TPL_SUPPLY,
 																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 																			parser->filename, line );
@@ -686,7 +686,7 @@ scomment:	scomment '^\n'
 
 {
 
-int p_parse( PARSER* p, char* src )
+int parse_grammar( PARSER* p, char* src )
 {
 	char* s,
 		* sp;

@@ -627,7 +627,6 @@ LIBOBJS
 EGREP
 GREP
 CPP
-MIN_LALR1
 am__fastdepCC_FALSE
 am__fastdepCC_TRUE
 CCDEPMODE
@@ -3921,51 +3920,6 @@ $as_echo "no" >&6; }
   SET_MAKE="MAKE=${MAKE-make}"
 fi
 
-
-# Check for min_lalr1.
-if test "$with_bootstrap" = "yes"; then :
-  # Extract the first word of "min_lalr1", so it can be a program name with args.
-set dummy min_lalr1; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_MIN_LALR1+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$MIN_LALR1"; then
-  ac_cv_prog_MIN_LALR1="$MIN_LALR1" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_MIN_LALR1=""yes""
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_prog_MIN_LALR1" && ac_cv_prog_MIN_LALR1=""no""
-fi
-fi
-MIN_LALR1=$ac_cv_prog_MIN_LALR1
-if test -n "$MIN_LALR1"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $MIN_LALR1" >&5
-$as_echo "$MIN_LALR1" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-	if test $MIN_LALR1 = "no" ; then
-		as_fn_error $? "Cannot build without min_lalr1 parser generator; Install min_lalr1 first, or check your PATH." "$LINENO" 5
-	fi
-fi
 
 # Checks for libraries.
 

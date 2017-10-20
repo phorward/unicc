@@ -27,14 +27,28 @@ all: unicc
 
 clean:
 	-rm *.o
+	-rm min_lalr1/min_lalr1.o
 	-rm p_parse_boot1.c p_parse_boot2.c p_parse_boot2.h p_parse_boot3.c p_parse_boot3.h
-	-rm unicc unicc_boot1 unicc_boot2 unicc_boot3
+	-rm unicc unicc_boot1 unicc_boot2 unicc_boot3 boot_min_lalr1
 
 make_install:
 	cp Makefile.gnu Makefile
 
 make_uninstall:
 	-rm -f Makefile
+
+# --- UniCC Bootstrap phase 0 --------------------------------------------------
+#
+# First we need to compile min_lalr1, which is a stand-alone parser generator
+# that was written for experimental reasons before UniCC, but is needed by
+# UniCC to bootstrap.
+#
+
+boot_min_lalr1_SOURCES = min_lalr1/min_lalr1.c
+boot_min_lalr1_OBJECTS = $(patsubst %.c,%.o,$(boot_min_lalr1_SOURCES))
+
+boot_min_lalr1: $(boot_min_lalr1_OBJECTS)
+	$(CC) -o $@ $(boot_min_lalr1_OBJECTS)
 
 # --- UniCC Bootstrap phase 1 --------------------------------------------------
 #
@@ -46,8 +60,8 @@ make_uninstall:
 unicc_boot1_SOURCES = p_parse_boot1.c $(SOURCES)
 unicc_boot1_OBJECTS = $(patsubst %.c,%.o,$(unicc_boot1_SOURCES))
 
-p_parse_boot1.c: p_parse.syn
-	../min_lalr1/min_lalr1 $? >$@ 2>/dev/null
+p_parse_boot1.c: p_parse.syn boot_min_lalr1
+	./boot_min_lalr1 p_parse.syn >$@ 2>/dev/null
 
 unicc_boot1: $(unicc_boot1_OBJECTS) $(LIBPHORWARD)
 	$(CC) -o $@ $(unicc_boot1_OBJECTS) $(LIBPHORWARD)

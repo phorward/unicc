@@ -4,7 +4,7 @@ Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
-File:	p_first.c
+File:	compute_first.c
 Author:	Jan Max Meyer
 Usage:	First set computation
 ----------------------------------------------------------------------------- */
@@ -17,7 +17,7 @@ of symbols.
 //symbols// is the list of symbols where the first computation should be done
 for.
 */
-void p_first( LIST* symbols )
+void compute_first( LIST* symbols )
 {
 	LIST*		i			= (LIST*)NULL;
 	LIST*		j			= (LIST*)NULL;
@@ -95,7 +95,7 @@ element on the right-hand side, and is used as starting point.
 
 Returns TRUE if the whole right-hand side is possibly nullable, FALSE else.
 */
-int p_rhs_first( LIST** first, LIST* rhs )
+int seek_rhs_first( LIST** first, LIST* rhs )
 {
 	SYMBOL*		sym		= (SYMBOL*)NULL;
 

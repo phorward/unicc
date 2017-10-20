@@ -19,7 +19,7 @@ an character is appended to, and which is unique.
 
 Returns the derived name; New allocated memory, must be freed!
 */
-char* p_derivation_name( char* name, char append_char )
+char* derive_name( char* name, char append_char )
 {
 	char*		ret;
 	size_t		len;
@@ -57,7 +57,7 @@ char* p_derivation_name( char* name, char append_char )
 character definition.
 
 Returns the character value */
-int p_unescape_char( char* str, char** strfix )
+int unescape_char( char* str, char** strfix )
 {
 	char*	ptr = str;
 	int		ch = 0;
@@ -175,7 +175,7 @@ int p_unescape_char( char* str, char** strfix )
 }
 
 /** Finds out the base symbol for a possibly derived symbol, and returns it. */
-SYMBOL* p_find_base_symbol( SYMBOL* sym )
+SYMBOL* find_base_symbol( SYMBOL* sym )
 {
 	while( sym->derived_from )
 		sym = sym->derived_from;
@@ -184,7 +184,7 @@ SYMBOL* p_find_base_symbol( SYMBOL* sym )
 }
 
 /** Construct a C-identifier from a file-name. */
-char* p_gen_c_identifier( char* str, BOOLEAN to_upper )
+char* c_identifier( char* str, BOOLEAN to_upper )
 {
 	char*	p;
 

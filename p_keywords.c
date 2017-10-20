@@ -28,7 +28,7 @@ Usage:	Turns regular expression definitions into deterministic state
 machines matching the same pool of keywords.
 
 //parser// is the pointer to parser information structure. */
-void p_keywords_to_dfa( PARSER* parser )
+void merge_symbols_to_dfa( PARSER* parser )
 {
 	pregex_nfa*	nfa;
 	pregex_dfa*	dfa;
@@ -38,7 +38,7 @@ void p_keywords_to_dfa( PARSER* parser )
 	STATE*	s;
 	TABCOL*	col;
 
-	PROC( "p_keywords_to_dfa" );
+	PROC( "merge_symbols_to_dfa" );
 	PARMS( "parser", "%p", parser );
 
 	LISTFOR( parser->lalr_states, l )
@@ -53,7 +53,7 @@ void p_keywords_to_dfa( PARSER* parser )
 		LISTFOR( s->actions, m )
 		{
 			col = (TABCOL*)list_access( m );
-			p_symbol_to_nfa( parser, nfa, col->symbol );
+			nfa_from_symbol( parser, nfa, col->symbol );
 		}
 
 		/* Construct DFA, if NFA has been constructed */
@@ -77,7 +77,7 @@ void p_keywords_to_dfa( PARSER* parser )
 			VARS( "plist_count( dfa->states )", "%d",
 					plist_count( dfa->states ) );
 
-			if( ( ex_dfa = p_find_equal_dfa( parser, dfa ) ) )
+			if( ( ex_dfa = find_equal_dfa( parser, dfa ) ) )
 			{
 				MSG( "An equal DFA exists; Freeing temporary one!" );
 				dfa = pregex_dfa_free( dfa );
@@ -102,14 +102,14 @@ void p_keywords_to_dfa( PARSER* parser )
 /** Constructs a single DFA for a general token lexer.
 
 //parser// is the pointer to parser information structure. */
-void p_single_lexer( PARSER* parser )
+void construct_single_lexer( PARSER* parser )
 {
 	pregex_nfa*			nfa;
 	pregex_dfa*			dfa;
 	LIST*				l;
 	SYMBOL*				s;
 
-	PROC( "p_single_lexer" );
+	PROC( "construct_single_lexer" );
 	PARMS( "parser", "%p", parser );
 
 	MSG( "Constructing NFA" );
@@ -121,7 +121,7 @@ void p_single_lexer( PARSER* parser )
 		s = (SYMBOL*)list_access( l );
 		VARS( "s->id", "%d", s->id );
 
-		p_symbol_to_nfa( parser, nfa, s );
+		nfa_from_symbol( parser, nfa, s );
 	}
 
 	/* Construct DFA, if NFA has been constructed */
@@ -162,7 +162,7 @@ integrated into the parser structure.
 
 Returns the pointer to a matching DFA, else (pregex_dfa*)NULL.
 */
-pregex_dfa* p_find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
+pregex_dfa* find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
 {
 	LIST*			l;
 	plistel*		e;
@@ -184,7 +184,7 @@ pregex_dfa* p_find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
 	Fixed sources to run with libphorward v0.18 (current development version).
 	*/
 
-	PROC( "p_find_equal_dfa" );
+	PROC( "find_equal_dfa" );
 	PARMS( "parser", "%p", parser );
 	PARMS( "ndfa", "%p", ndfa );
 
@@ -254,9 +254,9 @@ NFA state machine.
 //nfa// is the pointer to NFA structure, that is extended by this function.
 //sym// is the symbol which is associated with this NFA.
 */
-void p_symbol_to_nfa( PARSER* parser, pregex_nfa* nfa, SYMBOL* sym )
+void nfa_from_symbol( PARSER* parser, pregex_nfa* nfa, SYMBOL* sym )
 {
-	PROC( "p_symbol_to_nfa" );
+	PROC( "nfa_from_symbol" );
 	PARMS( "parser", "%p", parser );
 	PARMS( "nfa", "%p", nfa );
 	PARMS( "sym", "%p", sym );

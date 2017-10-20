@@ -19,7 +19,7 @@ Usage:	Performs the LALR(1) parse table construction algorithm
 //kernel2// is the The second kernel item set.
 
 Returns a int TRUE if the item sets are equal, else FALSE. */
-static int p_same_kernel( LIST* kernel1, LIST* kernel2 )
+static int test_same_kernel( LIST* kernel1, LIST* kernel2 )
 {
 	int		ret			= FALSE;
 	LIST*	checklist	= (LIST*)NULL;
@@ -64,7 +64,7 @@ contains all states of the LALR(1) parse table.
 Returns a STATE*-pointer to the next state item, if no more undone states are
 found, (STATE*)NULL is returned.
 */
-static STATE* p_get_undone( LIST* lalr_states )
+static STATE* get_undone_state( LIST* lalr_states )
 {
 	STATE*		st		= (STATE*)NULL;
 	LIST*		l		= (LIST*)NULL;
@@ -87,7 +87,7 @@ item seed to a closure set.
 //closure_set// is the pointer to the closure set list which can possibly
 be enhanced.
 */
-static void p_item_closure( LIST* productions, ITEM* it, LIST** closure_set )
+static void close_item( LIST* productions, ITEM* it, LIST** closure_set )
 {
 	LIST*		j		= (LIST*)NULL;
 	LIST*		k		= (LIST*)NULL;
@@ -124,10 +124,10 @@ static void p_item_closure( LIST* productions, ITEM* it, LIST** closure_set )
 #if ON_ALGORITHM_DEBUG
 						fprintf( stderr, "\n===> Closure: Creating new "
 											"item\n");
-						p_dump_item_set( (FILE*)NULL, "Partial closure:",
+						dump_item_set( (FILE*)NULL, "Partial closure:",
 							*closure_set );
 #endif
-						cit = p_create_item( (STATE*)NULL,
+						cit = create_item( (STATE*)NULL,
 								prod, (LIST*)NULL );
 						*closure_set = list_push( *closure_set, cit );
 					}
@@ -136,7 +136,7 @@ static void p_item_closure( LIST* productions, ITEM* it, LIST** closure_set )
 					{
 						fprintf( stderr, "\n===> Closure: Using existing "
 											"item\n");
-						p_dump_item_set( (FILE*)NULL, "Partial closure:",
+						dump_item_set( (FILE*)NULL, "Partial closure:",
 							*closure_set );
 					}
 #endif
@@ -173,7 +173,7 @@ static void p_item_closure( LIST* productions, ITEM* it, LIST** closure_set )
 #if ON_ALGORITHM_DEBUG
 							fprintf( stderr, "\n===> Closure: Dot at the end, "
 												"taking lookahead \n");
-							p_dump_item_set( (FILE*)NULL, "Partial closure:",
+							dump_item_set( (FILE*)NULL, "Partial closure:",
 								*closure_set );
 #endif
 						}
@@ -181,7 +181,7 @@ static void p_item_closure( LIST* productions, ITEM* it, LIST** closure_set )
 						{
 							first = (LIST*)NULL;
 
-							if( p_rhs_first( &first, k ) )
+							if( seek_rhs_first( &first, k ) )
 								first = list_union( first, it->lookahead );
 
 							cit->lookahead = list_union(
@@ -192,7 +192,7 @@ static void p_item_closure( LIST* productions, ITEM* it, LIST** closure_set )
 #if ON_ALGORITHM_DEBUG
 						fprintf( stderr, "\n===> Closure: "
 											"Calculated lookahead\n");
-						p_dump_item_set( (FILE*)NULL, "Partial closure:",
+						dump_item_set( (FILE*)NULL, "Partial closure:",
 							*closure_set );
 #endif
 						}
@@ -209,7 +209,7 @@ static void p_item_closure( LIST* productions, ITEM* it, LIST** closure_set )
 
 Returns LIST*(NULL) always.
 */
-static LIST* p_drop_item_list( LIST* list )
+static LIST* drop_item_list( LIST* list )
 {
 	LIST*		l;
 	ITEM*		it;
@@ -218,7 +218,7 @@ static LIST* p_drop_item_list( LIST* list )
 	{
 		it = (ITEM*)list_access( l );
 
-		p_free_item( it );
+		free_item( it );
 	}
 
 	list_free( list );
@@ -260,8 +260,8 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 	fprintf( stderr, "================\n");
 	fprintf( stderr, "=== State % 2d ===\n", st->state_id );
 	fprintf( stderr, "================\n");
-	p_dump_item_set( (FILE*)NULL, "Kernel:", st->kernel );
-	p_dump_item_set( (FILE*)NULL, "Epsilon:", st->epsilon );
+	dump_item_set( (FILE*)NULL, "Kernel:", st->kernel );
+	dump_item_set( (FILE*)NULL, "Epsilon:", st->epsilon );
 #endif
 
 	/*
@@ -283,7 +283,7 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 		for( i = closure_start; i; i = i->next )
 		{
 			it = i->pptr;
-			p_item_closure( parser->productions, it, &closure_set );
+			close_item( parser->productions, it, &closure_set );
 		}
 
 		closure_start = closure_set;
@@ -293,7 +293,7 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 	}
 	while( prev_cnt != cnt );
 
-	/*p_dump_item_set( (FILE*)NULL, "Closure:", closure_set );*/
+	/*dump_item_set( (FILE*)NULL, "Closure:", closure_set );*/
 
 	/*
 		Adding all kernel items with outgoing transitions
@@ -311,7 +311,7 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 				The complete memory must be mirrored and re-allocated to
 				create a single, independend item!
 			*/
-			cit = p_create_item( (STATE*)NULL, it->prod, (LIST*)NULL );
+			cit = create_item( (STATE*)NULL, it->prod, (LIST*)NULL );
 
 			memcpy( cit, it, sizeof( ITEM ) );
 			cit->lookahead = list_dup( it->lookahead );
@@ -361,9 +361,9 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 
 #if 0
 	fprintf( stderr, "\n--- State %d ---\n", st->state_id );
-	p_dump_item_set( (FILE*)NULL, "Kernel:", st->kernel );
-	p_dump_item_set( (FILE*)NULL, "Closure:", closure_set );
-	p_dump_item_set( (FILE*)NULL, "Epsilon:", st->epsilon );
+	dump_item_set( (FILE*)NULL, "Kernel:", st->kernel );
+	dump_item_set( (FILE*)NULL, "Closure:", closure_set );
+	dump_item_set( (FILE*)NULL, "Epsilon:", st->epsilon );
 #endif
 
 	/*
@@ -401,9 +401,9 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 
 #if ON_ALGORITHM_DEBUG
 	fprintf( stderr, "\n--- State %d ---\n", st->state_id );
-	p_dump_item_set( (FILE*)NULL, "Kernel:", st->kernel );
-	p_dump_item_set( (FILE*)NULL, "Closure:", closure_set );
-	p_dump_item_set( (FILE*)NULL, "Epsilon:", st->epsilon );
+	dump_item_set( (FILE*)NULL, "Kernel:", st->kernel );
+	dump_item_set( (FILE*)NULL, "Closure:", closure_set );
+	dump_item_set( (FILE*)NULL, "Epsilon:", st->epsilon );
 #endif
 
 	/*
@@ -477,7 +477,7 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 		{
 #if 0
 	fprintf( stderr, "\nAdding SHIFT_REDUCE entry\n", st->state_id );
-	p_dump_item_set( (FILE*)NULL, "Partition:", (LIST*)(i->pptr) );
+	dump_item_set( (FILE*)NULL, "Partition:", (LIST*)(i->pptr) );
 #endif
 			/*
 				Add a shift-reduce entry
@@ -486,19 +486,19 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 			{
 				if( IS_TERMINAL( sym_before_move ) )
 				{
-					st->actions = list_push( st->actions, p_create_tabcol(
+					st->actions = list_push( st->actions, create_tabcol(
 						sym_before_move, SHIFT_REDUCE,
 							it->prod->id, (ITEM*)NULL ) );
 				}
 				else
 				{
-					st->gotos = list_push( st->gotos, p_create_tabcol(
+					st->gotos = list_push( st->gotos, create_tabcol(
 						sym_before_move, SHIFT_REDUCE,
 							it->prod->id, (ITEM*)NULL ) );
 				}
 			}
 
-			p_drop_item_list( (LIST*)( i->pptr ) );
+			drop_item_list( (LIST*)( i->pptr ) );
 		}
 		else
 		{
@@ -509,20 +509,20 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 			{
 				nstate = j->pptr;
 
-				if( p_same_kernel( nstate->kernel, i->pptr ) )
+				if( test_same_kernel( nstate->kernel, i->pptr ) )
 					break;
 			}
 
 			if( !j )
 			{
-				nstate = p_create_state( parser );
+				nstate = create_state( parser );
 				nstate->kernel = i->pptr;
 				nstate->derived_from = st;
 
 #if ON_ALGORITHM_DEBUG
 				fprintf( stderr, "\n===> Creating new State %d...\n",
 					nstate->state_id );
-				p_dump_item_set( (FILE*)NULL, "Kernel:", nstate->kernel );
+				dump_item_set( (FILE*)NULL, "Kernel:", nstate->kernel );
 #endif
 			}
 			else
@@ -530,9 +530,9 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 #if ON_ALGORITHM_DEBUG
 				fprintf( stderr, "\n===> Updating existing State %d...\n",
 					nstate->state_id );
-				p_dump_item_set( (FILE*)NULL, "Kernel:", nstate->kernel );
+				dump_item_set( (FILE*)NULL, "Kernel:", nstate->kernel );
 				fprintf( stderr, "\n...from partition set...\n" );
-				p_dump_item_set( (FILE*)NULL, "Partition:", i->pptr );
+				dump_item_set( (FILE*)NULL, "Partition:", i->pptr );
 #endif
 
 				/* Merging the lookaheads */
@@ -544,8 +544,8 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 	{
 		fprintf( stderr, "\n--- NEW/UPDATE STATE %d from STATE %d ---\n",
 			nstate->state_id, st->state_id );
-		p_dump_item_set( (FILE*)NULL, "Partition:", i->pptr );
-		p_dump_item_set( (FILE*)NULL, "Kernel:", nstate->kernel );
+		dump_item_set( (FILE*)NULL, "Partition:", i->pptr );
+		dump_item_set( (FILE*)NULL, "Kernel:", nstate->kernel );
 		getchar();
 	}
 #endif
@@ -571,10 +571,10 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 
 #if ON_ALGORITHM_DEBUG
 				fprintf( stderr, "\n...it's now...\n" );
-				p_dump_item_set( (FILE*)NULL, "Kernel:", nstate->kernel );
+				dump_item_set( (FILE*)NULL, "Kernel:", nstate->kernel );
 #endif
 
-				/* p_drop_item_list( (LIST*)( i->pptr ) ); */
+				/* drop_item_list( (LIST*)( i->pptr ) ); */
 				list_free( (LIST*)( i->pptr ) );
 			}
 
@@ -583,13 +583,13 @@ static void p_lalr1_closure( PARSER* parser, STATE* st )
 			{
 				if( IS_TERMINAL( sym_before_move ) )
 				{
-					st->actions = list_push( st->actions, p_create_tabcol(
+					st->actions = list_push( st->actions, create_tabcol(
 						sym_before_move, SHIFT,
 							nstate->state_id, (ITEM*)NULL ) );
 				}
 				else
 				{
-					st->gotos = list_push( st->gotos, p_create_tabcol(
+					st->gotos = list_push( st->gotos, create_tabcol(
 						sym_before_move, SHIFT,
 							nstate->state_id, (ITEM*)NULL ) );
 				}
@@ -623,7 +623,7 @@ step on creating the parse-tables.
 //st// is the state pointer, defining the state where reduce-entries should be
 created for.
 //it// is the item where the reduce-entries should be created for. */
-static void p_reduce_item( PARSER* parser, STATE* st, ITEM* it )
+static void reduce_item( PARSER* parser, STATE* st, ITEM* it )
 {
 	LIST*		i		= (LIST*)NULL;
 	SYMBOL*		sym		= (SYMBOL*)NULL;
@@ -647,10 +647,10 @@ static void p_reduce_item( PARSER* parser, STATE* st, ITEM* it )
 			/*
 				Check out if there is already an action!
 			*/
-			if( ( act = p_find_tabcol( st->actions, sym ) ) == (TABCOL*)NULL )
+			if( ( act = find_tabcol( st->actions, sym ) ) == (TABCOL*)NULL )
 			{
 				st->actions = list_push( st->actions,
-					p_create_tabcol( sym, REDUCE, it->prod->id, it ) );
+					create_tabcol( sym, REDUCE, it->prod->id, it ) );
 			}
 			else
 			{
@@ -661,7 +661,7 @@ static void p_reduce_item( PARSER* parser, STATE* st, ITEM* it )
 							&& !( it->prod->lhs->generated ) )
 								|| parser->all_warnings ) )
 					{
-						p_error( parser, ERR_REDUCE_REDUCE,
+						print_error( parser, ERR_REDUCE_REDUCE,
 							ERRSTYLE_WARNING | ERRSTYLE_STATEINFO
 								| ERRSTYLE_SYMBOL, st, sym );
 
@@ -677,7 +677,7 @@ static void p_reduce_item( PARSER* parser, STATE* st, ITEM* it )
 					{
 						st->actions = list_remove( st->actions,
 										(void*)act );
-						p_free_tabcol( act );
+						free_tabcol( act );
 					}
 				}
 				else if( act->action & SHIFT )
@@ -715,7 +715,7 @@ static void p_reduce_item( PARSER* parser, STATE* st, ITEM* it )
 							&& !( it->prod->lhs->generated ) )
 								|| parser->all_warnings ) )
 					{
-						p_error( parser, ERR_SHIFT_REDUCE,
+						print_error( parser, ERR_SHIFT_REDUCE,
 							ERRSTYLE_WARNING |
 								ERRSTYLE_STATEINFO | ERRSTYLE_SYMBOL,
 									st, sym );
@@ -733,16 +733,16 @@ creation. This must be called as the last step on computing the parse tables.
 //parser// is the pointer to parser structure
 //st// is the state pointer, defining the state where reduce-entries should be
 created for. */
-static void p_perform_reductions( PARSER* parser, STATE* st )
+static void perform_reductions( PARSER* parser, STATE* st )
 {
 	LIST*	i;
 
 	/* First, perform the reductions */
 	for( i = st->kernel; i; i = i->next )
-		p_reduce_item( parser, st, i->pptr );
+		reduce_item( parser, st, i->pptr );
 
 	for( i = st->epsilon; i; i = i->next )
-		p_reduce_item( parser, st, i->pptr );
+		reduce_item( parser, st, i->pptr );
 }
 
 
@@ -750,7 +750,7 @@ static void p_perform_reductions( PARSER* parser, STATE* st )
 parsed grammar definition.
 
 //parser// is the pointer to the parser information structure. */
-void p_generate_tables( PARSER* parser )
+void generate_tables( PARSER* parser )
 {
 	STATE*	st		= (STATE*)NULL;
 	ITEM*	it		= (ITEM*)NULL;
@@ -761,24 +761,24 @@ void p_generate_tables( PARSER* parser )
 
 	if( !( parser->goal ) )
 	{
-		p_error( parser, ERR_NO_GOAL_SYMBOL, ERRSTYLE_FATAL );
+		print_error( parser, ERR_NO_GOAL_SYMBOL, ERRSTYLE_FATAL );
 		return;
 	}
 
-	st = p_create_state( parser );
-	it = p_create_item( st, parser->goal->productions->pptr, (LIST*)NULL );
+	st = create_state( parser );
+	it = create_item( st, parser->goal->productions->pptr, (LIST*)NULL );
 
 	/* The goal item's lookahead is the end_of_input symbol */
 	it->lookahead = list_push( it->lookahead, parser->end_of_input );
 
-	while( ( st = p_get_undone( parser->lalr_states ) ) != (STATE*)NULL )
+	while( ( st = get_undone_state( parser->lalr_states ) ) != (STATE*)NULL )
 	{
 		st->done = 1;
 		p_lalr1_closure( parser, st );
 	}
 
 	for( i = parser->lalr_states; i; i = i->next )
-		p_perform_reductions( parser, i->pptr );
+		perform_reductions( parser, i->pptr );
 }
 
 /** Performs a default production detection. This must be done immediatelly
@@ -786,7 +786,7 @@ before the code is generated, but behind all the other stuff, e.g. state-based
 lexical analysis generation.
 
 //parser// is the pointer to the parser information structure. */
-void p_detect_default_productions( PARSER* parser )
+void detect_default_productions( PARSER* parser )
 {
 	STATE*	st;
 	PROD*	cur;
@@ -841,7 +841,7 @@ void p_detect_default_productions( PARSER* parser )
 
 				if( act->action == REDUCE &&
 						act->index == st->def_prod->id )
-					p_free_tabcol( act );
+					free_tabcol( act );
 				else
 					n_list = list_push( n_list, act );
 			}

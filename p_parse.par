@@ -4,7 +4,7 @@ Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
-File:	p_parse.par
+File:	parse_grammar.par
 Author:	Jan Max Meyer
 Usage:	Grammar definition parser
 ----------------------------------------------------------------------------- */
@@ -16,7 +16,7 @@ Usage:	Grammar definition parser
  * IMPORTANT NOTIFICATION ON THIS PARSER
  * -------------------------------------
  * This module underlies to a special coding convention: Because UniCC is boot-
- * strapped from an older parser that is compiled using min_lalr1 (p_parse.syn),
+ * strapped from an older parser that is compiled using min_lalr1 (parse_grammar.syn),
  * the use of some features is prohibited because they are only featured by the
  * parser defined in this module. The old parser is not tended anymore with new
  * features.
@@ -74,7 +74,7 @@ struct @@prefix_rhs_item
 #endif
 
 #define UNICC_GETINPUT				getinput()
-#define UNICC_PARSE_ERROR( pcb )	p_parse_error( pcb )
+#define UNICC_PARSE_ERROR( pcb )	parse_error( pcb )
 
 
 PARSER*	parser			= (PARSER*)NULL;
@@ -217,7 +217,7 @@ static OPT* set_option( plist* opts, char* key, char* val, int line )
 {
 	OPT*		opt;
 
-	if( !( opt = p_create_opt( opts, key, (char*)NULL ) ) )
+	if( !( opt = create_opt( opts, key, (char*)NULL ) ) )
 		OUTOFMEM;
 
 	opt->def = val;
@@ -226,7 +226,7 @@ static OPT* set_option( plist* opts, char* key, char* val, int line )
 	return opt;
 }
 
-static void p_parse_error();
+static void parse_error();
 
 *];
 //End of Prologue --------------------------------------------------------------
@@ -248,7 +248,7 @@ fixed_directive		-> "mode"				mode_type
 							if( !( parser->p_template ) )
 								parser->p_template = pstrdup( strbuf );
 							else
-								p_error( parser, ERR_DIRECTIVE_ALREADY_USED,
+								print_error( parser, ERR_DIRECTIVE_ALREADY_USED,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 										parser->filename, line,
 											"!language" );
@@ -263,7 +263,7 @@ fixed_directive		-> "mode"				mode_type
 							if( universe > 0 )
 								parser->p_universe = universe;
 							else
-								p_error( parser, ERR_INVALID_CHAR_UNIVERSE,
+								print_error( parser, ERR_INVALID_CHAR_UNIVERSE,
 									ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
 										parser->filename, line );
 						*]
@@ -325,7 +325,7 @@ directive_parms		-> "whitespaces" 	symbol_list
 									parser->p_mode !=
 										MODE_SENSITIVE )
 								{
-									p_error( parser, ERR_NONTERM_WS_NOT_ALLOWED,
+									print_error( parser, ERR_NONTERM_WS_NOT_ALLOWED,
 										ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
 												parser->filename, line,
 													s->name );
@@ -346,7 +346,7 @@ directive_parms		-> "whitespaces" 	symbol_list
 								is effectless */
 							if( parser->p_mode != MODE_SENSITIVE )
 							{
-								p_error( parser, ERR_NO_EFFECT_IN_MODE,
+								print_error( parser, ERR_NO_EFFECT_IN_MODE,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 										parser->filename, line, "lexeme" );
 							}
@@ -370,7 +370,7 @@ directive_parms		-> "whitespaces" 	symbol_list
 								is effectless */
 							if( parser->p_mode != MODE_SENSITIVE )
 							{
-								p_error( parser, ERR_NO_EFFECT_IN_MODE,
+								print_error( parser, ERR_NO_EFFECT_IN_MODE,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 										parser->filename, line, "fixate" );
 							}
@@ -407,12 +407,12 @@ directive_parms		-> "whitespaces" 	symbol_list
 								parser->p_desc, strbuf, FALSE );	*]
 
 					| "copyright"		string
-						[*	parser->p_copyright = pstrcatstr(
-								parser->p_copyright, strbuf, FALSE );	*]
+						[*	parser->print_copyright = pstrcatstr(
+								parser->print_copyright, strbuf, FALSE );	*]
 
 					| "version"			string
-						[*	parser->p_version = pstrcatstr(
-								parser->p_version, strbuf, FALSE );	*]
+						[*	parser->print_version = pstrcatstr(
+								parser->print_version, strbuf, FALSE );	*]
 
 					| "prefix"			string
 						[*	parser->p_prefix = pstrcatstr(
@@ -422,7 +422,7 @@ directive_parms		-> "whitespaces" 	symbol_list
 						[*	if( !( parser->p_def_action ) )
 								parser->p_def_action = pstrdup( strbuf );
 							else
-								p_error( parser, ERR_DIRECTIVE_ALREADY_USED,
+								print_error( parser, ERR_DIRECTIVE_ALREADY_USED,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 										parser->filename, line,
 											"default epsilon action" );
@@ -432,7 +432,7 @@ directive_parms		-> "whitespaces" 	symbol_list
 						[*	if( !( parser->p_def_action_e ) )
 								parser->p_def_action_e = pstrdup( strbuf );
 							else
-								p_error( parser, ERR_DIRECTIVE_ALREADY_USED,
+								print_error( parser, ERR_DIRECTIVE_ALREADY_USED,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 										parser->filename, line,
 											"default epsilon action" );
@@ -440,10 +440,10 @@ directive_parms		-> "whitespaces" 	symbol_list
 
 					| "default value type" type
 						[*	if( !( parser->p_def_type ) )
-								parser->p_def_type = p_create_vtype(
+								parser->p_def_type = create_vtype(
 									parser, (char*)@type );
 							else
-								p_error( parser, ERR_DIRECTIVE_ALREADY_USED,
+								print_error( parser, ERR_DIRECTIVE_ALREADY_USED,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 										parser->filename, line,
 											"default value type" );
@@ -456,7 +456,7 @@ directive_parms		-> "whitespaces" 	symbol_list
 								is effectless */
 							if( parser->p_mode != MODE_SENSITIVE )
 							{
-								p_error( parser, ERR_NO_EFFECT_IN_MODE,
+								print_error( parser, ERR_NO_EFFECT_IN_MODE,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 										parser->filename, line,
 											"lexem separation" );
@@ -508,7 +508,7 @@ symbol_list<LIST*>	->	symbol_list sym
 					;
 
 lhs<SYMBOL*>		->	identifier
-						[*	@@ = p_get_symbol( parser,
+						[*	@@ = get_symbol( parser,
 									strbuf, SYM_NON_TERMINAL, TRUE );
 							@@->defined = TRUE;
 							@@->line = line;
@@ -543,13 +543,13 @@ alt_regex_sym<LIST*>
 					;
 
 regex_sym<SYMBOL*>	-> identifier
-						[*	@@ = p_get_symbol( parser,
+						[*	@@ = get_symbol( parser,
 									strbuf, SYM_REGEX_TERMINAL, TRUE );
 
 
 							if( @@->defined )
 							{
-								p_error( parser, ERR_DOUBLE_TERMINAL_DEF,
+								print_error( parser, ERR_DOUBLE_TERMINAL_DEF,
 									ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
 										parser->filename, line,
 											@@->name );
@@ -576,7 +576,7 @@ definition			->	lhs:primary
 							/* Value type */
 							if( @type )
 							{
-								vt = p_create_vtype( parser,
+								vt = create_vtype( parser,
 										(char*)@type );
 
 								pfree( @type );
@@ -607,7 +607,7 @@ definition			->	lhs:primary
 							{
 								if( parser->goal )
 								{
-									p_error( parser, ERR_MULTIPLE_GOAL_DEF,
+									print_error( parser, ERR_MULTIPLE_GOAL_DEF,
 										ERRSTYLE_FATAL,
 											parser->goal->name );
 								}
@@ -662,7 +662,7 @@ definition			->	lhs:primary
 							/* Value type */
 							if( @type )
 							{
-								vt = p_create_vtype( parser, @type );
+								vt = create_vtype( parser, @type );
 
 								for( l = @alt_regex_sym; l;
 									l = list_next( l ) )
@@ -740,7 +740,7 @@ production<PROD*>	->	line_number rhs_opt:rhs code_opt_dup:act
 
 rhs_opt<PROD*>		->	rhs
 
-					|	[*	@@ = p_create_production( parser,
+					|	[*	@@ = create_production( parser,
 								(SYMBOL*)NULL );
 						*]
 					;
@@ -762,7 +762,7 @@ prod_directives<int>
 
 rhs<PROD*>			->	rhs symbol access_name
 
-						[*	p_append_to_production( @1, @2,
+						[*	append_to_production( @1, @2,
 								( *strbuf == '\0' ? (char*)NULL :
 											pstrdup( strbuf ) ) );
 									@@ = @1;
@@ -771,10 +771,10 @@ rhs<PROD*>			->	rhs symbol access_name
 					|	symbol access_name
 
 						[*	@@ = current_prod =
-								p_create_production( parser,
+								create_production( parser,
 									(SYMBOL*)NULL );
 
-							p_append_to_production( @@, @1,
+							append_to_production( @@, @1,
 								( *strbuf == '\0' ? (char*)NULL :
 									pstrdup( strbuf ) ) );
 						*]
@@ -786,13 +786,13 @@ symbol<SYMBOL*>		->	sym modifier
 							switch( @2 )
 							{
 								case '*':
-									@@ = p_kleene_closure( parser, @1 );
+									@@ = kleene_closure( parser, @1 );
 									break;
 								case '+':
-									@@ = p_positive_closure( parser, @1 );
+									@@ = positive_closure( parser, @1 );
 									break;
 								case '?':
-									@@ = p_optional_closure( parser, @1 );
+									@@ = optional_closure( parser, @1 );
 									break;
 								default:
 									@@ = @1;
@@ -802,14 +802,14 @@ symbol<SYMBOL*>		->	sym modifier
 
 					|	"&error"
 
-						[*	@@ = p_get_symbol( parser,
+						[*	@@ = get_symbol( parser,
 									P_ERROR_RESYNC, SYM_SYSTEM_TERMINAL,
 										TRUE );
 						*]
 
 					|	"&eof"
 
-						[*	@@ = p_get_symbol( parser,
+						[*	@@ = get_symbol( parser,
 									P_END_OF_FILE, SYM_SYSTEM_TERMINAL,
 										TRUE );
 						*]
@@ -819,7 +819,7 @@ sym<SYMBOL*>		-> terminal
 
 					| identifier
 
-						[*	@@ = p_get_symbol( parser,
+						[*	@@ = get_symbol( parser,
 									strbuf, SYM_NON_TERMINAL, TRUE );
 							@@->used = TRUE;
 
@@ -838,7 +838,7 @@ sym<SYMBOL*>		-> terminal
 							sprintf( temp_nonterm, P_EMBEDDED,
 									embedded_count++ );
 
-							@@ = p_get_symbol( parser,
+							@@ = get_symbol( parser,
 									temp_nonterm, SYM_NON_TERMINAL,
 										TRUE );
 							@@->defined = TRUE;
@@ -850,7 +850,7 @@ sym<SYMBOL*>		-> terminal
 							{
 								VTYPE*	vt;
 
-								vt = p_create_vtype( parser,
+								vt = create_vtype( parser,
 										(char*)@type );
 								@@->vtype = vt;
 
@@ -887,7 +887,7 @@ terminal<SYMBOL*>	->	ccl
 							if( @1 )
 								p_ccl_negate( ccl );
 
-							@@ = p_get_symbol( parser, (void*)ccl,
+							@@ = get_symbol( parser, (void*)ccl,
 									SYM_CCL_TERMINAL, TRUE );
 
 							@@->defined = TRUE;
@@ -899,7 +899,7 @@ terminal<SYMBOL*>	->	ccl
 
 					| kw
 
-						[*	@@ = p_get_symbol( parser,
+						[*	@@ = get_symbol( parser,
 									strbuf, SYM_REGEX_TERMINAL, TRUE );
 
 							@@->used = TRUE;
@@ -916,7 +916,7 @@ terminal<SYMBOL*>	->	ccl
 
 					| '@' identifier
 
-						[*	@@ = p_get_symbol( parser,
+						[*	@@ = get_symbol( parser,
 									strbuf, SYM_REGEX_TERMINAL, TRUE );
 
 							/* @@->defined = TRUE;
@@ -1151,7 +1151,7 @@ code			->	code_begin inner_code_opt "*]"
 					[*
 						if( !parser->p_template )
 						{
-							p_error( parser,
+							print_error( parser,
 								ERR_NO_TARGET_TPL_SUPPLY,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
 										parser->filename, last_code_begin );
@@ -1213,7 +1213,7 @@ line_number		->	[* @@ = line; *]
 
 [*
 
-static void p_parse_error( @@prefix_pcb* pcb )
+static void parse_error( @@prefix_pcb* pcb )
 {
 	int		i;
 	char**	vptr;
@@ -1235,12 +1235,12 @@ static void p_parse_error( @@prefix_pcb* pcb )
 	else
 		cur = @@prefix_symbols[ pcb->sym ].name;
 
-	p_error( parser, ERR_PARSE_ERROR,
+	print_error( parser, ERR_PARSE_ERROR,
 				ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
 					parser->filename, pcb->line, cur, valid );
 }
 
-int p_parse( PARSER* p, char* src )
+int parse_grammar( PARSER* p, char* src )
 {
 	@@prefix_pcb pcb;
 

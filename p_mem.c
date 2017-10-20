@@ -24,7 +24,7 @@ pointer to the ccl, else an identifying name.
 //create// defines, if TRUE, create symbol if it does not exist!
 
 Returns a SYMBOL*-pointer to the SYMBOL structure representing the symbol. */
-SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
+SYMBOL* get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 {
 	char		keych;
 	char*		keyname;
@@ -39,11 +39,11 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 
 	11.11.2009	Jan Max Meyer
 	Changed name-parameter to dfn, to allow direct charclass-assignments to
-	p_get_symbol() instead of a name that defines the charclass.
+	get_symbol() instead of a name that defines the charclass.
 	Also, added trace macros.
 	*/
 
-	PROC( "p_get_symbol" );
+	PROC( "get_symbol" );
 	PARMS( "p", "%p", p );
 	PARMS( "dfn", "%p", dfn );
 	PARMS( "type", "%d", type );
@@ -178,7 +178,7 @@ SYMBOL* p_get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 /** Frees a symbol structure and all its members.
 
 //sym// is the symbol to be freed. */
-void p_free_symbol( SYMBOL* sym )
+void free_symbol( SYMBOL* sym )
 {
 	pfree( sym->code );
 	pfree( sym->name );
@@ -192,7 +192,7 @@ void p_free_symbol( SYMBOL* sym )
 	list_free( sym->productions );
 	list_free( sym->all_sym );
 
-	sym->options = p_free_opts( sym->options );
+	sym->options = free_opts( sym->options );
 
 	pfree( sym );
 }
@@ -206,7 +206,7 @@ global list of productions.
 
 Returns a PROD*-pointer to the production, or (PROD*)NULL in error case.
 */
-PROD* p_create_production( PARSER* p, SYMBOL* lhs )
+PROD* create_production( PARSER* p, SYMBOL* lhs )
 {
 	PROD*		prod		= (PROD*)NULL;
 
@@ -262,7 +262,7 @@ of a production.
 //name// is the optional semantic identifier for the symbol on the right-hand
 side, can be (char*)NULL.
 */
-void p_append_to_production( PROD* p, SYMBOL* sym, char* name )
+void append_to_production( PROD* p, SYMBOL* sym, char* name )
 {
 	/*
 	11.07.2010	Jan Max Meyer
@@ -299,7 +299,7 @@ void p_append_to_production( PROD* p, SYMBOL* sym, char* name )
 /** Frees a production structure and all its members.
 
 //prod// is the production to be freed. */
-void p_free_production( PROD* prod )
+void free_production( PROD* prod )
 {
 	LIST*	li		= (LIST*)NULL;
 
@@ -321,7 +321,7 @@ void p_free_production( PROD* prod )
 
 	pfree( prod->code );
 
-	prod->options = p_free_opts( prod->options );
+	prod->options = free_opts( prod->options );
 
 	pfree( prod );
 }
@@ -338,7 +338,7 @@ This can also be filled later.
 
 Returns an ITEM*-pointer to the newly created item, (ITEM*)NULL in error case.
 */
-ITEM* p_create_item( STATE* st, PROD* p, LIST* lookahead )
+ITEM* create_item( STATE* st, PROD* p, LIST* lookahead )
 {
 	ITEM*		i		= (ITEM*)NULL;
 
@@ -367,7 +367,7 @@ ITEM* p_create_item( STATE* st, PROD* p, LIST* lookahead )
 /** Frees an item structure and all its members.
 
 //it// is the pointer to item structure to be freed. */
-void p_free_item( ITEM* it )
+void free_item( ITEM* it )
 {
 	list_free( it->lookahead );
 	pfree( it );
@@ -379,7 +379,7 @@ void p_free_item( ITEM* it )
 
 Returns a STATE* Pointer to the newly created state, (STATE*)NULL in error case.
 */
-STATE* p_create_state( PARSER* p )
+STATE* create_state( PARSER* p )
 {
 	STATE*		st		= (STATE*)NULL;
 
@@ -405,21 +405,21 @@ STATE* p_create_state( PARSER* p )
 /** Frees a state structure and all its members.
 
 //st// is the Pointer to state structure to be freed. */
-void p_free_state( STATE* st )
+void free_state( STATE* st )
 {
 	LIST*	li		= (LIST*)NULL;
 
 	for( li = st->kernel; li; li = li->next )
-		p_free_item( li->pptr );
+		free_item( li->pptr );
 
 	for( li = st->epsilon; li; li = li->next )
-		p_free_item( li->pptr );
+		free_item( li->pptr );
 
 	for( li = st->actions; li; li = li->next )
-		p_free_tabcol( li->pptr );
+		free_tabcol( li->pptr );
 
 	for( li = st->gotos; li; li = li->next )
-		p_free_tabcol( li->pptr );
+		free_tabcol( li->pptr );
 
 	list_free( st->kernel );
 	list_free( st->epsilon );
@@ -442,7 +442,7 @@ reductions.
 
 Returns a TABCOL* Pointer to the new action item. On error, (TABCOL*)NULL is
 returned. */
-TABCOL* p_create_tabcol( SYMBOL* sym, short action, int idx, ITEM* item )
+TABCOL* create_tabcol( SYMBOL* sym, short action, int idx, ITEM* item )
 {
 	TABCOL*		act		= (TABCOL*)NULL;
 
@@ -466,7 +466,7 @@ TABCOL* p_create_tabcol( SYMBOL* sym, short action, int idx, ITEM* item )
 
 //act// is the pointer to action element to be freed.
 */
-void p_free_tabcol( TABCOL* act )
+void free_tabcol( TABCOL* act )
 {
 	pfree( act );
 }
@@ -481,7 +481,7 @@ will be returned.
 Returns a TABCOL* Pointer to the action item. If no action item was found when
 searching on the row, (TABCOL*)NULL is returned.
 */
-TABCOL* p_find_tabcol( LIST* row, SYMBOL* sym )
+TABCOL* find_tabcol( LIST* row, SYMBOL* sym )
 {
 	TABCOL*		act		= (TABCOL*)NULL;
 
@@ -504,7 +504,7 @@ hash-table.
 
 Returns a OPT* Pointer to the newly created OPT-structure, (OPT*)NULL in error
 case. */
-OPT* p_create_opt( plist* options, char* opt, char* def )
+OPT* create_opt( plist* options, char* opt, char* def )
 {
 	OPT			option;
 	plistel*	e;
@@ -532,7 +532,7 @@ OPT* p_create_opt( plist* options, char* opt, char* def )
 //options// is the options list
 
 Always returns (plist*)NULL */
-plist* p_free_opts( plist* options )
+plist* free_opts( plist* options )
 {
 	OPT		opt;
 
@@ -553,7 +553,7 @@ plist* p_free_opts( plist* options )
 Returns a PARSER* Pointer to the newly created PARSER-structure,
 (PARSER*)NULL in error case.
 */
-PARSER* p_create_parser( void )
+PARSER* create_parser( void )
 {
 	PARSER*		pptr	= (PARSER*)NULL;
 
@@ -578,7 +578,7 @@ PARSER* p_create_parser( void )
 	pptr->options = plist_create( sizeof( OPT ), PLIST_MOD_EXTKEYS );
 
 	/* End of Input symbol must exist in every parser! */
-	p_get_symbol( pptr, P_END_OF_FILE, SYM_SYSTEM_TERMINAL, TRUE );
+	get_symbol( pptr, P_END_OF_FILE, SYM_SYSTEM_TERMINAL, TRUE );
 
 	return pptr;
 }
@@ -586,7 +586,7 @@ PARSER* p_create_parser( void )
 /** Frees a parser structure and all its members.
 
 //parser// is the Parser structure to be freed. */
-void p_free_parser( PARSER* parser )
+void free_parser( PARSER* parser )
 {
 	LIST*		it			= (LIST*)NULL;
 	pregex_dfa*	dfa;
@@ -594,16 +594,16 @@ void p_free_parser( PARSER* parser )
 	plist_free( parser->definitions );
 
 	for( it = parser->symbols; it; it = it->next )
-		p_free_symbol( it->pptr );
+		free_symbol( it->pptr );
 
 	for( it = parser->productions; it; it = it->next )
-		p_free_production( it->pptr );
+		free_production( it->pptr );
 
 	for( it = parser->lalr_states; it; it = it->next )
-		p_free_state( it->pptr );
+		free_state( it->pptr );
 
 	for( it = parser->vtypes; it; it = it->next )
-		p_free_vtype( it->pptr );
+		free_vtype( it->pptr );
 
 	for( it = parser->kw; it; it = it->next )
 	{
@@ -620,8 +620,8 @@ void p_free_parser( PARSER* parser )
 	pfree( parser->p_name );
 	pfree( parser->p_desc );
 	pfree( parser->p_template );
-	pfree( parser->p_copyright );
-	pfree( parser->p_version );
+	pfree( parser->print_copyright );
+	pfree( parser->print_version );
 	pfree( parser->p_prefix );
 	pfree( parser->p_header );
 	pfree( parser->p_footer );
@@ -632,7 +632,7 @@ void p_free_parser( PARSER* parser )
 
 	pfree( parser->source );
 
-	parser->options = p_free_opts( parser->options );
+	parser->options = free_opts( parser->options );
 
 	xml_free( parser->err_xml );
 
@@ -647,7 +647,7 @@ void p_free_parser( PARSER* parser )
 Returns a VTYPE* Pointer to the VTYPE structure representing the value type, if
 a matching type has been found.
 */
-VTYPE* p_find_vtype( PARSER* p, char* name )
+VTYPE* find_vtype( PARSER* p, char* name )
 {
 	VTYPE*	vt;
 	LIST*	l;
@@ -657,7 +657,7 @@ VTYPE* p_find_vtype( PARSER* p, char* name )
 	if( !test_name )
 		OUTOFMEM;
 
-	p_str_no_whitespace( test_name );
+	str_no_whitespace( test_name );
 
 	for( l = p->vtypes; l; l = l->next )
 	{
@@ -680,11 +680,11 @@ already exists.
 //name// is the value type name.
 
 Returns a VTYPE*-pointer to the VTYPE structure representing the value type. */
-VTYPE* p_create_vtype( PARSER* p, char* name )
+VTYPE* create_vtype( PARSER* p, char* name )
 {
 	VTYPE*	vt;
 
-	if( !( vt = p_find_vtype( p, name ) ) )
+	if( !( vt = find_vtype( p, name ) ) )
 	{
 		vt = (VTYPE*)pmalloc( sizeof( VTYPE ) );
 		if( !vt )
@@ -696,7 +696,7 @@ VTYPE* p_create_vtype( PARSER* p, char* name )
 		if( !( vt->int_name ) )
 			OUTOFMEM;
 
-		p_str_no_whitespace( vt->int_name );
+		str_no_whitespace( vt->int_name );
 
 		vt->real_def = pstrdup( name );
 		if( !( vt->real_def ) )
@@ -716,7 +716,7 @@ VTYPE* p_create_vtype( PARSER* p, char* name )
 /** Frees a VTYPE-structure.
 
 //vt// is the VTYPE-Structure to be deleted. */
-void p_free_vtype( VTYPE* vt )
+void free_vtype( VTYPE* vt )
 {
 	pfree( vt->int_name );
 	pfree( vt->real_def );
