@@ -14,5 +14,12 @@ It just does it's job ;-).
 
 ## Building
 
-``` cc -o min_lalr1 min_lalr1.c
+To build min_lalr1 stand-alone, just do
+
+```
+cc -o min_lalr1 min_lalr1.c
+```
+
+and that's all.
+
 
