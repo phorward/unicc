@@ -115,11 +115,7 @@ unicc: $(unicc_OBJECTS) $(LIBPHORWARD)
 # Now documentation generation follows, using txt2tags.
 #
 
-doc: README.md unicc.1.man
-
-README.md: unicc.t2t
-	-rm -f $@
-	txt2tags -t md -H -o - $?  | tail -n+4 >$@
+doc: unicc.1.man
 
 unicc.1.man: unicc.t2t
 	txt2tags -t man -o $@ $?

@@ -4,7 +4,7 @@ Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
-File:	p_lalr_gen.c
+File:	lalr.c
 Author:	Jan Max Meyer
 Usage:	Performs the LALR(1) parse table construction algorithm
 ----------------------------------------------------------------------------- */

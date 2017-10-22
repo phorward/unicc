@@ -4,28 +4,16 @@ Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
-File:	p_keywords.c
+File:	lex.c
 Author:	Jan Max Meyer
 Usage:	Turns regular expression definitions into deterministic state
 		machines, by using the libphorward regular expression tools.
 ----------------------------------------------------------------------------- */
 
-/*
-	An note on history:
-
-	Until UniCC v0.24, the keyword-only feature has been extended to
-	entire regular expressions. Later on in UniCC 0.27, the term
-	"keyword" was renamed to "string", and the classification of the
-	various terminals was not that strong anymore than before. So this
-	is the reason why everything in here is still called "keyword",
-	altought it means any terminal in general. All terminals are now
-	put into one lexical analysis part, since UniCC 0.27.
-*/
-
 #include "unicc.h"
 
-/** Converts the keywords within the states into a DFA, and maybe re-uses state
-machines matching the same pool of keywords.
+/** Converts the terminal symbols within the states into a DFA, and maybe
+re-uses state machines matching the same pool of terminals.
 
 //parser// is the pointer to parser information structure. */
 void merge_symbols_to_dfa( PARSER* parser )
@@ -49,7 +37,7 @@ void merge_symbols_to_dfa( PARSER* parser )
 		nfa = pregex_nfa_create();
 		dfa = pregex_dfa_create();
 
-		/* Construct NFAs from keywords */
+		/* Construct NFAs from symbols */
 		LISTFOR( s->actions, m )
 		{
 			col = (TABCOL*)list_access( m );
@@ -192,8 +180,11 @@ pregex_dfa* find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
 	{
 		tdfa = (pregex_dfa*)list_access( l );
 
-		VARS( "plist_count( tdfa->states )", "%d", plist_count( tdfa->states ) );
-		VARS( "plist_count( ndfa->states )", "%d", plist_count( ndfa->states ) );
+		VARS( "plist_count( tdfa->states )", "%d",
+				plist_count( tdfa->states ) );
+		VARS( "plist_count( ndfa->states )", "%d",
+				plist_count( ndfa->states ) );
+
 		if( plist_count( tdfa->states ) != plist_count( ndfa->states ) )
 		{
 			MSG( "Number of states does already not match - test next" );

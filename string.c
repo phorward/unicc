@@ -4,7 +4,7 @@ Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
-File:	p_string.c
+File:	string.c
 Author:	Jan Max Meyer
 Usage:	String-related management functions
 ----------------------------------------------------------------------------- */

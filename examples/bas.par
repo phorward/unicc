@@ -1,0 +1,58 @@
+#!language					"C";
+
+//Some grammar-related directives
+#whitespaces                ' \t';
+#lexeme                     integer;
+#default action             [* @@ = @1; *];
+#case insensitive strings   on;
+
+#left                       '+' '-';
+#left                       '*' '/';
+
+#prologue
+[*
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+static int variables[ 26 ];
+*];
+
+//Defining the grammar
+calculator$     -> statement*
+                ;
+
+statement       -> "LET"? variable:var '=' expression:expr '\n'
+                        [* *@var = @expr; *]
+
+                | "PRINT" expression:expr '\n'
+                        [* printf( "~> %d\n", @expr ); *]
+
+                | "INPUT" variable:var '\n'
+                        [* char inp[10+1];
+                           printf( "<~ " );
+                           fgets( inp, sizeof( inp ), stdin );
+                           *@var = atoi( inp );
+                         *]
+                | '\n'
+                ;
+
+expression      -> expression '+' expression [* @@ = @1 + @3; *]
+                | expression '-' expression  [* @@ = @1 - @3; *]
+                | expression '*' expression  [* @@ = @1 * @3; *]
+                | expression '/' expression  [* @@ = @1 / @3; *]
+                | '(' expression ')'         [* @@ = @2; *]
+                | integer
+                | variable                   [* @@ = *@variable; *]
+                ;
+
+integer         -> '0-9'                     [* @@ = @1 - '0'; *]
+                | integer '0-9'              [* @@ = @1 * 10 +
+                                                     @2 - '0'; *]
+                ;
+
+variable<int*>  -> 'a-z':name                [* @@ = &variables[
+                                                  @name - 'a' ]; *]
+                ;
+
+//End of definition

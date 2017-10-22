@@ -4,7 +4,7 @@ Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
-File:	p_integrity.c
+File:	integrity.c
 Author:	Jan Max Meyer
 Usage:	Grammar integrity checking functions
 ----------------------------------------------------------------------------- */
@@ -150,8 +150,8 @@ static BOOLEAN check_nfa_matches_parser(
 		They are either reduces.
 
 		30.01.2011	Jan Max Meyer
-		Renamed to check_nfa_matches_parser(), the function now tries to parse along
-		an NFA state machine which must not have its origin in a keyword
+		Renamed to check_nfa_matches_parser(), the function now tries to parse
+		along an NFA state machine which must not have its origin in a keyword
 		terminal.
 
 		16.01.2014	Jan Max Meyer
@@ -315,12 +315,12 @@ BOOLEAN check_regex_anomalies( PARSER* parser )
 	They are either reduces.
 
 	12.06.2010	Jan Max Meyer
-	Changed to new regular expression library functions, which can handle entire
-	sets of characters from 0x0 - 0xFFFF.
+	Changed to new regular expression library functions, which can handle
+	entire sets of characters from 0x0 - 0xFFFF.
 
 	31.01.2011	Jan Max Meyer
-	Renamed the function to check_regex_anomalies() because not only keywords are
-	tested now, also entire regular expressions.
+	Renamed the function to check_regex_anomalies() because not only keywords
+	are tested now, also entire regular expressions.
 
 	29.11.2011	Jan Max Meyer
 	Changed to new regular expression handling with the pregex_ptn-structure.

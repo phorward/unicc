@@ -4,7 +4,7 @@ Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
-File:	p_main.c (created on 28.01.2007)
+File:	main.c
 Author:	Jan Max Meyer
 Usage:	UniCC program entry / main function
 ----------------------------------------------------------------------------- */
@@ -252,7 +252,8 @@ int main( int argc, char** argv )
 	{
 		if( !pfiletostr( &parser->source, ( parser->filename = filename ) ) )
 		{
-			print_error( parser, ERR_OPEN_INPUT_FILE, ERRSTYLE_FATAL, filename );
+			print_error( parser, ERR_OPEN_INPUT_FILE,
+							ERRSTYLE_FATAL, filename );
 			free_parser( parser );
 
 			return error_count;

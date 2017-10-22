@@ -1,4 +1,0 @@
-You can find some example parsers in the directory "examples" of your UniCC installaton path.
-The example programming language "xpl" comes with a Makefile that also compiles with Microsoft Nmake and Visual C++.
-
-Have fun!

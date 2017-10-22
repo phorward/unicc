@@ -4,7 +4,7 @@ Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
-File:	p_xml.c
+File:	buildxml.c
 Author:	Jan Max Meyer
 Usage:	The XML-based Parser Definition code-generator.
 ----------------------------------------------------------------------------- */
@@ -280,7 +280,8 @@ static BOOLEAN build_xml_action( XML_T code_xml, PARSER* parser, PROD* p,
 				{
 					MSG( "No match found..." );
 
-					print_error( parser, ERR_UNDEFINED_LHS, ERRSTYLE_WARNING, tmp );
+					print_error( parser, ERR_UNDEFINED_LHS,
+									ERRSTYLE_WARNING, tmp );
 					pfree( tmp );
 
 					if( !( tmp = pstrdup( start ) ) )

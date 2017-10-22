@@ -4,7 +4,7 @@ Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
-File:	p_build.c
+File:	build.c
 Author:	Jan Max Meyer
 Usage:	The dynamic program module generator of the UniCC parser generator,
 		to construct a parser program module in a specific programming language
@@ -207,8 +207,8 @@ char* build_action( PARSER* parser, GENERATOR* g, PROD* p,
 
 				if( !l )
 				{
-					print_error( parser, ERR_UNDEFINED_SYMREF, ERRSTYLE_WARNING,
-										end - start, start );
+					print_error( parser, ERR_UNDEFINED_SYMREF,
+									ERRSTYLE_WARNING, end - start, start );
 					off = 0;
 					tmp = pstrdup( start );
 				}
@@ -279,7 +279,8 @@ char* build_action( PARSER* parser, GENERATOR* g, PROD* p,
 				{
 					MSG( "No match found..." );
 
-					print_error( parser, ERR_UNDEFINED_LHS, ERRSTYLE_WARNING, tmp );
+					print_error( parser, ERR_UNDEFINED_LHS,
+									ERRSTYLE_WARNING, tmp );
 					pfree( tmp );
 
 					if( !( tmp = pstrdup( start ) ) )
@@ -560,8 +561,8 @@ char* mkproduction_str( PROD* p )
 }
 
 /** Loads a XML-defined code generator into an adequate GENERATOR structure.
-Pointers are only set to the values mapped to the XML-structure, so no memory is
-wasted.
+Pointers are only set to the values mapped to the XML-structure, so no memory
+is wasted.
 
 //parser// is the parser information structure.
 //g// is the target generator.
@@ -678,8 +679,8 @@ BOOLEAN load_generator( PARSER* parser, GENERATOR* g, char* genfile )
 			{
 				if( !strcmp( g->for_sequences[ i ], att_for ) )
 				{
-					print_error( parser, ERR_DUPLICATE_ESCAPE_SEQ, ERRSTYLE_WARNING,
-						att_for, genfile );
+					print_error( parser, ERR_DUPLICATE_ESCAPE_SEQ,
+									ERRSTYLE_WARNING, att_for, genfile );
 					break;
 				}
 			}
