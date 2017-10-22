@@ -1,5 +1,5 @@
 /*
- * File:        p_parse.h
+ * File:        parse.h
  * Parser:		UniCC Grammar Definition Language
  * Version:		1.5.1
  * Copyright:	Copyright (C) 2008-2016 by Jan Max Meyer, Phorward Software Technologies
@@ -9,8 +9,8 @@
  * Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
  */
 
-#ifndef P_PARSE_H
-#define P_PARSE_H
+#ifndef PARSE_H
+#define PARSE_H
 
 /* Wide character processing enabled? */
 #ifndef UNICC_WCHAR
@@ -245,4 +245,4 @@ typedef struct
 
 } _pcb;
 
-#endif /* P_PARSE_H */
+#endif /* PARSE_H */

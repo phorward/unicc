@@ -113,73 +113,63 @@ am__dirstamp = $(am__leading_dot)dirstamp
 @WITH_BOOTSTRAP_TRUE@	min_lalr1/min_lalr1.$(OBJEXT)
 boot_min_lalr1_OBJECTS = $(am_boot_min_lalr1_OBJECTS)
 boot_min_lalr1_LDADD = $(LDADD)
-am__objects_1 = p_mem.$(OBJEXT) p_error.$(OBJEXT) p_first.$(OBJEXT) \
-	p_lalr_gen.$(OBJEXT) p_util.$(OBJEXT) p_string.$(OBJEXT) \
-	p_integrity.$(OBJEXT) p_virtual.$(OBJEXT) p_rewrite.$(OBJEXT) \
-	p_debug.$(OBJEXT) p_keywords.$(OBJEXT) p_list.$(OBJEXT) \
-	p_build.$(OBJEXT) p_xml.$(OBJEXT) p_main.$(OBJEXT) \
-	xml.$(OBJEXT)
-am_unicc_OBJECTS = p_parse.$(OBJEXT) $(am__objects_1)
+am__objects_1 = mem.$(OBJEXT) error.$(OBJEXT) first.$(OBJEXT) \
+	lalr.$(OBJEXT) utils.$(OBJEXT) string.$(OBJEXT) \
+	integrity.$(OBJEXT) virtual.$(OBJEXT) rewrite.$(OBJEXT) \
+	debug.$(OBJEXT) lex.$(OBJEXT) list.$(OBJEXT) build.$(OBJEXT) \
+	buildxml.$(OBJEXT) main.$(OBJEXT) xml.$(OBJEXT)
+am_unicc_OBJECTS = parse.$(OBJEXT) $(am__objects_1)
 unicc_OBJECTS = $(am_unicc_OBJECTS)
 unicc_LDADD = $(LDADD)
-am__unicc_boot1_SOURCES_DIST = p_parse_boot1.c p_mem.c p_error.c \
-	p_first.c p_lalr_gen.c p_util.c p_string.c p_integrity.c \
-	p_virtual.c p_rewrite.c p_debug.c p_keywords.c p_list.c \
-	p_build.c p_xml.c p_main.c xml.c
-am__objects_2 = unicc_boot1-p_mem.$(OBJEXT) \
-	unicc_boot1-p_error.$(OBJEXT) unicc_boot1-p_first.$(OBJEXT) \
-	unicc_boot1-p_lalr_gen.$(OBJEXT) unicc_boot1-p_util.$(OBJEXT) \
-	unicc_boot1-p_string.$(OBJEXT) \
-	unicc_boot1-p_integrity.$(OBJEXT) \
-	unicc_boot1-p_virtual.$(OBJEXT) \
-	unicc_boot1-p_rewrite.$(OBJEXT) unicc_boot1-p_debug.$(OBJEXT) \
-	unicc_boot1-p_keywords.$(OBJEXT) unicc_boot1-p_list.$(OBJEXT) \
-	unicc_boot1-p_build.$(OBJEXT) unicc_boot1-p_xml.$(OBJEXT) \
-	unicc_boot1-p_main.$(OBJEXT) unicc_boot1-xml.$(OBJEXT)
+am__unicc_boot1_SOURCES_DIST = parse_boot1.c mem.c error.c first.c \
+	lalr.c utils.c string.c integrity.c virtual.c rewrite.c \
+	debug.c lex.c list.c build.c buildxml.c main.c xml.c
+am__objects_2 = unicc_boot1-mem.$(OBJEXT) unicc_boot1-error.$(OBJEXT) \
+	unicc_boot1-first.$(OBJEXT) unicc_boot1-lalr.$(OBJEXT) \
+	unicc_boot1-utils.$(OBJEXT) unicc_boot1-string.$(OBJEXT) \
+	unicc_boot1-integrity.$(OBJEXT) unicc_boot1-virtual.$(OBJEXT) \
+	unicc_boot1-rewrite.$(OBJEXT) unicc_boot1-debug.$(OBJEXT) \
+	unicc_boot1-lex.$(OBJEXT) unicc_boot1-list.$(OBJEXT) \
+	unicc_boot1-build.$(OBJEXT) unicc_boot1-buildxml.$(OBJEXT) \
+	unicc_boot1-main.$(OBJEXT) unicc_boot1-xml.$(OBJEXT)
 @WITH_BOOTSTRAP_TRUE@am_unicc_boot1_OBJECTS =  \
-@WITH_BOOTSTRAP_TRUE@	unicc_boot1-p_parse_boot1.$(OBJEXT) \
+@WITH_BOOTSTRAP_TRUE@	unicc_boot1-parse_boot1.$(OBJEXT) \
 @WITH_BOOTSTRAP_TRUE@	$(am__objects_2)
 unicc_boot1_OBJECTS = $(am_unicc_boot1_OBJECTS)
 unicc_boot1_LDADD = $(LDADD)
 unicc_boot1_LINK = $(CCLD) $(unicc_boot1_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-am__unicc_boot2_SOURCES_DIST = p_parse_boot2.c p_mem.c p_error.c \
-	p_first.c p_lalr_gen.c p_util.c p_string.c p_integrity.c \
-	p_virtual.c p_rewrite.c p_debug.c p_keywords.c p_list.c \
-	p_build.c p_xml.c p_main.c xml.c
-am__objects_3 = unicc_boot2-p_mem.$(OBJEXT) \
-	unicc_boot2-p_error.$(OBJEXT) unicc_boot2-p_first.$(OBJEXT) \
-	unicc_boot2-p_lalr_gen.$(OBJEXT) unicc_boot2-p_util.$(OBJEXT) \
-	unicc_boot2-p_string.$(OBJEXT) \
-	unicc_boot2-p_integrity.$(OBJEXT) \
-	unicc_boot2-p_virtual.$(OBJEXT) \
-	unicc_boot2-p_rewrite.$(OBJEXT) unicc_boot2-p_debug.$(OBJEXT) \
-	unicc_boot2-p_keywords.$(OBJEXT) unicc_boot2-p_list.$(OBJEXT) \
-	unicc_boot2-p_build.$(OBJEXT) unicc_boot2-p_xml.$(OBJEXT) \
-	unicc_boot2-p_main.$(OBJEXT) unicc_boot2-xml.$(OBJEXT)
+am__unicc_boot2_SOURCES_DIST = parse_boot2.c mem.c error.c first.c \
+	lalr.c utils.c string.c integrity.c virtual.c rewrite.c \
+	debug.c lex.c list.c build.c buildxml.c main.c xml.c
+am__objects_3 = unicc_boot2-mem.$(OBJEXT) unicc_boot2-error.$(OBJEXT) \
+	unicc_boot2-first.$(OBJEXT) unicc_boot2-lalr.$(OBJEXT) \
+	unicc_boot2-utils.$(OBJEXT) unicc_boot2-string.$(OBJEXT) \
+	unicc_boot2-integrity.$(OBJEXT) unicc_boot2-virtual.$(OBJEXT) \
+	unicc_boot2-rewrite.$(OBJEXT) unicc_boot2-debug.$(OBJEXT) \
+	unicc_boot2-lex.$(OBJEXT) unicc_boot2-list.$(OBJEXT) \
+	unicc_boot2-build.$(OBJEXT) unicc_boot2-buildxml.$(OBJEXT) \
+	unicc_boot2-main.$(OBJEXT) unicc_boot2-xml.$(OBJEXT)
 @WITH_BOOTSTRAP_TRUE@am_unicc_boot2_OBJECTS =  \
-@WITH_BOOTSTRAP_TRUE@	unicc_boot2-p_parse_boot2.$(OBJEXT) \
+@WITH_BOOTSTRAP_TRUE@	unicc_boot2-parse_boot2.$(OBJEXT) \
 @WITH_BOOTSTRAP_TRUE@	$(am__objects_3)
 unicc_boot2_OBJECTS = $(am_unicc_boot2_OBJECTS)
 unicc_boot2_LDADD = $(LDADD)
 unicc_boot2_LINK = $(CCLD) $(unicc_boot2_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-am__unicc_boot3_SOURCES_DIST = p_parse_boot3.c p_mem.c p_error.c \
-	p_first.c p_lalr_gen.c p_util.c p_string.c p_integrity.c \
-	p_virtual.c p_rewrite.c p_debug.c p_keywords.c p_list.c \
-	p_build.c p_xml.c p_main.c xml.c
-am__objects_4 = unicc_boot3-p_mem.$(OBJEXT) \
-	unicc_boot3-p_error.$(OBJEXT) unicc_boot3-p_first.$(OBJEXT) \
-	unicc_boot3-p_lalr_gen.$(OBJEXT) unicc_boot3-p_util.$(OBJEXT) \
-	unicc_boot3-p_string.$(OBJEXT) \
-	unicc_boot3-p_integrity.$(OBJEXT) \
-	unicc_boot3-p_virtual.$(OBJEXT) \
-	unicc_boot3-p_rewrite.$(OBJEXT) unicc_boot3-p_debug.$(OBJEXT) \
-	unicc_boot3-p_keywords.$(OBJEXT) unicc_boot3-p_list.$(OBJEXT) \
-	unicc_boot3-p_build.$(OBJEXT) unicc_boot3-p_xml.$(OBJEXT) \
-	unicc_boot3-p_main.$(OBJEXT) unicc_boot3-xml.$(OBJEXT)
+am__unicc_boot3_SOURCES_DIST = parse_boot3.c mem.c error.c first.c \
+	lalr.c utils.c string.c integrity.c virtual.c rewrite.c \
+	debug.c lex.c list.c build.c buildxml.c main.c xml.c
+am__objects_4 = unicc_boot3-mem.$(OBJEXT) unicc_boot3-error.$(OBJEXT) \
+	unicc_boot3-first.$(OBJEXT) unicc_boot3-lalr.$(OBJEXT) \
+	unicc_boot3-utils.$(OBJEXT) unicc_boot3-string.$(OBJEXT) \
+	unicc_boot3-integrity.$(OBJEXT) unicc_boot3-virtual.$(OBJEXT) \
+	unicc_boot3-rewrite.$(OBJEXT) unicc_boot3-debug.$(OBJEXT) \
+	unicc_boot3-lex.$(OBJEXT) unicc_boot3-list.$(OBJEXT) \
+	unicc_boot3-build.$(OBJEXT) unicc_boot3-buildxml.$(OBJEXT) \
+	unicc_boot3-main.$(OBJEXT) unicc_boot3-xml.$(OBJEXT)
 @WITH_BOOTSTRAP_TRUE@am_unicc_boot3_OBJECTS =  \
-@WITH_BOOTSTRAP_TRUE@	unicc_boot3-p_parse_boot3.$(OBJEXT) \
+@WITH_BOOTSTRAP_TRUE@	unicc_boot3-parse_boot3.$(OBJEXT) \
 @WITH_BOOTSTRAP_TRUE@	$(am__objects_4)
 unicc_boot3_OBJECTS = $(am_unicc_boot3_OBJECTS)
 unicc_boot3_LDADD = $(LDADD)
@@ -401,29 +391,29 @@ AM_CPPFLAGS = -DTLTDIR=\"$(tltdir)\"
 # All sources except the grammar parser are equal in all bootstrappers.
 #
 SOURCES = \
-				p_mem.c \
-				p_error.c \
-				p_first.c \
-				p_lalr_gen.c \
-				p_util.c \
-				p_string.c \
-				p_integrity.c \
-				p_virtual.c \
-				p_rewrite.c \
-				p_debug.c \
-				p_keywords.c \
-				p_list.c \
-				p_build.c \
-				p_xml.c \
-				p_main.c \
+				mem.c \
+				error.c \
+				first.c \
+				lalr.c \
+				utils.c \
+				string.c \
+				integrity.c \
+				virtual.c \
+				rewrite.c \
+				debug.c \
+				lex.c \
+				list.c \
+				build.c \
+				buildxml.c \
+				main.c \
 				xml.c
 
 @WITH_BOOTSTRAP_TRUE@BUILT_SOURCES = \
-@WITH_BOOTSTRAP_TRUE@				p_parse_boot1.c \
-@WITH_BOOTSTRAP_TRUE@				p_parse_boot2.c \
-@WITH_BOOTSTRAP_TRUE@				p_parse_boot2.h \
-@WITH_BOOTSTRAP_TRUE@				p_parse_boot3.c \
-@WITH_BOOTSTRAP_TRUE@				p_parse_boot3.h
+@WITH_BOOTSTRAP_TRUE@				parse_boot1.c \
+@WITH_BOOTSTRAP_TRUE@				parse_boot2.c \
+@WITH_BOOTSTRAP_TRUE@				parse_boot2.h \
+@WITH_BOOTSTRAP_TRUE@				parse_boot3.c \
+@WITH_BOOTSTRAP_TRUE@				parse_boot3.h
 
 
 # --- UniCC Bootstrap phase 0 --------------------------------------------------
@@ -439,15 +429,15 @@ SOURCES = \
 # This phase uses the experimental min_lalr1 Parser Generator to build a
 # rudimentary parser for UniCC. min_lalr1 must be installed and in the PATH.
 #
-@WITH_BOOTSTRAP_TRUE@unicc_boot1_SOURCES = p_parse_boot1.c $(SOURCES)
+@WITH_BOOTSTRAP_TRUE@unicc_boot1_SOURCES = parse_boot1.c $(SOURCES)
 @WITH_BOOTSTRAP_TRUE@unicc_boot1_CFLAGS = -DUNICC_BOOTSTRAP=1
 
 # --- UniCC Bootstrap phase 2 --------------------------------------------------
 #
 # In this phase, the parser generated by min_lalr1 is will be used to parse the
-# grammar definition of the UniCC parser (p_parse.par)
+# grammar definition of the UniCC parser (parse.par)
 #
-@WITH_BOOTSTRAP_TRUE@unicc_boot2_SOURCES = p_parse_boot2.c $(SOURCES)
+@WITH_BOOTSTRAP_TRUE@unicc_boot2_SOURCES = parse_boot2.c $(SOURCES)
 @WITH_BOOTSTRAP_TRUE@unicc_boot2_CFLAGS = -DUNICC_BOOTSTRAP=2
 
 # --- UniCC Bootstrap phase 3 --------------------------------------------------
@@ -455,14 +445,14 @@ SOURCES = \
 # In this phase, the UniCC parser compiled by UniCC will be used to build
 # itself.
 #
-@WITH_BOOTSTRAP_TRUE@unicc_boot3_SOURCES = p_parse_boot3.c $(SOURCES)
+@WITH_BOOTSTRAP_TRUE@unicc_boot3_SOURCES = parse_boot3.c $(SOURCES)
 @WITH_BOOTSTRAP_TRUE@unicc_boot3_CFLAGS = -DUNICC_BOOTSTRAP=3
 
 # --- UniCC Final Build --------------------------------------------------------
 #
 # Using the third bootstrap phase, the final UniCC executable is built.
 #
-unicc_SOURCES = p_parse.c $(SOURCES)
+unicc_SOURCES = parse.c $(SOURCES)
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -582,73 +572,73 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/p_build.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/p_debug.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/p_error.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/p_first.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/p_integrity.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/p_keywords.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/p_lalr_gen.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/p_list.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/p_main.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/p_mem.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/p_parse.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/p_rewrite.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/p_string.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/p_util.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/p_virtual.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/p_xml.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-p_build.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-p_debug.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-p_error.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-p_first.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-p_integrity.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-p_keywords.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-p_lalr_gen.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-p_list.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-p_main.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-p_mem.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-p_parse_boot1.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-p_rewrite.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-p_string.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-p_util.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-p_virtual.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-p_xml.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/build.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/buildxml.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/debug.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/error.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/first.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/integrity.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lalr.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lex.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/list.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mem.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parse.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rewrite.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/string.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-build.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-buildxml.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-debug.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-error.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-first.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-integrity.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-lalr.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-lex.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-list.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-mem.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-parse_boot1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-rewrite.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-string.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-utils.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-virtual.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot1-xml.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-p_build.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-p_debug.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-p_error.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-p_first.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-p_integrity.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-p_keywords.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-p_lalr_gen.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-p_list.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-p_main.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-p_mem.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-p_parse_boot2.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-p_rewrite.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-p_string.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-p_util.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-p_virtual.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-p_xml.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-build.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-buildxml.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-debug.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-error.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-first.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-integrity.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-lalr.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-lex.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-list.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-mem.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-parse_boot2.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-rewrite.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-string.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-utils.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-virtual.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot2-xml.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-p_build.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-p_debug.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-p_error.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-p_first.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-p_integrity.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-p_keywords.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-p_lalr_gen.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-p_list.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-p_main.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-p_mem.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-p_parse_boot3.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-p_rewrite.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-p_string.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-p_util.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-p_virtual.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-p_xml.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-build.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-buildxml.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-debug.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-error.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-first.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-integrity.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-lalr.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-lex.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-list.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-mem.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-parse_boot3.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-rewrite.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-string.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-utils.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-virtual.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unicc_boot3-xml.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utils.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virtual.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xml.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@min_lalr1/$(DEPDIR)/min_lalr1.Po@am__quote@
 
@@ -668,229 +658,229 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-unicc_boot1-p_parse_boot1.o: p_parse_boot1.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_parse_boot1.o -MD -MP -MF $(DEPDIR)/unicc_boot1-p_parse_boot1.Tpo -c -o unicc_boot1-p_parse_boot1.o `test -f 'p_parse_boot1.c' || echo '$(srcdir)/'`p_parse_boot1.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_parse_boot1.Tpo $(DEPDIR)/unicc_boot1-p_parse_boot1.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_parse_boot1.c' object='unicc_boot1-p_parse_boot1.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-parse_boot1.o: parse_boot1.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-parse_boot1.o -MD -MP -MF $(DEPDIR)/unicc_boot1-parse_boot1.Tpo -c -o unicc_boot1-parse_boot1.o `test -f 'parse_boot1.c' || echo '$(srcdir)/'`parse_boot1.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-parse_boot1.Tpo $(DEPDIR)/unicc_boot1-parse_boot1.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='parse_boot1.c' object='unicc_boot1-parse_boot1.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_parse_boot1.o `test -f 'p_parse_boot1.c' || echo '$(srcdir)/'`p_parse_boot1.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-parse_boot1.o `test -f 'parse_boot1.c' || echo '$(srcdir)/'`parse_boot1.c
 
-unicc_boot1-p_parse_boot1.obj: p_parse_boot1.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_parse_boot1.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-p_parse_boot1.Tpo -c -o unicc_boot1-p_parse_boot1.obj `if test -f 'p_parse_boot1.c'; then $(CYGPATH_W) 'p_parse_boot1.c'; else $(CYGPATH_W) '$(srcdir)/p_parse_boot1.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_parse_boot1.Tpo $(DEPDIR)/unicc_boot1-p_parse_boot1.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_parse_boot1.c' object='unicc_boot1-p_parse_boot1.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-parse_boot1.obj: parse_boot1.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-parse_boot1.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-parse_boot1.Tpo -c -o unicc_boot1-parse_boot1.obj `if test -f 'parse_boot1.c'; then $(CYGPATH_W) 'parse_boot1.c'; else $(CYGPATH_W) '$(srcdir)/parse_boot1.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-parse_boot1.Tpo $(DEPDIR)/unicc_boot1-parse_boot1.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='parse_boot1.c' object='unicc_boot1-parse_boot1.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_parse_boot1.obj `if test -f 'p_parse_boot1.c'; then $(CYGPATH_W) 'p_parse_boot1.c'; else $(CYGPATH_W) '$(srcdir)/p_parse_boot1.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-parse_boot1.obj `if test -f 'parse_boot1.c'; then $(CYGPATH_W) 'parse_boot1.c'; else $(CYGPATH_W) '$(srcdir)/parse_boot1.c'; fi`
 
-unicc_boot1-p_mem.o: p_mem.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_mem.o -MD -MP -MF $(DEPDIR)/unicc_boot1-p_mem.Tpo -c -o unicc_boot1-p_mem.o `test -f 'p_mem.c' || echo '$(srcdir)/'`p_mem.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_mem.Tpo $(DEPDIR)/unicc_boot1-p_mem.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_mem.c' object='unicc_boot1-p_mem.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-mem.o: mem.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-mem.o -MD -MP -MF $(DEPDIR)/unicc_boot1-mem.Tpo -c -o unicc_boot1-mem.o `test -f 'mem.c' || echo '$(srcdir)/'`mem.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-mem.Tpo $(DEPDIR)/unicc_boot1-mem.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mem.c' object='unicc_boot1-mem.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_mem.o `test -f 'p_mem.c' || echo '$(srcdir)/'`p_mem.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-mem.o `test -f 'mem.c' || echo '$(srcdir)/'`mem.c
 
-unicc_boot1-p_mem.obj: p_mem.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_mem.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-p_mem.Tpo -c -o unicc_boot1-p_mem.obj `if test -f 'p_mem.c'; then $(CYGPATH_W) 'p_mem.c'; else $(CYGPATH_W) '$(srcdir)/p_mem.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_mem.Tpo $(DEPDIR)/unicc_boot1-p_mem.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_mem.c' object='unicc_boot1-p_mem.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-mem.obj: mem.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-mem.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-mem.Tpo -c -o unicc_boot1-mem.obj `if test -f 'mem.c'; then $(CYGPATH_W) 'mem.c'; else $(CYGPATH_W) '$(srcdir)/mem.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-mem.Tpo $(DEPDIR)/unicc_boot1-mem.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mem.c' object='unicc_boot1-mem.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_mem.obj `if test -f 'p_mem.c'; then $(CYGPATH_W) 'p_mem.c'; else $(CYGPATH_W) '$(srcdir)/p_mem.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-mem.obj `if test -f 'mem.c'; then $(CYGPATH_W) 'mem.c'; else $(CYGPATH_W) '$(srcdir)/mem.c'; fi`
 
-unicc_boot1-p_error.o: p_error.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_error.o -MD -MP -MF $(DEPDIR)/unicc_boot1-p_error.Tpo -c -o unicc_boot1-p_error.o `test -f 'p_error.c' || echo '$(srcdir)/'`p_error.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_error.Tpo $(DEPDIR)/unicc_boot1-p_error.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_error.c' object='unicc_boot1-p_error.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-error.o: error.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-error.o -MD -MP -MF $(DEPDIR)/unicc_boot1-error.Tpo -c -o unicc_boot1-error.o `test -f 'error.c' || echo '$(srcdir)/'`error.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-error.Tpo $(DEPDIR)/unicc_boot1-error.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='error.c' object='unicc_boot1-error.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_error.o `test -f 'p_error.c' || echo '$(srcdir)/'`p_error.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-error.o `test -f 'error.c' || echo '$(srcdir)/'`error.c
 
-unicc_boot1-p_error.obj: p_error.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_error.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-p_error.Tpo -c -o unicc_boot1-p_error.obj `if test -f 'p_error.c'; then $(CYGPATH_W) 'p_error.c'; else $(CYGPATH_W) '$(srcdir)/p_error.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_error.Tpo $(DEPDIR)/unicc_boot1-p_error.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_error.c' object='unicc_boot1-p_error.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-error.obj: error.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-error.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-error.Tpo -c -o unicc_boot1-error.obj `if test -f 'error.c'; then $(CYGPATH_W) 'error.c'; else $(CYGPATH_W) '$(srcdir)/error.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-error.Tpo $(DEPDIR)/unicc_boot1-error.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='error.c' object='unicc_boot1-error.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_error.obj `if test -f 'p_error.c'; then $(CYGPATH_W) 'p_error.c'; else $(CYGPATH_W) '$(srcdir)/p_error.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-error.obj `if test -f 'error.c'; then $(CYGPATH_W) 'error.c'; else $(CYGPATH_W) '$(srcdir)/error.c'; fi`
 
-unicc_boot1-p_first.o: p_first.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_first.o -MD -MP -MF $(DEPDIR)/unicc_boot1-p_first.Tpo -c -o unicc_boot1-p_first.o `test -f 'p_first.c' || echo '$(srcdir)/'`p_first.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_first.Tpo $(DEPDIR)/unicc_boot1-p_first.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_first.c' object='unicc_boot1-p_first.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-first.o: first.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-first.o -MD -MP -MF $(DEPDIR)/unicc_boot1-first.Tpo -c -o unicc_boot1-first.o `test -f 'first.c' || echo '$(srcdir)/'`first.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-first.Tpo $(DEPDIR)/unicc_boot1-first.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='first.c' object='unicc_boot1-first.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_first.o `test -f 'p_first.c' || echo '$(srcdir)/'`p_first.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-first.o `test -f 'first.c' || echo '$(srcdir)/'`first.c
 
-unicc_boot1-p_first.obj: p_first.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_first.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-p_first.Tpo -c -o unicc_boot1-p_first.obj `if test -f 'p_first.c'; then $(CYGPATH_W) 'p_first.c'; else $(CYGPATH_W) '$(srcdir)/p_first.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_first.Tpo $(DEPDIR)/unicc_boot1-p_first.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_first.c' object='unicc_boot1-p_first.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-first.obj: first.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-first.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-first.Tpo -c -o unicc_boot1-first.obj `if test -f 'first.c'; then $(CYGPATH_W) 'first.c'; else $(CYGPATH_W) '$(srcdir)/first.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-first.Tpo $(DEPDIR)/unicc_boot1-first.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='first.c' object='unicc_boot1-first.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_first.obj `if test -f 'p_first.c'; then $(CYGPATH_W) 'p_first.c'; else $(CYGPATH_W) '$(srcdir)/p_first.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-first.obj `if test -f 'first.c'; then $(CYGPATH_W) 'first.c'; else $(CYGPATH_W) '$(srcdir)/first.c'; fi`
 
-unicc_boot1-p_lalr_gen.o: p_lalr_gen.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_lalr_gen.o -MD -MP -MF $(DEPDIR)/unicc_boot1-p_lalr_gen.Tpo -c -o unicc_boot1-p_lalr_gen.o `test -f 'p_lalr_gen.c' || echo '$(srcdir)/'`p_lalr_gen.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_lalr_gen.Tpo $(DEPDIR)/unicc_boot1-p_lalr_gen.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_lalr_gen.c' object='unicc_boot1-p_lalr_gen.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-lalr.o: lalr.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-lalr.o -MD -MP -MF $(DEPDIR)/unicc_boot1-lalr.Tpo -c -o unicc_boot1-lalr.o `test -f 'lalr.c' || echo '$(srcdir)/'`lalr.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-lalr.Tpo $(DEPDIR)/unicc_boot1-lalr.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lalr.c' object='unicc_boot1-lalr.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_lalr_gen.o `test -f 'p_lalr_gen.c' || echo '$(srcdir)/'`p_lalr_gen.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-lalr.o `test -f 'lalr.c' || echo '$(srcdir)/'`lalr.c
 
-unicc_boot1-p_lalr_gen.obj: p_lalr_gen.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_lalr_gen.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-p_lalr_gen.Tpo -c -o unicc_boot1-p_lalr_gen.obj `if test -f 'p_lalr_gen.c'; then $(CYGPATH_W) 'p_lalr_gen.c'; else $(CYGPATH_W) '$(srcdir)/p_lalr_gen.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_lalr_gen.Tpo $(DEPDIR)/unicc_boot1-p_lalr_gen.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_lalr_gen.c' object='unicc_boot1-p_lalr_gen.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-lalr.obj: lalr.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-lalr.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-lalr.Tpo -c -o unicc_boot1-lalr.obj `if test -f 'lalr.c'; then $(CYGPATH_W) 'lalr.c'; else $(CYGPATH_W) '$(srcdir)/lalr.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-lalr.Tpo $(DEPDIR)/unicc_boot1-lalr.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lalr.c' object='unicc_boot1-lalr.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_lalr_gen.obj `if test -f 'p_lalr_gen.c'; then $(CYGPATH_W) 'p_lalr_gen.c'; else $(CYGPATH_W) '$(srcdir)/p_lalr_gen.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-lalr.obj `if test -f 'lalr.c'; then $(CYGPATH_W) 'lalr.c'; else $(CYGPATH_W) '$(srcdir)/lalr.c'; fi`
 
-unicc_boot1-p_util.o: p_util.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_util.o -MD -MP -MF $(DEPDIR)/unicc_boot1-p_util.Tpo -c -o unicc_boot1-p_util.o `test -f 'p_util.c' || echo '$(srcdir)/'`p_util.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_util.Tpo $(DEPDIR)/unicc_boot1-p_util.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_util.c' object='unicc_boot1-p_util.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-utils.o: utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-utils.o -MD -MP -MF $(DEPDIR)/unicc_boot1-utils.Tpo -c -o unicc_boot1-utils.o `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-utils.Tpo $(DEPDIR)/unicc_boot1-utils.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils.c' object='unicc_boot1-utils.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_util.o `test -f 'p_util.c' || echo '$(srcdir)/'`p_util.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-utils.o `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
 
-unicc_boot1-p_util.obj: p_util.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_util.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-p_util.Tpo -c -o unicc_boot1-p_util.obj `if test -f 'p_util.c'; then $(CYGPATH_W) 'p_util.c'; else $(CYGPATH_W) '$(srcdir)/p_util.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_util.Tpo $(DEPDIR)/unicc_boot1-p_util.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_util.c' object='unicc_boot1-p_util.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-utils.obj: utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-utils.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-utils.Tpo -c -o unicc_boot1-utils.obj `if test -f 'utils.c'; then $(CYGPATH_W) 'utils.c'; else $(CYGPATH_W) '$(srcdir)/utils.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-utils.Tpo $(DEPDIR)/unicc_boot1-utils.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils.c' object='unicc_boot1-utils.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_util.obj `if test -f 'p_util.c'; then $(CYGPATH_W) 'p_util.c'; else $(CYGPATH_W) '$(srcdir)/p_util.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-utils.obj `if test -f 'utils.c'; then $(CYGPATH_W) 'utils.c'; else $(CYGPATH_W) '$(srcdir)/utils.c'; fi`
 
-unicc_boot1-p_string.o: p_string.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_string.o -MD -MP -MF $(DEPDIR)/unicc_boot1-p_string.Tpo -c -o unicc_boot1-p_string.o `test -f 'p_string.c' || echo '$(srcdir)/'`p_string.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_string.Tpo $(DEPDIR)/unicc_boot1-p_string.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_string.c' object='unicc_boot1-p_string.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-string.o: string.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-string.o -MD -MP -MF $(DEPDIR)/unicc_boot1-string.Tpo -c -o unicc_boot1-string.o `test -f 'string.c' || echo '$(srcdir)/'`string.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-string.Tpo $(DEPDIR)/unicc_boot1-string.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='string.c' object='unicc_boot1-string.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_string.o `test -f 'p_string.c' || echo '$(srcdir)/'`p_string.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-string.o `test -f 'string.c' || echo '$(srcdir)/'`string.c
 
-unicc_boot1-p_string.obj: p_string.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_string.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-p_string.Tpo -c -o unicc_boot1-p_string.obj `if test -f 'p_string.c'; then $(CYGPATH_W) 'p_string.c'; else $(CYGPATH_W) '$(srcdir)/p_string.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_string.Tpo $(DEPDIR)/unicc_boot1-p_string.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_string.c' object='unicc_boot1-p_string.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-string.obj: string.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-string.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-string.Tpo -c -o unicc_boot1-string.obj `if test -f 'string.c'; then $(CYGPATH_W) 'string.c'; else $(CYGPATH_W) '$(srcdir)/string.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-string.Tpo $(DEPDIR)/unicc_boot1-string.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='string.c' object='unicc_boot1-string.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_string.obj `if test -f 'p_string.c'; then $(CYGPATH_W) 'p_string.c'; else $(CYGPATH_W) '$(srcdir)/p_string.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-string.obj `if test -f 'string.c'; then $(CYGPATH_W) 'string.c'; else $(CYGPATH_W) '$(srcdir)/string.c'; fi`
 
-unicc_boot1-p_integrity.o: p_integrity.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_integrity.o -MD -MP -MF $(DEPDIR)/unicc_boot1-p_integrity.Tpo -c -o unicc_boot1-p_integrity.o `test -f 'p_integrity.c' || echo '$(srcdir)/'`p_integrity.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_integrity.Tpo $(DEPDIR)/unicc_boot1-p_integrity.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_integrity.c' object='unicc_boot1-p_integrity.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-integrity.o: integrity.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-integrity.o -MD -MP -MF $(DEPDIR)/unicc_boot1-integrity.Tpo -c -o unicc_boot1-integrity.o `test -f 'integrity.c' || echo '$(srcdir)/'`integrity.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-integrity.Tpo $(DEPDIR)/unicc_boot1-integrity.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='integrity.c' object='unicc_boot1-integrity.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_integrity.o `test -f 'p_integrity.c' || echo '$(srcdir)/'`p_integrity.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-integrity.o `test -f 'integrity.c' || echo '$(srcdir)/'`integrity.c
 
-unicc_boot1-p_integrity.obj: p_integrity.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_integrity.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-p_integrity.Tpo -c -o unicc_boot1-p_integrity.obj `if test -f 'p_integrity.c'; then $(CYGPATH_W) 'p_integrity.c'; else $(CYGPATH_W) '$(srcdir)/p_integrity.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_integrity.Tpo $(DEPDIR)/unicc_boot1-p_integrity.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_integrity.c' object='unicc_boot1-p_integrity.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-integrity.obj: integrity.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-integrity.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-integrity.Tpo -c -o unicc_boot1-integrity.obj `if test -f 'integrity.c'; then $(CYGPATH_W) 'integrity.c'; else $(CYGPATH_W) '$(srcdir)/integrity.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-integrity.Tpo $(DEPDIR)/unicc_boot1-integrity.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='integrity.c' object='unicc_boot1-integrity.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_integrity.obj `if test -f 'p_integrity.c'; then $(CYGPATH_W) 'p_integrity.c'; else $(CYGPATH_W) '$(srcdir)/p_integrity.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-integrity.obj `if test -f 'integrity.c'; then $(CYGPATH_W) 'integrity.c'; else $(CYGPATH_W) '$(srcdir)/integrity.c'; fi`
 
-unicc_boot1-p_virtual.o: p_virtual.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_virtual.o -MD -MP -MF $(DEPDIR)/unicc_boot1-p_virtual.Tpo -c -o unicc_boot1-p_virtual.o `test -f 'p_virtual.c' || echo '$(srcdir)/'`p_virtual.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_virtual.Tpo $(DEPDIR)/unicc_boot1-p_virtual.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_virtual.c' object='unicc_boot1-p_virtual.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-virtual.o: virtual.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-virtual.o -MD -MP -MF $(DEPDIR)/unicc_boot1-virtual.Tpo -c -o unicc_boot1-virtual.o `test -f 'virtual.c' || echo '$(srcdir)/'`virtual.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-virtual.Tpo $(DEPDIR)/unicc_boot1-virtual.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='virtual.c' object='unicc_boot1-virtual.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_virtual.o `test -f 'p_virtual.c' || echo '$(srcdir)/'`p_virtual.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-virtual.o `test -f 'virtual.c' || echo '$(srcdir)/'`virtual.c
 
-unicc_boot1-p_virtual.obj: p_virtual.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_virtual.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-p_virtual.Tpo -c -o unicc_boot1-p_virtual.obj `if test -f 'p_virtual.c'; then $(CYGPATH_W) 'p_virtual.c'; else $(CYGPATH_W) '$(srcdir)/p_virtual.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_virtual.Tpo $(DEPDIR)/unicc_boot1-p_virtual.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_virtual.c' object='unicc_boot1-p_virtual.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-virtual.obj: virtual.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-virtual.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-virtual.Tpo -c -o unicc_boot1-virtual.obj `if test -f 'virtual.c'; then $(CYGPATH_W) 'virtual.c'; else $(CYGPATH_W) '$(srcdir)/virtual.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-virtual.Tpo $(DEPDIR)/unicc_boot1-virtual.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='virtual.c' object='unicc_boot1-virtual.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_virtual.obj `if test -f 'p_virtual.c'; then $(CYGPATH_W) 'p_virtual.c'; else $(CYGPATH_W) '$(srcdir)/p_virtual.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-virtual.obj `if test -f 'virtual.c'; then $(CYGPATH_W) 'virtual.c'; else $(CYGPATH_W) '$(srcdir)/virtual.c'; fi`
 
-unicc_boot1-p_rewrite.o: p_rewrite.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_rewrite.o -MD -MP -MF $(DEPDIR)/unicc_boot1-p_rewrite.Tpo -c -o unicc_boot1-p_rewrite.o `test -f 'p_rewrite.c' || echo '$(srcdir)/'`p_rewrite.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_rewrite.Tpo $(DEPDIR)/unicc_boot1-p_rewrite.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_rewrite.c' object='unicc_boot1-p_rewrite.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-rewrite.o: rewrite.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-rewrite.o -MD -MP -MF $(DEPDIR)/unicc_boot1-rewrite.Tpo -c -o unicc_boot1-rewrite.o `test -f 'rewrite.c' || echo '$(srcdir)/'`rewrite.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-rewrite.Tpo $(DEPDIR)/unicc_boot1-rewrite.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rewrite.c' object='unicc_boot1-rewrite.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_rewrite.o `test -f 'p_rewrite.c' || echo '$(srcdir)/'`p_rewrite.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-rewrite.o `test -f 'rewrite.c' || echo '$(srcdir)/'`rewrite.c
 
-unicc_boot1-p_rewrite.obj: p_rewrite.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_rewrite.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-p_rewrite.Tpo -c -o unicc_boot1-p_rewrite.obj `if test -f 'p_rewrite.c'; then $(CYGPATH_W) 'p_rewrite.c'; else $(CYGPATH_W) '$(srcdir)/p_rewrite.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_rewrite.Tpo $(DEPDIR)/unicc_boot1-p_rewrite.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_rewrite.c' object='unicc_boot1-p_rewrite.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-rewrite.obj: rewrite.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-rewrite.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-rewrite.Tpo -c -o unicc_boot1-rewrite.obj `if test -f 'rewrite.c'; then $(CYGPATH_W) 'rewrite.c'; else $(CYGPATH_W) '$(srcdir)/rewrite.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-rewrite.Tpo $(DEPDIR)/unicc_boot1-rewrite.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rewrite.c' object='unicc_boot1-rewrite.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_rewrite.obj `if test -f 'p_rewrite.c'; then $(CYGPATH_W) 'p_rewrite.c'; else $(CYGPATH_W) '$(srcdir)/p_rewrite.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-rewrite.obj `if test -f 'rewrite.c'; then $(CYGPATH_W) 'rewrite.c'; else $(CYGPATH_W) '$(srcdir)/rewrite.c'; fi`
 
-unicc_boot1-p_debug.o: p_debug.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_debug.o -MD -MP -MF $(DEPDIR)/unicc_boot1-p_debug.Tpo -c -o unicc_boot1-p_debug.o `test -f 'p_debug.c' || echo '$(srcdir)/'`p_debug.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_debug.Tpo $(DEPDIR)/unicc_boot1-p_debug.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_debug.c' object='unicc_boot1-p_debug.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-debug.o: debug.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-debug.o -MD -MP -MF $(DEPDIR)/unicc_boot1-debug.Tpo -c -o unicc_boot1-debug.o `test -f 'debug.c' || echo '$(srcdir)/'`debug.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-debug.Tpo $(DEPDIR)/unicc_boot1-debug.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='debug.c' object='unicc_boot1-debug.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_debug.o `test -f 'p_debug.c' || echo '$(srcdir)/'`p_debug.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-debug.o `test -f 'debug.c' || echo '$(srcdir)/'`debug.c
 
-unicc_boot1-p_debug.obj: p_debug.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_debug.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-p_debug.Tpo -c -o unicc_boot1-p_debug.obj `if test -f 'p_debug.c'; then $(CYGPATH_W) 'p_debug.c'; else $(CYGPATH_W) '$(srcdir)/p_debug.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_debug.Tpo $(DEPDIR)/unicc_boot1-p_debug.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_debug.c' object='unicc_boot1-p_debug.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-debug.obj: debug.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-debug.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-debug.Tpo -c -o unicc_boot1-debug.obj `if test -f 'debug.c'; then $(CYGPATH_W) 'debug.c'; else $(CYGPATH_W) '$(srcdir)/debug.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-debug.Tpo $(DEPDIR)/unicc_boot1-debug.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='debug.c' object='unicc_boot1-debug.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_debug.obj `if test -f 'p_debug.c'; then $(CYGPATH_W) 'p_debug.c'; else $(CYGPATH_W) '$(srcdir)/p_debug.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-debug.obj `if test -f 'debug.c'; then $(CYGPATH_W) 'debug.c'; else $(CYGPATH_W) '$(srcdir)/debug.c'; fi`
 
-unicc_boot1-p_keywords.o: p_keywords.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_keywords.o -MD -MP -MF $(DEPDIR)/unicc_boot1-p_keywords.Tpo -c -o unicc_boot1-p_keywords.o `test -f 'p_keywords.c' || echo '$(srcdir)/'`p_keywords.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_keywords.Tpo $(DEPDIR)/unicc_boot1-p_keywords.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_keywords.c' object='unicc_boot1-p_keywords.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-lex.o: lex.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-lex.o -MD -MP -MF $(DEPDIR)/unicc_boot1-lex.Tpo -c -o unicc_boot1-lex.o `test -f 'lex.c' || echo '$(srcdir)/'`lex.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-lex.Tpo $(DEPDIR)/unicc_boot1-lex.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lex.c' object='unicc_boot1-lex.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_keywords.o `test -f 'p_keywords.c' || echo '$(srcdir)/'`p_keywords.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-lex.o `test -f 'lex.c' || echo '$(srcdir)/'`lex.c
 
-unicc_boot1-p_keywords.obj: p_keywords.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_keywords.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-p_keywords.Tpo -c -o unicc_boot1-p_keywords.obj `if test -f 'p_keywords.c'; then $(CYGPATH_W) 'p_keywords.c'; else $(CYGPATH_W) '$(srcdir)/p_keywords.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_keywords.Tpo $(DEPDIR)/unicc_boot1-p_keywords.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_keywords.c' object='unicc_boot1-p_keywords.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-lex.obj: lex.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-lex.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-lex.Tpo -c -o unicc_boot1-lex.obj `if test -f 'lex.c'; then $(CYGPATH_W) 'lex.c'; else $(CYGPATH_W) '$(srcdir)/lex.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-lex.Tpo $(DEPDIR)/unicc_boot1-lex.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lex.c' object='unicc_boot1-lex.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_keywords.obj `if test -f 'p_keywords.c'; then $(CYGPATH_W) 'p_keywords.c'; else $(CYGPATH_W) '$(srcdir)/p_keywords.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-lex.obj `if test -f 'lex.c'; then $(CYGPATH_W) 'lex.c'; else $(CYGPATH_W) '$(srcdir)/lex.c'; fi`
 
-unicc_boot1-p_list.o: p_list.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_list.o -MD -MP -MF $(DEPDIR)/unicc_boot1-p_list.Tpo -c -o unicc_boot1-p_list.o `test -f 'p_list.c' || echo '$(srcdir)/'`p_list.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_list.Tpo $(DEPDIR)/unicc_boot1-p_list.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_list.c' object='unicc_boot1-p_list.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-list.o: list.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-list.o -MD -MP -MF $(DEPDIR)/unicc_boot1-list.Tpo -c -o unicc_boot1-list.o `test -f 'list.c' || echo '$(srcdir)/'`list.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-list.Tpo $(DEPDIR)/unicc_boot1-list.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='list.c' object='unicc_boot1-list.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_list.o `test -f 'p_list.c' || echo '$(srcdir)/'`p_list.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-list.o `test -f 'list.c' || echo '$(srcdir)/'`list.c
 
-unicc_boot1-p_list.obj: p_list.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_list.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-p_list.Tpo -c -o unicc_boot1-p_list.obj `if test -f 'p_list.c'; then $(CYGPATH_W) 'p_list.c'; else $(CYGPATH_W) '$(srcdir)/p_list.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_list.Tpo $(DEPDIR)/unicc_boot1-p_list.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_list.c' object='unicc_boot1-p_list.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-list.obj: list.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-list.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-list.Tpo -c -o unicc_boot1-list.obj `if test -f 'list.c'; then $(CYGPATH_W) 'list.c'; else $(CYGPATH_W) '$(srcdir)/list.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-list.Tpo $(DEPDIR)/unicc_boot1-list.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='list.c' object='unicc_boot1-list.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_list.obj `if test -f 'p_list.c'; then $(CYGPATH_W) 'p_list.c'; else $(CYGPATH_W) '$(srcdir)/p_list.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-list.obj `if test -f 'list.c'; then $(CYGPATH_W) 'list.c'; else $(CYGPATH_W) '$(srcdir)/list.c'; fi`
 
-unicc_boot1-p_build.o: p_build.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_build.o -MD -MP -MF $(DEPDIR)/unicc_boot1-p_build.Tpo -c -o unicc_boot1-p_build.o `test -f 'p_build.c' || echo '$(srcdir)/'`p_build.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_build.Tpo $(DEPDIR)/unicc_boot1-p_build.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_build.c' object='unicc_boot1-p_build.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-build.o: build.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-build.o -MD -MP -MF $(DEPDIR)/unicc_boot1-build.Tpo -c -o unicc_boot1-build.o `test -f 'build.c' || echo '$(srcdir)/'`build.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-build.Tpo $(DEPDIR)/unicc_boot1-build.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='build.c' object='unicc_boot1-build.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_build.o `test -f 'p_build.c' || echo '$(srcdir)/'`p_build.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-build.o `test -f 'build.c' || echo '$(srcdir)/'`build.c
 
-unicc_boot1-p_build.obj: p_build.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_build.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-p_build.Tpo -c -o unicc_boot1-p_build.obj `if test -f 'p_build.c'; then $(CYGPATH_W) 'p_build.c'; else $(CYGPATH_W) '$(srcdir)/p_build.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_build.Tpo $(DEPDIR)/unicc_boot1-p_build.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_build.c' object='unicc_boot1-p_build.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-build.obj: build.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-build.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-build.Tpo -c -o unicc_boot1-build.obj `if test -f 'build.c'; then $(CYGPATH_W) 'build.c'; else $(CYGPATH_W) '$(srcdir)/build.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-build.Tpo $(DEPDIR)/unicc_boot1-build.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='build.c' object='unicc_boot1-build.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_build.obj `if test -f 'p_build.c'; then $(CYGPATH_W) 'p_build.c'; else $(CYGPATH_W) '$(srcdir)/p_build.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-build.obj `if test -f 'build.c'; then $(CYGPATH_W) 'build.c'; else $(CYGPATH_W) '$(srcdir)/build.c'; fi`
 
-unicc_boot1-p_xml.o: p_xml.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_xml.o -MD -MP -MF $(DEPDIR)/unicc_boot1-p_xml.Tpo -c -o unicc_boot1-p_xml.o `test -f 'p_xml.c' || echo '$(srcdir)/'`p_xml.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_xml.Tpo $(DEPDIR)/unicc_boot1-p_xml.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_xml.c' object='unicc_boot1-p_xml.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-buildxml.o: buildxml.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-buildxml.o -MD -MP -MF $(DEPDIR)/unicc_boot1-buildxml.Tpo -c -o unicc_boot1-buildxml.o `test -f 'buildxml.c' || echo '$(srcdir)/'`buildxml.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-buildxml.Tpo $(DEPDIR)/unicc_boot1-buildxml.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='buildxml.c' object='unicc_boot1-buildxml.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_xml.o `test -f 'p_xml.c' || echo '$(srcdir)/'`p_xml.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-buildxml.o `test -f 'buildxml.c' || echo '$(srcdir)/'`buildxml.c
 
-unicc_boot1-p_xml.obj: p_xml.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_xml.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-p_xml.Tpo -c -o unicc_boot1-p_xml.obj `if test -f 'p_xml.c'; then $(CYGPATH_W) 'p_xml.c'; else $(CYGPATH_W) '$(srcdir)/p_xml.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_xml.Tpo $(DEPDIR)/unicc_boot1-p_xml.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_xml.c' object='unicc_boot1-p_xml.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-buildxml.obj: buildxml.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-buildxml.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-buildxml.Tpo -c -o unicc_boot1-buildxml.obj `if test -f 'buildxml.c'; then $(CYGPATH_W) 'buildxml.c'; else $(CYGPATH_W) '$(srcdir)/buildxml.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-buildxml.Tpo $(DEPDIR)/unicc_boot1-buildxml.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='buildxml.c' object='unicc_boot1-buildxml.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_xml.obj `if test -f 'p_xml.c'; then $(CYGPATH_W) 'p_xml.c'; else $(CYGPATH_W) '$(srcdir)/p_xml.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-buildxml.obj `if test -f 'buildxml.c'; then $(CYGPATH_W) 'buildxml.c'; else $(CYGPATH_W) '$(srcdir)/buildxml.c'; fi`
 
-unicc_boot1-p_main.o: p_main.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_main.o -MD -MP -MF $(DEPDIR)/unicc_boot1-p_main.Tpo -c -o unicc_boot1-p_main.o `test -f 'p_main.c' || echo '$(srcdir)/'`p_main.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_main.Tpo $(DEPDIR)/unicc_boot1-p_main.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_main.c' object='unicc_boot1-p_main.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-main.o: main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-main.o -MD -MP -MF $(DEPDIR)/unicc_boot1-main.Tpo -c -o unicc_boot1-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-main.Tpo $(DEPDIR)/unicc_boot1-main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main.c' object='unicc_boot1-main.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_main.o `test -f 'p_main.c' || echo '$(srcdir)/'`p_main.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
 
-unicc_boot1-p_main.obj: p_main.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-p_main.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-p_main.Tpo -c -o unicc_boot1-p_main.obj `if test -f 'p_main.c'; then $(CYGPATH_W) 'p_main.c'; else $(CYGPATH_W) '$(srcdir)/p_main.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-p_main.Tpo $(DEPDIR)/unicc_boot1-p_main.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_main.c' object='unicc_boot1-p_main.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot1-main.obj: main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-main.obj -MD -MP -MF $(DEPDIR)/unicc_boot1-main.Tpo -c -o unicc_boot1-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot1-main.Tpo $(DEPDIR)/unicc_boot1-main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main.c' object='unicc_boot1-main.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-p_main.obj `if test -f 'p_main.c'; then $(CYGPATH_W) 'p_main.c'; else $(CYGPATH_W) '$(srcdir)/p_main.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
 
 unicc_boot1-xml.o: xml.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-xml.o -MD -MP -MF $(DEPDIR)/unicc_boot1-xml.Tpo -c -o unicc_boot1-xml.o `test -f 'xml.c' || echo '$(srcdir)/'`xml.c
@@ -906,229 +896,229 @@ unicc_boot1-xml.obj: xml.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-xml.obj `if test -f 'xml.c'; then $(CYGPATH_W) 'xml.c'; else $(CYGPATH_W) '$(srcdir)/xml.c'; fi`
 
-unicc_boot2-p_parse_boot2.o: p_parse_boot2.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_parse_boot2.o -MD -MP -MF $(DEPDIR)/unicc_boot2-p_parse_boot2.Tpo -c -o unicc_boot2-p_parse_boot2.o `test -f 'p_parse_boot2.c' || echo '$(srcdir)/'`p_parse_boot2.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_parse_boot2.Tpo $(DEPDIR)/unicc_boot2-p_parse_boot2.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_parse_boot2.c' object='unicc_boot2-p_parse_boot2.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-parse_boot2.o: parse_boot2.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-parse_boot2.o -MD -MP -MF $(DEPDIR)/unicc_boot2-parse_boot2.Tpo -c -o unicc_boot2-parse_boot2.o `test -f 'parse_boot2.c' || echo '$(srcdir)/'`parse_boot2.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-parse_boot2.Tpo $(DEPDIR)/unicc_boot2-parse_boot2.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='parse_boot2.c' object='unicc_boot2-parse_boot2.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_parse_boot2.o `test -f 'p_parse_boot2.c' || echo '$(srcdir)/'`p_parse_boot2.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-parse_boot2.o `test -f 'parse_boot2.c' || echo '$(srcdir)/'`parse_boot2.c
 
-unicc_boot2-p_parse_boot2.obj: p_parse_boot2.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_parse_boot2.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-p_parse_boot2.Tpo -c -o unicc_boot2-p_parse_boot2.obj `if test -f 'p_parse_boot2.c'; then $(CYGPATH_W) 'p_parse_boot2.c'; else $(CYGPATH_W) '$(srcdir)/p_parse_boot2.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_parse_boot2.Tpo $(DEPDIR)/unicc_boot2-p_parse_boot2.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_parse_boot2.c' object='unicc_boot2-p_parse_boot2.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-parse_boot2.obj: parse_boot2.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-parse_boot2.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-parse_boot2.Tpo -c -o unicc_boot2-parse_boot2.obj `if test -f 'parse_boot2.c'; then $(CYGPATH_W) 'parse_boot2.c'; else $(CYGPATH_W) '$(srcdir)/parse_boot2.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-parse_boot2.Tpo $(DEPDIR)/unicc_boot2-parse_boot2.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='parse_boot2.c' object='unicc_boot2-parse_boot2.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_parse_boot2.obj `if test -f 'p_parse_boot2.c'; then $(CYGPATH_W) 'p_parse_boot2.c'; else $(CYGPATH_W) '$(srcdir)/p_parse_boot2.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-parse_boot2.obj `if test -f 'parse_boot2.c'; then $(CYGPATH_W) 'parse_boot2.c'; else $(CYGPATH_W) '$(srcdir)/parse_boot2.c'; fi`
 
-unicc_boot2-p_mem.o: p_mem.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_mem.o -MD -MP -MF $(DEPDIR)/unicc_boot2-p_mem.Tpo -c -o unicc_boot2-p_mem.o `test -f 'p_mem.c' || echo '$(srcdir)/'`p_mem.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_mem.Tpo $(DEPDIR)/unicc_boot2-p_mem.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_mem.c' object='unicc_boot2-p_mem.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-mem.o: mem.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-mem.o -MD -MP -MF $(DEPDIR)/unicc_boot2-mem.Tpo -c -o unicc_boot2-mem.o `test -f 'mem.c' || echo '$(srcdir)/'`mem.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-mem.Tpo $(DEPDIR)/unicc_boot2-mem.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mem.c' object='unicc_boot2-mem.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_mem.o `test -f 'p_mem.c' || echo '$(srcdir)/'`p_mem.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-mem.o `test -f 'mem.c' || echo '$(srcdir)/'`mem.c
 
-unicc_boot2-p_mem.obj: p_mem.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_mem.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-p_mem.Tpo -c -o unicc_boot2-p_mem.obj `if test -f 'p_mem.c'; then $(CYGPATH_W) 'p_mem.c'; else $(CYGPATH_W) '$(srcdir)/p_mem.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_mem.Tpo $(DEPDIR)/unicc_boot2-p_mem.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_mem.c' object='unicc_boot2-p_mem.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-mem.obj: mem.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-mem.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-mem.Tpo -c -o unicc_boot2-mem.obj `if test -f 'mem.c'; then $(CYGPATH_W) 'mem.c'; else $(CYGPATH_W) '$(srcdir)/mem.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-mem.Tpo $(DEPDIR)/unicc_boot2-mem.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mem.c' object='unicc_boot2-mem.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_mem.obj `if test -f 'p_mem.c'; then $(CYGPATH_W) 'p_mem.c'; else $(CYGPATH_W) '$(srcdir)/p_mem.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-mem.obj `if test -f 'mem.c'; then $(CYGPATH_W) 'mem.c'; else $(CYGPATH_W) '$(srcdir)/mem.c'; fi`
 
-unicc_boot2-p_error.o: p_error.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_error.o -MD -MP -MF $(DEPDIR)/unicc_boot2-p_error.Tpo -c -o unicc_boot2-p_error.o `test -f 'p_error.c' || echo '$(srcdir)/'`p_error.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_error.Tpo $(DEPDIR)/unicc_boot2-p_error.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_error.c' object='unicc_boot2-p_error.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-error.o: error.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-error.o -MD -MP -MF $(DEPDIR)/unicc_boot2-error.Tpo -c -o unicc_boot2-error.o `test -f 'error.c' || echo '$(srcdir)/'`error.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-error.Tpo $(DEPDIR)/unicc_boot2-error.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='error.c' object='unicc_boot2-error.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_error.o `test -f 'p_error.c' || echo '$(srcdir)/'`p_error.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-error.o `test -f 'error.c' || echo '$(srcdir)/'`error.c
 
-unicc_boot2-p_error.obj: p_error.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_error.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-p_error.Tpo -c -o unicc_boot2-p_error.obj `if test -f 'p_error.c'; then $(CYGPATH_W) 'p_error.c'; else $(CYGPATH_W) '$(srcdir)/p_error.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_error.Tpo $(DEPDIR)/unicc_boot2-p_error.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_error.c' object='unicc_boot2-p_error.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-error.obj: error.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-error.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-error.Tpo -c -o unicc_boot2-error.obj `if test -f 'error.c'; then $(CYGPATH_W) 'error.c'; else $(CYGPATH_W) '$(srcdir)/error.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-error.Tpo $(DEPDIR)/unicc_boot2-error.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='error.c' object='unicc_boot2-error.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_error.obj `if test -f 'p_error.c'; then $(CYGPATH_W) 'p_error.c'; else $(CYGPATH_W) '$(srcdir)/p_error.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-error.obj `if test -f 'error.c'; then $(CYGPATH_W) 'error.c'; else $(CYGPATH_W) '$(srcdir)/error.c'; fi`
 
-unicc_boot2-p_first.o: p_first.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_first.o -MD -MP -MF $(DEPDIR)/unicc_boot2-p_first.Tpo -c -o unicc_boot2-p_first.o `test -f 'p_first.c' || echo '$(srcdir)/'`p_first.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_first.Tpo $(DEPDIR)/unicc_boot2-p_first.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_first.c' object='unicc_boot2-p_first.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-first.o: first.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-first.o -MD -MP -MF $(DEPDIR)/unicc_boot2-first.Tpo -c -o unicc_boot2-first.o `test -f 'first.c' || echo '$(srcdir)/'`first.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-first.Tpo $(DEPDIR)/unicc_boot2-first.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='first.c' object='unicc_boot2-first.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_first.o `test -f 'p_first.c' || echo '$(srcdir)/'`p_first.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-first.o `test -f 'first.c' || echo '$(srcdir)/'`first.c
 
-unicc_boot2-p_first.obj: p_first.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_first.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-p_first.Tpo -c -o unicc_boot2-p_first.obj `if test -f 'p_first.c'; then $(CYGPATH_W) 'p_first.c'; else $(CYGPATH_W) '$(srcdir)/p_first.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_first.Tpo $(DEPDIR)/unicc_boot2-p_first.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_first.c' object='unicc_boot2-p_first.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-first.obj: first.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-first.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-first.Tpo -c -o unicc_boot2-first.obj `if test -f 'first.c'; then $(CYGPATH_W) 'first.c'; else $(CYGPATH_W) '$(srcdir)/first.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-first.Tpo $(DEPDIR)/unicc_boot2-first.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='first.c' object='unicc_boot2-first.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_first.obj `if test -f 'p_first.c'; then $(CYGPATH_W) 'p_first.c'; else $(CYGPATH_W) '$(srcdir)/p_first.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-first.obj `if test -f 'first.c'; then $(CYGPATH_W) 'first.c'; else $(CYGPATH_W) '$(srcdir)/first.c'; fi`
 
-unicc_boot2-p_lalr_gen.o: p_lalr_gen.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_lalr_gen.o -MD -MP -MF $(DEPDIR)/unicc_boot2-p_lalr_gen.Tpo -c -o unicc_boot2-p_lalr_gen.o `test -f 'p_lalr_gen.c' || echo '$(srcdir)/'`p_lalr_gen.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_lalr_gen.Tpo $(DEPDIR)/unicc_boot2-p_lalr_gen.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_lalr_gen.c' object='unicc_boot2-p_lalr_gen.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-lalr.o: lalr.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-lalr.o -MD -MP -MF $(DEPDIR)/unicc_boot2-lalr.Tpo -c -o unicc_boot2-lalr.o `test -f 'lalr.c' || echo '$(srcdir)/'`lalr.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-lalr.Tpo $(DEPDIR)/unicc_boot2-lalr.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lalr.c' object='unicc_boot2-lalr.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_lalr_gen.o `test -f 'p_lalr_gen.c' || echo '$(srcdir)/'`p_lalr_gen.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-lalr.o `test -f 'lalr.c' || echo '$(srcdir)/'`lalr.c
 
-unicc_boot2-p_lalr_gen.obj: p_lalr_gen.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_lalr_gen.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-p_lalr_gen.Tpo -c -o unicc_boot2-p_lalr_gen.obj `if test -f 'p_lalr_gen.c'; then $(CYGPATH_W) 'p_lalr_gen.c'; else $(CYGPATH_W) '$(srcdir)/p_lalr_gen.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_lalr_gen.Tpo $(DEPDIR)/unicc_boot2-p_lalr_gen.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_lalr_gen.c' object='unicc_boot2-p_lalr_gen.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-lalr.obj: lalr.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-lalr.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-lalr.Tpo -c -o unicc_boot2-lalr.obj `if test -f 'lalr.c'; then $(CYGPATH_W) 'lalr.c'; else $(CYGPATH_W) '$(srcdir)/lalr.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-lalr.Tpo $(DEPDIR)/unicc_boot2-lalr.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lalr.c' object='unicc_boot2-lalr.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_lalr_gen.obj `if test -f 'p_lalr_gen.c'; then $(CYGPATH_W) 'p_lalr_gen.c'; else $(CYGPATH_W) '$(srcdir)/p_lalr_gen.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-lalr.obj `if test -f 'lalr.c'; then $(CYGPATH_W) 'lalr.c'; else $(CYGPATH_W) '$(srcdir)/lalr.c'; fi`
 
-unicc_boot2-p_util.o: p_util.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_util.o -MD -MP -MF $(DEPDIR)/unicc_boot2-p_util.Tpo -c -o unicc_boot2-p_util.o `test -f 'p_util.c' || echo '$(srcdir)/'`p_util.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_util.Tpo $(DEPDIR)/unicc_boot2-p_util.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_util.c' object='unicc_boot2-p_util.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-utils.o: utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-utils.o -MD -MP -MF $(DEPDIR)/unicc_boot2-utils.Tpo -c -o unicc_boot2-utils.o `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-utils.Tpo $(DEPDIR)/unicc_boot2-utils.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils.c' object='unicc_boot2-utils.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_util.o `test -f 'p_util.c' || echo '$(srcdir)/'`p_util.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-utils.o `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
 
-unicc_boot2-p_util.obj: p_util.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_util.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-p_util.Tpo -c -o unicc_boot2-p_util.obj `if test -f 'p_util.c'; then $(CYGPATH_W) 'p_util.c'; else $(CYGPATH_W) '$(srcdir)/p_util.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_util.Tpo $(DEPDIR)/unicc_boot2-p_util.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_util.c' object='unicc_boot2-p_util.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-utils.obj: utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-utils.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-utils.Tpo -c -o unicc_boot2-utils.obj `if test -f 'utils.c'; then $(CYGPATH_W) 'utils.c'; else $(CYGPATH_W) '$(srcdir)/utils.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-utils.Tpo $(DEPDIR)/unicc_boot2-utils.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils.c' object='unicc_boot2-utils.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_util.obj `if test -f 'p_util.c'; then $(CYGPATH_W) 'p_util.c'; else $(CYGPATH_W) '$(srcdir)/p_util.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-utils.obj `if test -f 'utils.c'; then $(CYGPATH_W) 'utils.c'; else $(CYGPATH_W) '$(srcdir)/utils.c'; fi`
 
-unicc_boot2-p_string.o: p_string.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_string.o -MD -MP -MF $(DEPDIR)/unicc_boot2-p_string.Tpo -c -o unicc_boot2-p_string.o `test -f 'p_string.c' || echo '$(srcdir)/'`p_string.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_string.Tpo $(DEPDIR)/unicc_boot2-p_string.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_string.c' object='unicc_boot2-p_string.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-string.o: string.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-string.o -MD -MP -MF $(DEPDIR)/unicc_boot2-string.Tpo -c -o unicc_boot2-string.o `test -f 'string.c' || echo '$(srcdir)/'`string.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-string.Tpo $(DEPDIR)/unicc_boot2-string.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='string.c' object='unicc_boot2-string.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_string.o `test -f 'p_string.c' || echo '$(srcdir)/'`p_string.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-string.o `test -f 'string.c' || echo '$(srcdir)/'`string.c
 
-unicc_boot2-p_string.obj: p_string.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_string.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-p_string.Tpo -c -o unicc_boot2-p_string.obj `if test -f 'p_string.c'; then $(CYGPATH_W) 'p_string.c'; else $(CYGPATH_W) '$(srcdir)/p_string.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_string.Tpo $(DEPDIR)/unicc_boot2-p_string.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_string.c' object='unicc_boot2-p_string.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-string.obj: string.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-string.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-string.Tpo -c -o unicc_boot2-string.obj `if test -f 'string.c'; then $(CYGPATH_W) 'string.c'; else $(CYGPATH_W) '$(srcdir)/string.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-string.Tpo $(DEPDIR)/unicc_boot2-string.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='string.c' object='unicc_boot2-string.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_string.obj `if test -f 'p_string.c'; then $(CYGPATH_W) 'p_string.c'; else $(CYGPATH_W) '$(srcdir)/p_string.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-string.obj `if test -f 'string.c'; then $(CYGPATH_W) 'string.c'; else $(CYGPATH_W) '$(srcdir)/string.c'; fi`
 
-unicc_boot2-p_integrity.o: p_integrity.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_integrity.o -MD -MP -MF $(DEPDIR)/unicc_boot2-p_integrity.Tpo -c -o unicc_boot2-p_integrity.o `test -f 'p_integrity.c' || echo '$(srcdir)/'`p_integrity.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_integrity.Tpo $(DEPDIR)/unicc_boot2-p_integrity.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_integrity.c' object='unicc_boot2-p_integrity.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-integrity.o: integrity.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-integrity.o -MD -MP -MF $(DEPDIR)/unicc_boot2-integrity.Tpo -c -o unicc_boot2-integrity.o `test -f 'integrity.c' || echo '$(srcdir)/'`integrity.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-integrity.Tpo $(DEPDIR)/unicc_boot2-integrity.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='integrity.c' object='unicc_boot2-integrity.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_integrity.o `test -f 'p_integrity.c' || echo '$(srcdir)/'`p_integrity.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-integrity.o `test -f 'integrity.c' || echo '$(srcdir)/'`integrity.c
 
-unicc_boot2-p_integrity.obj: p_integrity.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_integrity.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-p_integrity.Tpo -c -o unicc_boot2-p_integrity.obj `if test -f 'p_integrity.c'; then $(CYGPATH_W) 'p_integrity.c'; else $(CYGPATH_W) '$(srcdir)/p_integrity.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_integrity.Tpo $(DEPDIR)/unicc_boot2-p_integrity.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_integrity.c' object='unicc_boot2-p_integrity.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-integrity.obj: integrity.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-integrity.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-integrity.Tpo -c -o unicc_boot2-integrity.obj `if test -f 'integrity.c'; then $(CYGPATH_W) 'integrity.c'; else $(CYGPATH_W) '$(srcdir)/integrity.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-integrity.Tpo $(DEPDIR)/unicc_boot2-integrity.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='integrity.c' object='unicc_boot2-integrity.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_integrity.obj `if test -f 'p_integrity.c'; then $(CYGPATH_W) 'p_integrity.c'; else $(CYGPATH_W) '$(srcdir)/p_integrity.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-integrity.obj `if test -f 'integrity.c'; then $(CYGPATH_W) 'integrity.c'; else $(CYGPATH_W) '$(srcdir)/integrity.c'; fi`
 
-unicc_boot2-p_virtual.o: p_virtual.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_virtual.o -MD -MP -MF $(DEPDIR)/unicc_boot2-p_virtual.Tpo -c -o unicc_boot2-p_virtual.o `test -f 'p_virtual.c' || echo '$(srcdir)/'`p_virtual.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_virtual.Tpo $(DEPDIR)/unicc_boot2-p_virtual.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_virtual.c' object='unicc_boot2-p_virtual.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-virtual.o: virtual.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-virtual.o -MD -MP -MF $(DEPDIR)/unicc_boot2-virtual.Tpo -c -o unicc_boot2-virtual.o `test -f 'virtual.c' || echo '$(srcdir)/'`virtual.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-virtual.Tpo $(DEPDIR)/unicc_boot2-virtual.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='virtual.c' object='unicc_boot2-virtual.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_virtual.o `test -f 'p_virtual.c' || echo '$(srcdir)/'`p_virtual.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-virtual.o `test -f 'virtual.c' || echo '$(srcdir)/'`virtual.c
 
-unicc_boot2-p_virtual.obj: p_virtual.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_virtual.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-p_virtual.Tpo -c -o unicc_boot2-p_virtual.obj `if test -f 'p_virtual.c'; then $(CYGPATH_W) 'p_virtual.c'; else $(CYGPATH_W) '$(srcdir)/p_virtual.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_virtual.Tpo $(DEPDIR)/unicc_boot2-p_virtual.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_virtual.c' object='unicc_boot2-p_virtual.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-virtual.obj: virtual.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-virtual.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-virtual.Tpo -c -o unicc_boot2-virtual.obj `if test -f 'virtual.c'; then $(CYGPATH_W) 'virtual.c'; else $(CYGPATH_W) '$(srcdir)/virtual.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-virtual.Tpo $(DEPDIR)/unicc_boot2-virtual.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='virtual.c' object='unicc_boot2-virtual.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_virtual.obj `if test -f 'p_virtual.c'; then $(CYGPATH_W) 'p_virtual.c'; else $(CYGPATH_W) '$(srcdir)/p_virtual.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-virtual.obj `if test -f 'virtual.c'; then $(CYGPATH_W) 'virtual.c'; else $(CYGPATH_W) '$(srcdir)/virtual.c'; fi`
 
-unicc_boot2-p_rewrite.o: p_rewrite.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_rewrite.o -MD -MP -MF $(DEPDIR)/unicc_boot2-p_rewrite.Tpo -c -o unicc_boot2-p_rewrite.o `test -f 'p_rewrite.c' || echo '$(srcdir)/'`p_rewrite.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_rewrite.Tpo $(DEPDIR)/unicc_boot2-p_rewrite.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_rewrite.c' object='unicc_boot2-p_rewrite.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-rewrite.o: rewrite.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-rewrite.o -MD -MP -MF $(DEPDIR)/unicc_boot2-rewrite.Tpo -c -o unicc_boot2-rewrite.o `test -f 'rewrite.c' || echo '$(srcdir)/'`rewrite.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-rewrite.Tpo $(DEPDIR)/unicc_boot2-rewrite.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rewrite.c' object='unicc_boot2-rewrite.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_rewrite.o `test -f 'p_rewrite.c' || echo '$(srcdir)/'`p_rewrite.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-rewrite.o `test -f 'rewrite.c' || echo '$(srcdir)/'`rewrite.c
 
-unicc_boot2-p_rewrite.obj: p_rewrite.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_rewrite.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-p_rewrite.Tpo -c -o unicc_boot2-p_rewrite.obj `if test -f 'p_rewrite.c'; then $(CYGPATH_W) 'p_rewrite.c'; else $(CYGPATH_W) '$(srcdir)/p_rewrite.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_rewrite.Tpo $(DEPDIR)/unicc_boot2-p_rewrite.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_rewrite.c' object='unicc_boot2-p_rewrite.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-rewrite.obj: rewrite.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-rewrite.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-rewrite.Tpo -c -o unicc_boot2-rewrite.obj `if test -f 'rewrite.c'; then $(CYGPATH_W) 'rewrite.c'; else $(CYGPATH_W) '$(srcdir)/rewrite.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-rewrite.Tpo $(DEPDIR)/unicc_boot2-rewrite.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rewrite.c' object='unicc_boot2-rewrite.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_rewrite.obj `if test -f 'p_rewrite.c'; then $(CYGPATH_W) 'p_rewrite.c'; else $(CYGPATH_W) '$(srcdir)/p_rewrite.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-rewrite.obj `if test -f 'rewrite.c'; then $(CYGPATH_W) 'rewrite.c'; else $(CYGPATH_W) '$(srcdir)/rewrite.c'; fi`
 
-unicc_boot2-p_debug.o: p_debug.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_debug.o -MD -MP -MF $(DEPDIR)/unicc_boot2-p_debug.Tpo -c -o unicc_boot2-p_debug.o `test -f 'p_debug.c' || echo '$(srcdir)/'`p_debug.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_debug.Tpo $(DEPDIR)/unicc_boot2-p_debug.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_debug.c' object='unicc_boot2-p_debug.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-debug.o: debug.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-debug.o -MD -MP -MF $(DEPDIR)/unicc_boot2-debug.Tpo -c -o unicc_boot2-debug.o `test -f 'debug.c' || echo '$(srcdir)/'`debug.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-debug.Tpo $(DEPDIR)/unicc_boot2-debug.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='debug.c' object='unicc_boot2-debug.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_debug.o `test -f 'p_debug.c' || echo '$(srcdir)/'`p_debug.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-debug.o `test -f 'debug.c' || echo '$(srcdir)/'`debug.c
 
-unicc_boot2-p_debug.obj: p_debug.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_debug.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-p_debug.Tpo -c -o unicc_boot2-p_debug.obj `if test -f 'p_debug.c'; then $(CYGPATH_W) 'p_debug.c'; else $(CYGPATH_W) '$(srcdir)/p_debug.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_debug.Tpo $(DEPDIR)/unicc_boot2-p_debug.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_debug.c' object='unicc_boot2-p_debug.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-debug.obj: debug.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-debug.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-debug.Tpo -c -o unicc_boot2-debug.obj `if test -f 'debug.c'; then $(CYGPATH_W) 'debug.c'; else $(CYGPATH_W) '$(srcdir)/debug.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-debug.Tpo $(DEPDIR)/unicc_boot2-debug.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='debug.c' object='unicc_boot2-debug.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_debug.obj `if test -f 'p_debug.c'; then $(CYGPATH_W) 'p_debug.c'; else $(CYGPATH_W) '$(srcdir)/p_debug.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-debug.obj `if test -f 'debug.c'; then $(CYGPATH_W) 'debug.c'; else $(CYGPATH_W) '$(srcdir)/debug.c'; fi`
 
-unicc_boot2-p_keywords.o: p_keywords.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_keywords.o -MD -MP -MF $(DEPDIR)/unicc_boot2-p_keywords.Tpo -c -o unicc_boot2-p_keywords.o `test -f 'p_keywords.c' || echo '$(srcdir)/'`p_keywords.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_keywords.Tpo $(DEPDIR)/unicc_boot2-p_keywords.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_keywords.c' object='unicc_boot2-p_keywords.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-lex.o: lex.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-lex.o -MD -MP -MF $(DEPDIR)/unicc_boot2-lex.Tpo -c -o unicc_boot2-lex.o `test -f 'lex.c' || echo '$(srcdir)/'`lex.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-lex.Tpo $(DEPDIR)/unicc_boot2-lex.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lex.c' object='unicc_boot2-lex.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_keywords.o `test -f 'p_keywords.c' || echo '$(srcdir)/'`p_keywords.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-lex.o `test -f 'lex.c' || echo '$(srcdir)/'`lex.c
 
-unicc_boot2-p_keywords.obj: p_keywords.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_keywords.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-p_keywords.Tpo -c -o unicc_boot2-p_keywords.obj `if test -f 'p_keywords.c'; then $(CYGPATH_W) 'p_keywords.c'; else $(CYGPATH_W) '$(srcdir)/p_keywords.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_keywords.Tpo $(DEPDIR)/unicc_boot2-p_keywords.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_keywords.c' object='unicc_boot2-p_keywords.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-lex.obj: lex.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-lex.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-lex.Tpo -c -o unicc_boot2-lex.obj `if test -f 'lex.c'; then $(CYGPATH_W) 'lex.c'; else $(CYGPATH_W) '$(srcdir)/lex.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-lex.Tpo $(DEPDIR)/unicc_boot2-lex.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lex.c' object='unicc_boot2-lex.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_keywords.obj `if test -f 'p_keywords.c'; then $(CYGPATH_W) 'p_keywords.c'; else $(CYGPATH_W) '$(srcdir)/p_keywords.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-lex.obj `if test -f 'lex.c'; then $(CYGPATH_W) 'lex.c'; else $(CYGPATH_W) '$(srcdir)/lex.c'; fi`
 
-unicc_boot2-p_list.o: p_list.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_list.o -MD -MP -MF $(DEPDIR)/unicc_boot2-p_list.Tpo -c -o unicc_boot2-p_list.o `test -f 'p_list.c' || echo '$(srcdir)/'`p_list.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_list.Tpo $(DEPDIR)/unicc_boot2-p_list.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_list.c' object='unicc_boot2-p_list.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-list.o: list.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-list.o -MD -MP -MF $(DEPDIR)/unicc_boot2-list.Tpo -c -o unicc_boot2-list.o `test -f 'list.c' || echo '$(srcdir)/'`list.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-list.Tpo $(DEPDIR)/unicc_boot2-list.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='list.c' object='unicc_boot2-list.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_list.o `test -f 'p_list.c' || echo '$(srcdir)/'`p_list.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-list.o `test -f 'list.c' || echo '$(srcdir)/'`list.c
 
-unicc_boot2-p_list.obj: p_list.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_list.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-p_list.Tpo -c -o unicc_boot2-p_list.obj `if test -f 'p_list.c'; then $(CYGPATH_W) 'p_list.c'; else $(CYGPATH_W) '$(srcdir)/p_list.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_list.Tpo $(DEPDIR)/unicc_boot2-p_list.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_list.c' object='unicc_boot2-p_list.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-list.obj: list.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-list.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-list.Tpo -c -o unicc_boot2-list.obj `if test -f 'list.c'; then $(CYGPATH_W) 'list.c'; else $(CYGPATH_W) '$(srcdir)/list.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-list.Tpo $(DEPDIR)/unicc_boot2-list.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='list.c' object='unicc_boot2-list.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_list.obj `if test -f 'p_list.c'; then $(CYGPATH_W) 'p_list.c'; else $(CYGPATH_W) '$(srcdir)/p_list.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-list.obj `if test -f 'list.c'; then $(CYGPATH_W) 'list.c'; else $(CYGPATH_W) '$(srcdir)/list.c'; fi`
 
-unicc_boot2-p_build.o: p_build.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_build.o -MD -MP -MF $(DEPDIR)/unicc_boot2-p_build.Tpo -c -o unicc_boot2-p_build.o `test -f 'p_build.c' || echo '$(srcdir)/'`p_build.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_build.Tpo $(DEPDIR)/unicc_boot2-p_build.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_build.c' object='unicc_boot2-p_build.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-build.o: build.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-build.o -MD -MP -MF $(DEPDIR)/unicc_boot2-build.Tpo -c -o unicc_boot2-build.o `test -f 'build.c' || echo '$(srcdir)/'`build.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-build.Tpo $(DEPDIR)/unicc_boot2-build.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='build.c' object='unicc_boot2-build.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_build.o `test -f 'p_build.c' || echo '$(srcdir)/'`p_build.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-build.o `test -f 'build.c' || echo '$(srcdir)/'`build.c
 
-unicc_boot2-p_build.obj: p_build.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_build.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-p_build.Tpo -c -o unicc_boot2-p_build.obj `if test -f 'p_build.c'; then $(CYGPATH_W) 'p_build.c'; else $(CYGPATH_W) '$(srcdir)/p_build.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_build.Tpo $(DEPDIR)/unicc_boot2-p_build.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_build.c' object='unicc_boot2-p_build.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-build.obj: build.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-build.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-build.Tpo -c -o unicc_boot2-build.obj `if test -f 'build.c'; then $(CYGPATH_W) 'build.c'; else $(CYGPATH_W) '$(srcdir)/build.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-build.Tpo $(DEPDIR)/unicc_boot2-build.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='build.c' object='unicc_boot2-build.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_build.obj `if test -f 'p_build.c'; then $(CYGPATH_W) 'p_build.c'; else $(CYGPATH_W) '$(srcdir)/p_build.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-build.obj `if test -f 'build.c'; then $(CYGPATH_W) 'build.c'; else $(CYGPATH_W) '$(srcdir)/build.c'; fi`
 
-unicc_boot2-p_xml.o: p_xml.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_xml.o -MD -MP -MF $(DEPDIR)/unicc_boot2-p_xml.Tpo -c -o unicc_boot2-p_xml.o `test -f 'p_xml.c' || echo '$(srcdir)/'`p_xml.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_xml.Tpo $(DEPDIR)/unicc_boot2-p_xml.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_xml.c' object='unicc_boot2-p_xml.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-buildxml.o: buildxml.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-buildxml.o -MD -MP -MF $(DEPDIR)/unicc_boot2-buildxml.Tpo -c -o unicc_boot2-buildxml.o `test -f 'buildxml.c' || echo '$(srcdir)/'`buildxml.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-buildxml.Tpo $(DEPDIR)/unicc_boot2-buildxml.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='buildxml.c' object='unicc_boot2-buildxml.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_xml.o `test -f 'p_xml.c' || echo '$(srcdir)/'`p_xml.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-buildxml.o `test -f 'buildxml.c' || echo '$(srcdir)/'`buildxml.c
 
-unicc_boot2-p_xml.obj: p_xml.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_xml.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-p_xml.Tpo -c -o unicc_boot2-p_xml.obj `if test -f 'p_xml.c'; then $(CYGPATH_W) 'p_xml.c'; else $(CYGPATH_W) '$(srcdir)/p_xml.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_xml.Tpo $(DEPDIR)/unicc_boot2-p_xml.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_xml.c' object='unicc_boot2-p_xml.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-buildxml.obj: buildxml.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-buildxml.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-buildxml.Tpo -c -o unicc_boot2-buildxml.obj `if test -f 'buildxml.c'; then $(CYGPATH_W) 'buildxml.c'; else $(CYGPATH_W) '$(srcdir)/buildxml.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-buildxml.Tpo $(DEPDIR)/unicc_boot2-buildxml.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='buildxml.c' object='unicc_boot2-buildxml.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_xml.obj `if test -f 'p_xml.c'; then $(CYGPATH_W) 'p_xml.c'; else $(CYGPATH_W) '$(srcdir)/p_xml.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-buildxml.obj `if test -f 'buildxml.c'; then $(CYGPATH_W) 'buildxml.c'; else $(CYGPATH_W) '$(srcdir)/buildxml.c'; fi`
 
-unicc_boot2-p_main.o: p_main.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_main.o -MD -MP -MF $(DEPDIR)/unicc_boot2-p_main.Tpo -c -o unicc_boot2-p_main.o `test -f 'p_main.c' || echo '$(srcdir)/'`p_main.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_main.Tpo $(DEPDIR)/unicc_boot2-p_main.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_main.c' object='unicc_boot2-p_main.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-main.o: main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-main.o -MD -MP -MF $(DEPDIR)/unicc_boot2-main.Tpo -c -o unicc_boot2-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-main.Tpo $(DEPDIR)/unicc_boot2-main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main.c' object='unicc_boot2-main.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_main.o `test -f 'p_main.c' || echo '$(srcdir)/'`p_main.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
 
-unicc_boot2-p_main.obj: p_main.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-p_main.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-p_main.Tpo -c -o unicc_boot2-p_main.obj `if test -f 'p_main.c'; then $(CYGPATH_W) 'p_main.c'; else $(CYGPATH_W) '$(srcdir)/p_main.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-p_main.Tpo $(DEPDIR)/unicc_boot2-p_main.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_main.c' object='unicc_boot2-p_main.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot2-main.obj: main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-main.obj -MD -MP -MF $(DEPDIR)/unicc_boot2-main.Tpo -c -o unicc_boot2-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-main.Tpo $(DEPDIR)/unicc_boot2-main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main.c' object='unicc_boot2-main.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-p_main.obj `if test -f 'p_main.c'; then $(CYGPATH_W) 'p_main.c'; else $(CYGPATH_W) '$(srcdir)/p_main.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
 
 unicc_boot2-xml.o: xml.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-xml.o -MD -MP -MF $(DEPDIR)/unicc_boot2-xml.Tpo -c -o unicc_boot2-xml.o `test -f 'xml.c' || echo '$(srcdir)/'`xml.c
@@ -1144,229 +1134,229 @@ unicc_boot2-xml.obj: xml.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-xml.obj `if test -f 'xml.c'; then $(CYGPATH_W) 'xml.c'; else $(CYGPATH_W) '$(srcdir)/xml.c'; fi`
 
-unicc_boot3-p_parse_boot3.o: p_parse_boot3.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_parse_boot3.o -MD -MP -MF $(DEPDIR)/unicc_boot3-p_parse_boot3.Tpo -c -o unicc_boot3-p_parse_boot3.o `test -f 'p_parse_boot3.c' || echo '$(srcdir)/'`p_parse_boot3.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_parse_boot3.Tpo $(DEPDIR)/unicc_boot3-p_parse_boot3.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_parse_boot3.c' object='unicc_boot3-p_parse_boot3.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-parse_boot3.o: parse_boot3.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-parse_boot3.o -MD -MP -MF $(DEPDIR)/unicc_boot3-parse_boot3.Tpo -c -o unicc_boot3-parse_boot3.o `test -f 'parse_boot3.c' || echo '$(srcdir)/'`parse_boot3.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-parse_boot3.Tpo $(DEPDIR)/unicc_boot3-parse_boot3.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='parse_boot3.c' object='unicc_boot3-parse_boot3.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_parse_boot3.o `test -f 'p_parse_boot3.c' || echo '$(srcdir)/'`p_parse_boot3.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-parse_boot3.o `test -f 'parse_boot3.c' || echo '$(srcdir)/'`parse_boot3.c
 
-unicc_boot3-p_parse_boot3.obj: p_parse_boot3.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_parse_boot3.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-p_parse_boot3.Tpo -c -o unicc_boot3-p_parse_boot3.obj `if test -f 'p_parse_boot3.c'; then $(CYGPATH_W) 'p_parse_boot3.c'; else $(CYGPATH_W) '$(srcdir)/p_parse_boot3.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_parse_boot3.Tpo $(DEPDIR)/unicc_boot3-p_parse_boot3.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_parse_boot3.c' object='unicc_boot3-p_parse_boot3.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-parse_boot3.obj: parse_boot3.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-parse_boot3.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-parse_boot3.Tpo -c -o unicc_boot3-parse_boot3.obj `if test -f 'parse_boot3.c'; then $(CYGPATH_W) 'parse_boot3.c'; else $(CYGPATH_W) '$(srcdir)/parse_boot3.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-parse_boot3.Tpo $(DEPDIR)/unicc_boot3-parse_boot3.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='parse_boot3.c' object='unicc_boot3-parse_boot3.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_parse_boot3.obj `if test -f 'p_parse_boot3.c'; then $(CYGPATH_W) 'p_parse_boot3.c'; else $(CYGPATH_W) '$(srcdir)/p_parse_boot3.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-parse_boot3.obj `if test -f 'parse_boot3.c'; then $(CYGPATH_W) 'parse_boot3.c'; else $(CYGPATH_W) '$(srcdir)/parse_boot3.c'; fi`
 
-unicc_boot3-p_mem.o: p_mem.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_mem.o -MD -MP -MF $(DEPDIR)/unicc_boot3-p_mem.Tpo -c -o unicc_boot3-p_mem.o `test -f 'p_mem.c' || echo '$(srcdir)/'`p_mem.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_mem.Tpo $(DEPDIR)/unicc_boot3-p_mem.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_mem.c' object='unicc_boot3-p_mem.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-mem.o: mem.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-mem.o -MD -MP -MF $(DEPDIR)/unicc_boot3-mem.Tpo -c -o unicc_boot3-mem.o `test -f 'mem.c' || echo '$(srcdir)/'`mem.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-mem.Tpo $(DEPDIR)/unicc_boot3-mem.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mem.c' object='unicc_boot3-mem.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_mem.o `test -f 'p_mem.c' || echo '$(srcdir)/'`p_mem.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-mem.o `test -f 'mem.c' || echo '$(srcdir)/'`mem.c
 
-unicc_boot3-p_mem.obj: p_mem.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_mem.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-p_mem.Tpo -c -o unicc_boot3-p_mem.obj `if test -f 'p_mem.c'; then $(CYGPATH_W) 'p_mem.c'; else $(CYGPATH_W) '$(srcdir)/p_mem.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_mem.Tpo $(DEPDIR)/unicc_boot3-p_mem.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_mem.c' object='unicc_boot3-p_mem.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-mem.obj: mem.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-mem.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-mem.Tpo -c -o unicc_boot3-mem.obj `if test -f 'mem.c'; then $(CYGPATH_W) 'mem.c'; else $(CYGPATH_W) '$(srcdir)/mem.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-mem.Tpo $(DEPDIR)/unicc_boot3-mem.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='mem.c' object='unicc_boot3-mem.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_mem.obj `if test -f 'p_mem.c'; then $(CYGPATH_W) 'p_mem.c'; else $(CYGPATH_W) '$(srcdir)/p_mem.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-mem.obj `if test -f 'mem.c'; then $(CYGPATH_W) 'mem.c'; else $(CYGPATH_W) '$(srcdir)/mem.c'; fi`
 
-unicc_boot3-p_error.o: p_error.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_error.o -MD -MP -MF $(DEPDIR)/unicc_boot3-p_error.Tpo -c -o unicc_boot3-p_error.o `test -f 'p_error.c' || echo '$(srcdir)/'`p_error.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_error.Tpo $(DEPDIR)/unicc_boot3-p_error.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_error.c' object='unicc_boot3-p_error.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-error.o: error.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-error.o -MD -MP -MF $(DEPDIR)/unicc_boot3-error.Tpo -c -o unicc_boot3-error.o `test -f 'error.c' || echo '$(srcdir)/'`error.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-error.Tpo $(DEPDIR)/unicc_boot3-error.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='error.c' object='unicc_boot3-error.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_error.o `test -f 'p_error.c' || echo '$(srcdir)/'`p_error.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-error.o `test -f 'error.c' || echo '$(srcdir)/'`error.c
 
-unicc_boot3-p_error.obj: p_error.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_error.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-p_error.Tpo -c -o unicc_boot3-p_error.obj `if test -f 'p_error.c'; then $(CYGPATH_W) 'p_error.c'; else $(CYGPATH_W) '$(srcdir)/p_error.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_error.Tpo $(DEPDIR)/unicc_boot3-p_error.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_error.c' object='unicc_boot3-p_error.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-error.obj: error.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-error.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-error.Tpo -c -o unicc_boot3-error.obj `if test -f 'error.c'; then $(CYGPATH_W) 'error.c'; else $(CYGPATH_W) '$(srcdir)/error.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-error.Tpo $(DEPDIR)/unicc_boot3-error.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='error.c' object='unicc_boot3-error.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_error.obj `if test -f 'p_error.c'; then $(CYGPATH_W) 'p_error.c'; else $(CYGPATH_W) '$(srcdir)/p_error.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-error.obj `if test -f 'error.c'; then $(CYGPATH_W) 'error.c'; else $(CYGPATH_W) '$(srcdir)/error.c'; fi`
 
-unicc_boot3-p_first.o: p_first.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_first.o -MD -MP -MF $(DEPDIR)/unicc_boot3-p_first.Tpo -c -o unicc_boot3-p_first.o `test -f 'p_first.c' || echo '$(srcdir)/'`p_first.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_first.Tpo $(DEPDIR)/unicc_boot3-p_first.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_first.c' object='unicc_boot3-p_first.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-first.o: first.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-first.o -MD -MP -MF $(DEPDIR)/unicc_boot3-first.Tpo -c -o unicc_boot3-first.o `test -f 'first.c' || echo '$(srcdir)/'`first.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-first.Tpo $(DEPDIR)/unicc_boot3-first.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='first.c' object='unicc_boot3-first.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_first.o `test -f 'p_first.c' || echo '$(srcdir)/'`p_first.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-first.o `test -f 'first.c' || echo '$(srcdir)/'`first.c
 
-unicc_boot3-p_first.obj: p_first.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_first.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-p_first.Tpo -c -o unicc_boot3-p_first.obj `if test -f 'p_first.c'; then $(CYGPATH_W) 'p_first.c'; else $(CYGPATH_W) '$(srcdir)/p_first.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_first.Tpo $(DEPDIR)/unicc_boot3-p_first.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_first.c' object='unicc_boot3-p_first.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-first.obj: first.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-first.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-first.Tpo -c -o unicc_boot3-first.obj `if test -f 'first.c'; then $(CYGPATH_W) 'first.c'; else $(CYGPATH_W) '$(srcdir)/first.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-first.Tpo $(DEPDIR)/unicc_boot3-first.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='first.c' object='unicc_boot3-first.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_first.obj `if test -f 'p_first.c'; then $(CYGPATH_W) 'p_first.c'; else $(CYGPATH_W) '$(srcdir)/p_first.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-first.obj `if test -f 'first.c'; then $(CYGPATH_W) 'first.c'; else $(CYGPATH_W) '$(srcdir)/first.c'; fi`
 
-unicc_boot3-p_lalr_gen.o: p_lalr_gen.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_lalr_gen.o -MD -MP -MF $(DEPDIR)/unicc_boot3-p_lalr_gen.Tpo -c -o unicc_boot3-p_lalr_gen.o `test -f 'p_lalr_gen.c' || echo '$(srcdir)/'`p_lalr_gen.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_lalr_gen.Tpo $(DEPDIR)/unicc_boot3-p_lalr_gen.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_lalr_gen.c' object='unicc_boot3-p_lalr_gen.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-lalr.o: lalr.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-lalr.o -MD -MP -MF $(DEPDIR)/unicc_boot3-lalr.Tpo -c -o unicc_boot3-lalr.o `test -f 'lalr.c' || echo '$(srcdir)/'`lalr.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-lalr.Tpo $(DEPDIR)/unicc_boot3-lalr.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lalr.c' object='unicc_boot3-lalr.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_lalr_gen.o `test -f 'p_lalr_gen.c' || echo '$(srcdir)/'`p_lalr_gen.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-lalr.o `test -f 'lalr.c' || echo '$(srcdir)/'`lalr.c
 
-unicc_boot3-p_lalr_gen.obj: p_lalr_gen.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_lalr_gen.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-p_lalr_gen.Tpo -c -o unicc_boot3-p_lalr_gen.obj `if test -f 'p_lalr_gen.c'; then $(CYGPATH_W) 'p_lalr_gen.c'; else $(CYGPATH_W) '$(srcdir)/p_lalr_gen.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_lalr_gen.Tpo $(DEPDIR)/unicc_boot3-p_lalr_gen.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_lalr_gen.c' object='unicc_boot3-p_lalr_gen.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-lalr.obj: lalr.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-lalr.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-lalr.Tpo -c -o unicc_boot3-lalr.obj `if test -f 'lalr.c'; then $(CYGPATH_W) 'lalr.c'; else $(CYGPATH_W) '$(srcdir)/lalr.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-lalr.Tpo $(DEPDIR)/unicc_boot3-lalr.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lalr.c' object='unicc_boot3-lalr.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_lalr_gen.obj `if test -f 'p_lalr_gen.c'; then $(CYGPATH_W) 'p_lalr_gen.c'; else $(CYGPATH_W) '$(srcdir)/p_lalr_gen.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-lalr.obj `if test -f 'lalr.c'; then $(CYGPATH_W) 'lalr.c'; else $(CYGPATH_W) '$(srcdir)/lalr.c'; fi`
 
-unicc_boot3-p_util.o: p_util.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_util.o -MD -MP -MF $(DEPDIR)/unicc_boot3-p_util.Tpo -c -o unicc_boot3-p_util.o `test -f 'p_util.c' || echo '$(srcdir)/'`p_util.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_util.Tpo $(DEPDIR)/unicc_boot3-p_util.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_util.c' object='unicc_boot3-p_util.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-utils.o: utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-utils.o -MD -MP -MF $(DEPDIR)/unicc_boot3-utils.Tpo -c -o unicc_boot3-utils.o `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-utils.Tpo $(DEPDIR)/unicc_boot3-utils.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils.c' object='unicc_boot3-utils.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_util.o `test -f 'p_util.c' || echo '$(srcdir)/'`p_util.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-utils.o `test -f 'utils.c' || echo '$(srcdir)/'`utils.c
 
-unicc_boot3-p_util.obj: p_util.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_util.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-p_util.Tpo -c -o unicc_boot3-p_util.obj `if test -f 'p_util.c'; then $(CYGPATH_W) 'p_util.c'; else $(CYGPATH_W) '$(srcdir)/p_util.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_util.Tpo $(DEPDIR)/unicc_boot3-p_util.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_util.c' object='unicc_boot3-p_util.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-utils.obj: utils.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-utils.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-utils.Tpo -c -o unicc_boot3-utils.obj `if test -f 'utils.c'; then $(CYGPATH_W) 'utils.c'; else $(CYGPATH_W) '$(srcdir)/utils.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-utils.Tpo $(DEPDIR)/unicc_boot3-utils.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='utils.c' object='unicc_boot3-utils.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_util.obj `if test -f 'p_util.c'; then $(CYGPATH_W) 'p_util.c'; else $(CYGPATH_W) '$(srcdir)/p_util.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-utils.obj `if test -f 'utils.c'; then $(CYGPATH_W) 'utils.c'; else $(CYGPATH_W) '$(srcdir)/utils.c'; fi`
 
-unicc_boot3-p_string.o: p_string.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_string.o -MD -MP -MF $(DEPDIR)/unicc_boot3-p_string.Tpo -c -o unicc_boot3-p_string.o `test -f 'p_string.c' || echo '$(srcdir)/'`p_string.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_string.Tpo $(DEPDIR)/unicc_boot3-p_string.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_string.c' object='unicc_boot3-p_string.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-string.o: string.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-string.o -MD -MP -MF $(DEPDIR)/unicc_boot3-string.Tpo -c -o unicc_boot3-string.o `test -f 'string.c' || echo '$(srcdir)/'`string.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-string.Tpo $(DEPDIR)/unicc_boot3-string.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='string.c' object='unicc_boot3-string.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_string.o `test -f 'p_string.c' || echo '$(srcdir)/'`p_string.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-string.o `test -f 'string.c' || echo '$(srcdir)/'`string.c
 
-unicc_boot3-p_string.obj: p_string.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_string.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-p_string.Tpo -c -o unicc_boot3-p_string.obj `if test -f 'p_string.c'; then $(CYGPATH_W) 'p_string.c'; else $(CYGPATH_W) '$(srcdir)/p_string.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_string.Tpo $(DEPDIR)/unicc_boot3-p_string.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_string.c' object='unicc_boot3-p_string.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-string.obj: string.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-string.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-string.Tpo -c -o unicc_boot3-string.obj `if test -f 'string.c'; then $(CYGPATH_W) 'string.c'; else $(CYGPATH_W) '$(srcdir)/string.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-string.Tpo $(DEPDIR)/unicc_boot3-string.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='string.c' object='unicc_boot3-string.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_string.obj `if test -f 'p_string.c'; then $(CYGPATH_W) 'p_string.c'; else $(CYGPATH_W) '$(srcdir)/p_string.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-string.obj `if test -f 'string.c'; then $(CYGPATH_W) 'string.c'; else $(CYGPATH_W) '$(srcdir)/string.c'; fi`
 
-unicc_boot3-p_integrity.o: p_integrity.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_integrity.o -MD -MP -MF $(DEPDIR)/unicc_boot3-p_integrity.Tpo -c -o unicc_boot3-p_integrity.o `test -f 'p_integrity.c' || echo '$(srcdir)/'`p_integrity.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_integrity.Tpo $(DEPDIR)/unicc_boot3-p_integrity.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_integrity.c' object='unicc_boot3-p_integrity.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-integrity.o: integrity.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-integrity.o -MD -MP -MF $(DEPDIR)/unicc_boot3-integrity.Tpo -c -o unicc_boot3-integrity.o `test -f 'integrity.c' || echo '$(srcdir)/'`integrity.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-integrity.Tpo $(DEPDIR)/unicc_boot3-integrity.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='integrity.c' object='unicc_boot3-integrity.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_integrity.o `test -f 'p_integrity.c' || echo '$(srcdir)/'`p_integrity.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-integrity.o `test -f 'integrity.c' || echo '$(srcdir)/'`integrity.c
 
-unicc_boot3-p_integrity.obj: p_integrity.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_integrity.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-p_integrity.Tpo -c -o unicc_boot3-p_integrity.obj `if test -f 'p_integrity.c'; then $(CYGPATH_W) 'p_integrity.c'; else $(CYGPATH_W) '$(srcdir)/p_integrity.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_integrity.Tpo $(DEPDIR)/unicc_boot3-p_integrity.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_integrity.c' object='unicc_boot3-p_integrity.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-integrity.obj: integrity.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-integrity.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-integrity.Tpo -c -o unicc_boot3-integrity.obj `if test -f 'integrity.c'; then $(CYGPATH_W) 'integrity.c'; else $(CYGPATH_W) '$(srcdir)/integrity.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-integrity.Tpo $(DEPDIR)/unicc_boot3-integrity.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='integrity.c' object='unicc_boot3-integrity.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_integrity.obj `if test -f 'p_integrity.c'; then $(CYGPATH_W) 'p_integrity.c'; else $(CYGPATH_W) '$(srcdir)/p_integrity.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-integrity.obj `if test -f 'integrity.c'; then $(CYGPATH_W) 'integrity.c'; else $(CYGPATH_W) '$(srcdir)/integrity.c'; fi`
 
-unicc_boot3-p_virtual.o: p_virtual.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_virtual.o -MD -MP -MF $(DEPDIR)/unicc_boot3-p_virtual.Tpo -c -o unicc_boot3-p_virtual.o `test -f 'p_virtual.c' || echo '$(srcdir)/'`p_virtual.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_virtual.Tpo $(DEPDIR)/unicc_boot3-p_virtual.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_virtual.c' object='unicc_boot3-p_virtual.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-virtual.o: virtual.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-virtual.o -MD -MP -MF $(DEPDIR)/unicc_boot3-virtual.Tpo -c -o unicc_boot3-virtual.o `test -f 'virtual.c' || echo '$(srcdir)/'`virtual.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-virtual.Tpo $(DEPDIR)/unicc_boot3-virtual.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='virtual.c' object='unicc_boot3-virtual.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_virtual.o `test -f 'p_virtual.c' || echo '$(srcdir)/'`p_virtual.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-virtual.o `test -f 'virtual.c' || echo '$(srcdir)/'`virtual.c
 
-unicc_boot3-p_virtual.obj: p_virtual.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_virtual.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-p_virtual.Tpo -c -o unicc_boot3-p_virtual.obj `if test -f 'p_virtual.c'; then $(CYGPATH_W) 'p_virtual.c'; else $(CYGPATH_W) '$(srcdir)/p_virtual.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_virtual.Tpo $(DEPDIR)/unicc_boot3-p_virtual.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_virtual.c' object='unicc_boot3-p_virtual.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-virtual.obj: virtual.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-virtual.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-virtual.Tpo -c -o unicc_boot3-virtual.obj `if test -f 'virtual.c'; then $(CYGPATH_W) 'virtual.c'; else $(CYGPATH_W) '$(srcdir)/virtual.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-virtual.Tpo $(DEPDIR)/unicc_boot3-virtual.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='virtual.c' object='unicc_boot3-virtual.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_virtual.obj `if test -f 'p_virtual.c'; then $(CYGPATH_W) 'p_virtual.c'; else $(CYGPATH_W) '$(srcdir)/p_virtual.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-virtual.obj `if test -f 'virtual.c'; then $(CYGPATH_W) 'virtual.c'; else $(CYGPATH_W) '$(srcdir)/virtual.c'; fi`
 
-unicc_boot3-p_rewrite.o: p_rewrite.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_rewrite.o -MD -MP -MF $(DEPDIR)/unicc_boot3-p_rewrite.Tpo -c -o unicc_boot3-p_rewrite.o `test -f 'p_rewrite.c' || echo '$(srcdir)/'`p_rewrite.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_rewrite.Tpo $(DEPDIR)/unicc_boot3-p_rewrite.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_rewrite.c' object='unicc_boot3-p_rewrite.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-rewrite.o: rewrite.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-rewrite.o -MD -MP -MF $(DEPDIR)/unicc_boot3-rewrite.Tpo -c -o unicc_boot3-rewrite.o `test -f 'rewrite.c' || echo '$(srcdir)/'`rewrite.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-rewrite.Tpo $(DEPDIR)/unicc_boot3-rewrite.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rewrite.c' object='unicc_boot3-rewrite.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_rewrite.o `test -f 'p_rewrite.c' || echo '$(srcdir)/'`p_rewrite.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-rewrite.o `test -f 'rewrite.c' || echo '$(srcdir)/'`rewrite.c
 
-unicc_boot3-p_rewrite.obj: p_rewrite.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_rewrite.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-p_rewrite.Tpo -c -o unicc_boot3-p_rewrite.obj `if test -f 'p_rewrite.c'; then $(CYGPATH_W) 'p_rewrite.c'; else $(CYGPATH_W) '$(srcdir)/p_rewrite.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_rewrite.Tpo $(DEPDIR)/unicc_boot3-p_rewrite.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_rewrite.c' object='unicc_boot3-p_rewrite.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-rewrite.obj: rewrite.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-rewrite.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-rewrite.Tpo -c -o unicc_boot3-rewrite.obj `if test -f 'rewrite.c'; then $(CYGPATH_W) 'rewrite.c'; else $(CYGPATH_W) '$(srcdir)/rewrite.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-rewrite.Tpo $(DEPDIR)/unicc_boot3-rewrite.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='rewrite.c' object='unicc_boot3-rewrite.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_rewrite.obj `if test -f 'p_rewrite.c'; then $(CYGPATH_W) 'p_rewrite.c'; else $(CYGPATH_W) '$(srcdir)/p_rewrite.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-rewrite.obj `if test -f 'rewrite.c'; then $(CYGPATH_W) 'rewrite.c'; else $(CYGPATH_W) '$(srcdir)/rewrite.c'; fi`
 
-unicc_boot3-p_debug.o: p_debug.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_debug.o -MD -MP -MF $(DEPDIR)/unicc_boot3-p_debug.Tpo -c -o unicc_boot3-p_debug.o `test -f 'p_debug.c' || echo '$(srcdir)/'`p_debug.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_debug.Tpo $(DEPDIR)/unicc_boot3-p_debug.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_debug.c' object='unicc_boot3-p_debug.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-debug.o: debug.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-debug.o -MD -MP -MF $(DEPDIR)/unicc_boot3-debug.Tpo -c -o unicc_boot3-debug.o `test -f 'debug.c' || echo '$(srcdir)/'`debug.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-debug.Tpo $(DEPDIR)/unicc_boot3-debug.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='debug.c' object='unicc_boot3-debug.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_debug.o `test -f 'p_debug.c' || echo '$(srcdir)/'`p_debug.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-debug.o `test -f 'debug.c' || echo '$(srcdir)/'`debug.c
 
-unicc_boot3-p_debug.obj: p_debug.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_debug.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-p_debug.Tpo -c -o unicc_boot3-p_debug.obj `if test -f 'p_debug.c'; then $(CYGPATH_W) 'p_debug.c'; else $(CYGPATH_W) '$(srcdir)/p_debug.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_debug.Tpo $(DEPDIR)/unicc_boot3-p_debug.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_debug.c' object='unicc_boot3-p_debug.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-debug.obj: debug.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-debug.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-debug.Tpo -c -o unicc_boot3-debug.obj `if test -f 'debug.c'; then $(CYGPATH_W) 'debug.c'; else $(CYGPATH_W) '$(srcdir)/debug.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-debug.Tpo $(DEPDIR)/unicc_boot3-debug.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='debug.c' object='unicc_boot3-debug.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_debug.obj `if test -f 'p_debug.c'; then $(CYGPATH_W) 'p_debug.c'; else $(CYGPATH_W) '$(srcdir)/p_debug.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-debug.obj `if test -f 'debug.c'; then $(CYGPATH_W) 'debug.c'; else $(CYGPATH_W) '$(srcdir)/debug.c'; fi`
 
-unicc_boot3-p_keywords.o: p_keywords.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_keywords.o -MD -MP -MF $(DEPDIR)/unicc_boot3-p_keywords.Tpo -c -o unicc_boot3-p_keywords.o `test -f 'p_keywords.c' || echo '$(srcdir)/'`p_keywords.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_keywords.Tpo $(DEPDIR)/unicc_boot3-p_keywords.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_keywords.c' object='unicc_boot3-p_keywords.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-lex.o: lex.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-lex.o -MD -MP -MF $(DEPDIR)/unicc_boot3-lex.Tpo -c -o unicc_boot3-lex.o `test -f 'lex.c' || echo '$(srcdir)/'`lex.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-lex.Tpo $(DEPDIR)/unicc_boot3-lex.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lex.c' object='unicc_boot3-lex.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_keywords.o `test -f 'p_keywords.c' || echo '$(srcdir)/'`p_keywords.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-lex.o `test -f 'lex.c' || echo '$(srcdir)/'`lex.c
 
-unicc_boot3-p_keywords.obj: p_keywords.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_keywords.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-p_keywords.Tpo -c -o unicc_boot3-p_keywords.obj `if test -f 'p_keywords.c'; then $(CYGPATH_W) 'p_keywords.c'; else $(CYGPATH_W) '$(srcdir)/p_keywords.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_keywords.Tpo $(DEPDIR)/unicc_boot3-p_keywords.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_keywords.c' object='unicc_boot3-p_keywords.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-lex.obj: lex.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-lex.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-lex.Tpo -c -o unicc_boot3-lex.obj `if test -f 'lex.c'; then $(CYGPATH_W) 'lex.c'; else $(CYGPATH_W) '$(srcdir)/lex.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-lex.Tpo $(DEPDIR)/unicc_boot3-lex.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lex.c' object='unicc_boot3-lex.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_keywords.obj `if test -f 'p_keywords.c'; then $(CYGPATH_W) 'p_keywords.c'; else $(CYGPATH_W) '$(srcdir)/p_keywords.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-lex.obj `if test -f 'lex.c'; then $(CYGPATH_W) 'lex.c'; else $(CYGPATH_W) '$(srcdir)/lex.c'; fi`
 
-unicc_boot3-p_list.o: p_list.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_list.o -MD -MP -MF $(DEPDIR)/unicc_boot3-p_list.Tpo -c -o unicc_boot3-p_list.o `test -f 'p_list.c' || echo '$(srcdir)/'`p_list.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_list.Tpo $(DEPDIR)/unicc_boot3-p_list.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_list.c' object='unicc_boot3-p_list.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-list.o: list.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-list.o -MD -MP -MF $(DEPDIR)/unicc_boot3-list.Tpo -c -o unicc_boot3-list.o `test -f 'list.c' || echo '$(srcdir)/'`list.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-list.Tpo $(DEPDIR)/unicc_boot3-list.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='list.c' object='unicc_boot3-list.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_list.o `test -f 'p_list.c' || echo '$(srcdir)/'`p_list.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-list.o `test -f 'list.c' || echo '$(srcdir)/'`list.c
 
-unicc_boot3-p_list.obj: p_list.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_list.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-p_list.Tpo -c -o unicc_boot3-p_list.obj `if test -f 'p_list.c'; then $(CYGPATH_W) 'p_list.c'; else $(CYGPATH_W) '$(srcdir)/p_list.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_list.Tpo $(DEPDIR)/unicc_boot3-p_list.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_list.c' object='unicc_boot3-p_list.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-list.obj: list.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-list.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-list.Tpo -c -o unicc_boot3-list.obj `if test -f 'list.c'; then $(CYGPATH_W) 'list.c'; else $(CYGPATH_W) '$(srcdir)/list.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-list.Tpo $(DEPDIR)/unicc_boot3-list.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='list.c' object='unicc_boot3-list.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_list.obj `if test -f 'p_list.c'; then $(CYGPATH_W) 'p_list.c'; else $(CYGPATH_W) '$(srcdir)/p_list.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-list.obj `if test -f 'list.c'; then $(CYGPATH_W) 'list.c'; else $(CYGPATH_W) '$(srcdir)/list.c'; fi`
 
-unicc_boot3-p_build.o: p_build.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_build.o -MD -MP -MF $(DEPDIR)/unicc_boot3-p_build.Tpo -c -o unicc_boot3-p_build.o `test -f 'p_build.c' || echo '$(srcdir)/'`p_build.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_build.Tpo $(DEPDIR)/unicc_boot3-p_build.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_build.c' object='unicc_boot3-p_build.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-build.o: build.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-build.o -MD -MP -MF $(DEPDIR)/unicc_boot3-build.Tpo -c -o unicc_boot3-build.o `test -f 'build.c' || echo '$(srcdir)/'`build.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-build.Tpo $(DEPDIR)/unicc_boot3-build.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='build.c' object='unicc_boot3-build.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_build.o `test -f 'p_build.c' || echo '$(srcdir)/'`p_build.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-build.o `test -f 'build.c' || echo '$(srcdir)/'`build.c
 
-unicc_boot3-p_build.obj: p_build.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_build.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-p_build.Tpo -c -o unicc_boot3-p_build.obj `if test -f 'p_build.c'; then $(CYGPATH_W) 'p_build.c'; else $(CYGPATH_W) '$(srcdir)/p_build.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_build.Tpo $(DEPDIR)/unicc_boot3-p_build.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_build.c' object='unicc_boot3-p_build.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-build.obj: build.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-build.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-build.Tpo -c -o unicc_boot3-build.obj `if test -f 'build.c'; then $(CYGPATH_W) 'build.c'; else $(CYGPATH_W) '$(srcdir)/build.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-build.Tpo $(DEPDIR)/unicc_boot3-build.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='build.c' object='unicc_boot3-build.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_build.obj `if test -f 'p_build.c'; then $(CYGPATH_W) 'p_build.c'; else $(CYGPATH_W) '$(srcdir)/p_build.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-build.obj `if test -f 'build.c'; then $(CYGPATH_W) 'build.c'; else $(CYGPATH_W) '$(srcdir)/build.c'; fi`
 
-unicc_boot3-p_xml.o: p_xml.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_xml.o -MD -MP -MF $(DEPDIR)/unicc_boot3-p_xml.Tpo -c -o unicc_boot3-p_xml.o `test -f 'p_xml.c' || echo '$(srcdir)/'`p_xml.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_xml.Tpo $(DEPDIR)/unicc_boot3-p_xml.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_xml.c' object='unicc_boot3-p_xml.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-buildxml.o: buildxml.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-buildxml.o -MD -MP -MF $(DEPDIR)/unicc_boot3-buildxml.Tpo -c -o unicc_boot3-buildxml.o `test -f 'buildxml.c' || echo '$(srcdir)/'`buildxml.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-buildxml.Tpo $(DEPDIR)/unicc_boot3-buildxml.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='buildxml.c' object='unicc_boot3-buildxml.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_xml.o `test -f 'p_xml.c' || echo '$(srcdir)/'`p_xml.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-buildxml.o `test -f 'buildxml.c' || echo '$(srcdir)/'`buildxml.c
 
-unicc_boot3-p_xml.obj: p_xml.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_xml.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-p_xml.Tpo -c -o unicc_boot3-p_xml.obj `if test -f 'p_xml.c'; then $(CYGPATH_W) 'p_xml.c'; else $(CYGPATH_W) '$(srcdir)/p_xml.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_xml.Tpo $(DEPDIR)/unicc_boot3-p_xml.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_xml.c' object='unicc_boot3-p_xml.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-buildxml.obj: buildxml.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-buildxml.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-buildxml.Tpo -c -o unicc_boot3-buildxml.obj `if test -f 'buildxml.c'; then $(CYGPATH_W) 'buildxml.c'; else $(CYGPATH_W) '$(srcdir)/buildxml.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-buildxml.Tpo $(DEPDIR)/unicc_boot3-buildxml.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='buildxml.c' object='unicc_boot3-buildxml.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_xml.obj `if test -f 'p_xml.c'; then $(CYGPATH_W) 'p_xml.c'; else $(CYGPATH_W) '$(srcdir)/p_xml.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-buildxml.obj `if test -f 'buildxml.c'; then $(CYGPATH_W) 'buildxml.c'; else $(CYGPATH_W) '$(srcdir)/buildxml.c'; fi`
 
-unicc_boot3-p_main.o: p_main.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_main.o -MD -MP -MF $(DEPDIR)/unicc_boot3-p_main.Tpo -c -o unicc_boot3-p_main.o `test -f 'p_main.c' || echo '$(srcdir)/'`p_main.c
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_main.Tpo $(DEPDIR)/unicc_boot3-p_main.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_main.c' object='unicc_boot3-p_main.o' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-main.o: main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-main.o -MD -MP -MF $(DEPDIR)/unicc_boot3-main.Tpo -c -o unicc_boot3-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-main.Tpo $(DEPDIR)/unicc_boot3-main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main.c' object='unicc_boot3-main.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_main.o `test -f 'p_main.c' || echo '$(srcdir)/'`p_main.c
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
 
-unicc_boot3-p_main.obj: p_main.c
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-p_main.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-p_main.Tpo -c -o unicc_boot3-p_main.obj `if test -f 'p_main.c'; then $(CYGPATH_W) 'p_main.c'; else $(CYGPATH_W) '$(srcdir)/p_main.c'; fi`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-p_main.Tpo $(DEPDIR)/unicc_boot3-p_main.Po
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='p_main.c' object='unicc_boot3-p_main.obj' libtool=no @AMDEPBACKSLASH@
+unicc_boot3-main.obj: main.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-main.obj -MD -MP -MF $(DEPDIR)/unicc_boot3-main.Tpo -c -o unicc_boot3-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot3-main.Tpo $(DEPDIR)/unicc_boot3-main.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='main.c' object='unicc_boot3-main.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-p_main.obj `if test -f 'p_main.c'; then $(CYGPATH_W) 'p_main.c'; else $(CYGPATH_W) '$(srcdir)/p_main.c'; fi`
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
 
 unicc_boot3-xml.o: xml.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-xml.o -MD -MP -MF $(DEPDIR)/unicc_boot3-xml.Tpo -c -o unicc_boot3-xml.o `test -f 'xml.c' || echo '$(srcdir)/'`xml.c
@@ -1830,20 +1820,20 @@ uninstall-man: uninstall-man1
 .PRECIOUS: Makefile
 
 
-@WITH_BOOTSTRAP_TRUE@p_parse_boot1.c: p_parse.syn boot_min_lalr1$(EXEEXT)
-@WITH_BOOTSTRAP_TRUE@	./boot_min_lalr1$(EXEEXT) p_parse.syn >$@ 2>/dev/null
+@WITH_BOOTSTRAP_TRUE@parse_boot1.c: parse.min boot_min_lalr1$(EXEEXT)
+@WITH_BOOTSTRAP_TRUE@	./boot_min_lalr1$(EXEEXT) parse.min >$@ 2>/dev/null
 #unicc_boot2_DEPENDENCIES = unicc_boot1$(EXEEXT)
 
-@WITH_BOOTSTRAP_TRUE@p_parse_boot2.c p_parse_boot2.h: p_parse.par unicc_boot1$(EXEEXT)
-@WITH_BOOTSTRAP_TRUE@	./unicc_boot1$(EXEEXT) -svwb p_parse_boot2 p_parse.par
+@WITH_BOOTSTRAP_TRUE@parse_boot2.c parse_boot2.h: parse.par unicc_boot1$(EXEEXT)
+@WITH_BOOTSTRAP_TRUE@	./unicc_boot1$(EXEEXT) -svwb parse_boot2 parse.par
 #unicc_boot3_DEPENDENCIES = unicc_boot2$(EXEEXT)
 
-@WITH_BOOTSTRAP_TRUE@p_parse_boot3.c p_parse_boot3.h: p_parse.par unicc_boot2$(EXEEXT)
-@WITH_BOOTSTRAP_TRUE@	./unicc_boot2$(EXEEXT) -svwb p_parse_boot3 p_parse.par
+@WITH_BOOTSTRAP_TRUE@parse_boot3.c parse_boot3.h: parse.par unicc_boot2$(EXEEXT)
+@WITH_BOOTSTRAP_TRUE@	./unicc_boot2$(EXEEXT) -svwb parse_boot3 parse.par
 #unicc_DEPENDENCIES = unicc_boot3$(EXEEXT)
 
-@WITH_BOOTSTRAP_TRUE@p_parse.c p_parse.h: p_parse.par unicc_boot3$(EXEEXT)
-@WITH_BOOTSTRAP_TRUE@	./unicc_boot3$(EXEEXT) -svwb p_parse p_parse.par
+@WITH_BOOTSTRAP_TRUE@parse.c parse.h: parse.par unicc_boot3$(EXEEXT)
+@WITH_BOOTSTRAP_TRUE@	./unicc_boot3$(EXEEXT) -svwb parse parse.par
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
