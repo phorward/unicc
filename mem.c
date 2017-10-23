@@ -605,7 +605,7 @@ void free_parser( PARSER* parser )
 	for( it = parser->vtypes; it; it = it->next )
 		free_vtype( it->pptr );
 
-	for( it = parser->kw; it; it = it->next )
+	for( it = parser->dfas; it; it = it->next )
 	{
 		dfa = (pregex_dfa*)list_access( it );
 		pregex_dfa_free( dfa );
@@ -615,13 +615,13 @@ void free_parser( PARSER* parser )
 	list_free( parser->productions );
 	list_free( parser->lalr_states );
 	list_free( parser->vtypes );
-	list_free( parser->kw );
+	list_free( parser->dfas );
 
 	pfree( parser->p_name );
 	pfree( parser->p_desc );
 	pfree( parser->p_template );
-	pfree( parser->print_copyright );
-	pfree( parser->print_version );
+	pfree( parser->p_copyright );
+	pfree( parser->p_version );
 	pfree( parser->p_prefix );
 	pfree( parser->p_header );
 	pfree( parser->p_footer );

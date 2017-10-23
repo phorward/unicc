@@ -87,7 +87,7 @@ Usage:	Global declarations, structures and includes
 
 /* UniCC version number */
 #define UNICC_VER_MAJOR			1
-#define UNICC_VER_MINOR			1
+#define UNICC_VER_MINOR			2
 #define UNICC_VER_PATCH			0
 #define UNICC_VER_EXTSTR		""
 
@@ -314,15 +314,15 @@ struct _parser
 	SYMBOL*		end_of_input;	/* End of input symbol */
 	SYMBOL*		error;			/* Error token */
 
-	LIST*		kw;				/* Keyword recognition machines */
+	LIST*		dfas;			/* Lexers */
 	LIST*		vtypes;			/* Value stack types */
 
 	short		p_mode;			/* Parser model */
 	char*		p_name;			/* Parser name */
 	char*		p_desc;			/* Parser description */
 	char*		p_template;		/* Parser target template */
-	char*		print_copyright;	/* Parser copyright notice */
-	char*		print_version;		/* Parser version */
+	char*		p_copyright;	/* Parser copyright notice */
+	char*		p_version;		/* Parser version */
 	char*		p_prefix;		/* Parser symbol prefix */
 	char*		p_basename;		/* Parser file basename */
 	char*		p_def_action;	/* Default reduce action */

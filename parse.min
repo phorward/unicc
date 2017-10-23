@@ -252,11 +252,11 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 																		parser->p_name = pstrdup( strbuf );	}
 				| "description"		string						{	if( !( parser->p_desc ) )
 																		parser->p_desc = pstrdup( strbuf );	}
-				| "copyright"		string						{	if( !( parser->print_copyright ) )
-																		parser->print_copyright = pstrdup( strbuf );
+				| "copyright"		string						{	if( !( parser->p_copyright ) )
+																		parser->p_copyright = pstrdup( strbuf );
 																}
-				| "version"			string						{	if( !( parser->print_version ) )
-																		parser->print_version= pstrdup( strbuf );	}
+				| "version"			string						{	if( !( parser->p_version ) )
+																		parser->p_version= pstrdup( strbuf );	}
 				| "prefix"			string						{	if( !( parser->p_prefix ) )
 																		parser->p_prefix = pstrdup( strbuf );	}
 				| "default action"	code						{	if( !( parser->p_def_action ) )

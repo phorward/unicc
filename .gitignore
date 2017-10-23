@@ -9,11 +9,12 @@ unicc
 old
 test
 bak
-p_parse_boot1.c
-p_parse_boot2.c
-p_parse_boot2.h
-p_parse_boot3.c
-p_parse_boot3.h
+parse_boot1.c
+parse_boot2.c
+parse_boot2.h
+parse_boot3.c
+parse_boot3.h
+boot_min_lalr1
 unicc_boot1
 unicc_boot2
 unicc_boot3

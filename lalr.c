@@ -232,7 +232,7 @@ closure.
 
 //parser// is the pointer to the parser information structure.
 //st// is the state to be closed. */
-static void p_lalr1_closure( PARSER* parser, STATE* st )
+static void lalr1_closure( PARSER* parser, STATE* st )
 {
 	LIST*		closure_start		= st->kernel;
 	LIST*		closure_set			= (LIST*)NULL;
@@ -745,7 +745,6 @@ static void perform_reductions( PARSER* parser, STATE* st )
 		reduce_item( parser, st, i->pptr );
 }
 
-
 /** This is the entry function for generating the LALR(1) parse tables for a
 parsed grammar definition.
 
@@ -774,11 +773,14 @@ void generate_tables( PARSER* parser )
 	while( ( st = get_undone_state( parser->lalr_states ) ) != (STATE*)NULL )
 	{
 		st->done = 1;
-		p_lalr1_closure( parser, st );
+		lalr1_closure( parser, st );
 	}
 
 	for( i = parser->lalr_states; i; i = i->next )
-		perform_reductions( parser, i->pptr );
+	{
+		st = (STATE*)list_access( i );
+		perform_reductions( parser, st );
+	}
 }
 
 /** Performs a default production detection. This must be done immediatelly

@@ -886,7 +886,7 @@ static void print_xml_states( PARSER* parser, XML_T par )
 				st->def_prod->id );
 
 		/* Matching Lexer */
-		if( ( st_lex = list_find( parser->kw, st->dfa ) ) >= 0 )
+		if( ( st_lex = list_find( parser->dfas, st->dfa ) ) >= 0 )
 			xml_set_int_attr( state, "lexer", st_lex );
 
 		/* Derived from state CHECK! */
@@ -998,14 +998,14 @@ static void print_xml_lexers( PARSER* parser, XML_T par )
 	if( !( lex_tab = xml_add_child( par, "lexers", 0 ) ) )
 		OUTOFMEM;
 
-	for( l = parser->kw, i = 0; l; l = list_next( l ), i++ )
+	for( l = parser->dfas, i = 0; l; l = list_next( l ), i++ )
 	{
 		dfa = (pregex_dfa*)list_access( l );
 
 		if( !( lex = xml_add_child( lex_tab, "lexer", 0 ) ) )
 			OUTOFMEM;
 
-		if( list_count( parser->kw ) > 1 &&
+		if( list_count( parser->dfas ) > 1 &&
 			!( xml_set_int_attr( lex, "id", i ) ) )
 				OUTOFMEM;
 
@@ -1098,21 +1098,21 @@ void build_xml( PARSER* parser, BOOLEAN finished )
 		OUTOFMEM;
 
 	/* Set additional parser attributes */
-	if( parser->print_version )
+	if( parser->p_version )
 	{
 		if( !( attrib = xml_add_child( par, "version", 0 ) ) )
 			OUTOFMEM;
 
-		if( !( xml_set_txt( attrib, parser->print_version ) ) )
+		if( !( xml_set_txt( attrib, parser->p_version ) ) )
 			OUTOFMEM;
 	}
 
-	if( parser->print_copyright )
+	if( parser->p_copyright )
 	{
 		if( !( attrib = xml_add_child( par, "copyright", 0 ) ) )
 			OUTOFMEM;
 
-		if( !( xml_set_txt( attrib, parser->print_copyright ) ) )
+		if( !( xml_set_txt( attrib, parser->p_copyright ) ) )
 			OUTOFMEM;
 	}
 

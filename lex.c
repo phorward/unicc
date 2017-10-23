@@ -35,7 +35,6 @@ void merge_symbols_to_dfa( PARSER* parser )
 
 		VARS( "s->state_id", "%d", s->state_id );
 		nfa = pregex_nfa_create();
-		dfa = pregex_dfa_create();
 
 		/* Construct NFAs from symbols */
 		LISTFOR( s->actions, m )
@@ -48,6 +47,8 @@ void merge_symbols_to_dfa( PARSER* parser )
 		VARS( "plist_count( nfa->states )", "%d", plist_count( nfa->states ) );
 		if( plist_count( nfa->states ) )
 		{
+			dfa = pregex_dfa_create();
+
 			MSG( "Constructing DFA from NFA" );
 			if( !pregex_dfa_from_nfa( dfa, nfa ) )
 				OUTOFMEM;
@@ -75,13 +76,16 @@ void merge_symbols_to_dfa( PARSER* parser )
 				MSG( "This DFA does not exist in pool yet - integrating!" );
 				ex_dfa = dfa;
 
-				if( !( parser->kw = list_push( parser->kw, (void*)ex_dfa ) ) )
+				if( !( parser->dfas = list_push(
+						parser->dfas, (void*)ex_dfa ) ) )
 					OUTOFMEM;
 			}
 
 			VARS( "ex_dfa", "%p", ex_dfa );
 			s->dfa = ex_dfa;
 		}
+		else
+			pregex_nfa_free( nfa );
 	}
 
 	VOIDRET;
@@ -133,7 +137,7 @@ void construct_single_lexer( PARSER* parser )
 		VARS( "plist_count( dfa->states )", "%d",
 				plist_count( dfa->states ) );
 
-		if( !( parser->kw = list_push( parser->kw, (void*)dfa ) ) )
+		if( !( parser->dfas = list_push( parser->dfas, (void*)dfa ) ) )
 			OUTOFMEM;
 	}
 
@@ -176,7 +180,7 @@ pregex_dfa* find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
 	PARMS( "parser", "%p", parser );
 	PARMS( "ndfa", "%p", ndfa );
 
-	LISTFOR( parser->kw, l )
+	LISTFOR( parser->dfas, l )
 	{
 		tdfa = (pregex_dfa*)list_access( l );
 
@@ -192,9 +196,11 @@ pregex_dfa* find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
 		}
 
 		for( e = plist_first( tdfa->states ),
-				f = plist_first( ndfa->states ), match = TRUE;
-					e && f && match; e = plist_next( e ), f = plist_next( f ) )
+				f = plist_first( ndfa->states );
+					e && f; e = plist_next( e ), f = plist_next( f ) )
 		{
+			match = TRUE;
+
 			dfa_st[0] = (pregex_dfa_st*)plist_access( e );
 			dfa_st[1] = (pregex_dfa_st*)plist_access( f );
 

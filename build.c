@@ -994,7 +994,7 @@ void build_code( PARSER* parser )
 			dfa_select = pstrcatstr( dfa_select,
 				pstrrender( gen->dfa_select.col,
 					GEN_WILD_PREFIX "machine",
-						int_to_str( list_find( parser->kw, st->dfa ) ), TRUE,
+						int_to_str( list_find( parser->dfas, st->dfa ) ), TRUE,
 							(char*)NULL ), TRUE );
 
 			if( l->next )
@@ -1018,7 +1018,7 @@ void build_code( PARSER* parser )
 
 	/* Lexical recognition machine table composition */
 	MSG( "Lexical recognition machine" );
-	for( l = parser->kw, row = 0, column = 0; l; l = list_next( l ), row++ )
+	for( l = parser->dfas, row = 0, column = 0; l; l = list_next( l ), row++ )
 	{
 		dfa = (pregex_dfa*)list_access( l );
 
@@ -1379,9 +1379,9 @@ void build_code( PARSER* parser )
 			GEN_WILD_PREFIX "name" LEN_EXT,
 				long_to_str( (long)pstrlen( parser->p_name ) ), TRUE,
 			GEN_WILD_PREFIX "copyright" LEN_EXT,
-				long_to_str( (long)pstrlen( parser->print_copyright ) ), TRUE,
+				long_to_str( (long)pstrlen( parser->p_copyright ) ), TRUE,
 			GEN_WILD_PREFIX "version" LEN_EXT,
-				long_to_str( (long)pstrlen( parser->print_version ) ), TRUE,
+				long_to_str( (long)pstrlen( parser->p_version ) ), TRUE,
 			GEN_WILD_PREFIX "description" LEN_EXT,
 				long_to_str( (long)pstrlen( parser->p_desc ) ), TRUE,
 			GEN_WILD_PREFIX "prologue" LEN_EXT,
@@ -1393,8 +1393,8 @@ void build_code( PARSER* parser )
 
 			/* Names and Prologue/Epilogue codes */
 			GEN_WILD_PREFIX "name", parser->p_name, FALSE,
-			GEN_WILD_PREFIX "copyright", parser->print_copyright, FALSE,
-			GEN_WILD_PREFIX "version", parser->print_version, FALSE,
+			GEN_WILD_PREFIX "copyright", parser->p_copyright, FALSE,
+			GEN_WILD_PREFIX "version", parser->p_version, FALSE,
 			GEN_WILD_PREFIX "description", parser->p_desc, FALSE,
 			GEN_WILD_PREFIX "prologue", parser->p_header, FALSE,
 			GEN_WILD_PREFIX "epilogue", parser->p_footer, FALSE,
@@ -1408,7 +1408,7 @@ void build_code( PARSER* parser )
 			GEN_WILD_PREFIX "number-of-productions",
 				int_to_str( list_count( parser->productions ) ), TRUE,
 			GEN_WILD_PREFIX "number-of-dfa-machines",
-				int_to_str( list_count( parser->kw ) ), TRUE,
+				int_to_str( list_count( parser->dfas ) ), TRUE,
 			GEN_WILD_PREFIX "deepest-action-row",
 				int_to_str( max_action ), TRUE,
 			GEN_WILD_PREFIX "deepest-goto-row",

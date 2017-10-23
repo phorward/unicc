@@ -4,7 +4,7 @@ Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
-File:	p_proto.h (created on 30.01.2007)
+File:	proto.h (created on 30.01.2007)
 Author:	Jan Max Meyer
 Usage:	Prototype declarations
 ----------------------------------------------------------------------------- */
@@ -12,18 +12,18 @@ Usage:	Prototype declarations
 #ifndef P_PROTO_H
 #define P_PROTO_H
 
-/* compute_first.c */
+/* first.c */
 void compute_first( LIST* symbols );
 int seek_rhs_first( LIST** first, LIST* rhs );
 
-/* p_lalr_gen.c */
+/* lalr.c */
 void generate_tables( PARSER* parser );
 void detect_default_productions( PARSER* parser );
 
-/* print_error.c */
+/* error.c */
 void print_error( PARSER* parser, ERRORCODE err_id, int err_style, ... );
 
-/* p_mem.c */
+/* mem.c */
 SYMBOL* get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create );
 void free_symbol( SYMBOL* sym );
 PROD* create_production( PARSER* p, SYMBOL* lhs );
@@ -44,23 +44,23 @@ VTYPE* find_vtype( PARSER* p, char* name );
 VTYPE* create_vtype( PARSER* p, char* name );
 void free_vtype( VTYPE* vt );
 
-/* p_integrity.c */
+/* integrity.c */
 BOOLEAN find_undef_or_unused( PARSER* parser );
 BOOLEAN check_regex_anomalies( PARSER* parser );
 BOOLEAN check_stupid_productions( PARSER* parser );
 
-/* p_string.c */
+/* string.c */
 char* int_to_str( int val );
 char* long_to_str( long val );
 char* str_no_whitespace( char* str );
 
-/* p_util.c */
+/* utils.c */
 char* derive_name( char* name, char append_char );
 int unescape_char( char* str, char** strfix );
 SYMBOL* find_base_symbol( SYMBOL* sym );
 char* c_identifier( char* str, BOOLEAN to_upper );
 
-/* p_rewrite.c */
+/* rewrite.c */
 void rewrite_grammar( PARSER* parser );
 void unique_charsets( PARSER* parser );
 void fix_precedences( PARSER* parser );
@@ -70,15 +70,15 @@ void setup_single_goal( PARSER* parser );
 void sort_symbols( PARSER* parser );
 void charsets_to_ptn( PARSER* parser );
 
-/* p_virtual.c */
+/* virtual.c */
 SYMBOL* positive_closure( PARSER* parser, SYMBOL* base );
 SYMBOL* kleene_closure( PARSER* parser, SYMBOL* base );
 SYMBOL* optional_closure( PARSER* parser, SYMBOL* base );
 
-/* p_main.c */
+/* main.c */
 char* print_version( BOOLEAN long_version );
 
-/* p_debug.c */
+/* debug.c */
 void print_symbol( FILE* stream, SYMBOL* sym );
 void dump_grammar( FILE* stream, PARSER* parser );
 void dump_symbols( FILE* stream, PARSER* parser );
@@ -88,16 +88,16 @@ void dump_productions( FILE* stream, PARSER* parser );
 void dump_production( FILE* stream, PROD* prod,
 		BOOLEAN with_lhs, BOOLEAN semantics );
 
-/* parse_grammar.c / parse_grammar.syn */
+/* parse.c / parse.par / parse.syn */
 int parse_grammar( PARSER* p, char* src );
 
-/* p_keywords.c */
+/* lex.c */
 void merge_symbols_to_dfa( PARSER* parser );
 void construct_single_lexer( PARSER* parser );
 pregex_dfa* find_equal_dfa( PARSER* parser, pregex_dfa* ndfa );
 void nfa_from_symbol( PARSER* parser, pregex_nfa* nfa, SYMBOL* sym );
 
-/* p_list.c */
+/* list.c */
 LIST* list_push( LIST* list, void* ptr );
 LIST* list_pop( LIST* list, void** ptr );
 LIST* list_remove( LIST* list, void* ptr );
@@ -108,7 +108,7 @@ void* list_getptr( LIST* list, int cnt );
 LIST* list_union( LIST* first, LIST* second );
 int list_count( LIST* list );
 
-/* p_build.c */
+/* build.c */
 void build_code( PARSER* parser );
 char* build_action( PARSER* parser, GENERATOR* g,
 			PROD* p, char* base, BOOLEAN def_code );
@@ -118,7 +118,7 @@ char* escape_for_target( GENERATOR* g, char* str, BOOLEAN clear );
 char* mkproduction_str( PROD* p );
 BOOLEAN load_generator( PARSER* parser, GENERATOR* g, char* genfile );
 
-/* p_xml.c */
+/* buildxml.c */
 void build_xml( PARSER* parser, BOOLEAN finished );
 
 /* xml.c */

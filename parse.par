@@ -407,12 +407,12 @@ directive_parms		-> "whitespaces" 	symbol_list
 								parser->p_desc, strbuf, FALSE );	*]
 
 					| "copyright"		string
-						[*	parser->print_copyright = pstrcatstr(
-								parser->print_copyright, strbuf, FALSE );	*]
+						[*	parser->p_copyright = pstrcatstr(
+								parser->p_copyright, strbuf, FALSE );	*]
 
 					| "version"			string
-						[*	parser->print_version = pstrcatstr(
-								parser->print_version, strbuf, FALSE );	*]
+						[*	parser->p_version = pstrcatstr(
+								parser->p_version, strbuf, FALSE );	*]
 
 					| "prefix"			string
 						[*	parser->p_prefix = pstrcatstr(
