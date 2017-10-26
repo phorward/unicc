@@ -1,0 +1,106 @@
+/*
+	This is an example of a UniCC4C Abstract Syntax Tree 
+	and UniCC parser definition in one file.
+*/
+
+#!language 				"C";
+
+#nonassoc				'=' ;
+#left					'+' '-' ;
+#left					'*' '/' ;
+#right					'!' ;
+#right					'^' ;
+
+#unicc4c:ast			on;
+#unicc4c:ast-prefix		"ast";
+#unicc4c:ast-execmode	"top-down";
+
+#ast:expression ;
+#ast:expression>binary
+[*
+	ast:%abstract;
+	ast:expression	expr1;
+	ast:expression	expr2;
+*];
+
+#ast:expression>unary
+[* 
+	ast:%abstract;
+	ast:expression	expr;
+*];
+
+#ast:expression>int
+[*
+	int				value;
+*];
+
+#ast:binary>assign ;
+#ast:binary>plus ;
+#ast:binary>minus ;
+#ast:binary>multiply ;
+#ast:binary>divide ;
+#ast:binary>times ;
+#ast:unary>negative ;
+
+@string<uchar>	'"' .* '"' ;
+				[*
+					@@ = pasprintf( "%.*s", @< - @> - 2, @> );
+				*]
+
+@integer<int>	'0-9'+ 
+				[*
+					@@ = atoi( @> );
+				*];
+
+test$			-> expr ';'
+				;
+
+expr<ast>		-> expr:expr1 '=' expr:expr2
+					#ast:assign
+					/*
+						Node member assignment is done via 
+						right-hand side identifiers...
+					*/
+
+				|  expr:expr1 '+' expr:expr2
+					#ast:plus
+
+				|  expr:expr1 '-' expr:expr2
+					#ast:minus
+
+				|  expr:expr1 '*' expr:expr2
+					#ast:multiply
+
+				|  expr:expr1 '/' expr:expr2
+					#ast:divide
+
+				|  expr:expr1 '^' expr:expr2
+					#ast:times
+
+				|  '!' expr
+					#ast:negative	
+					[* return !value; *]
+
+				|  '(' expr ')'
+					[* @@ = @2; *]
+
+				|  @integer:value
+
+					#ast:int
+
+				|	@string
+
+					/*
+						Conversion is done this way (example...)
+					*/
+					[* 	int ast_value;
+						ast_value = atoi( @string );
+					*]
+
+					#ast:int
+					[*
+						printf( "In my past, I was a string..." );
+					*]
+
+				;
+

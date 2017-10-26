@@ -815,7 +815,7 @@ void build_code( PARSER* parser )
 	sprintf( tlt_file, "%s%s", parser->p_template, UNICC_TLT_EXTENSION );
 	VARS( "tlt_file", "%s", tlt_file );
 
-	if( !( tlt_path = pwhich( tlt_file, "tlt" ) )
+	if( !( tlt_path = pwhich( tlt_file, "templates" ) )
 		&& !( tlt_path = pwhich( tlt_file, getenv( "UNICC_TPLDIR" ) ) )
 #ifndef _WIN32
 			&& !( tlt_path = pwhich( tlt_file,
@@ -859,7 +859,7 @@ void build_code( PARSER* parser )
 
 	/* Create piece of code for the value at the top of the value stack
 		(e.g. used to store the next terminal character onto the value stack) */
-	if( list_count( parser->vtypes ) == 1 )
+	if( list_count( parser->vtypes ) <= 1 )
 		top_value = pstrrender( gen->action_single,
 			GEN_WILD_PREFIX "offset", int_to_str( 0 ), TRUE,
 				(char*)NULL );
@@ -878,7 +878,7 @@ void build_code( PARSER* parser )
 
 	/* Create piece of code for the value that is associated with the
 	 * 	goal symbol, to e.g. return it from the parser function */
-	if( list_count( parser->vtypes ) == 1 )
+	if( list_count( parser->vtypes ) <= 1 )
 		goal_value = pstrrender( gen->action_single,
 			GEN_WILD_PREFIX "offset", int_to_str( 0 ), TRUE,
 				(char*)NULL );
@@ -1170,7 +1170,7 @@ void build_code( PARSER* parser )
 				GEN_WILD_PREFIX "type",
 					int_to_str( sym->type ), TRUE,
 				GEN_WILD_PREFIX "datatype",
-					int_to_str( sym->vtype->id ), TRUE,
+					int_to_str( sym->vtype ? sym->vtype->id : 0 ), TRUE,
 				GEN_WILD_PREFIX "lexem",
 					int_to_str( sym->lexem ), TRUE,
 				GEN_WILD_PREFIX "whitespace",
@@ -1442,7 +1442,9 @@ void build_code( PARSER* parser )
 			GEN_WILD_PREFIX "scan_actions", scan_actions, FALSE,
 			GEN_WILD_PREFIX "top-value", top_value, FALSE,
 			GEN_WILD_PREFIX "goal-value", goal_value, FALSE,
-			GEN_WILD_PREFIX "goal-type", parser->goal->vtype->real_def, FALSE,
+			GEN_WILD_PREFIX "goal-type", parser->goal->vtype ?
+											parser->goal->vtype->real_def : "",
+												FALSE,
 			GEN_WILD_PREFIX "model", int_to_str( parser->p_mode ), TRUE,
 			GEN_WILD_PREFIX "mode", int_to_str( parser->p_mode ), TRUE,
 			GEN_WILD_PREFIX "error",

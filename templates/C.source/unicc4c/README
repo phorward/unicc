@@ -1,0 +1,10 @@
+UniCC4C was the idea of providing an extended tool-chain for UniCC targetting the C programming language, and working on the XML-based UniCC parser description files. It contains stubs for generators that are able to generate more performant parts of the parser than the table-driven one provided by Cparser.
+
+The project has been under development in and until 2010 but was not continued or finished. So this directory contains some pieces of code that represent a vision or maybe some stub of code that never reached any goal.
+
+The code is now put into the Cparser repository (many parts of UniCC4C based on parts of the Cparser) and therefore released under the 3-clause BSD license, same as Cparser. This directory is not working and the Makefile should be revised. Its only the code that may be interesting (or not!).
+
+Have fun!
+
+Jan Max Meyer
+Dortmund on February 28, 2017
