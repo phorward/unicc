@@ -6,6 +6,10 @@ This file is used to document any relevant changes done to UniCC.
 
 Released on: Outstanding
 
+- Started an (yet incomplete) new standard template to provide parser generation
+  support for the Python programming language.
+- Imported the sourcecode of the C standard template into the UniCC repository
+  for further developments, the previous repository gets closed.
 - Fixed bug in the lexical analyzer generation by linking against
   libphorward 0.20 that caused a massive overhead of deterministic finite
   automation states in context-sensitive mode due an arbitrary character
