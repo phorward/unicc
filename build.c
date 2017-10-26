@@ -822,7 +822,7 @@ void build_code( PARSER* parser )
 #ifdef TLTDIR
 			TLTDIR
 #else
-			"/usr/share/unicc/tlt"
+			"/usr/share/unicc/templates"
 #endif
 			) )
 #endif
