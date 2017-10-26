@@ -1600,13 +1600,13 @@ UNICC_STATIC int _get_act( _pcb* pcb )
 	return 0;
 }
 
-UNICC_STATIC int _get_go( _pcb* pcb, int sym )
+UNICC_STATIC int _get_go( _pcb* pcb )
 {
 	int i;
 
 	for( i = 1; i < _go[ pcb->tos->state ][0] * 3; i += 3 )
 	{
-		if( _go[ pcb->tos->state ][i] == sym )
+		if( _go[ pcb->tos->state ][i] == pcb->lhs )
 		{
 			pcb->act = _go[ pcb->tos->state ][ i + 1 ];
 			pcb->idx = _go[ pcb->tos->state ][ i + 2 ];
@@ -2192,11 +2192,11 @@ UNICC_STATIC int _handle_error( _pcb* pcb, FILE* _dbg )
 #endif /* -1 >= 0 */
 }
 
-UNICC_STATIC int _parse( _pcb* pcb )
+int _parse( _pcb* pcb )
 {
 	int			ret;
 	_pcb*		pcb_org		= pcb;
-	
+
 #if UNICC_SYNTAXTREE
 	_syntree*	child;
 	_syntree*	last		= (_syntree*)NULL;
@@ -2205,7 +2205,7 @@ UNICC_STATIC int _parse( _pcb* pcb )
 	int					i;
 	_vtype*		vptr;
 	FILE* 				_dbg;
-	
+
 	_dbg = stderr;
 #endif
 
@@ -2218,7 +2218,7 @@ UNICC_STATIC int _parse( _pcb* pcb )
 			UNICC_OUTOFMEM;
 			return (int)0;
 		}
-		
+
 		memset( pcb, 0, sizeof( _pcb ) );
 	}
 
@@ -2232,18 +2232,18 @@ UNICC_STATIC int _parse( _pcb* pcb )
 	pcb->old_sym = -1;
 	pcb->line = 1;
 	pcb->column = 1;
-	
+
 #if UNICC_SYNTAXTREE
 	_syntree_append( pcb, (char*)NULL );
 #endif
 
 	memset( &pcb->test, 0, sizeof( _vtype ) );
-	
+
 	/* Begin of main parser loop */
 	while( 1 )
 	{
 		/* If in error recovery, replace old-symbol */
-		if( pcb->error_delay == UNICC_ERROR_DELAY 
+		if( pcb->error_delay == UNICC_ERROR_DELAY
 				&& ( pcb->sym = pcb->old_sym ) < 0 )
 		{
 			/* If symbol is invalid, try to find new token */
@@ -2252,7 +2252,7 @@ UNICC_STATIC int _parse( _pcb* pcb )
 				"old token invalid, requesting new token\n",
 						UNICC_PARSER );
 			#endif
-			
+
 			while( !_get_sym( pcb ) )
 			{
 				/* Skip one character */
@@ -2263,7 +2263,7 @@ UNICC_STATIC int _parse( _pcb* pcb )
 
 			#if UNICC_DEBUG
 			fprintf( _dbg, "%s: error recovery: "
-				"new token %d (%s)\n", UNICC_PARSER, pcb->sym, 
+				"new token %d (%s)\n", UNICC_PARSER, pcb->sym,
 					_symbols[ pcb->sym ].name );
 			#endif
 		}
@@ -2271,7 +2271,7 @@ UNICC_STATIC int _parse( _pcb* pcb )
 		{
 			_get_sym( pcb );
 		}
-		
+
 #if UNICC_DEBUG
 		fprintf( _dbg, "%s: current token %d (%s)\n",
 					UNICC_PARSER, pcb->sym,
@@ -2297,7 +2297,7 @@ UNICC_STATIC int _parse( _pcb* pcb )
 		fprintf( _dbg,
 			"%s: sym = %d (%s) [len = %d] tos->state = %d act = %s idx = %d\n",
 				UNICC_PARSER, pcb->sym,
-					( ( pcb->sym >= 0 ) ? 
+					( ( pcb->sym >= 0 ) ?
 						_symbols[ pcb->sym ].name :
 							"(invalid symbol id)" ),
 					pcb->len, pcb->tos->state,
@@ -2316,7 +2316,7 @@ UNICC_STATIC int _parse( _pcb* pcb )
 		{
 			pcb->next = pcb->buf[ pcb->len ];
 			pcb->buf[ pcb->len ] = '\0';
-			
+
 #if UNICC_DEBUG
 			fprintf( _dbg, "%s: >> shifting terminal %d (%s)\n",
 			UNICC_PARSER, pcb->sym, _symbols[ pcb->sym ].name );
@@ -2325,7 +2325,7 @@ UNICC_STATIC int _parse( _pcb* pcb )
 			_alloc_stack( pcb );
 			pcb->tos++;
 
-			/* 
+			/*
 				Execute scanner actions, if existing.
 				Here, UNICC_ON_SHIFT is set to 1, so that shifting-
 				related operations will be performed.
@@ -2352,20 +2352,20 @@ UNICC_STATIC int _parse( _pcb* pcb )
 			pcb->tos->symbol = &( _symbols[ pcb->sym ] );
 			pcb->tos->line = pcb->line;
 			pcb->tos->column = pcb->column;
-			
+
 #if UNICC_SYNTAXTREE
 			last = _syntree_append( pcb, _lexem( pcb ) );
 #endif
 
 			pcb->buf[ pcb->len ] = pcb->next;
-			
+
 			/* Perform the shift on input */
 			if( pcb->sym != 69 && pcb->sym != -1 )
 			{
 				UNICC_CLEARIN( pcb );
 				pcb->old_sym = -1;
 			}
-			
+
 			if( pcb->error_delay )
 				pcb->error_delay--;
 		}
@@ -2373,7 +2373,7 @@ UNICC_STATIC int _parse( _pcb* pcb )
 		/* Reduce */
 		while( pcb->act & UNICC_REDUCE )
 		{
-#if UNICC_DEBUG			
+#if UNICC_DEBUG
 			fprintf( _dbg, "%s: << "
 					"reducing by production %d (%s)\n",
 						UNICC_PARSER, pcb->idx,
@@ -4719,7 +4719,7 @@ UNICC_STATIC int _parse( _pcb* pcb )
 						cnt < _productions[ pcb->idx ].length;
 							cnt++ )
 					child = child->prev;
-						
+
 				child->prev->next = (_syntree*)NULL;
 				child->prev = (_syntree*)NULL;
 			}
@@ -4740,7 +4740,7 @@ UNICC_STATIC int _parse( _pcb* pcb )
 				{
 					pcb->syntax_tree->child = child;
 					child->parent = pcb->syntax_tree;
-					pcb->syntax_tree->symbol.symbol = 
+					pcb->syntax_tree->symbol.symbol =
 						&( _symbols[ pcb->lhs ] );
 				}
 #endif
@@ -4760,8 +4760,8 @@ UNICC_STATIC int _parse( _pcb* pcb )
 								_symbols[ pcb->lhs ].name );
 			#endif
 
-			_get_go( pcb, pcb->lhs );
-			
+			_get_go( pcb );
+
 			pcb->tos++;
 
 			memcpy( &( pcb->tos->value ), &( pcb->ret ),
@@ -4770,7 +4770,7 @@ UNICC_STATIC int _parse( _pcb* pcb )
 			pcb->tos->state = ( pcb->act & UNICC_REDUCE ) ? -1 : pcb->idx;
 			pcb->tos->line = pcb->line;
 			pcb->tos->column = pcb->column;
-			
+
 #if UNICC_SYNTAXTREE
 			last = _syntree_append( pcb, (char*)NULL );
 
@@ -4781,7 +4781,7 @@ UNICC_STATIC int _parse( _pcb* pcb )
 			}
 #endif
 		}
-		
+
 		if( pcb->act & UNICC_REDUCE && pcb->idx == 232 )
 			break;
 	}
@@ -4790,7 +4790,7 @@ UNICC_STATIC int _parse( _pcb* pcb )
 	fprintf( _dbg, "%s: parse completed with %d errors\n",
 		UNICC_PARSER, pcb->error_count );
 	#endif
-	
+
 	/* Save return value */
 	ret = ( ( pcb->tos - 0 )->value.value_5 );
 

@@ -1,8 +1,8 @@
-UNICC_STATIC @@goal-type @@prefix_parse( @@prefix_pcb* pcb )
+@@goal-type @@prefix_parse( @@prefix_pcb* pcb )
 {
 	@@goal-type			ret;
 	@@prefix_pcb*		pcb_org		= pcb;
-	
+
 #if UNICC_SYNTAXTREE
 	@@prefix_syntree*	child;
 	@@prefix_syntree*	last		= (@@prefix_syntree*)NULL;
@@ -11,7 +11,7 @@ UNICC_STATIC @@goal-type @@prefix_parse( @@prefix_pcb* pcb )
 	int					i;
 	@@prefix_vtype*		vptr;
 	FILE* 				@@prefix_dbg;
-	
+
 	@@prefix_dbg = stderr;
 #endif
 
@@ -24,7 +24,7 @@ UNICC_STATIC @@goal-type @@prefix_parse( @@prefix_pcb* pcb )
 			UNICC_OUTOFMEM;
 			return (@@goal-type)0;
 		}
-		
+
 		memset( pcb, 0, sizeof( @@prefix_pcb ) );
 	}
 
@@ -38,18 +38,18 @@ UNICC_STATIC @@goal-type @@prefix_parse( @@prefix_pcb* pcb )
 	pcb->old_sym = -1;
 	pcb->line = 1;
 	pcb->column = 1;
-	
+
 #if UNICC_SYNTAXTREE
 	@@prefix_syntree_append( pcb, (char*)NULL );
 #endif
 
 	memset( &pcb->test, 0, sizeof( @@prefix_vtype ) );
-	
+
 	/* Begin of main parser loop */
 	while( 1 )
 	{
 		/* If in error recovery, replace old-symbol */
-		if( pcb->error_delay == UNICC_ERROR_DELAY 
+		if( pcb->error_delay == UNICC_ERROR_DELAY
 				&& ( pcb->sym = pcb->old_sym ) < 0 )
 		{
 			/* If symbol is invalid, try to find new token */
@@ -58,7 +58,7 @@ UNICC_STATIC @@goal-type @@prefix_parse( @@prefix_pcb* pcb )
 				"old token invalid, requesting new token\n",
 						UNICC_PARSER );
 			#endif
-			
+
 %%%ifgen STDTPL
 			while( !@@prefix_get_sym( pcb ) )
 %%%ifgen UNICC4C
@@ -73,7 +73,7 @@ UNICC_STATIC @@goal-type @@prefix_parse( @@prefix_pcb* pcb )
 
 			#if UNICC_DEBUG
 			fprintf( @@prefix_dbg, "%s: error recovery: "
-				"new token %d (%s)\n", UNICC_PARSER, pcb->sym, 
+				"new token %d (%s)\n", UNICC_PARSER, pcb->sym,
 					@@prefix_symbols[ pcb->sym ].name );
 			#endif
 		}
@@ -85,7 +85,7 @@ UNICC_STATIC @@goal-type @@prefix_parse( @@prefix_pcb* pcb )
 			@@prefix_lex( pcb );
 %%%end
 		}
-		
+
 #if UNICC_DEBUG
 		fprintf( @@prefix_dbg, "%s: current token %d (%s)\n",
 					UNICC_PARSER, pcb->sym,
@@ -111,7 +111,7 @@ UNICC_STATIC @@goal-type @@prefix_parse( @@prefix_pcb* pcb )
 		fprintf( @@prefix_dbg,
 			"%s: sym = %d (%s) [len = %d] tos->state = %d act = %s idx = %d\n",
 				UNICC_PARSER, pcb->sym,
-					( ( pcb->sym >= 0 ) ? 
+					( ( pcb->sym >= 0 ) ?
 						@@prefix_symbols[ pcb->sym ].name :
 							"(invalid symbol id)" ),
 					pcb->len, pcb->tos->state,
@@ -130,7 +130,7 @@ UNICC_STATIC @@goal-type @@prefix_parse( @@prefix_pcb* pcb )
 		{
 			pcb->next = pcb->buf[ pcb->len ];
 			pcb->buf[ pcb->len ] = '\0';
-			
+
 #if UNICC_DEBUG
 			fprintf( @@prefix_dbg, "%s: >> shifting terminal %d (%s)\n",
 			UNICC_PARSER, pcb->sym, @@prefix_symbols[ pcb->sym ].name );
@@ -139,7 +139,7 @@ UNICC_STATIC @@goal-type @@prefix_parse( @@prefix_pcb* pcb )
 			@@prefix_alloc_stack( pcb );
 			pcb->tos++;
 
-			/* 
+			/*
 				Execute scanner actions, if existing.
 				Here, UNICC_ON_SHIFT is set to 1, so that shifting-
 				related operations will be performed.
@@ -159,20 +159,20 @@ UNICC_STATIC @@goal-type @@prefix_parse( @@prefix_pcb* pcb )
 			pcb->tos->symbol = &( @@prefix_symbols[ pcb->sym ] );
 			pcb->tos->line = pcb->line;
 			pcb->tos->column = pcb->column;
-			
+
 #if UNICC_SYNTAXTREE
 			last = @@prefix_syntree_append( pcb, @@prefix_lexem( pcb ) );
 #endif
 
 			pcb->buf[ pcb->len ] = pcb->next;
-			
+
 			/* Perform the shift on input */
 			if( pcb->sym != @@eof && pcb->sym != @@error )
 			{
 				UNICC_CLEARIN( pcb );
 				pcb->old_sym = -1;
 			}
-			
+
 			if( pcb->error_delay )
 				pcb->error_delay--;
 		}
@@ -180,7 +180,7 @@ UNICC_STATIC @@goal-type @@prefix_parse( @@prefix_pcb* pcb )
 		/* Reduce */
 		while( pcb->act & UNICC_REDUCE )
 		{
-#if UNICC_DEBUG			
+#if UNICC_DEBUG
 			fprintf( @@prefix_dbg, "%s: << "
 					"reducing by production %d (%s)\n",
 						UNICC_PARSER, pcb->idx,
@@ -211,7 +211,7 @@ UNICC_STATIC @@goal-type @@prefix_parse( @@prefix_pcb* pcb )
 						cnt < @@prefix_productions[ pcb->idx ].length;
 							cnt++ )
 					child = child->prev;
-						
+
 				child->prev->next = (@@prefix_syntree*)NULL;
 				child->prev = (@@prefix_syntree*)NULL;
 			}
@@ -232,7 +232,7 @@ UNICC_STATIC @@goal-type @@prefix_parse( @@prefix_pcb* pcb )
 				{
 					pcb->syntax_tree->child = child;
 					child->parent = pcb->syntax_tree;
-					pcb->syntax_tree->symbol.symbol = 
+					pcb->syntax_tree->symbol.symbol =
 						&( @@prefix_symbols[ pcb->lhs ] );
 				}
 #endif
@@ -252,8 +252,8 @@ UNICC_STATIC @@goal-type @@prefix_parse( @@prefix_pcb* pcb )
 								@@prefix_symbols[ pcb->lhs ].name );
 			#endif
 
-			@@prefix_get_go( pcb, pcb->lhs );
-			
+			@@prefix_get_go( pcb );
+
 			pcb->tos++;
 
 			memcpy( &( pcb->tos->value ), &( pcb->ret ),
@@ -262,7 +262,7 @@ UNICC_STATIC @@goal-type @@prefix_parse( @@prefix_pcb* pcb )
 			pcb->tos->state = ( pcb->act & UNICC_REDUCE ) ? -1 : pcb->idx;
 			pcb->tos->line = pcb->line;
 			pcb->tos->column = pcb->column;
-			
+
 #if UNICC_SYNTAXTREE
 			last = @@prefix_syntree_append( pcb, (char*)NULL );
 
@@ -273,7 +273,7 @@ UNICC_STATIC @@goal-type @@prefix_parse( @@prefix_pcb* pcb )
 			}
 #endif
 		}
-		
+
 		if( pcb->act & UNICC_REDUCE && pcb->idx == @@goal-production )
 			break;
 	}
@@ -282,7 +282,7 @@ UNICC_STATIC @@goal-type @@prefix_parse( @@prefix_pcb* pcb )
 	fprintf( @@prefix_dbg, "%s: parse completed with %d errors\n",
 		UNICC_PARSER, pcb->error_count );
 	#endif
-	
+
 	/* Save return value */
 	ret = @@goal-value;
 
