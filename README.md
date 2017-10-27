@@ -4,17 +4,22 @@
 
 ## About
 
-UniCC is a parser generator. It compiles an augmented grammar definition into a program source code. Because UniCC is intended to be a target-language independent parser generator, it can be configured via template definition files to emit parser programs in probably any programming language.
+UniCC is a parser generator. It compiles an augmented grammar definition into a program source code. Because UniCC is intended to be a target-language independent parser generator, it can be configured via template definition files to emit parsers in probably any programming language.
 
-Currently, UniCC does support the C programming language using its [Standard C Parser Template](https://github.com/phorward/Cparser) only.
+UniCC supports parser code generation for the following programming languages so far:
+
+- **C** is fully supported (and reference implementation),
+- **Python** is under development, but already running in first tests,
+- **ECMAScript** is prototyped in a stub, but may come soon.
+
+More target languages can easily be added by creating specific target language templates.
 
 ## Example
 
-This is the full definition for a four-function arithmetic syntax including their integer calculation semantics.
+This is the full definition for a four-function arithmetic syntax including their integer calculation semantics (in C).
 
 ```c
-//Some grammar-related directives
-#!language      "C";
+#!language      "C";	// <- target language!
 
 #whitespaces    ' \t';
 #lexeme         int;
@@ -70,9 +75,7 @@ approaches relating the whitespace handling
 file generator
 - Platform-independent (console-based)
 - Standard LALR(1) conflict resolution
-- Supporting the C programming language via the UniCC Standard C Parser
-Template, providing many useful features like integrated syntax tree
-visualizer and error recovery
+- Supporting C and Python target languages so far
 
 ## Documentation
 
@@ -102,8 +105,8 @@ UniCC is developed and maintained by Jan Max Meyer, Phorward Software Technologi
 Some other projects by the author are:
 
 - [libphorward](https://github.com/phorward/phorward), a free toolkit for parser development, lexical analysis, regular expressions and more.
-- [pynetree](https://github.com/phorward/pynetree), a light-weight parsing toolkit written in pure Python.
 - [RapidBATCH](https://github.com/phorward/rapidbatch), a scripting language.
+- [pynetree](https://github.com/phorward/pynetree), a light-weight parsing toolkit written in pure Python.
 - [JS/CC](https://jscc.brobston.com), the JavaScript parser generator.
 
 ## License
