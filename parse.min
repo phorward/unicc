@@ -5,7 +5,7 @@ Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
-File:	parse_grammar.syn/parse_grammar.c
+File:	parse.min
 Author:	Jan Max Meyer
 Usage:	Grammar definition parser - FOR BOOTSTRAPPING ONLY!!
 ----------------------------------------------------------------------------- */
@@ -15,7 +15,7 @@ Usage:	Grammar definition parser - FOR BOOTSTRAPPING ONLY!!
  * -------------------------------------
  * This parser is only used for bootstrapping UniCC, and is not be tended any-
  * more with new features. Instead, implement new language-oriented features
- * into the final UniCC parser, parse_grammar.par. This grammar uses the min_lalr1
+ * into the final UniCC parser, parse.par. This grammar uses the min_lalr1
  * experimental and testing purpose parser generator to build a first running
  * parser for UniCC. min_lalr1 served as UniCC prototype in the past! :)
  *

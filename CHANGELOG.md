@@ -14,6 +14,8 @@ Released on: Outstanding
   libphorward 0.20 that caused a massive overhead of deterministic finite
   automation states in context-sensitive mode due an arbitrary character
   set order. This bug did not produce invalid parsers, but much huger ones.
+- Imported the sourcecode of min_lalr1 into the unicc repository, because it
+  is the only place where it is used.
 - Several internal revisions
   - Changed internal names for files, functions and variables.
   - Replaced old-style function headers by more convenient ones.

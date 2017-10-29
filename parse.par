@@ -4,7 +4,7 @@ Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
-File:	parse_grammar.par
+File:	parse.par
 Author:	Jan Max Meyer
 Usage:	Grammar definition parser
 ----------------------------------------------------------------------------- */
@@ -16,7 +16,7 @@ Usage:	Grammar definition parser
  * IMPORTANT NOTIFICATION ON THIS PARSER
  * -------------------------------------
  * This module underlies to a special coding convention: Because UniCC is boot-
- * strapped from an older parser that is compiled using min_lalr1 (parse_grammar.syn),
+ * strapped from an older parser that is compiled using min_lalr1 (parse.min),
  * the use of some features is prohibited because they are only featured by the
  * parser defined in this module. The old parser is not tended anymore with new
  * features.
