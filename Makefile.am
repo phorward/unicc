@@ -1,4 +1,4 @@
-
+2
 #
 # Automake targets
 #
@@ -16,7 +16,7 @@ man1_MANS = unicc.1.man
 
 uniccdir = $(datadir)/unicc
 templatesdir = $(uniccdir)/templates
-dist_templates_DATA = templates/C.tlt templates/python.tlt
+dist_templates_DATA = templates/c.tlt templates/python.tlt
 dist_unicc_DATA = unicc.dtd LICENSE README.md
 
 AM_CPPFLAGS = -DTLTDIR=\"$(templatesdir)\"
