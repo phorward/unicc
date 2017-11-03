@@ -1,4 +1,3 @@
-2
 #
 # Automake targets
 #
