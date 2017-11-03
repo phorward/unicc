@@ -812,7 +812,7 @@ void build_code( PARSER* parser )
 	gen = &generator;
 	memset( gen, 0, sizeof( GENERATOR ) );
 
-	sprintf( tlt_file, "%s%s", parser->p_template, UNICC_TLT_EXTENSION );
+	sprintf( tlt_file, "%s%s", pstrlwr(parser->p_template), UNICC_TLT_EXTENSION );
 	VARS( "tlt_file", "%s", tlt_file );
 
 	if( !( tlt_path = pwhich( tlt_file, "templates" ) )

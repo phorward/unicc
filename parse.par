@@ -32,14 +32,6 @@ Usage:	Grammar definition parser
  */
 
 /*
- * Information directives
- */
-#parser					"UniCC Grammar Definition Language";
-#version				"1.5.1";
-#description			"Parser for UniCC parser definitions";
-#copyright				"Copyright (C) 2008-2016 by Jan Max Meyer, Phorward Software Technologies";
-
-/*
  * Parser configuration
  */
 #whitespaces 			whitespace;

@@ -1,18 +1,5 @@
 <?xml version="1.0" standalone="yes"?>
 <!--
-UniCC LALR(1) Parser Generator :: Standard C Parser Template
-Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
-http://www.phorward-software.com ++ contact<<AT>>phorward-software<<DOT>>com
-All rights reserved. See license agreements below.
-
-File:		C.tlt
-Version:	1.0
-Author:		Jan Max Meyer
-Usage:		Default UniCC target language template for parsers written in
-			the C programming language.
-
-DESCRIPTION:
-++++++++++++
 This template should serve as a general description and reference of how
 templates for the UniCC parser generator's static build-in code generator
 may be described.
@@ -39,7 +26,7 @@ Some of the following comments begin with 1D TABLE or 2D TABLE. A 1D TABLE
 expands to a one-dimensional array, a 2D TABLE into a two-dimensional array;
 To obtain the sizes for both dimensions, there are expanding macros both in the
 <file>-tag and realted to every table.
-  
+
 1D Tables always consist of a <col> and a <col_sep> tag.
 2D Tables always consist of a <row_start>, <row_end>, <row_sep>, <col> and a
 <col_sep> tag. <row_sep> and <col_sep> define separators that will be inserted
@@ -64,37 +51,9 @@ The UniCC Standard C Parser Template provides the following features.
 
 Please check the UniCC user manual for detailed information and notes on using
 the UniCC Standard C Parser Template.
-
-LICENSE:
-++++++++
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-	* Redistributions of source code must retain the above copyright
-	  notice, this list of conditions and the following disclaimer.
-	* Redistributions in binary form must reproduce the above copyright
-	  notice, this list of conditions and the following disclaimer in the
-	  documentation and/or other materials provided with the distri-
-	  bution.
-	* Neither the name of Phorward Software Technologies nor the
-	  names of its contributors may be used to endorse or promote
-	  products derived from this software without specific prior
-	  written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
-<generator name="C" long-name="UniCC Standard C Template" version="1.0">
+<generator name="C" long-name="UniCC Standard C Template" version="1.1">
 	<!--
 	****************************************************************************
 	Escape sequences
@@ -103,12 +62,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	which should be replaced when terminal-/nonterminal (especially generated
 	ones) names are generated into the target file, e.g. in the <symbols>-tag.
 	-->
-	
+
 	<!-- Backslash must be double-quoted -->
 	<escape-sequence for="\" do="\\" />
 	<!-- Escape double quotation marks -->
 	<escape-sequence for="&#x22;" do="\&#x22;" />
-	
+
 	<!--
 	****************************************************************************
 	Value-stack templates
@@ -119,38 +78,38 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	<vstack_def_type>int</vstack_def_type>
 	<!-- Default value type for character-class terminals -->
 	<vstack_term_type>int</vstack_term_type>
-	
+
 	<!--
 	Code to be generated for the value stack datatype-definition
 	when only one datatype is used within the whole grammar (or if
 	always the default-type is used).
-	
+
 	Placeholders:	@@value-type			- 	Expands to the type-declaration
 												of the only used value type.
 	-->
 	<vstack_single>typedef @@value-type @@prefix_vtype;</vstack_single>
 
 	<!--
-	Begin and end of code to be generated for the value stack 
+	Begin and end of code to be generated for the value stack
 	datatype-definition when multiple datatypes are used within the
 	whole grammar.  Note that you can define here even struct-like
 	code or array-like structure if your target language supports
 	only those.
-	
+
 	Placeholders:	@@number-of-value-types	-	Expands to the maximum number
 												of value types possible here.
-												Can be used in both of the 
+												Can be used in both of the
 												following tags.
 	-->
 	<vstack_union_start>typedef union @@prefix_VTYPE&#x0A;{&#x0A;</vstack_union_start>
 	<vstack_union_end>} @@prefix_vtype;&#x0A;&#x0A;</vstack_union_end>
-	
+
 	<!--
 	This tag defines a data type definition within the union.
 	As @@attribute, the content of the <vstack_union_att>-tag is expanded,
 	which then contains a consecutive number of the datatype.
 	This block is repeated for every value type within the union/whatever ;)
-	
+
 	Placeholders:	@@value-type			- 	Expands to the type-declaration
 												of the current data type as
 												specified within the grammar.
@@ -159,18 +118,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 												is expanded, which then
 												contains a consecutive number
 												of the datatype.
-					@@value-type-id			-	The value type ID, which begins 
+					@@value-type-id			-	The value type ID, which begins
 												at 0. This can be the index of
 												an array!
 	-->
 	<vstack_union_def>&#x09;@@value-type @@attribute;&#x0A;</vstack_union_def>
-	
+
 	<!--
 	This tag defines is used in several code-generation parts, both when
 	the value stack union is defined and when reduction code for productions
 	is produced.
-	
-	Placeholders:	@@value-type-id			-	The value type ID, which 
+
+	Placeholders:	@@value-type-id			-	The value type ID, which
 												begins at 0.
 												This can be the index of
 												an array!
@@ -182,13 +141,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	Semantic action templates
 	****************************************************************************
 	-->
-	
+
 	<!--
 	Begin and end of code to be generated for each reduction code action of a
 	production. This code is embedded to a switch-structure below, every block
-	is a "case" within this switch. <action_start> is generated BEFORE and 
+	is a "case" within this switch. <action_start> is generated BEFORE and
 	<action_end> BEHIND each reduction code.
-	
+
 	Placeholders:	@@production-number		-	The number of the production to
 												be reduced. Can be used in both
 												of the following tags.
@@ -196,16 +155,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	<action_start>&#x09;&#x09;&#x09;&#x09;case @@production-number:&#x0A;&#x09;&#x09;&#x09;&#x09;{&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;</action_start>
 	<action_end>&#x0A;&#x09;&#x09;&#x09;&#x09;}&#x09;&#x09;&#x09;&#x09;break;
 	</action_end>
-	
+
 	<!--
 	Single value access when only one datatype is used in the whole grammar.
-	
+
 	Placeholders:	@@offset				-	The number of the right-hand
 												side symbol to be accessed.
 												This is the number specified in
-												the production reduction code 
-												as number or even by the 
-												right-hand side element's 
+												the production reduction code
+												as number or even by the
+												right-hand side element's
 												identifier. The offset is
 												inserted here by UniCC's
 												code generator.
@@ -213,14 +172,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	<action_single>( ( pcb->tos - @@offset )->value )</action_single>
 
 	<!--
-	Multiple value access, in case of different datatypes used within the 
+	Multiple value access, in case of different datatypes used within the
 	grammar.
-	
-	Placeholders:	@@offset				-	The number of the right-hand 
-												side symbol to be accessed. 
+
+	Placeholders:	@@offset				-	The number of the right-hand
+												side symbol to be accessed.
 												This is the number specified in
 												the production reduction code
-												as number or even by the 
+												as number or even by the
 												right-hand side element's
 												identifier. The offset is
 												inserted here by UniCC's
@@ -236,15 +195,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	<!--
 	Single value left-hand side assignment variable when only one datatype
 	is used in the whole grammar.
-	
+
 	Placeholders:	none
 	-->
 	<action_lhs_single>pcb->ret</action_lhs_single>
 
 	<!--
-	Multiple value left-hand side assignment variable when different 
+	Multiple value left-hand side assignment variable when different
 	datatypes are used within the whole grammar.
-	
+
 	Placeholders:	@@attribute				-	As @@attribute, the content of
 												the <vstack_union_att>-tag is
 												expanded, which then contains
@@ -260,7 +219,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	@$<name>-placeholders in semantic actions.
 
 	Only defined left-hand sides for the production can be associated.
-	
+
 	Placeholders:	@@sym					-	Will be replaced by the
 												symbol-id of the specified
 												left-hand side symbol.
@@ -272,7 +231,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	Semantic terminal action templates
 	****************************************************************************
 	-->
-	
+
 	<!--
 	Begin and end of code to be generated for each match of a regular
 	expression token. This code is embedded to a switch-structure below,
@@ -281,23 +240,23 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 	The code here is only produced when the matched regex-terminal contains
 	individual code segments.
-	
+
 	Placeholders:	@@symbol-number			-	The id of the terminal the
 												lexical analyzer action belongs
 												to. Can be used in both of the
 												following tags.
 	-->
-	
+
 	<scan_action_start>&#x09;&#x09;&#x09;&#x09;case @@symbol-number:&#x0A;&#x09;&#x09;&#x09;&#x09;{&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;</scan_action_start>
 	<scan_action_end>&#x0A;&#x09;&#x09;&#x09;&#x09;}&#x09;&#x09;&#x09;&#x09;break;
 	</scan_action_end>
 
 	<!--
-	The content of the tags <scan_action_begin_offset> and 
+	The content of the tags <scan_action_begin_offset> and
 	<scan_action_end_offset> are inserted in regex-terminal semantic code
 	blocks for the placeholders @> and @< to get the start-address and
 	length of the matched string. Normally, these are variable names.
-	
+
 	Placeholders:	none
 	-->
 	<scan_action_begin_offset>@@prefix_lexem( pcb )</scan_action_begin_offset>
@@ -308,14 +267,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	receives the semantic value of the token to be pushed to the value stack
 	must be given. For single value assignments,this is done here.
 	This value is only used when the grammar uses only one datatype.
-	
+
 	Placeholders:		none
 	-->
 	<scan_action_ret_single>pcb->tos->value</scan_action_ret_single>
 
 	<!--
 	Same play for multiple value assignments in regex-terminal semantic action blocks.
-	
+
 	Placeholders:	@@attribute				-	As @@attribute, the content of
 												the <vstack_union_att>-tag is
 												expanded, which then contains
@@ -328,7 +287,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	This template is used when there is a semantic action-based
 	regular expression terminal decision. This is equivalent to the
 	selection of left-hand side in semantic production actions above.
-	
+
 	Placeholders:	@@sym				-		The symbol-id of the requested
 												terminal symbol will be inserted
 												here.
@@ -340,7 +299,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	Parse table templates
 	****************************************************************************
 	-->
-	
+
 	<!-- 1D TABLE
 	The <defprod>-tag defines an one-dimensional array for the id's of
 	the default productions that should be reduced when no other action
@@ -349,7 +308,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	are removed from the action table, so that the default table is chosen.
 	The following Placeholders can only be used in the <col>-tag below
 	<defprod>.
-					
+
 	Placeholders:	@@state-number			-	The id-number of the state
 												where the default production
 												belongs to.
@@ -368,12 +327,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		<col>@@production-number</col>
 		<col_sep>, </col_sep>
 	</defprod>
-	
+
 	<!-- 2D TABLE
 	The <acttab>-tag expands to the parser action table. The action table
 	describes the parser actions for every state and lookahead-symbol
 	combination (resp. state-terminal combination).
-	
+
 	Placeholders:	@@number-of-columns		-	Total number of columns
 												for every entry. Can only
 												be used in <row_start> and
@@ -406,12 +365,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		<col>, @@symbol,@@action,@@index </col>
 		<col_sep></col_sep>
 	</acttab>
-	
+
 	<!-- 2D TABLE
 	The <gotab>-tag expands to the parser goto table. The goto table
 	describes the parser actions to be performed on a state and
 	nonterminal-symbol combination right after a reduction.
-	
+
 	Placeholders:	@@number-of-columns		-	Total number of columns
 												for every entry. Can only
 												be used in <row_start> and
@@ -430,7 +389,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 												<col>. This expands to
 												2 for shift and
 												3 for shift&reduce.
-												
+
 												A reduce-only will never be
 												the case.
 					@@index					-	The number of the next state.
@@ -443,7 +402,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		<col_sep></col_sep>
 	</gotab>
 
-	
+
 	<!--
 	****************************************************************************
 	Lexical analyzer table templates
@@ -451,7 +410,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	UniCC constructs one single lexical analyzer in insensitive mode, and
 	several lexical analyzers in sensitive mode, that must be selected for every
 	LALR-state.
-	
+
 	Several states may use the same lexical analyzer, so there is a table to
 	select the lexical analyzer from, relating to every LALR-state.
 	A lexical analyzer is a deterministic finite-state machine (DFA) that is
@@ -463,7 +422,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	<!-- 1D TABLE
 	The <dfa_select>-tag expands to a table that hold the index of the lexical
 	analyzer for every LALR-state.
-	
+
 	Placeholders:	@@column				-	The column index, beginning
 												at 0. Can only be used in
 												<col>.
@@ -480,7 +439,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	The <dfa_char>-tag expands to a table that hold all the characters for all
 	states, where a character-range with @@from = -1 and @@to = -1 defines the
 	end of a state character range definition.
-	
+
 	Placeholders:	@@column				-	The column index, beginning
 												at 0. Can only be used in
 												<col>.
@@ -491,26 +450,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		<col>@@from, @@to</col>
 		<col_sep>, </col_sep>
 	</dfa_char>
-	
+
 	<!-- 1D TABLE
 	The <dfa_trans>-tag expands to a table that hold all the transitions
 	to the next DFA state if a character range from <dfa_char> matches.
-	
+
 	Placeholders:	@@column				-	The column index, beginning
 												at 0. Can only be used in
 												<col>.
 					@@goto					-	Next state to go to.
-	-->	
+	-->
 	<dfa_trans>
 		<col>@@goto</col>
 		<col_sep>, </col_sep>
 	</dfa_trans>
-	
-	
+
+
 	<!-- 2D TABLE
 	The <dfa_idx>-tag expands to a table that hold for every lexical analyzer
 	DFA a table with the offsets of the character-ranges in table <dfa_char>.
-	
+
 	Placeholders:	@@row					-	The row index, beginning
 												at 0. Can only be used in
 												<row_start> and <row_end>.
@@ -531,11 +490,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		<col>@@index * 2</col>
 		<col_sep>, </col_sep>
 	</dfa_idx>
-	
+
 	<!-- 2D TABLE
 	The <dfa_accept>-tag expands to a table that hold accepting symbol
 	identifier tables for every DFA state.
-	
+
 	Placeholders:	@@row					-	The row index, beginning
 												at 0. Can only be used in
 												<row_start> and <row_end>.
@@ -543,7 +502,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 												at 0. Can only be used in
 												<col>.
 					@@accept				-	Accepting ID of the terminal
-												symbol that is probably 
+												symbol that is probably
 												matched until this state by
 												the lexical analyzer.
 					@@number-of-columns		-	Number of DFA states for the
@@ -556,13 +515,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 		<col>@@accept</col>
 		<col_sep>, </col_sep>
 	</dfa_accept>
-	
+
 	<!--
 	****************************************************************************
 	Symbol and production information tables
 	****************************************************************************
 	-->
-	
+
 	<!-- 1D TABLE
 	The <symbol>-tag expands to a symbol information table that has an
 	entry for each grammar symbol (intermixed terminal and nonterminal),
@@ -570,7 +529,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	index and several symbol-related flags. The table is not required for
 	the parsing, but used for debug/trace and extended possibilites, e.g.
 	automatically generated syntax trees.
-	
+
 	Placeholders:	@@column				-	The column index, beginning
 												at 0. Can only be used in
 												<col>.
@@ -590,19 +549,19 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 												3) String-class terminal
 					@@whitespace			-	1, if the symbol is configured
 												as whitespace symbol, 0 if not.
-	-->	
+	-->
 	<symbols>
 		<col>	{ /* @@symbol */ "@@symbol-name", @@type, @@lexem, @@whitespace, @@greedy }</col>
 		<col_sep>,&#x0A;</col_sep>
 	</symbols>
-	
+
 	<!-- 1D TABLE
 	The <production>-tag expands to a production information table that has an
 	entry for every production, which may contain its definition string, length
 	and default left-hand side. This table is not required for the parsing, but
 	used for debug/trace and extended possibilites, e.g. automatically
 	generated syntax trees.
-	
+
 	Placeholders:	@@column				-	The column index, beginning
 												at 0. Can only be used in
 												<col>.
@@ -616,18 +575,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 					@@lhs					-	Default left-hand side.
 												Multiple left-hand sides are
 												not covered here.
-	-->	
+	-->
 	<productions>
 		<col>	{ /* @@production-number */ "@@production", @@length, @@lhs }</col>
 		<col_sep>,&#x0A;</col_sep>
 	</productions>
-	
+
 	<!--
 	The <code_localization>-tag is printed before every line of semantic
 	code, and equipped with some information about the source. Programming
 	languages like C support a way to let the compiler report other locations
 	in generated files, like it is the case with UniCC.
-	
+
 	Placeholders:	@@line					-	The first line number where the
 												semantic code was parsed at.
 					@@filename				-	The filename, where the semantoc
@@ -640,9 +599,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 	<!--
-	Now, the output files are described. It can be one file or multiple, all 
+	Now, the output files are described. It can be one file or multiple, all
 	allow the insertion of the same placeholers.
-	
+
 	Placeholders:	@@actions				-	Inserts the parser action code
 												that is constructed from the
 												program code attached to
@@ -781,7 +740,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 												directive.
 					@@version				-	Content of the #version
 												parser directive.
-	
+
 	The expansion macros @@basename, @@Cbasename, @@CBASENAME, @@filename,
 	@@filename_len and @@prefix can be used everywhere in all tags. They are
 	replaced as last. They can also be used in semantic actions defined in the
@@ -789,15 +748,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	the filename-attribute of the file-tag, to generate adequate filenames.
 	-->
 	<file filename="@@basename.c">/*
- * File:        @@basename.c
- * Parser:		@@name
- * Version:		@@version
- * Copyright:	@@copyright
- * Description:	@@description
- *
- * UniCC Parser Template for C - Version 1.0
- * Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
- */
+	Parser module generated from @@filename.
+	DO NOT EDIT THIS FILE MANUALLY, IT WILL GO AWAY!
+*/
 
 #if @@prologue_len == 0
 #include &lt;stdlib.h&gt;
@@ -2021,15 +1974,9 @@ int main( int argc, char** argv )
 
 </file>
 <file filename="@@basename.h">/*
- * File:        @@basename.h
- * Parser:		@@name
- * Version:		@@version
- * Copyright:	@@copyright
- * Description:	@@description
- *
- * UniCC Parser Template for C - Version 1.0
- * Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
- */
+	Parser header generated from @@filename.
+	DO NOT EDIT THIS FILE MANUALLY, IT WILL GO AWAY!
+*/
 
 #ifndef @@CBASENAME_H
 #define @@CBASENAME_H
