@@ -61,8 +61,7 @@ Usage:	Global declarations, structures and includes
 #define MODE_INSENSITIVE		1	/* Insensitive parser construction mode */
 
 /* Macro to verify terminals */
-#define IS_TERMINAL( s ) \
-	( ((s)->type) > SYM_NON_TERMINAL )
+#define IS_TERMINAL( s )		( ((s)->type) > SYM_NON_TERMINAL )
 
 /* Associativity */
 #define ASSOC_NONE				0

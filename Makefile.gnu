@@ -23,13 +23,16 @@ SOURCES			= 	\
 				main.c \
 				xml.c
 
-all: unicc
+all: unicc_only
 
-clean:
-	-rm *.o
+boot_clean:
 	-rm min_lalr1/min_lalr1.o
 	-rm parse_boot1.c parse_boot2.c parse_boot2.h parse_boot3.c parse_boot3.h
-	-rm unicc unicc_boot1 unicc_boot2 unicc_boot3 boot_min_lalr1
+	-rm unicc_boot1 unicc_boot2 unicc_boot3 boot_min_lalr1
+
+clean: boot_clean
+	-rm *.o
+	-rm unicc
 
 make_install:
 	cp Makefile.gnu Makefile
@@ -109,6 +112,8 @@ parse.c parse.h: parse.par unicc_boot3
 
 unicc: $(unicc_OBJECTS) $(LIBPHORWARD)
 	$(CC) -o $@ $(unicc_OBJECTS) $(LIBPHORWARD)
+
+unicc_only: unicc boot_clean
 
 # --- UniCC Documentation ------------------------------------------------------
 #

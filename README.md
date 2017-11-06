@@ -107,7 +107,7 @@ Some other projects by the author are:
 - [libphorward](https://github.com/phorward/phorward), a free toolkit for parser development, lexical analysis, regular expressions and more.
 - [RapidBATCH](https://github.com/phorward/rapidbatch), a scripting language.
 - [pynetree](https://github.com/phorward/pynetree), a light-weight parsing toolkit written in pure Python.
-- [JS/CC](https://jscc.brobston.com), the JavaScript parser generator.
+- [JS/CC](http://jscc.brobston.com), the JavaScript parser generator.
 
 ## License
 
