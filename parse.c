@@ -1955,6 +1955,7 @@ fprintf( stderr, "%s: lex: new accepting symbol pcb->sym = %d greedy = %d\n",
 					
 						( pcb->tos->value.value_0 ) = _lexem( pcb );
 					
+					;
 				}				break;
 	
 
@@ -2332,6 +2333,7 @@ int _parse( _pcb* pcb )
 					
 						( pcb->tos->value.value_0 ) = _lexem( pcb );
 					
+					;
 				}				break;
 	
 
@@ -2383,50 +2385,62 @@ int _parse( _pcb* pcb )
 				case 0:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 1:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 2:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 3:
 				{
 					 pcb->ret.value_5 = 0; 
+					;
 				}				break;
 					case 4:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 5:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 6:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 7:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 8:
 				{
 					 pcb->ret.value_5 = 0; 
+					;
 				}				break;
 					case 9:
 				{
 					
+					;
 				}				break;
 					case 10:
 				{
 					
+					;
 				}				break;
 					case 11:
 				{
 					
+					;
 				}				break;
 					case 12:
 				{
@@ -2440,50 +2454,61 @@ int _parse( _pcb* pcb )
 										parser->filename, line,
 											"!language" );
 						
+					;
 				}				break;
 					case 13:
 				{
 					#line 265 "parse.par"
 	parser->p_mode = MODE_SENSITIVE; 
+					;
 				}				break;
 					case 14:
 				{
 					#line 267 "parse.par"
 	parser->p_mode = MODE_SENSITIVE; 
+					;
 				}				break;
 					case 15:
 				{
 					#line 269 "parse.par"
 	parser->p_mode = MODE_INSENSITIVE;
+					;
 				}				break;
 					case 16:
 				{
 					#line 271 "parse.par"
 	parser->p_mode = MODE_INSENSITIVE;
+					;
 				}				break;
 					case 17:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 18:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 19:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 20:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 21:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 22:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 23:
 				{
@@ -2494,11 +2519,13 @@ int _parse( _pcb* pcb )
 							else
 								strbuf_append( '0' );
 						
+					;
 				}				break;
 					case 24:
 				{
 					#line 302 "parse.par"
 	reset_strbuf(); 
+					;
 				}				break;
 					case 25:
 				{
@@ -2527,6 +2554,7 @@ int _parse( _pcb* pcb )
 
 							list_free( ( ( pcb->tos - 0 )->value.value_2 ) );
 						
+					;
 				}				break;
 					case 26:
 				{
@@ -2554,6 +2582,7 @@ int _parse( _pcb* pcb )
 
 							list_free( ( ( pcb->tos - 0 )->value.value_2 ) );
 						
+					;
 				}				break;
 					case 27:
 				{
@@ -2581,51 +2610,60 @@ int _parse( _pcb* pcb )
 							list_free( ( ( pcb->tos - 0 )->value.value_2 ) );
 
 						
+					;
 				}				break;
 					case 28:
 				{
 					#line 382 "parse.par"
 	set_assoc_and_prec( ( ( pcb->tos - 0 )->value.value_2 ), ASSOC_LEFT ); 	
+					;
 				}				break;
 					case 29:
 				{
 					#line 386 "parse.par"
 	set_assoc_and_prec( ( ( pcb->tos - 0 )->value.value_2 ), ASSOC_RIGHT ); 	
+					;
 				}				break;
 					case 30:
 				{
 					#line 390 "parse.par"
 	set_assoc_and_prec( ( ( pcb->tos - 0 )->value.value_2 ), ASSOC_NOASSOC ); 
+					;
 				}				break;
 					case 31:
 				{
 					#line 393 "parse.par"
 	parser->p_name = pstrcatstr(
 								parser->p_name, strbuf, FALSE );	
+					;
 				}				break;
 					case 32:
 				{
 					#line 397 "parse.par"
 	parser->p_desc = pstrcatstr(
 								parser->p_desc, strbuf, FALSE );	
+					;
 				}				break;
 					case 33:
 				{
 					#line 401 "parse.par"
 	parser->p_copyright = pstrcatstr(
 								parser->p_copyright, strbuf, FALSE );	
+					;
 				}				break;
 					case 34:
 				{
 					#line 405 "parse.par"
 	parser->p_version = pstrcatstr(
 								parser->p_version, strbuf, FALSE );	
+					;
 				}				break;
 					case 35:
 				{
 					#line 409 "parse.par"
 	parser->p_prefix = pstrcatstr(
 								parser->p_prefix, strbuf, FALSE );	
+					;
 				}				break;
 					case 36:
 				{
@@ -2638,6 +2676,7 @@ int _parse( _pcb* pcb )
 										parser->filename, line,
 											"default epsilon action" );
 						
+					;
 				}				break;
 					case 37:
 				{
@@ -2650,6 +2689,7 @@ int _parse( _pcb* pcb )
 										parser->filename, line,
 											"default epsilon action" );
 						
+					;
 				}				break;
 					case 38:
 				{
@@ -2665,6 +2705,7 @@ int _parse( _pcb* pcb )
 
 							pfree( ( ( pcb->tos - 0 )->value.value_0 ) );
 						
+					;
 				}				break;
 					case 39:
 				{
@@ -2681,42 +2722,50 @@ int _parse( _pcb* pcb )
 							else
 								parser->p_lexem_sep = !( ( pcb->tos - 0 )->value.value_1 );
 						
+					;
 				}				break;
 					case 40:
 				{
 					#line 460 "parse.par"
 	parser->p_cis_strings = !( ( pcb->tos - 0 )->value.value_1 );	
+					;
 				}				break;
 					case 41:
 				{
 					#line 463 "parse.par"
 	parser->p_reserve_regex = !( ( pcb->tos - 0 )->value.value_1 );		
+					;
 				}				break;
 					case 42:
 				{
 					#line 466 "parse.par"
 	parser->p_header = pstrcatstr(
 								parser->p_header, strbuf, FALSE );	
+					;
 				}				break;
 					case 43:
 				{
 					#line 470 "parse.par"
 	parser->p_footer = pstrcatstr(
 								parser->p_footer, strbuf, FALSE );	
+					;
 				}				break;
 					case 44:
 				{
 					#line 473 "parse.par"
 	parser->p_pcb = pstrcatstr(
 								parser->p_pcb, strbuf, FALSE );	
+					;
 				}				break;
 					case 45:
 				{
 					
+					;
 				}				break;
 					case 46:
 				{
 					 pcb->ret.value_5 = 0; 
+					;
 				}				break;
 					case 47:
 				{
@@ -2727,35 +2776,42 @@ int _parse( _pcb* pcb )
 
 							strbuf = (char*)NULL;
 						
+					;
 				}				break;
 					case 48:
 				{
 					 pcb->ret.value_1 = ( ( pcb->tos - 0 )->value.value_1 ); 
+					;
 				}				break;
 					case 49:
 				{
 					#line 487 "parse.par"
 	pcb->ret.value_1 = FALSE; 
+					;
 				}				break;
 					case 50:
 				{
 					#line 490 "parse.par"
 	pcb->ret.value_1 = FALSE; 	
+					;
 				}				break;
 					case 51:
 				{
 					#line 491 "parse.par"
 	pcb->ret.value_1 = TRUE; 		
+					;
 				}				break;
 					case 52:
 				{
 					#line 495 "parse.par"
 	pcb->ret.value_2 = list_push( ( ( pcb->tos - 1 )->value.value_2 ), (void*)( ( pcb->tos - 0 )->value.value_3 ) ); 
+					;
 				}				break;
 					case 53:
 				{
 					#line 498 "parse.par"
 	pcb->ret.value_2 = list_push( (LIST*)NULL, (void*)( ( pcb->tos - 0 )->value.value_3 ) ); 
+					;
 				}				break;
 					case 54:
 				{
@@ -2765,16 +2821,19 @@ int _parse( _pcb* pcb )
 							pcb->ret.value_3->defined = TRUE;
 							pcb->ret.value_3->line = line;
 						
+					;
 				}				break;
 					case 55:
 				{
 					#line 511 "parse.par"
 	pcb->ret.value_2 = list_push( ( ( pcb->tos - 1 )->value.value_2 ), (void*)( ( pcb->tos - 0 )->value.value_3 ) ); 
+					;
 				}				break;
 					case 56:
 				{
 					#line 515 "parse.par"
 	pcb->ret.value_2 = list_push( (LIST*)NULL, (void*)( ( pcb->tos - 0 )->value.value_3 ) ); 
+					;
 				}				break;
 					case 57:
 				{
@@ -2784,6 +2843,7 @@ int _parse( _pcb* pcb )
 							( ( pcb->tos - 0 )->value.value_3 )->derived_from =
 								(SYMBOL*)list_access( ( ( pcb->tos - 1 )->value.value_2 ) );
 						
+					;
 				}				break;
 					case 58:
 				{
@@ -2793,6 +2853,7 @@ int _parse( _pcb* pcb )
 
 							current_sym = ( ( pcb->tos - 0 )->value.value_3 );
 						
+					;
 				}				break;
 					case 59:
 				{
@@ -2812,6 +2873,7 @@ int _parse( _pcb* pcb )
 							pcb->ret.value_3->defined = TRUE;
 							pcb->ret.value_3->line = line;
 						
+					;
 				}				break;
 					case 60:
 				{
@@ -2869,14 +2931,17 @@ int _parse( _pcb* pcb )
 								}
 							}
 						
+					;
 				}				break;
 					case 61:
 				{
 					 pcb->ret.value_2 = ( ( pcb->tos - 0 )->value.value_2 ); 
+					;
 				}				break;
 					case 62:
 				{
 					 pcb->ret.value_2 = 0; 
+					;
 				}				break;
 					case 63:
 				{
@@ -2943,22 +3008,27 @@ int _parse( _pcb* pcb )
 
 							current_sym = (SYMBOL*)NULL;
 						
+					;
 				}				break;
 					case 64:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 65:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 66:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 67:
 				{
 					 pcb->ret.value_5 = 0; 
+					;
 				}				break;
 					case 68:
 				{
@@ -2966,6 +3036,7 @@ int _parse( _pcb* pcb )
 
 							greedy = TRUE;
 						
+					;
 				}				break;
 					case 69:
 				{
@@ -2973,6 +3044,7 @@ int _parse( _pcb* pcb )
 
 							greedy = FALSE;
 						
+					;
 				}				break;
 					case 70:
 				{
@@ -2983,26 +3055,31 @@ int _parse( _pcb* pcb )
 
 							strbuf = (char*)NULL;
 						
+					;
 				}				break;
 					case 71:
 				{
 					#line 703 "parse.par"
 	pcb->ret.value_1 = TRUE; 
+					;
 				}				break;
 					case 72:
 				{
 					#line 705 "parse.par"
 	pcb->ret.value_1 = FALSE; 
+					;
 				}				break;
 					case 73:
 				{
 					#line 709 "parse.par"
 	pcb->ret.value_2 = list_push( ( ( pcb->tos - 2 )->value.value_2 ), ( ( pcb->tos - 0 )->value.value_4 ) ); 
+					;
 				}				break;
 					case 74:
 				{
 					#line 712 "parse.par"
 	pcb->ret.value_2 = list_push( (LIST*)NULL, ( ( pcb->tos - 0 )->value.value_4 ) ); 
+					;
 				}				break;
 					case 75:
 				{
@@ -3020,26 +3097,32 @@ int _parse( _pcb* pcb )
 
 							current_prod = (PROD*)NULL;
 						
+					;
 				}				break;
 					case 76:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 77:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 78:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 79:
 				{
 					 pcb->ret.value_5 = 0; 
+					;
 				}				break;
 					case 80:
 				{
 					 pcb->ret.value_4 = ( ( pcb->tos - 0 )->value.value_4 ); 
+					;
 				}				break;
 					case 81:
 				{
@@ -3047,11 +3130,13 @@ int _parse( _pcb* pcb )
 	pcb->ret.value_4 = create_production( parser,
 								(SYMBOL*)NULL );
 						
+					;
 				}				break;
 					case 82:
 				{
 					#line 742 "parse.par"
 	current_prod->prec = ( ( pcb->tos - 0 )->value.value_3 )->prec; 
+					;
 				}				break;
 					case 83:
 				{
@@ -3061,6 +3146,7 @@ int _parse( _pcb* pcb )
 
 							strbuf = (char*)NULL;
 						
+					;
 				}				break;
 					case 84:
 				{
@@ -3070,6 +3156,7 @@ int _parse( _pcb* pcb )
 											pstrdup( strbuf ) ) );
 									pcb->ret.value_4 = ( ( pcb->tos - 2 )->value.value_4 );
 						
+					;
 				}				break;
 					case 85:
 				{
@@ -3082,6 +3169,7 @@ int _parse( _pcb* pcb )
 								( *strbuf == '\0' ? (char*)NULL :
 									pstrdup( strbuf ) ) );
 						
+					;
 				}				break;
 					case 86:
 				{
@@ -3103,6 +3191,7 @@ int _parse( _pcb* pcb )
 									break;
 							}
 						
+					;
 				}				break;
 					case 87:
 				{
@@ -3111,6 +3200,7 @@ int _parse( _pcb* pcb )
 									P_ERROR_RESYNC, SYM_SYSTEM_TERMINAL,
 										TRUE );
 						
+					;
 				}				break;
 					case 88:
 				{
@@ -3119,10 +3209,12 @@ int _parse( _pcb* pcb )
 									P_END_OF_FILE, SYM_SYSTEM_TERMINAL,
 										TRUE );
 						
+					;
 				}				break;
 					case 89:
 				{
 					 pcb->ret.value_3 = ( ( pcb->tos - 0 )->value.value_3 ); 
+					;
 				}				break;
 					case 90:
 				{
@@ -3134,6 +3226,7 @@ int _parse( _pcb* pcb )
 							if( pcb->ret.value_3->line < 0 )
 								pcb->ret.value_3->line = line;
 						
+					;
 				}				break;
 					case 91:
 				{
@@ -3179,6 +3272,7 @@ int _parse( _pcb* pcb )
 								make_semantic_rhs( prod );
 							}
 						
+					;
 				}				break;
 					case 92:
 				{
@@ -3186,6 +3280,7 @@ int _parse( _pcb* pcb )
  	pcb->ret.value_4 = current_prod;
 							current_prod = (PROD*)NULL;
 						
+					;
 				}				break;
 					case 93:
 				{
@@ -3205,6 +3300,7 @@ int _parse( _pcb* pcb )
 							if( pcb->ret.value_3->line < 0 )
 								pcb->ret.value_3->line = line;
 						
+					;
 				}				break;
 					case 94:
 				{
@@ -3223,6 +3319,7 @@ int _parse( _pcb* pcb )
 							if( pcb->ret.value_3->line < 0 )
 								pcb->ret.value_3->line = line;
 						
+					;
 				}				break;
 					case 95:
 				{
@@ -3237,43 +3334,52 @@ int _parse( _pcb* pcb )
 							if( pcb->ret.value_3->line < 0 )
 								pcb->ret.value_3->line = line;
 						
+					;
 				}				break;
 					case 96:
 				{
 					#line 923 "parse.par"
 	pcb->ret.value_5 = (int)'*';	
+					;
 				}				break;
 					case 97:
 				{
 					#line 926 "parse.par"
 	pcb->ret.value_5 = (int)'+'; 	
+					;
 				}				break;
 					case 98:
 				{
 					#line 929 "parse.par"
 	pcb->ret.value_5 = (int)'?';	
+					;
 				}				break;
 					case 99:
 				{
 					#line 932 "parse.par"
 	pcb->ret.value_5 = 0; 		
+					;
 				}				break;
 					case 100:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 101:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 102:
 				{
 					#line 938 "parse.par"
 	reset_strbuf(); 
+					;
 				}				break;
 					case 103:
 				{
 					 pcb->ret.value_6 = ( ( pcb->tos - 0 )->value.value_6 ); 
+					;
 				}				break;
 					case 104:
 				{
@@ -3282,10 +3388,12 @@ int _parse( _pcb* pcb )
 							pcb->ret.value_6 = pregex_ptn_create_alt(
 									( ( pcb->tos - 2 )->value.value_6 ), ( ( pcb->tos - 0 )->value.value_6 ), (pregex_ptn*)NULL );
 						
+					;
 				}				break;
 					case 105:
 				{
 					 pcb->ret.value_6 = ( ( pcb->tos - 0 )->value.value_6 ); 
+					;
 				}				break;
 					case 106:
 				{
@@ -3294,10 +3402,12 @@ int _parse( _pcb* pcb )
 							pcb->ret.value_6 = pregex_ptn_create_seq(
 									( ( pcb->tos - 1 )->value.value_6 ), ( ( pcb->tos - 0 )->value.value_6 ), (pregex_ptn*)NULL );
 						
+					;
 				}				break;
 					case 107:
 				{
 					 pcb->ret.value_6 = ( ( pcb->tos - 0 )->value.value_6 ); 
+					;
 				}				break;
 					case 108:
 				{
@@ -3305,6 +3415,7 @@ int _parse( _pcb* pcb )
 
 							pcb->ret.value_6 = pregex_ptn_create_kle( ( ( pcb->tos - 1 )->value.value_6 ) );
 						
+					;
 				}				break;
 					case 109:
 				{
@@ -3312,6 +3423,7 @@ int _parse( _pcb* pcb )
 
 							pcb->ret.value_6 = pregex_ptn_create_pos( ( ( pcb->tos - 1 )->value.value_6 ) );
 						
+					;
 				}				break;
 					case 110:
 				{
@@ -3319,10 +3431,12 @@ int _parse( _pcb* pcb )
 
 							pcb->ret.value_6 = pregex_ptn_create_opt( ( ( pcb->tos - 1 )->value.value_6 ) );
 						
+					;
 				}				break;
 					case 111:
 				{
 					 pcb->ret.value_6 = ( ( pcb->tos - 0 )->value.value_6 ); 
+					;
 				}				break;
 					case 112:
 				{
@@ -3336,6 +3450,7 @@ int _parse( _pcb* pcb )
 
 						pcb->ret.value_6 = pregex_ptn_create_char( ccl );
 					
+					;
 				}				break;
 					case 113:
 				{
@@ -3343,6 +3458,7 @@ int _parse( _pcb* pcb )
 
 						pcb->ret.value_6 = pregex_ptn_create_string( strbuf, 0 );
 					
+					;
 				}				break;
 					case 114:
 				{
@@ -3357,6 +3473,7 @@ int _parse( _pcb* pcb )
 
 						pcb->ret.value_6 = pregex_ptn_create_char( ccl );
 					
+					;
 				}				break;
 					case 115:
 				{
@@ -3364,79 +3481,96 @@ int _parse( _pcb* pcb )
 
 						pcb->ret.value_6 = pregex_ptn_create_sub( ( ( pcb->tos - 1 )->value.value_6 ) );
 					
+					;
 				}				break;
 					case 116:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 117:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 118:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 119:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 120:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 121:
 				{
 					#line 1039 "parse.par"
 	pcb->ret.value_1 = FALSE; 
+					;
 				}				break;
 					case 122:
 				{
 					#line 1043 "parse.par"
 	pcb->ret.value_1 = TRUE; 
+					;
 				}				break;
 					case 123:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 2 )->value.value_5 ); 
+					;
 				}				break;
 					case 124:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 125:
 				{
 					#line 1052 "parse.par"
 	reset_strbuf(); 
+					;
 				}				break;
 					case 126:
 				{
 					#line 1056 "parse.par"
 	strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) ); 
+					;
 				}				break;
 					case 127:
 				{
 					#line 1059 "parse.par"
  	strbuf_append( (char)'\\' );
 						strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) ); 	  
+					;
 				}				break;
 					case 128:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 2 )->value.value_5 ); 
+					;
 				}				break;
 					case 129:
 				{
 					#line 1067 "parse.par"
  	strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) ); 
+					;
 				}				break;
 					case 130:
 				{
 					#line 1068 "parse.par"
 	reset_strbuf(); 
+					;
 				}				break;
 					case 131:
 				{
 					#line 1072 "parse.par"
  	strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) ); 
+					;
 				}				break;
 					case 132:
 				{
@@ -3444,30 +3578,36 @@ int _parse( _pcb* pcb )
  	strbuf_append( (char)'\\' );
 						strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) );
 					
+					;
 				}				break;
 					case 133:
 				{
 					#line 1081 "parse.par"
 	pcb->ret.value_0 = pstrdup( strbuf ); 
+					;
 				}				break;
 					case 134:
 				{
 					#line 1082 "parse.par"
 	pcb->ret.value_0 = (char*)NULL; 
+					;
 				}				break;
 					case 135:
 				{
 					#line 1086 "parse.par"
  	strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) ); 
+					;
 				}				break;
 					case 136:
 				{
 					#line 1087 "parse.par"
  	reset_strbuf(); 
+					;
 				}				break;
 					case 137:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 138:
 				{
@@ -3475,20 +3615,24 @@ int _parse( _pcb* pcb )
  	reset_strbuf();
 						strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) );
 					
+					;
 				}				break;
 					case 139:
 				{
 					#line 1112 "parse.par"
 	strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) );  
+					;
 				}				break;
 					case 140:
 				{
 					 pcb->ret.value_5 = 0; 
+					;
 				}				break;
 					case 141:
 				{
 					#line 1119 "parse.par"
 	strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) ); 
+					;
 				}				break;
 					case 142:
 				{
@@ -3496,6 +3640,7 @@ int _parse( _pcb* pcb )
  	reset_strbuf();
 						strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) );
 					
+					;
 				}				break;
 					case 143:
 				{
@@ -3503,17 +3648,20 @@ int _parse( _pcb* pcb )
  	pcb->ret.value_0 = pstrdup( ( ( pcb->tos - 0 )->value.value_0 ) );
 						reset_strbuf();
 					
+					;
 				}				break;
 					case 144:
 				{
 					#line 1136 "parse.par"
 	pcb->ret.value_0 = strbuf; 
+					;
 				}				break;
 					case 145:
 				{
 					#line 1137 "parse.par"
 	reset_strbuf();
 						pcb->ret.value_0 = (char*)NULL; 
+					;
 				}				break;
 					case 146:
 				{
@@ -3529,25 +3677,30 @@ int _parse( _pcb* pcb )
 							reset_strbuf();
 						}
 					
+					;
 				}				break;
 					case 147:
 				{
 					#line 1157 "parse.par"
  last_code_begin = line; 
+					;
 				}				break;
 					case 148:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 149:
 				{
 					#line 1161 "parse.par"
 	reset_strbuf(); 
+					;
 				}				break;
 					case 150:
 				{
 					#line 1165 "parse.par"
 	strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) );		
+					;
 				}				break;
 					case 151:
 				{
@@ -3555,56 +3708,69 @@ int _parse( _pcb* pcb )
 	reset_strbuf();
 						strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) );
 					
+					;
 				}				break;
 					case 152:
 				{
 					
+					;
 				}				break;
 					case 153:
 				{
 					
+					;
 				}				break;
 					case 154:
 				{
 					
+					;
 				}				break;
 					case 155:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 156:
 				{
 					 pcb->ret.value_5 = 0; 
+					;
 				}				break;
 					case 157:
 				{
 					#line 1178 "parse.par"
  line++;	
+					;
 				}				break;
 					case 158:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 159:
 				{
 					 pcb->ret.value_5 = 0; 
+					;
 				}				break;
 					case 160:
 				{
 					
+					;
 				}				break;
 					case 161:
 				{
 					#line 1182 "parse.par"
  line++; 	
+					;
 				}				break;
 					case 162:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 163:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 164:
 				{
@@ -3613,1087 +3779,1358 @@ int _parse( _pcb* pcb )
 							line++;
 						pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 );
 					
+					;
 				}				break;
 					case 165:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 166:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 167:
 				{
 					#line 1200 "parse.par"
  pcb->ret.value_5 = line; 
+					;
 				}				break;
 					case 168:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 169:
 				{
 					
+					;
 				}				break;
 					case 170:
 				{
 					
+					;
 				}				break;
 					case 171:
 				{
 					
+					;
 				}				break;
 					case 172:
 				{
 					
+					;
 				}				break;
 					case 173:
 				{
 					
+					;
 				}				break;
 					case 174:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 175:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 176:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 177:
 				{
 					
+					;
 				}				break;
 					case 178:
 				{
 					
+					;
 				}				break;
 					case 179:
 				{
 					
+					;
 				}				break;
 					case 180:
 				{
 					
+					;
 				}				break;
 					case 181:
 				{
 					
+					;
 				}				break;
 					case 182:
 				{
 					
+					;
 				}				break;
 					case 183:
 				{
 					
+					;
 				}				break;
 					case 184:
 				{
 					
+					;
 				}				break;
 					case 185:
 				{
 					
+					;
 				}				break;
 					case 186:
 				{
 					
+					;
 				}				break;
 					case 187:
 				{
 					
+					;
 				}				break;
 					case 188:
 				{
 					
+					;
 				}				break;
 					case 189:
 				{
 					
+					;
 				}				break;
 					case 190:
 				{
 					
+					;
 				}				break;
 					case 191:
 				{
 					 pcb->ret.value_0 = ( ( pcb->tos - 1 )->value.value_0 ); 
+					;
 				}				break;
 					case 192:
 				{
 					
+					;
 				}				break;
 					case 193:
 				{
 					
+					;
 				}				break;
 					case 194:
 				{
 					
+					;
 				}				break;
 					case 195:
 				{
 					
+					;
 				}				break;
 					case 196:
 				{
 					
+					;
 				}				break;
 					case 197:
 				{
 					
+					;
 				}				break;
 					case 198:
 				{
 					 pcb->ret.value_0 = ( ( pcb->tos - 1 )->value.value_0 ); 
+					;
 				}				break;
 					case 199:
 				{
 					
+					;
 				}				break;
 					case 200:
 				{
 					
+					;
 				}				break;
 					case 201:
 				{
 					
+					;
 				}				break;
 					case 202:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 203:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 204:
 				{
 					 pcb->ret.value_3 = ( ( pcb->tos - 1 )->value.value_3 ); 
+					;
 				}				break;
 					case 205:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 206:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 207:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 208:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 209:
 				{
 					
+					;
 				}				break;
 					case 210:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 211:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 212:
 				{
 					
+					;
 				}				break;
 					case 213:
 				{
 					
+					;
 				}				break;
 					case 214:
 				{
 					
+					;
 				}				break;
 					case 215:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 216:
 				{
 					
+					;
 				}				break;
 					case 217:
 				{
 					
+					;
 				}				break;
 					case 218:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 219:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 220:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 221:
 				{
 					 pcb->ret.value_1 = ( ( pcb->tos - 1 )->value.value_1 ); 
+					;
 				}				break;
 					case 222:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 223:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 224:
 				{
 					
+					;
 				}				break;
 					case 225:
 				{
 					
+					;
 				}				break;
 					case 226:
 				{
 					
+					;
 				}				break;
 					case 227:
 				{
 					
+					;
 				}				break;
 					case 228:
 				{
 					
+					;
 				}				break;
 					case 229:
 				{
 					
+					;
 				}				break;
 					case 230:
 				{
 					
+					;
 				}				break;
 					case 231:
 				{
 					
+					;
 				}				break;
 					case 232:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 1 )->value.value_5 ); 
+					;
 				}				break;
 					case 233:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 234:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 235:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 236:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 237:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 238:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 239:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 240:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 241:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 242:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 243:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 244:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 245:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 246:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 247:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 248:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 249:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 250:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 251:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 252:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 253:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 254:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 255:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 256:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 257:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 258:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 259:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 260:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 261:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 262:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 263:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 264:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 265:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 266:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 267:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 268:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 269:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 270:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 271:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 272:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 273:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 274:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 275:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 276:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 277:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 278:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 279:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 280:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 281:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 282:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 283:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 284:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 285:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 286:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 287:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 288:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 289:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 290:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 291:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 292:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 293:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 294:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 295:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 296:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 297:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 298:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 299:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 300:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 301:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 302:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 303:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 304:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 305:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 306:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 307:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 308:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 309:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 310:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 311:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 312:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 313:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 314:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 315:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 316:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 317:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 318:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 319:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 320:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 321:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 322:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 323:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 324:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 325:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 326:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 327:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 328:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 329:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 330:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 331:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 332:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 333:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 334:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 335:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 336:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 337:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 338:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 339:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 340:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 341:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 342:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 343:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 344:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 345:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 346:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 347:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 348:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 349:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 350:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 351:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 352:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 353:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 354:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 355:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 356:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 357:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 358:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 359:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 360:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 361:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 362:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 363:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 364:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 365:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 366:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 367:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 368:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 369:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 370:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 371:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 372:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 373:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 374:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 375:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 376:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 377:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 378:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 379:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 380:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 381:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 382:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 383:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 384:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 385:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 386:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 387:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 388:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 389:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 390:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 391:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 392:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 393:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 394:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 395:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 396:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 397:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 398:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 399:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 400:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 401:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 402:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 403:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 404:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 405:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 406:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 407:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 408:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 409:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 410:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 411:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 412:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 413:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 414:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 415:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 416:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 417:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 418:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 419:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 420:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 421:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 422:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 423:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 424:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 425:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 426:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 427:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 428:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 429:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 430:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 431:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 432:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 433:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 					case 434:
 				{
 					 pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 ); 
+					;
 				}				break;
 	
 			}

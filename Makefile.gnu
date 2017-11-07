@@ -1,7 +1,6 @@
 # Standard GNU Makefile for the generic development environment at
 # Phorward Software (no autotools, etc. wanted in here).
 
-UNICC_TPLDIR	= ./tlt
 CFLAGS 			= -g -I../phorward/src -DUTF8 -DUNICODE -DDEBUG -Wall $(CLOCAL)
 LIBPHORWARD		= ../phorward/src/libphorward.a
 
@@ -23,10 +22,11 @@ SOURCES			= 	\
 				main.c \
 				xml.c
 
-all: unicc_only
+all: unicc
 
 boot_clean:
 	-rm min_lalr1/min_lalr1.o
+	-rm parse_boot1.o parse_boot2.o parse_boot3.o
 	-rm parse_boot1.c parse_boot2.c parse_boot2.h parse_boot3.c parse_boot3.h
 	-rm unicc_boot1 unicc_boot2 unicc_boot3 boot_min_lalr1
 
@@ -112,8 +112,7 @@ parse.c parse.h: parse.par unicc_boot3
 
 unicc: $(unicc_OBJECTS) $(LIBPHORWARD)
 	$(CC) -o $@ $(unicc_OBJECTS) $(LIBPHORWARD)
-
-unicc_only: unicc boot_clean
+	make -f Makefile.gnu boot_clean
 
 # --- UniCC Documentation ------------------------------------------------------
 #

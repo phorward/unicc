@@ -32,8 +32,6 @@ To obtain the sizes for both dimensions, there are expanding macros both in the
 <col_sep> tag. <row_sep> and <col_sep> define separators that will be inserted
 between the rows/columns, except the last row/column.
 
-FEATURES:
-+++++++++
 The UniCC Standard C Parser Template provides the following features.
 
 - Well tested, feature proven, used by UniCC's own grammar parser
@@ -53,7 +51,7 @@ Please check the UniCC user manual for detailed information and notes on using
 the UniCC Standard C Parser Template.
 -->
 
-<generator name="C" long-name="UniCC Standard C Template" version="1.1">
+<generator name="C" long-name="UniCC Standard C Template" version="1.2">
 	<!--
 	****************************************************************************
 	Escape sequences
@@ -153,7 +151,7 @@ the UniCC Standard C Parser Template.
 												of the following tags.
 	-->
 	<action_start>&#x09;&#x09;&#x09;&#x09;case @@production-number:&#x0A;&#x09;&#x09;&#x09;&#x09;{&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;</action_start>
-	<action_end>&#x0A;&#x09;&#x09;&#x09;&#x09;}&#x09;&#x09;&#x09;&#x09;break;
+	<action_end>&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;;&#x0A;&#x09;&#x09;&#x09;&#x09;}&#x09;&#x09;&#x09;&#x09;break;
 	</action_end>
 
 	<!--
@@ -248,7 +246,7 @@ the UniCC Standard C Parser Template.
 	-->
 
 	<scan_action_start>&#x09;&#x09;&#x09;&#x09;case @@symbol-number:&#x0A;&#x09;&#x09;&#x09;&#x09;{&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;</scan_action_start>
-	<scan_action_end>&#x0A;&#x09;&#x09;&#x09;&#x09;}&#x09;&#x09;&#x09;&#x09;break;
+	<scan_action_end>&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;;&#x0A;&#x09;&#x09;&#x09;&#x09;}&#x09;&#x09;&#x09;&#x09;break;
 	</scan_action_end>
 
 	<!--

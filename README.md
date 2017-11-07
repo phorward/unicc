@@ -23,25 +23,25 @@ This is the full definition for a four-function arithmetic syntax including thei
 
 #whitespaces    ' \t';
 #lexeme         int;
-#default action [* @@ = @1; *];
+#default action [* @@ = @1 *];
 
 #left           '+' '-';
 #left           '*' '/';
 
 //Defining the grammar
-calc$           -> expr          [* printf( "= %d\n", @expr ); *]
+calc$           -> expr          [* printf( "= %d\n", @expr ) *]
                 ;
 
-expr            -> expr '+' expr [* @@ = @1 + @3; *]
-                | expr '-' expr  [* @@ = @1 - @3; *]
-                | expr '*' expr  [* @@ = @1 * @3; *]
-                | expr '/' expr  [* @@ = @1 / @3; *]
-                | '(' expr ')'   [* @@ = @2; *]
+expr            -> expr '+' expr [* @@ = @1 + @3 *]
+                | expr '-' expr  [* @@ = @1 - @3 *]
+                | expr '*' expr  [* @@ = @1 * @3 *]
+                | expr '/' expr  [* @@ = @1 / @3 *]
+                | '(' expr ')'   [* @@ = @2 *]
                 | int
                 ;
 
-int             -> '0-9'         [* @@ = @1 - '0'; *]
-                | int '0-9'      [* @@ = @int * 10 + @2 - '0'; *]
+int             -> '0-9'         [* @@ = @1 - '0' *]
+                | int '0-9'      [* @@ = @int * 10 + @2 - '0' *]
                 ;
 ```
 
@@ -55,7 +55,7 @@ $ ./expr -sl
 = 23
 ```
 
-More real-world examples for programming languages implemented using UniCC are [xpl](https://github.com/phorward/xpl) and [rapidbatch](https://github.com/phorward/rapidbatch).
+More real-world examples for parsers implemented with UniCC are [xpl](https://github.com/phorward/xpl) and [rapidbatch](https://github.com/phorward/rapidbatch).
 
 ## Features
 
