@@ -1,6 +1,6 @@
-UniCC LALR(1) Parser Generator
-Version 1.1.1
-Oct 2017
+UNICC
+Version 1.2
+Nov 2017
 %!postproc(md): '```(.?)' '```\1'
 %!postproc(md): '^	([^-$])' '\1'
 %!postproc(md): '^ \* ' '- '
@@ -18,10 +18,20 @@ unicc [OPTION]... FILE
 
 = ABOUT =
 
-UniCC is a parser generator. It compiles an augmented grammar definition into
-a program source code. Because UniCC is intended to be a target-language
-independent parser generator, it can be configured via template definition files
-to emit parser programs in probably any programming language.
+UniCC (Universal Compiler Compiler) is a parser generator. It compiles an
+augmented grammar definition into a program source code. Because UniCC is
+intended to be target-language independent, it can be configured via template
+definition files to emit parser programs in probably any programming language.
+
+UniCC supports parser code generation for the following programming languages
+so far:
+
+- **C** is fully supported (and reference implementation),
+- **Python** is under development, but already running in first tests,
+- **ECMAScript** is prototyped in a stub, but may come soon.
+
+
+The official user's manual can be obtained for free here: https://www.phorward-software.com/products/unicc/unicc.pdf
 
 = COMMAND-LINE OPTIONS =
 
@@ -113,84 +123,18 @@ without running the program-module generator.
 
 Errors and warnings are printed to STDERR, any other kind of output to STDOUT.
 
-
-= BUILDING UNICC FROM SOURCE =
-
-UniCC is a software that was entirely established and developed on top of the
-Phorward Toolkit.
-
-The Phorward Toolkit and its library //libphorward// provide many useful
-functions for general purpose and extended software-development tasks,
-including standard data structures, a system-independent interface, extending
-data types and regular expression management functions, required by UniCC to
-construct the lexical analyzers.
-
-The Phorward Toolkit is released under the BSD License. More information can
-be obtained from the official product website at http://phorward-software.com.
-
-Before UniCC can be built, ensure that the Phorward Toolkit is installed in
-its latest version.
-
-Getting the latest version is simple using the Mercurial SCM with
-
-``` git clone https://github.com/phorward/phorward.git
-
-then, change into the cloned directory and run
-
-```
-./configure
-make
-make install
-```
-
-After that, clone the following repositories. They provide the UniCC Parser
-Generator and XPL, a demonstration of a tiny programming language implementation
-written with UniCC.
-
-```
-git clone https://github.com/phorward/unicc.git
-git clone https://github.com/phorward/xpl.git
-```
-
-Optionally, if hacking the UniCC Standard C Parser Template is wanted, clone
-
-``` git clone https://github.com/phorward/Cparser.git
-
-also.
-
-Change into the directory ``unicc`` and, again run
-
-```
-./configure
-make
-make install
-```
-
-After UniCC was successfully built and installed, ``xpl`` can be compiled
-out of the box without any configuration script.
-
-If the UniCC bootstrapping toolchain is wanted, configure UniCC with
-
-``` ./configure --with-bootstrap
-
-this will bootstrap the UniCC grammar parser with multiple generation states.
-
-
 = AUTHOR =
 
-The UniCC LALR(1) Parser Generator and all subsequent repositories and tools is
-written and maintained by Jan Max Meyer, Phorward Software Technologies.
+Written by Jan Max Meyer.
 
-Some other projects by the author are:
+= BUGS =
 
-- //pynetree// (http://pynetree.org): A light-weight parsing toolkit written in pure Python.
-- //phorward// (http://phorward.phorward-software.com): A free toolkit for parser development, lexical analysis, regular expressions and more.
-- //JS/CC// (http://jscc.brobston.com): The JavaScript parser generator.
+Please report bugs into the issue tracker at GitHub:
 
+https://github.com/phorward/unicc/issues
 
 = COPYRIGHT =
 
 Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer.
 
-You may use, modify and distribute this software under the terms and conditions of the 3-clause BSD license. The full license terms can be obtained from the file LICENSE.
-
+You may use, modify and distribute this software under the terms and conditions of the 3-clause BSD license.

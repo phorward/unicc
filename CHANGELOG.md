@@ -7,19 +7,21 @@ This file is used to document any relevant changes done to UniCC.
 Released on: Outstanding
 
 - Started an (yet incomplete) new standard template to provide parser generation
-  support for the Python programming language.
-- Imported the sourcecode of the C standard template into the UniCC repository
+  support for the Python programming language (templates/python.tlt).
+- Imported the source code of the C standard template into the UniCC repository
   for further developments, the previous repository gets closed.
+  (tempates/c.tlt)
 - Fixed bug in the lexical analyzer generation by linking against
   libphorward 0.20 that caused a massive overhead of deterministic finite
   automation states in context-sensitive mode due an arbitrary character
-  set order. This bug did not produce invalid parsers, but much huger ones.
-- Imported the sourcecode of min_lalr1 into the unicc repository, because it
+  set order. This bug did not produce invalid parsers, but horribly huge tables.
+- Imported the source code of min_lalr1 into the unicc repository, because it
   is the only place where it is used.
 - Several internal revisions
   - Changed internal names for files, functions and variables.
   - Replaced old-style function headers by more convenient ones.
   - Removed unused code.
+- Renewed manpage
 - New README.md and updated CHANGELOG.md
 
 ## v1.1

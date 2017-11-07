@@ -1,95 +1,33 @@
-.TH "UniCC LALR(1) Parser Generator" 1 "Sept 2017" "Version 1.1.1"
+.TH "UNICC" 1 "Nov 2017" "Version 1.2"
 
 .SH NAME
-
 .P
-\fBUniCC\fR is a LALR(1) parser generator and language development system.
+\fBunicc\fR \- target\-language independent parser generator.
 .SH SYNOPSIS
 .P
 unicc [OPTION]... FILE
 .SH ABOUT
 .P
-Its design\-goal is to serve as an all\-round design and build tool for any
-parsing\-related issue, including production\-quality compiler construction and
-the implementation of domains specific languages.
+UniCC (Universal Compiler Compiler) is a parser generator. It compiles an
+augmented grammar definition into a program source code. Because UniCC is
+intended to be target\-language independent, it can be configured via template
+definition files to emit parser programs in probably any programming language.
 .P
-It comes with useful features for both grammar prototyping and design, parser
-optimization, semantic augmentation and parser programming. Lexical symbols can
-be directly defined within productions, right\-hand side items can be referenced
-by meaningful names within semantic actions, instead of only their offsets.
-Features like virtual\- and embedded\-productions finally help to rapidly build\-up
-iterative and optional grammatical structures.
-.P
-Standard features like automatic conflict resolution, terminal and production
-precedence association, state compression as well as parser trace and behavior
-modification trough semantic actions round up the whole system.
-.P
-UniCC is technically a target language independent parser generator, which
-means that it is not bound to a special programming language. Currently, only
-support of the C programming language is given due the UniCC Standard C Parser
-Template. More standard templates for other languages like C++ and Java will be
-developed and released in future by Phorward Software Technologies, but are not
-available for now; Any help and support on this area is appreciated.
-.P
-UniCC has been developed since 2006 and has its origin at Phorward Software
-Technologies and is initially written and maintained by its 1985 born core
-developer, Jan Max Meyer. Phorward Software Technologies is a software company
-from Dortmund, Germany, which focuses its business on compiler construction,
-scripting languages and software development tools, both in the area of open
-source and proprietary solutions.
-.P
-This document should serve as a quick reference note on how to use UniCC and
-set up its environment. There is also additional documentation in form of a
-User's Manual available, which is included into the binary packages of UniCC
-and can be obtained from the Phorward Software Technologies website.
-.P
-Please check out http://unicc.phorward\-software.com/ to get latest news,
-documentation, updates and support on UniCC.
-.SH FEATURES
-.P
-UniCC features the following, unique tools and possibilities.
+UniCC supports parser code generation for the following programming languages
+so far:
 
 .RS
 .IP \(bu 3
-A powerful and inovative BNF\-based grammar definition language
+\fBC\fR is fully supported (and reference implementation),
 .IP \(bu 3
-Full Unicode support
+\fBPython\fR is under development, but already running in first tests,
 .IP \(bu 3
-Build\-in lexical analyzer generator
-.IP \(bu 3
-Grammar prototyping features
-.IP \(bu 3
-Virtual productions
-.IP \(bu 3
-Anonymous nonterminals
-.IP \(bu 3
-Semantically determined symbols
-.IP \(bu 3
-Two parser construction modes allow the use of different algorithmic
-approaches relating the whitespace handling
-.IP \(bu 3
-Target\-language independent parser development
-.IP \(bu 3
-Template\-based program\-module generator and XML\-based parser description
-file generator
-.IP \(bu 3
-Platform\-independent (console\-based)
-.IP \(bu 3
-Standard LALR(1) conflict resolution
-.IP \(bu 3
-Supporting the C programming language via the UniCC Standard C Parser
-Template, providing many useful features like integrated Syntax Tree
-Generator and Error Recovery
+\fBECMAScript\fR is prototyped in a stub, but may come soon.
 .RE
 .IP
 
-.SH ENVIRONMENT SETUP
 .P
-To get UniCC work properly, the \fBunicc\fR executable must be in the PATH.
-It is also required to set an environment variable UNICC_TPLDIR that directs
-to a directory holding the UniCC target language templates. If UNICC_TPLDIR is
-not set, UniCC will automatically check for templates in $prefix/share/unicc/tlt
-on Linux/Unix.
+The official user's manual can be obtained for free here: https://www.phorward\-software.com/products/unicc/unicc.pdf
 .SH COMMAND-LINE OPTIONS
 .P
 The UniCC command\-line interface supports various, combinable options to
@@ -165,115 +103,19 @@ Triggers UniCC to only run the parser description file generator
 without running the program\-module generator.
 .P
 Errors and warnings are printed to STDERR, any other kind of output to STDOUT.
-.SH BUILDING UNICC FROM SOURCE
-.P
-UniCC is a software that was entirely established and developed on top of the
-Phorward Toolkit.
-.P
-The Phorward Toolkit and its library \fIlibphorward\fR provide many useful
-functions for general purpose and extended software\-development tasks,
-including standard data structures, a system\-independent interface, extending
-data types and regular expression management functions, required by UniCC to
-construct the lexical analyzers.
-.P
-The Phorward Toolkit is released under the BSD License. More information can
-be obtained from the official product website at http://phorward\-software.com.
-.P
-Before UniCC can be built, ensure that the Phorward Toolkit is installed in
-its latest version.
-.P
-Getting the latest version is simple using the Mercurial SCM with
-
-.nf
-git clone https://github.com/phorward/phorward.git
-.fi
-
-
-.P
-then, change into the cloned directory and run
-
-.nf
-\&./configure
-make
-make install
-.fi
-
-
-.P
-After that, clone the following repositories. They provide the UniCC Parser
-Generator and XPL, a demonstration of a tiny programming language implementation
-written with UniCC.
-
-.nf
-git clone https://github.com/phorward/unicc.git
-git clone https://github.com/phorward/xpl.git
-.fi
-
-
-.P
-Optionally, if hacking the UniCC Standard C Parser Template is wanted, clone
-
-.nf
-git clone https://github.com/phorward/Cparser.git
-.fi
-
-
-.P
-also.
-.P
-Change into the directory unicc and, again run
-
-.nf
-\&./configure
-make
-make install
-.fi
-
-
-.P
-After UniCC was successfully built and installed, xpl can be compiled
-out of the box without any configuration script.
-.P
-If the UniCC bootstrapping toolchain is wanted, configure UniCC with
-
-.nf
-\&./configure --with-bootstrap
-.fi
-
-
-.P
-this will bootstrap the UniCC grammar parser with multiple generation states.
-.P
-When bootstraping toolchain is enabled, it is additionally required to install
-the min_lalr1 parser generator. This program can be obtained with
-
-.nf
-git clone https://github.com/phorward/min_lalr1.git
-.fi
-
-
 .SH AUTHOR
 .P
-The UniCC LALR(1) Parser Generator and all subsequent repositories and tools is
-written and maintained by Jan Max Meyer, Phorward Software Technologies.
+Written by Jan Max Meyer.
+.SH BUGS
 .P
-Some other projects by the author are:
-
-.RS
-.IP \(bu 3
-\fIpynetree\fR (http://pynetree.org): A light\-weight parsing toolkit written in pure Python.
-.IP \(bu 3
-\fIphorward\fR (http://phorward.phorward\-software.com): A free toolkit for parser development, lexical analysis, regular expressions and more.
-.IP \(bu 3
-\fIJS/CC\fR (http://jscc.brobston.com): The JavaScript parser generator.
-.RE
-.IP
-
+Please report bugs into the issue tracker at GitHub:
+.P
+https://github.com/phorward/unicc/issues
 .SH COPYRIGHT
 .P
 Copyright (C) 2006\-2017 by Phorward Software Technologies, Jan Max Meyer.
 .P
-You may use, modify and distribute this software under the terms and conditions of the 3\-clause BSD license. The full license terms can be obtained from the file LICENSE.
+You may use, modify and distribute this software under the terms and conditions of the 3\-clause BSD license.
 
 .\" man code generated by txt2tags 2.6. (http://txt2tags.org)
 .\" cmdline: txt2tags -t man -o unicc.1.man unicc.t2t

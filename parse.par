@@ -72,10 +72,9 @@ struct @@prefix_rhs_item
 PARSER*	parser			= (PARSER*)NULL;
 
 static char*	src_ptr;
-static int		directive_level	= 0; /* Directive level */
+
 static int		prec_cnt		= 1; /* Precedence level */
 static int		line			= 1; /* Line within source file */
-static int 		auto_regex		= 0; /* Nameless Regex counter */
 static int		last_code_begin;	 /* Last code begin */
 static int		embedded_count	= 0;
 static PROD*	current_prod	= (PROD*)NULL;
@@ -1237,9 +1236,7 @@ int parse_grammar( PARSER* p, char* src )
 	@@prefix_pcb pcb;
 
 	line = 1;
-	auto_regex = 0;
 	prec_cnt = 1;
-	directive_level = 0;
 	embedded_count = 0;
 	memset( &pcb, 0, sizeof( pcb ) );
 
