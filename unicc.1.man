@@ -8,10 +8,11 @@
 unicc [OPTION]... FILE
 .SH ABOUT
 .P
-UniCC (Universal Compiler Compiler) is a parser generator. It compiles an
-augmented grammar definition into a program source code. Because UniCC is
-intended to be target\-language independent, it can be configured via template
-definition files to emit parser programs in probably any programming language.
+UniCC (UNIversal Compiler Compiler) is a LALR(1) parser generator.
+It compiles an augmented grammar definition into a program source code that
+parses the grammar. Because UniCC is intended to be target\-language independent,
+it can be configured via template definition files to emit parsers in nearly
+any programming language.
 .P
 UniCC supports parser code generation for the following programming languages
 so far:
