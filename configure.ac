@@ -1,5 +1,5 @@
 AC_PREREQ([2.69])
-AC_INIT([UniCC], [1.0.0])
+AC_INIT([UniCC], [1.2.0])
 AC_PREFIX_DEFAULT([/usr])
 AC_CONFIG_SRCDIR([main.c])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])

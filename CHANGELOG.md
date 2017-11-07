@@ -4,7 +4,7 @@ This file is used to document any relevant changes done to UniCC.
 
 ## v1.2
 
-Released on: Outstanding
+Released on: December 7, 2017
 
 - Started an (yet incomplete) new standard template to provide parser generation
   support for the Python programming language (templates/python.tlt).
@@ -26,7 +26,7 @@ Released on: Outstanding
 
 ## v1.1
 
-Released on: Sep 9, 2016
+Released on: September 9, 2016
 
 - Internal fixes to compiles against libphorward 0.18
 - Licensing terms changed from Artistic License 2.0 to 3-clause BSD-license
