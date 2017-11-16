@@ -18,11 +18,11 @@ The revision is done to simulate tokens which are separated by whitespaces.
 //parser// is the pointer to parser information structure. */
 void rewrite_grammar( PARSER* parser )
 {
-	LIST	*	l,
-			*	m,
-			*	stack		= (LIST*)NULL,
-			*	done		= (LIST*)NULL,
-			*	rewritten	= (LIST*)NULL;
+	plistel	*	e,
+			*	f;
+	plist	*	stack,
+			*	done,
+			*	rewritten;
 	SYMBOL	*	ws_all		= (SYMBOL*)NULL,
 			*	ws_list,
 			*	ws_optlist,
@@ -42,16 +42,16 @@ void rewrite_grammar( PARSER* parser )
 	*/
 
 	/* Create productions for all whitespaces */
-	for( l = parser->symbols; l; l = l->next )
+	plist_for( parser->symbols, e )
 	{
-		sym = l->pptr;
+		sym = (SYMBOL*)plist_access( e );
 
 		if( sym->whitespace )
 		{
 			if( !ws_all )
 			{
 				ws_all = get_symbol( parser, P_WHITESPACE,
-						SYM_NON_TERMINAL, TRUE );
+										SYM_NON_TERMINAL, TRUE );
 				ws_all->lexem = TRUE;
 				ws_all->generated = TRUE;
 			}
@@ -78,35 +78,39 @@ void rewrite_grammar( PARSER* parser )
 		Find out all lexeme non-terminals and those
 		which belong to them.
 	*/
-	for( l = parser->symbols; l; l = l->next )
+	done = plist_create( 0, PLIST_MOD_PTR | PLIST_MOD_RECYCLE );
+	stack = plist_create( 0, PLIST_MOD_PTR | PLIST_MOD_RECYCLE );
+	rewritten = plist_create( 0, PLIST_MOD_PTR | PLIST_MOD_RECYCLE );
+
+	plist_for( parser->symbols, e )
 	{
-		sym = l->pptr;
+		sym = (SYMBOL*)plist_access( e );
 
 		if( sym->lexem && sym->type == SYM_NON_TERMINAL )
 		{
-			done = list_push( done, sym );
-			stack = list_push( stack, sym );
+			plist_push( done, sym );
+			plist_push( stack, sym );
 		}
 	}
 
-	while( list_count( stack ) )
+	while( plist_pop( stack, &sym ) )
 	{
-		stack = list_pop( stack, (void**)&sym );
-
-		for( l = sym->productions; l; l = l->next )
+		plist_for( sym->productions, e )
 		{
-			p = l->pptr;
-			for( m = p->rhs; m; m = m->next )
+			p = (PROD*)plist_access( e );
+
+			plist_for( p->rhs, f )
 			{
-				sym = m->pptr;
+				sym = (SYMBOL*)plist_access( f );
 
 				if( sym->type == SYM_NON_TERMINAL )
 				{
-					if( list_find( done, sym ) == -1 )
+					if( !plist_get_by_ptr( done, sym ) )
 					{
-						done = list_push( done, sym );
-						stack = list_push( stack, sym );
 						sym->lexem = TRUE;
+
+						plist_push( done, sym );
+						plist_push( stack, sym );
 					}
 				}
 			}
@@ -120,35 +124,32 @@ void rewrite_grammar( PARSER* parser )
 	*/
 	if( !( parser->goal->lexem ) )
 	{
-		done = list_free( done );
-		stack = (LIST*)NULL;
+		plist_erase( done );
+		plist_erase( stack );
 
-		done = list_push( done, parser->goal );
-		stack = list_push( stack, parser->goal );
+		plist_push( done, parser->goal );
+		plist_push( stack, parser->goal );
 
-		while( list_count( stack ) )
+		while( plist_pop( stack, &sym ) )
 		{
-			stack = list_pop( stack, (void**)&sym );
-
-			for( l = sym->productions; l; l = l->next )
+			plist_for( sym->productions, e )
 			{
-				p = (PROD*)list_access( l );
+				p = (PROD*)plist_access( e );
 
 				/* Don't rewrite a production twice! */
-				if( list_find( rewritten, p ) > -1 )
+				if( plist_get_by_ptr( rewritten, p ) )
 					continue;
 
-				for( m = p->rhs; m; m = m->next )
+				plist_for( p->rhs, f )
 				{
-					sym = (SYMBOL*)list_access( m );
+					sym = (SYMBOL*)plist_access( f );
 
-					if( sym->type == SYM_NON_TERMINAL
-						&& !( sym->lexem ) )
+					if( sym->type == SYM_NON_TERMINAL && !( sym->lexem ) )
 					{
-						if( list_find( done, sym ) == -1 )
+						if( !plist_get_by_ptr( done, sym ) )
 						{
-							done = list_push( done, sym );
-							stack = list_push( stack, sym );
+							plist_push( done, sym );
+							plist_push( stack, sym );
 						}
 					}
 					else if( ( sym->type == SYM_NON_TERMINAL && sym->lexem )
@@ -196,21 +197,21 @@ void rewrite_grammar( PARSER* parser )
 
 						/* Replace the rewritten symbol with the
 						  		production's symbol! */
-						m->pptr = nsym;
+						memcpy( f + 1, &nsym, sizeof( SYMBOL* ) );
 
 						pfree( deriv );
 					}
 				}
 
 				/* Mark this production as already rewritten! */
-				rewritten = list_push( rewritten, p );
+				plist_push( rewritten, p );
 			}
 		}
 	}
 
-	done = list_free( done );
-	rewritten = list_free( rewritten );
-	stack = (LIST*)NULL;
+	plist_free( done );
+	plist_free( rewritten );
+	plist_free( stack );
 
 	/* Build a new goal symbol */
 	deriv = pstrdup( parser->goal->name );
@@ -223,12 +224,6 @@ void rewrite_grammar( PARSER* parser )
 	while( sym && sym->derived_from != parser->goal );
 
 	sym = get_symbol( parser, deriv, SYM_NON_TERMINAL, TRUE );
-	if( !sym )
-	{
-		OUTOFMEM;
-		return;
-	}
-
 	sym->generated = TRUE;
 	pfree( deriv );
 
@@ -251,8 +246,8 @@ instead of overlapping ones. This function was completely rewritten in Nov 2009.
 */
 void unique_charsets( PARSER* parser )
 {
-	LIST*		l;
-	LIST*		m;
+	plistel*	e;
+	plistel*	f;
 	SYMBOL*		sym;
 	SYMBOL*		tsym;
 	SYMBOL*		nsym;
@@ -272,12 +267,12 @@ void unique_charsets( PARSER* parser )
 
 	do
 	{
-		old_prod_cnt = list_count( parser->productions );
+		old_prod_cnt = plist_count( parser->productions );
 
-		LISTFOR( parser->symbols, l )
+		plist_for( parser->symbols, e )
 		{
 			/* Get symbol pointer */
-			sym = (SYMBOL*)list_access( l );
+			sym = (SYMBOL*)plist_access( e );
 			if( sym->type != SYM_CCL_TERMINAL )
 				continue;
 
@@ -291,13 +286,9 @@ void unique_charsets( PARSER* parser )
 
 			/* Find overlapping character classes */
 			MSG( "Searching for overlapping character classes" );
-			LISTFOR( parser->symbols, m )
+			plist_for( parser->symbols, f )
 			{
-				/* Get valid symbol pointer */
-				/* if( l == m )
-					continue; */
-
-				tsym = (SYMBOL*)list_access( m );
+				tsym = (SYMBOL*)plist_access( f );
 
 				if( tsym->type != SYM_CCL_TERMINAL )
 					continue;
@@ -360,7 +351,8 @@ void unique_charsets( PARSER* parser )
 					tsym->name = pstrcatstr( tsym->name,
 									P_REWRITTEN_CCL, FALSE );
 					tsym->type = SYM_NON_TERMINAL;
-					tsym->first = list_free( tsym->first );
+					plist_erase( tsym->first );
+					tsym->productions = plist_create( 0, PLIST_MOD_PTR );
 
 					/* Create & append productions */
 					p = create_production( parser, tsym );
@@ -382,7 +374,7 @@ void unique_charsets( PARSER* parser )
 		getchar();
 		*/
 	}
-	while( old_prod_cnt != list_count( parser->productions ) );
+	while( old_prod_cnt != plist_count( parser->productions ) );
 
 	VOIDRET;
 }
@@ -393,28 +385,26 @@ to be prepared for LALR(1) table generation.
 //parser// is the pointer to parser information structure. */
 void fix_precedences( PARSER* parser )
 {
-	PROD*	p;
-	int		i;
-	LIST*	l;
-	LIST*	m;
-	BOOLEAN	found;
-	SYMBOL*	sym;
+	PROD*		p;
+	plistel*	e;
+	plistel*	f;
+	BOOLEAN		found;
+	SYMBOL*		sym;
 
 	/*
 	 * If nonterminal symbol has a precedence,
 	 * attach it to all its productions!
 	 */
-	for( l = parser->symbols; l; l = l->next )
+	plist_for( parser->symbols, e )
 	{
-		sym = (SYMBOL*)l->pptr;
+		sym = (SYMBOL*)plist_access( e );
 
 		if( sym->type == SYM_NON_TERMINAL
-			&& sym->prec > 0
-				&& !( sym->generated ) )
+				&& sym->prec > 0 && !( sym->generated ) )
 		{
-			for( m = sym->productions; m; m = m->next )
+			plist_for( sym->productions, f )
 			{
-				p = (PROD*)m->pptr;
+				p = (PROD*)plist_access( f );
 
 				if( p->prec <= sym->prec )
 					p->prec = sym->prec;
@@ -426,18 +416,18 @@ void fix_precedences( PARSER* parser )
 		Set production's precedence level to the
 		one of the rightmost terminal!
 	*/
-	for( l = parser->productions; l; l = l->next )
+	plist_for( parser->productions, e )
 	{
-		p = (PROD*)l->pptr;
+		p = (PROD*)plist_access( e );
 
 		if( p->prec > 0 )
 			continue;
 
 		/* First try to find leftmost terminal */
 		found = FALSE;
-		for( i = list_count( p->rhs ) - 1; i >= 0; i-- )
+		for( f = plist_last( p->rhs ); f; f = plist_prev( f ) )
 		{
-			sym = (SYMBOL*)list_getptr( p->rhs, i );
+			sym = (SYMBOL*)plist_access( f );
 
 			if( sym->lexem )
 			{
@@ -452,9 +442,9 @@ void fix_precedences( PARSER* parser )
 			non-terminal with a precedence
 		*/
 		if( !found )
-			for( i = list_count( p->rhs ) - 1; i >= 0; i-- )
+			for( f = plist_last( p->rhs ); f; f = plist_prev( f ) )
 			{
-				sym = (SYMBOL*)list_getptr( p->rhs, i );
+				sym = (SYMBOL*)plist_access( f );
 
 				if( sym->prec > p->prec )
 				{
@@ -471,49 +461,54 @@ void fix_precedences( PARSER* parser )
 data, holding everything :) */
 void inherit_fixiations( PARSER* parser )
 {
-	LIST*		l;
-	LIST*		m;
+	plistel*	e;
+	plistel*	f;
 	SYMBOL*		sym;
 	PROD*		p;
-	LIST*		done	= (LIST*)NULL;
-	LIST*		stack	= (LIST*)NULL;
 
-	for( l = parser->symbols; l; l = l->next )
+	plist*		done;
+	plist*		stack;
+
+	done = plist_create( 0, PLIST_MOD_PTR );
+	stack = plist_create( 0, PLIST_MOD_PTR );
+
+	plist_for( parser->symbols, e )
 	{
-		sym = l->pptr;
+		sym = (SYMBOL*)plist_access( e );
 
 		if( sym->fixated && sym->type == SYM_NON_TERMINAL )
 		{
-			done = list_push( done, sym );
-			stack = list_push( stack, sym );
+			plist_push( done, sym );
+			plist_push( stack, sym );
 		}
 	}
 
-	while( list_count( stack ) )
+	while( plist_pop( stack, &sym ) )
 	{
-		stack = list_pop( stack, (void**)&sym );
-
-		for( l = sym->productions; l; l = l->next )
+		plist_for( sym->productions, e )
 		{
-			p = l->pptr;
-			for( m = p->rhs; m; m = m->next )
+			p = (PROD*)plist_access( e );
+
+			plist_for( p->rhs, f )
 			{
-				sym = m->pptr;
+				sym = (SYMBOL*)plist_access( f );
 
 				if( sym->type == SYM_NON_TERMINAL )
 				{
-					if( list_find( done, sym ) == -1 )
+					if( !plist_get_by_ptr( done, sym ) )
 					{
-						done = list_push( done, sym );
-						stack = list_push( stack, sym );
 						sym->fixated = TRUE;
+
+						plist_push( done, sym );
+						plist_push( stack, sym );
 					}
 				}
 			}
 		}
 	}
 
-	list_free( done );
+	plist_free( stack );
+	plist_free( done );
 }
 
 /** Inherits value types of rewritten symbols from their base.
@@ -522,12 +517,12 @@ This is required for symbols that where generated before their definition in
 the code - where a possible value type is still unknown. */
 void inherit_vtypes( PARSER* parser )
 {
-	SYMBOL*	sym;
-	LIST*	l;
+	SYMBOL*		sym;
+	plistel*	e;
 
-	for( l = parser->symbols; l; l = list_next( l ) )
+	plist_for( parser->symbols, e )
 	{
-		sym = (SYMBOL*)list_access( l );
+		sym = (SYMBOL*)plist_access( e );
 
 		if( !sym->vtype && sym->derived_from )
 			sym->vtype = sym->derived_from->vtype;
@@ -541,19 +536,17 @@ void setup_single_goal( PARSER* parser )
 	PROD*	p;
 	char*	deriv;
 
-	if( list_count( parser->goal->productions ) == 1 )
+	if( plist_count( parser->goal->productions ) == 1 )
 	{
-		p = ((PROD*)(parser->goal->productions->pptr));
+		p = (PROD*)plist_access( plist_first( parser->goal->productions ) );
 
-		if( list_count( p->rhs ) == 1 )
+		if( plist_count( p->rhs ) == 1 )
 		{
-			sym = (SYMBOL*)list_getptr( p->rhs, list_count( p->rhs ) - 1 );
+			sym = (SYMBOL*)plist_access( plist_last( p->rhs ) );
 
 			if( sym->type == SYM_NON_TERMINAL )
 			{
-				list_push( p->rhs, (void*)parser->end_of_input );
-				list_push( p->rhs_idents, (void*)NULL );
-
+				plist_push( p->rhs, parser->end_of_input );
 				return; /* Nothing to do anymore! */
 			}
 		}
@@ -586,74 +579,6 @@ void setup_single_goal( PARSER* parser )
 	parser->goal = sym;
 }
 
-/** Re-orders all parser symbols after all parsing and revision steps are done
-according to the following order:
-
-# Keywords-Terminals
-# Regex-Terminals
-# Character-Class Terminals
-# Nonterminals
-
-After this, id's are re-assigned.
-
-//parser// is the pointer to the parser information structure. */
-void sort_symbols( PARSER* parser )
-{
-	LIST*			new_order		= (LIST*)NULL;
-	LIST*			l;
-	SYMBOL*			sym;
-
-	int				sort_order[]	=	{
-											/* SYM_REGEX_TERMINAL,
-												once for keywords, then for
-												real regex terminals
-											*/
-											SYM_REGEX_TERMINAL,
-											SYM_REGEX_TERMINAL,
-											SYM_CCL_TERMINAL,
-											SYM_SYSTEM_TERMINAL,
-											SYM_NON_TERMINAL
-										};
-	int				i;
-	int				id				= 0;
-
-	/*
-	17.01.2011	Jan Max Meyer
-	Sort keyword regex terminals before any other kind of terminal... hmm ...
-	in the past, keywords where of type SYM_KW_TERMINAL, now they are
-	SYM_REGEX_TERMINAL, so this must be hard-coded here, check for it if one's
-	like to change this (be careful!!)
-	*/
-
-	/* Sort symbols according above sort order into a new list */
-	for( i = 0; i < sizeof( sort_order ) / sizeof( *sort_order ); i++ )
-	{
-		LISTFOR( parser->symbols, l )
-		{
-			sym = (SYMBOL*)list_access( l );
-
-			if( sym->type == sort_order[i] )
-			{
-				/* That's it... */
-				if( i == 0 && sym->keyword == FALSE )
-					continue;
-				else if( i == 1 && sym->keyword == TRUE )
-					continue;
-
-				if( !( new_order = list_push( new_order, (void*)sym ) ) )
-					OUTOFMEM;
-
-				/* Re-assign new ID! */
-				sym->id = id++;
-			}
-		}
-	}
-
-	/* Replace the list */
-	list_free( parser->symbols );
-	parser->symbols = new_order;
-}
-
 /** Turns character-classes into patterns, to be later integrated into lexical
 analyzers.
 
@@ -664,14 +589,14 @@ finished, and no more character classes are added.
 void charsets_to_ptn( PARSER* parser )
 {
 	SYMBOL*			sym;
-	LIST*			l;
+	plistel*			e;
 
 	PROC( "charsets_to_ptn" );
 	PARMS( "parser", "%p", parser );
 
-	LISTFOR( parser->symbols, l )
+	plist_for( parser->symbols, e )
 	{
-		sym = (SYMBOL*)list_access( l );
+		sym = (SYMBOL*)plist_access( e );
 
 		if( sym->type == SYM_CCL_TERMINAL )
 			sym->ptn = pregex_ptn_create_char( sym->ccl );

@@ -154,15 +154,16 @@ struct _symbol
 	int			id;				/* Symbol ID */
 	int			type;			/* Symbol type */
 
+	char*		keyname;		/* Key name */
 	char*		name;			/* Symbol name */
 
 	pccl*		ccl;			/* Character-class definition */
 
-	LIST*		productions;	/* List of productions attached to a
+	plist*		productions;	/* List of productions attached to a
 									non-terminal symbol */
-	LIST*		first;			/* The symbol's first set */
+	plist*		first;			/* The symbol's first set */
 
-	LIST*		all_sym;		/* List of all possible terminal
+	plist*		all_sym;		/* List of all possible terminal
 									definitions, for multiple-terminals.
 									This list will only be set in the
 									primary symbol.
@@ -210,21 +211,14 @@ struct _prod
 	int			id;				/* Production ID */
 
 	SYMBOL*		lhs;			/* Primary left-hand side symbol */
-	LIST*		all_lhs;		/* All possible left-hand sides */
+	plist*		all_lhs;		/* List of all possible left-hand sides */
 
-	LIST*		rhs;			/* Right-hand side symbols */
-
-	LIST*		rhs_idents;		/* List of offset identifiers for rhs items;
-									This list is hold equivalent to the
-										right-hand side symbol list */
-
-	LIST*		sem_rhs;		/* Semantic right-hand side; This
+	plist*		rhs;			/* Right-hand side symbols */
+	plist*		sem_rhs;		/* Semantic right-hand side; This
 									may differ from the right hand side
 										in case of embedded productions,
 											to allow a mixture of the
 												outer- and inner-production */
-	LIST*		sem_rhs_idents;	/* Semantic right-hand side identifiers;
-									Must be equivalent to sem_rhs */
 
 	int			prec;			/* Precedence level */
 	int			assoc;			/* Associativity flag */
@@ -246,7 +240,7 @@ struct _item
 	int			dot_offset;		/* The dot's offset from the left
 									of the right hand side */
 	SYMBOL*		next_symbol;	/* Symbol following the dot */
-	LIST*		lookahead;		/* Set of lookahead-symbols */
+	plist*		lookahead;		/* Set of lookahead-symbols */
 };
 
 /* LALR(1) State */
@@ -300,11 +294,8 @@ struct _option
 /* Parser information structure */
 struct _parser
 {
-	plist*		definitions;	/* Symbol hash table for faster
-									symbol access */
-	LIST*		symbols;		/* Linked list for sequencial
-									symbol management */
-	LIST*		productions;	/* Linked list of productions */
+	plist*		symbols;		/* Symbol table */
+	plist*		productions;	/* Productions */
 	LIST*		lalr_states;	/* Linked list of LALR(1) states */
 	LIST*		dfa;			/* List containing the DFA for
 									regex terminal recognition */

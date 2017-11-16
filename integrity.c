@@ -18,13 +18,14 @@ Usage:	Grammar integrity checking functions
 Returns a TRUE if undefined or unused symbols are found, else FALSE. */
 BOOLEAN find_undef_or_unused( PARSER* parser )
 {
-	LIST*		l;
+	plistel*	e;
 	SYMBOL*		sym;
 	BOOLEAN		ret		= FALSE;
 
-	for( l = parser->symbols; l; l = l->next )
+	plist_for( parser->symbols, e )
 	{
-		sym = l->pptr;
+		sym = (SYMBOL*)plist_access( e );
+
 		if( sym->generated == FALSE && sym->defined == FALSE )
 		{
 			print_error( parser, (sym->type == SYM_NON_TERMINAL ) ?
@@ -225,14 +226,15 @@ static BOOLEAN check_nfa_matches_parser(
 		/* Reduce */
 		while( act & REDUCE )
 		{
-			rprod = (PROD*)list_getptr( parser->productions, idx );
+			rprod = (PROD*)plist_access(
+						plist_get( parser->productions, idx ) );
 			/*
 			fprintf( stderr, "tos = %d, reducing production %d, %d\n",
 				tos, idx, list_count( rprod->rhs ) );
 			dump_production( stderr, rprod, FALSE, FALSE );
 			*/
 
-			tos -= list_count( rprod->rhs );
+			tos -= plist_count( rprod->rhs );
 
 			/*
 			fprintf( stderr, "tos %d\n", tos );
@@ -295,8 +297,8 @@ BOOLEAN check_regex_anomalies( PARSER* parser )
 	LIST*			l;
 	LIST*			m;
 	LIST*			n;
-	LIST*			o;
-	LIST*			q;
+	plistel*		e;
+	plistel*		f;
 	PROD*			p;
 	SYMBOL*			lhs;
 	SYMBOL*			sym;
@@ -429,27 +431,32 @@ BOOLEAN check_regex_anomalies( PARSER* parser )
 									FIRST-sets of following symbols, report
 									this anomaly!
 								*/
-								p = (PROD*)list_getptr(
-										parser->productions, col->index );
+								p = (PROD*)plist_access(
+											plist_get( parser->productions,
+															col->index ) );
 								lhs = p->lhs;
 
 								/* Go trough all productions */
-								for( o = parser->productions, found = FALSE;
-										o && !found; o = list_next( o ) )
+								found = FALSE;
+
+								plist_for( parser->productions, e )
 								{
-									p = (PROD*)list_access( o );
-									for( q = p->rhs; q && !found;
-										q = list_next( q ) )
+									p = (PROD*)plist_access( e );
+
+									plist_for( p->rhs, f )
 									{
-										sym = (SYMBOL*)list_access( q );
-										if( sym == lhs && list_next( q ) )
+										sym = (SYMBOL*)plist_access( f );
+
+										if( sym == lhs && plist_next( f ) )
 										{
 											do
 											{
-												q = list_next( q );
-												if( !( sym = (SYMBOL*)
-														list_access( q ) ) )
+												f = plist_next( f );
+												if( !f )
 													break;
+
+												sym = (SYMBOL*)
+														plist_access( f );
 												/*
 												fprintf( stderr, "sym = " );
 												print_symbol( stderr, sym );
@@ -458,8 +465,9 @@ BOOLEAN check_regex_anomalies( PARSER* parser )
 														col->symbol ),
 															sym->nullable );
 												*/
-												if( list_find( sym->first,
-														col->symbol ) == -1
+												if( !plist_get_by_ptr(
+														sym->first,
+														col->symbol )
 													&& !sym->nullable )
 												{
 													print_error( parser,
@@ -475,7 +483,13 @@ BOOLEAN check_regex_anomalies( PARSER* parser )
 											}
 											while( sym && sym->nullable );
 										}
+
+										if( found )
+											break;
 									}
+
+									if( found )
+										break;
 								}
 							}
 						}
@@ -503,20 +517,20 @@ FALSE if all is fine :D.
 */
 BOOLEAN check_stupid_productions( PARSER* parser )
 {
-	LIST*	l;
-	LIST*	m;
-	PROD*	p;
-	SYMBOL*	sym;
-	BOOLEAN	stupid		= FALSE;
-	BOOLEAN	possible	= FALSE;
-	LIST*	first_check	= (LIST*)NULL;
+	plistel*	e;
+	plistel*	f;
+	PROD*		p;
+	SYMBOL*		sym;
+	BOOLEAN		stupid		= FALSE;
+	BOOLEAN		possible	= FALSE;
+	plist*		first_check	= (plist*)NULL;
 
-	for( l = parser->productions; l; l = l->next )
+	plist_for( parser->productions, e )
 	{
-		p = (PROD*)( l->pptr );
+		p = (PROD*)plist_access( e );
 
-		if( list_count( p->rhs ) == 1 &&
-				(SYMBOL*)( p->rhs->pptr ) == p->lhs )
+		if( plist_count( p->rhs ) == 1
+				&& plist_access( plist_first( p->rhs ) ) == p->lhs )
 		{
 			print_error( parser, ERR_CIRCULAR_DEFINITION,
 				ERRSTYLE_WARNING | ERRSTYLE_PRODUCTION | ERRSTYLE_FILEINFO,
@@ -525,9 +539,10 @@ BOOLEAN check_stupid_productions( PARSER* parser )
 		}
 		else if( p->lhs->nullable )
 		{
-			for( m = p->rhs, possible = FALSE; m; m = m->next )
+			possible = FALSE;
+			plist_for( p->rhs, f )
 			{
-				sym = (SYMBOL*)( m->pptr );
+				sym = (SYMBOL*)plist_access( f );
 
 				if( !( sym->nullable ) )
 				{
@@ -535,9 +550,7 @@ BOOLEAN check_stupid_productions( PARSER* parser )
 					break;
 				}
 				else if( sym == p->lhs )
-				{
 					possible = TRUE;
-				}
 			}
 
 			if( possible )
@@ -551,17 +564,26 @@ BOOLEAN check_stupid_productions( PARSER* parser )
 
 		/* Get all FIRST-sets of the right-hand side; If there are none,
 			this can't be possible */
-		if( p->rhs )
+		if( plist_count( p->rhs ) > 0 )
 		{
-			seek_rhs_first( &first_check, p->rhs );
-			if( list_count( first_check ) == 0 )
+			if( !first_check )
+				first_check = plist_create( 0,
+									PLIST_MOD_PTR | PLIST_MOD_RECYCLE );
+			else
+				plist_erase( first_check );
+
+			seek_rhs_first( first_check, plist_first( p->rhs ) );
+
+			if( plist_count( first_check ) == 0 )
+			{
 				print_error( parser, ERR_USELESS_RULE,
 					ERRSTYLE_WARNING | ERRSTYLE_PRODUCTION | ERRSTYLE_FILEINFO,
 						parser->filename, p->line, p );
-
-			first_check = list_free( first_check );
+			}
 		}
 	}
+
+	plist_free( first_check );
 
 	return stupid;
 }

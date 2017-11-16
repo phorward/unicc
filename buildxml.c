@@ -97,10 +97,8 @@ static BOOLEAN build_xml_action( XML_T code_xml, PARSER* parser, PROD* p,
 	int				match;
 	char*			chk;
 	char*			tmp;
-	LIST*			l;
-	LIST*			m;
-	LIST*			rhs			= p->rhs;
-	LIST*			rhs_idents	= p->rhs_idents;
+	plistel*		e;
+	plist*			rhs			= p->rhs;
 	BOOLEAN			on_error	= FALSE;
 	SYMBOL*			sym;
 	char*			raw;
@@ -140,13 +138,12 @@ static BOOLEAN build_xml_action( XML_T code_xml, PARSER* parser, PROD* p,
 		RETURN( FALSE );
 	}
 
-	VARS( "p->sem_rhs", "%p", p->sem_rhs  );
+	VARS( "p->sem_rhs counts", "%d", plist_count( p->sem_rhs ) );
 	/* Ok, perform replacement operations */
-	if( p->sem_rhs )
+	if( plist_count( p->sem_rhs ) )
 	{
 		MSG( "Replacing semantic right-hand side" );
 		rhs = p->sem_rhs;
-		rhs_idents = p->sem_rhs_idents;
 	}
 
 	MSG( "Iterating trough result array" );
@@ -178,10 +175,10 @@ static BOOLEAN build_xml_action( XML_T code_xml, PARSER* parser, PROD* p,
 
 			case 2:
 				MSG( "Identifier" );
-				for( l = rhs_idents, m = rhs, off = 1; l && m;
-						l = list_next( l ), m = list_next( m ), off++ )
+				off = 1;
+				plist_for( rhs, e )
 				{
-					chk = (char*)list_access( l );
+					chk = plist_key( e );
 					VARS( "chk", "%s", chk ? chk : "(NULL)" );
 
 					/*
@@ -194,9 +191,11 @@ static BOOLEAN build_xml_action( XML_T code_xml, PARSER* parser, PROD* p,
 					{
 						break;
 					}
+
+					off++;
 				}
 
-				if( !l )
+				if( !e )
 				{
 					print_error( parser, ERR_UNDEFINED_SYMREF, ERRSTYLE_WARNING,
 										end - start, start  );
@@ -250,9 +249,9 @@ static BOOLEAN build_xml_action( XML_T code_xml, PARSER* parser, PROD* p,
 				VARS( "tmp", "%s", tmp );
 
 				/* Go through all possible left-hand side symbols */
-				for( l = p->all_lhs; l; l = list_next( l ) )
+				plist_for( p->all_lhs, e )
 				{
-					sym = (SYMBOL*)list_access( l );
+					sym = (SYMBOL*)plist_access( e );
 
 					if( !strcmp( sym->name, tmp ) )
 					{
@@ -276,7 +275,7 @@ static BOOLEAN build_xml_action( XML_T code_xml, PARSER* parser, PROD* p,
 					}
 				}
 
-				if( !l )
+				if( !e )
 				{
 					MSG( "No match found..." );
 
@@ -302,9 +301,9 @@ static BOOLEAN build_xml_action( XML_T code_xml, PARSER* parser, PROD* p,
 		if( off > 0 )
 		{
 			MSG( "Handing offset" );
-			sym = (SYMBOL*)list_getptr( rhs, off - 1 );
+			sym = (SYMBOL*)plist_access( plist_get( rhs, off - 1 ) );
 
-			if( !( sym->keyword ) )
+			if( sym && !( sym->keyword ) )
 			{
 				if( !( code = xml_add_child( code_xml, "variable", 0 ) ) )
 					OUTOFMEM;
@@ -313,7 +312,7 @@ static BOOLEAN build_xml_action( XML_T code_xml, PARSER* parser, PROD* p,
 					OUTOFMEM;
 
 				if( !( xml_set_int_attr( code, "offset",
-						list_count( rhs ) - off ) ) )
+						plist_count( rhs ) - off ) ) )
 					OUTOFMEM;
 
 				if( sym->vtype )
@@ -365,7 +364,7 @@ static BOOLEAN build_xml_scan_action(
 	XML_T			code;
 	char*			tmp;
 	SYMBOL*			sym;
-	LIST*			l;
+	plistel*		e;
 
 	PROC( "build_scan_action" );
 	PARMS( "code_xml", "%p", code_xml );
@@ -453,9 +452,9 @@ static BOOLEAN build_xml_scan_action(
 				VARS( "tmp", "%s", tmp );
 
 				/* Go through all possible terminal symbols */
-				for( l = s->all_sym; l; l = list_next( l ) )
+				plist_for( s->all_sym, e )
 				{
-					sym = (SYMBOL*)list_access( l );
+					sym = (SYMBOL*)plist_access( e );
 
 					if( !strcmp( sym->name, tmp ) )
 					{
@@ -475,7 +474,7 @@ static BOOLEAN build_xml_scan_action(
 					}
 				}
 
-				if( !l )
+				if( !e )
 				{
 					MSG( "No match found..." );
 
@@ -577,7 +576,7 @@ static void print_xml_options( plist* opts, XML_T append_to )
 
 static void print_xml_symbols( PARSER* parser, XML_T par )
 {
-	LIST*			l;
+	plistel*		e;
 	SYMBOL*			sym;
 	char*			tmp;
 	pregex_nfa*		tmp_nfa;
@@ -595,9 +594,9 @@ static void print_xml_symbols( PARSER* parser, XML_T par )
 	if( !( sym_tab = xml_add_child( par, "symbols", 0 ) ) )
 		OUTOFMEM;
 
-	for( l = parser->symbols; l; l = list_next( l ) )
+	plist_for( parser->symbols, e )
 	{
-		sym = (SYMBOL*)list_access( l );
+		sym = (SYMBOL*)plist_access( e );
 
 		if( !( symbol = xml_add_child( sym_tab, "symbol", 0 ) ) )
 			OUTOFMEM;
@@ -717,13 +716,12 @@ static void print_xml_symbols( PARSER* parser, XML_T par )
 
 static void print_xml_productions( PARSER* parser, XML_T par )
 {
-	LIST*			l;
-	LIST*			m;
+	plistel*		e;
+	plistel*		f;
 	SYMBOL*			sym;
 	PROD*			p;
 	BOOLEAN			is_default_code;
 	char*			act;
-	char*			tmp;
 	int				i;
 	int				j;
 
@@ -739,23 +737,23 @@ static void print_xml_productions( PARSER* parser, XML_T par )
 	if( !( prod_tab = xml_add_child( par, "productions", 0 ) ) )
 		OUTOFMEM;
 
-	for( l = parser->productions; l; l = list_next( l ) )
+	plist_for( parser->productions, e )
 	{
-		p = (PROD*)list_access( l );
+		p = (PROD*)plist_access( e );
 
 		if( !( prod = xml_add_child( prod_tab, "production", 0 ) ) )
 			OUTOFMEM;
 
 		/* Production id */
 		xml_set_int_attr( prod, "id", p->id );
-		xml_set_int_attr( prod, "length", list_count( p->rhs ) );
+		xml_set_int_attr( prod, "length", plist_count( p->rhs ) );
 		if( p->line > 0 )
 			xml_set_int_attr( prod, "defined-at", p->line );
 
 		/* Print all left-hand sides */
-		for( m = p->all_lhs, i = 0; m; m = list_next( m ), i++ )
+		plist_for( p->all_lhs, f )
 		{
-			sym = (SYMBOL*)list_access( m );
+			sym = (SYMBOL*)plist_access( f );
 
 			if( !( lhs = xml_add_child( prod, "left-hand-side", 0 ) ) )
 				OUTOFMEM;
@@ -765,11 +763,11 @@ static void print_xml_productions( PARSER* parser, XML_T par )
 		}
 
 		/* Print parts of semantic right-hand side */
-		for( m = p->sem_rhs, i = 0; m &&
-			list_count( m ) > list_count( p->rhs );
-				m = list_next( m ), i++ )
+		for( f = plist_first( p->sem_rhs ), i = 0;
+				f && plist_count( p->sem_rhs ) - i > plist_count( p->rhs );
+					f = plist_next( f ), i++ )
 		{
-			sym = (SYMBOL*)list_access( m );
+			sym = (SYMBOL*)plist_access( f );
 
 			if( !( rhs = xml_add_child( prod,
 					"semantic-right-hand-side", 0 ) ) )
@@ -778,14 +776,15 @@ static void print_xml_productions( PARSER* parser, XML_T par )
 			xml_set_int_attr( rhs, "symbol-id", sym->id );
 			xml_set_int_attr( rhs, "offset", i );
 
-			if( ( tmp = (char*)list_getptr( p->sem_rhs_idents, i ) ) )
-				xml_set_attr( rhs, "named", tmp );
+			if( plist_key( f ) )
+				xml_set_attr( rhs, "named", plist_key( f ) );
 		}
 
 		/* Print right-hand side */
-		for( m = p->rhs, j = 0; m; m = list_next( m ), i++, j++ )
+		for( f = plist_first( p->rhs ), j = 0;
+				f; f = plist_next( f ), i++, j++ )
 		{
-			sym = (SYMBOL*)list_access( m );
+			sym = (SYMBOL*)plist_access( f );
 
 			if( !( rhs = xml_add_child( prod, "right-hand-side", 0 ) ) )
 				OUTOFMEM;
@@ -793,8 +792,8 @@ static void print_xml_productions( PARSER* parser, XML_T par )
 			xml_set_int_attr( rhs, "symbol-id", sym->id );
 			xml_set_int_attr( rhs, "offset", i );
 
-			if( ( tmp = (char*)list_getptr( p->rhs_idents, j ) ) )
-				xml_set_attr( rhs, "named", tmp );
+			if( plist_key( f ) )
+				xml_set_attr( rhs, "named", plist_key( f ) );
 		}
 
 		/* Set productions options */
@@ -807,7 +806,7 @@ static void print_xml_productions( PARSER* parser, XML_T par )
 		if( p->code )
 			act = p->code;
 		/* Non-empty production */
-		else if( list_count( p->rhs ) == 0 )
+		else if( plist_count( p->rhs ) == 0 )
 		{
 			act = parser->p_def_action_e;
 			is_default_code = TRUE;
@@ -825,7 +824,7 @@ static void print_xml_productions( PARSER* parser, XML_T par )
 		*/
 		if( is_default_code &&
 			( p->lhs->whitespace ||
-				list_find( p->rhs, parser->error ) > -1 ) )
+				plist_get_by_ptr( p->rhs, parser->error ) ) )
 		{
 			act = (char*)NULL;
 		}

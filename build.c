@@ -123,10 +123,8 @@ char* build_action( PARSER* parser, GENERATOR* g, PROD* p,
 	char*			chk;
 	char*			tmp;
 	char*			att;
-	LIST*			l;
-	LIST*			m;
-	LIST*			rhs			= p->rhs;
-	LIST*			rhs_idents	= p->rhs_idents;
+	plistel*		e;
+	plist*			rhs			= p->rhs;
 	BOOLEAN			on_error	= FALSE;
 	SYMBOL*			sym;
 
@@ -157,13 +155,13 @@ char* build_action( PARSER* parser, GENERATOR* g, PROD* p,
 		RETURN( (char*)NULL );
 	}
 
-	VARS( "p->sem_rhs", "%p", p->sem_rhs  );
+	VARS( "p->sem_rhs counts", "%d", plist_count( p->sem_rhs ) );
+
 	/* Ok, perform replacement operations */
-	if( p->sem_rhs && !def_code )
+	if( plist_count( p->sem_rhs ) && !def_code )
 	{
 		MSG( "Replacing semantic right-hand side" );
 		rhs = p->sem_rhs;
-		rhs_idents = p->sem_rhs_idents;
 	}
 
 	MSG( "Iterating trough matches" );
@@ -192,10 +190,10 @@ char* build_action( PARSER* parser, GENERATOR* g, PROD* p,
 
 			case 2:
 				MSG( "Identifier" );
-				for( l = rhs_idents, m = rhs, off = 1; l && m;
-						l = list_next( l ), m = list_next( m ), off++ )
+				for( e = plist_first( rhs ), off = 1; e;
+						e = plist_next( e ), off++ )
 				{
-					chk = (char*)list_access( l );
+					chk = plist_key( e );
 					VARS( "chk", "%s", chk ? chk : "(NULL)" );
 
 					if( chk && !strncmp( chk, start + 1, end - start - 1 )
@@ -205,7 +203,7 @@ char* build_action( PARSER* parser, GENERATOR* g, PROD* p,
 					}
 				}
 
-				if( !l )
+				if( !e )
 				{
 					print_error( parser, ERR_UNDEFINED_SYMREF,
 									ERRSTYLE_WARNING, end - start, start );
@@ -255,9 +253,9 @@ char* build_action( PARSER* parser, GENERATOR* g, PROD* p,
 				VARS( "tmp", "%s", tmp );
 
 				/* Go through all possible left-hand side symbols */
-				for( l = p->all_lhs; l; l = list_next( l ) )
+				plist_for( p->all_lhs, e )
 				{
-					sym = (SYMBOL*)list_access( l );
+					sym = (SYMBOL*)plist_access( e );
 
 					if( !strcmp( sym->name, tmp ) )
 					{
@@ -275,7 +273,7 @@ char* build_action( PARSER* parser, GENERATOR* g, PROD* p,
 					}
 				}
 
-				if( !l )
+				if( !e )
 				{
 					MSG( "No match found..." );
 
@@ -301,9 +299,9 @@ char* build_action( PARSER* parser, GENERATOR* g, PROD* p,
 		if( off > 0 )
 		{
 			MSG( "Handling offset" );
-			sym = (SYMBOL*)list_getptr( rhs, off - 1 );
+			sym = (SYMBOL*)plist_access( plist_get( rhs, off - 1 ) );
 
-			if( !( sym->keyword ) )
+			if( sym && !( sym->keyword ) )
 			{
 				if( list_count( parser->vtypes ) > 1 )
 				{
@@ -325,14 +323,14 @@ char* build_action( PARSER* parser, GENERATOR* g, PROD* p,
 
 					tmp = pstrrender( g->action_union,
 						GEN_WILD_PREFIX "offset",
-							int_to_str( list_count( rhs ) - off ), TRUE,
+							int_to_str( plist_count( rhs ) - off ), TRUE,
 						GEN_WILD_PREFIX "attribute", att, TRUE,
 						(char*)NULL );
 				}
 				else
 					tmp = pstrrender( g->action_single,
 						GEN_WILD_PREFIX "offset",
-							int_to_str( list_count( rhs ) - off ), TRUE,
+							int_to_str( plist_count( rhs ) - off ), TRUE,
 						(char*)NULL );
 			}
 			else
@@ -380,7 +378,7 @@ char* build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s, char* base )
 	int				match;
 	char*			ret			= (char*)NULL;
 	char*			tmp;
-	LIST*			l;
+	plistel*		e;
 	SYMBOL*			sym;
 
 	PROC( "build_scan_action" );
@@ -461,9 +459,9 @@ char* build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s, char* base )
 				VARS( "tmp", "%s", tmp );
 
 				/* Go through all possible terminal symbols */
-				for( l = s->all_sym; l; l = list_next( l ) )
+				plist_for( s->all_sym, e )
 				{
-					sym = (SYMBOL*)list_access( l );
+					sym = (SYMBOL*)plist_access( e );
 
 					if( !strcmp( sym->name, tmp ) )
 					{
@@ -477,7 +475,7 @@ char* build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s, char* base )
 					}
 				}
 
-				if( !l )
+				if( !e )
 				{
 					MSG( "No match found..." );
 
@@ -515,15 +513,15 @@ char* mkproduction_str( PROD* p )
 {
 	char*		ret;
 	char		wtf		[ 512 ];	/* yes, it stands for 'what the f...' */
-	LIST*		l;
+	plistel*	e;
 	SYMBOL*		sym;
 
 	sprintf( wtf, "%.*s -> ", (int)sizeof( wtf ) - 5, p->lhs->name );
 	ret = pstrdup( wtf );
 
-	for( l = p->rhs; l; l = l->next )
+	plist_for( p->rhs, e )
 	{
-		sym = (SYMBOL*)( l->pptr );
+		sym = (SYMBOL*)plist_access( e );
 
 		switch( sym->type )
 		{
@@ -551,7 +549,7 @@ char* mkproduction_str( PROD* p )
 				break;
 		}
 
-		if( l->next )
+		if( plist_next( e ) )
 			strcat( wtf, " " );
 
 		ret = pstrcatstr( ret, wtf, FALSE );
@@ -787,8 +785,6 @@ void build_code( PARSER* parser )
 	int				column;
 	int				charmap_count		= 0;
 	int				row;
-	LIST*			l;
-	LIST*			m;
 	pregex_dfa*		dfa;
 	pregex_dfa_st*	dfa_st;
 	pregex_dfa_tr*	dfa_ent;
@@ -802,9 +798,10 @@ void build_code( PARSER* parser )
 	wchar_t			end;
 	int				i;
 	BOOLEAN			is_default_code;
-
 	plistel*		e;
 	plistel*		f;
+	LIST*			l;
+	LIST*			m;
 
 	PROC( "build_code" );
 	PARMS( "parser", "%p", parser );
@@ -841,9 +838,9 @@ void build_code( PARSER* parser )
 		integrity preparatories on the grammar */
 
 	MSG( "Performing code generation-related integrity preparatories" );
-	for( l = parser->symbols; l; l = l->next )
+	plist_for( parser->symbols, e )
 	{
-		sym = (SYMBOL*)( l->pptr );
+		sym = (SYMBOL*)plist_access( e );
 
 		if( !( sym->vtype ) )
 			sym->vtype = parser->p_def_type;
@@ -1158,9 +1155,9 @@ void build_code( PARSER* parser )
 	MSG( "Construct symbol information table" );
 
 	/* Whitespace identification table and symbol-information-table */
-	LISTFOR( parser->symbols, l ) /* Okidoki, now do the generation */
+	plist_for( parser->symbols, e ) /* Okidoki, now do the generation */
 	{
-		sym = (SYMBOL*)list_access( l );
+		sym = (SYMBOL*)plist_access( e );
 
 		symbols = pstrcatstr( symbols, pstrrender( gen->symbols.col,
 				GEN_WILD_PREFIX "symbol-name",
@@ -1183,7 +1180,7 @@ void build_code( PARSER* parser )
 		if( max_symbol_name < (int)strlen( sym->name ) )
 			max_symbol_name = (int)strlen( sym->name );
 
-		if( l->next )
+		if( plist_next( e ) )
 		{
 			symbols = pstrcatstr( symbols,
 				gen->symbols.col_sep, FALSE );
@@ -1230,9 +1227,11 @@ void build_code( PARSER* parser )
 	}
 
 	/* Reduction action code and production definition table */
-	for( l = parser->productions, row = 0; l; l = l->next, row++ )
+	row = 0;
+
+	plist_for( parser->productions, e )
 	{
-		p = (PROD*)( l->pptr );
+		p = (PROD*)plist_access( e );
 
 		actions = pstrcatstr( actions, pstrrender( gen->action_start,
 			GEN_WILD_PREFIX "production-number", int_to_str( p->id ), TRUE,
@@ -1245,7 +1244,7 @@ void build_code( PARSER* parser )
 
 		if( p->code )
 			act = p->code;
-		else if( list_count( p->rhs ) == 0 )
+		else if( plist_count( p->rhs ) == 0 )
 		{
 			act = parser->p_def_action_e;
 			is_default_code = TRUE;
@@ -1258,7 +1257,8 @@ void build_code( PARSER* parser )
 
 		if( is_default_code &&
 			( p->lhs->whitespace ||
-				list_find( p->rhs, parser->error ) > -1 ) )
+				( parser->error && plist_get_by_ptr( p->rhs,
+										parser->error ) ) ) )
 		{
 			act = (char*)NULL;
 		}
@@ -1293,21 +1293,23 @@ void build_code( PARSER* parser )
 					escape_for_target( gen, mkproduction_str( p ), TRUE ),
 						TRUE,
 				GEN_WILD_PREFIX "length",
-					int_to_str( list_count( p->rhs ) ), TRUE,
+					int_to_str( plist_count( p->rhs ) ), TRUE,
 				GEN_WILD_PREFIX "lhs",
 					int_to_str( p->lhs->id ), TRUE,
 
 			(char*)NULL ), TRUE );
 
-		if( l->next )
+		if( plist_next( e ) )
 			productions = pstrcatstr( productions,
 				gen->productions.col_sep, FALSE );
+
+		row++;
 	}
 
 	/* Scanner action code */
-	for( l = parser->symbols, row = 0; l; l = l->next, row++ )
+	plist_for( parser->symbols, e )
 	{
-		sym = (SYMBOL*)( l->pptr );
+		sym = (SYMBOL*)plist_access( e );
 		if( sym->keyword )
 			continue;
 
@@ -1342,7 +1344,7 @@ void build_code( PARSER* parser )
 	}
 
 	/* Get the goal production */
-	goalprod = (PROD*)( parser->goal->productions->pptr );
+	goalprod = (PROD*)plist_access( plist_first( parser->goal->productions ) );
 
 	/* Generate basename - parser->p_basename may contain directory path */
 	basename = pstrdup( pbasename( parser->p_basename ) );
@@ -1402,11 +1404,11 @@ void build_code( PARSER* parser )
 
 			/* Limits and sizes, parse tables */
 			GEN_WILD_PREFIX "number-of-symbols",
-				int_to_str( list_count( parser->symbols ) ), TRUE,
+				int_to_str( plist_count( parser->symbols ) ), TRUE,
 			GEN_WILD_PREFIX "number-of-states",
 				int_to_str( list_count( parser->lalr_states ) ), TRUE,
 			GEN_WILD_PREFIX "number-of-productions",
-				int_to_str( list_count( parser->productions ) ), TRUE,
+				int_to_str( plist_count( parser->productions ) ), TRUE,
 			GEN_WILD_PREFIX "number-of-dfa-machines",
 				int_to_str( list_count( parser->dfas ) ), TRUE,
 			GEN_WILD_PREFIX "deepest-action-row",

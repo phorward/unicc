@@ -300,7 +300,7 @@ int main( int argc, char** argv )
 					rewrite_grammar( parser );
 
 				unique_charsets( parser );
-				sort_symbols( parser );
+				plist_sort( parser->symbols );
 				charsets_to_ptn( parser );
 
 				if( parser->p_mode == MODE_SENSITIVE )
@@ -314,7 +314,7 @@ int main( int argc, char** argv )
 
 				/* FIRST-set computation */
 				PROGRESS( "Computing FIRST-sets" )
-				compute_first( parser->symbols );
+				compute_first( parser );
 				DONE()
 
 				if( parser->show_grammar )

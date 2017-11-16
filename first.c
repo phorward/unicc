@@ -17,17 +17,17 @@ of symbols.
 //symbols// is the list of symbols where the first computation should be done
 for.
 */
-void compute_first( LIST* symbols )
+void compute_first( PARSER* parser )
 {
-	LIST*		i			= (LIST*)NULL;
-	LIST*		j			= (LIST*)NULL;
-	LIST*		k			= (LIST*)NULL;
+	plistel*	e;
+	plistel*	f;
+	plistel*	g;
 	PROD*		p			= (PROD*)NULL;
 	SYMBOL* 	sym			= (SYMBOL*)NULL;
 	SYMBOL*		s			= (SYMBOL*)NULL;
 	int			nullable	= FALSE;
-	int			f			= 0;
-	int			pf			= 0;
+	int			cnt			= 0;
+	int			prev_cnt;
 
 	/*
 		23.08.2008	Jan Max Meyer
@@ -45,27 +45,28 @@ void compute_first( LIST* symbols )
 	*/
 	do
 	{
-		pf = f;
-		f = 0;
+		prev_cnt = cnt;
+		cnt = 0;
 
-		for( i = symbols; i; i = i->next )
+		plist_for( parser->symbols, e )
 		{
-			s = (SYMBOL*)( i->pptr );
+			s = (SYMBOL*)plist_access( e );
+
 			if( s->type == SYM_NON_TERMINAL )
 			{
-				for( j = s->productions; j; j = j->next )
+				plist_for( s->productions, f )
 				{
 					nullable = FALSE;
 
-					p = (PROD*)( j->pptr );
+					p = (PROD*)plist_access( f );
 
-					if( p->rhs )
+					if( plist_count( p->rhs ) > 0 )
 					{
-						for( k = p->rhs; k; k = k->next )
+						plist_for( p->rhs, g )
 						{
-							sym = (SYMBOL*)( k->pptr );
+							sym = (SYMBOL*)plist_access( g );
 
-							s->first = list_union( s->first, sym->first );
+							plist_union( s->first, sym->first );
 							nullable = sym->nullable;
 
 							if( !nullable )
@@ -79,39 +80,40 @@ void compute_first( LIST* symbols )
 				}
 			}
 
-			f += list_count( s->first );
+			cnt += plist_count( s->first );
 		}
 	}
-	while( pf != f );
+	while( prev_cnt != cnt );
 }
 
 
 /** Performs a right-hand side FIRST()-set seek. This is an individual
 FIRST()-set to be created within a LR(1) closure as lookahead set.
 
-//first// is the pointer where the individual FIRST() set is stored to.
-//rhs// is the right-hand side to be processed; This can be a pointer to an
+//first// is where the individual FIRST() set is stored to.
+//rhs// is the right-hand side to be processed; This is a pointer to an
 element on the right-hand side, and is used as starting point.
 
 Returns TRUE if the whole right-hand side is possibly nullable, FALSE else.
 */
-int seek_rhs_first( LIST** first, LIST* rhs )
+int seek_rhs_first( plist* first, plistel* rhs )
 {
 	SYMBOL*		sym		= (SYMBOL*)NULL;
 
-	for( ; rhs; rhs = rhs->next )
+	for( ; rhs; rhs = plist_next( rhs ) )
 	{
-		sym = rhs->pptr;
+		sym = (SYMBOL*)plist_access( rhs );
 
 		if( IS_TERMINAL( sym ) )
 		{
-			if( list_find( *first, sym ) == -1 )
-				*first = list_push( *first, sym );
+			if( !plist_get_by_ptr( first, sym ) )
+				plist_push( first, sym );
+
 			break;
 		}
 		else
 		{
-			*first = list_union( *first, sym->first );
+			plist_union( first, sym->first );
 
 			if( !( sym->nullable ) )
 				break;

@@ -45,8 +45,8 @@ in an ASCII-based view.
 */
 void dump_grammar( FILE* stream, PARSER* parser )
 {
-	LIST*		i		= (LIST*)NULL;
-	LIST*		j		= (LIST*)NULL;
+	plistel*	e;
+	plistel*	f;
 
 	SYMBOL*		s		= (SYMBOL*)NULL;
 	SYMBOL*		sym		= (SYMBOL*)NULL;
@@ -62,9 +62,9 @@ void dump_grammar( FILE* stream, PARSER* parser )
 		( parser->p_name ? parser->p_name : "" ),
 			( parser->p_name ? ": " : "" ) );
 
-	for( i = parser->symbols; i; i = i->next )
+	plist_for( parser->symbols, e )
 	{
-		s = i->pptr;
+		s = (SYMBOL*)plist_access( e );
 
 		if( s->type == SYM_NON_TERMINAL )
 		{
@@ -74,9 +74,10 @@ void dump_grammar( FILE* stream, PARSER* parser )
 
 			/* Printing the FIRST-set */
 			fprintf( stream, "[ " );
-			for( j = s->first; j; j = j->next )
+
+			plist_for( s->first, f )
 			{
-				sym = j->pptr;
+				sym = (SYMBOL*)plist_access( f );
 
 				print_symbol( stream, sym );
 				fprintf( stream, " " );
@@ -90,9 +91,10 @@ void dump_grammar( FILE* stream, PARSER* parser )
 						( s->vtype ) ? s->vtype->int_name : "(null)" );
 
 				/* Printing the productions */
-				for( j = s->productions; j; j = j->next )
+				plist_for( s->productions, f )
 				{
-					p = j->pptr;
+					p = (PROD*)plist_access( f );
+
 					fprintf( stream, "      (%d) -> ", p->id );
 					dump_production( stream, p, FALSE, FALSE );
 				}
@@ -119,7 +121,7 @@ output is written to stderr.
 */
 void dump_symbols( FILE* stream, PARSER* parser )
 {
-	LIST*		i		= (LIST*)NULL;
+	plistel*	e;
 	SYMBOL*		s		= (SYMBOL*)NULL;
 
 	if( !stream )
@@ -132,11 +134,11 @@ void dump_symbols( FILE* stream, PARSER* parser )
 		( parser->p_name ? parser->p_name : "" ),
 			( parser->p_name ? ": " : "" ) );
 
-	for( i = parser->symbols; i; i = i->next )
+	plist_for( parser->symbols, e )
 	{
-		fprintf( stream, "    " );
+		s = (SYMBOL*)plist_access( e );
 
-		s = i->pptr;
+		fprintf( stream, "    " );
 		fprintf( stream, "%c%d: ",
 			( IS_TERMINAL( s ) ? 'T' : 'N' ), s->id );
 
@@ -178,9 +180,7 @@ void dump_symbols( FILE* stream, PARSER* parser )
 		fprintf( stream, "]" );
 
 		if( s->vtype )
-		{
 			fprintf( stream, " <%s>", s->vtype->int_name );
-		}
 
 		fprintf( stream, "\n" );
 	}
@@ -201,7 +201,7 @@ void dump_item_set( FILE* stream, char* title, LIST* list )
 {
 	ITEM*		it		= (ITEM*)NULL;
 	LIST*		i		= (LIST*)NULL;
-	LIST*		j		= (LIST*)NULL;
+	plistel*	e;
 	SYMBOL*		sym		= (SYMBOL*)NULL;
 	int			cnt		= 0;
 
@@ -225,9 +225,10 @@ void dump_item_set( FILE* stream, char* title, LIST* list )
 				it->prod->id, it->prod->lhs->name );
 
 			cnt = 0;
-			for( j = it->prod->rhs; j; j = j->next )
+
+			plist_for( it->prod->rhs, e )
 			{
-				sym = j->pptr;
+				sym = (SYMBOL*)plist_access( e );
 
 				if( cnt == it->dot_offset )
 					fprintf( stream, "." );
@@ -242,9 +243,10 @@ void dump_item_set( FILE* stream, char* title, LIST* list )
 			{
 				fprintf( stream, "." );
 				fprintf( stream, "      { " );
-				for( j = it->lookahead; j; j = j->next )
+				plist_for( it->lookahead, e )
 				{
-					sym = j->pptr;
+					sym = (SYMBOL*)plist_access( e );
+
 					print_symbol( stream, sym );
 					fprintf( stream, " " );
 				}
@@ -300,7 +302,7 @@ void dump_lalr_states( FILE* stream, PARSER* parser )
 void dump_productions( FILE* stream, PARSER* parser )
 {
 	PROD*		p;
-	LIST*		l;
+	plistel*	e;
 
 	if( !stream )
 		stream = stderr;
@@ -311,9 +313,9 @@ void dump_productions( FILE* stream, PARSER* parser )
 		( parser->p_name ? parser->p_name : "" ),
 			( parser->p_name ? ": " : "" ) );
 
-	for( l = parser->productions; l; l = l->next )
+	plist_for( parser->productions, e )
 	{
-		p = (PROD*)( l->pptr );
+		p = (PROD*)plist_access( e );
 		dump_production( stream, p, TRUE, TRUE );
 		fprintf( stream, "\n" );
 	}
@@ -332,12 +334,10 @@ void dump_productions( FILE* stream, PARSER* parser )
 void dump_production( FILE* stream, PROD* p,
 	BOOLEAN with_lhs, BOOLEAN semantics )
 {
-	LIST*	s;
-	LIST*	l			= p->rhs;
-	LIST*	m			= p->rhs_idents;
-	BOOLEAN	embedded 	= FALSE;
-	SYMBOL*	sym;
-	char*	ident;
+	plist*		l			= p->rhs;
+	plistel*	e;
+	BOOLEAN		embedded 	= FALSE;
+	SYMBOL*		sym;
 
 	if( !stream )
 		stream = stderr;
@@ -346,36 +346,33 @@ void dump_production( FILE* stream, PROD* p,
 	{
 		fprintf( stream, "    (%d) ", p->id );
 
-		LISTFOR( p->all_lhs, s )
+		plist_for( p->all_lhs, e )
 		{
-			sym = (SYMBOL*)list_access( s );
+			sym = (SYMBOL*)plist_access( e );
 			fprintf( stream, "%s ", sym->name );
 		}
 
 		fprintf( stream, "-> " );
 	}
 
-	if( semantics && p->sem_rhs )
+	if( semantics && plist_count( p->sem_rhs ) )
 	{
 		l = p->sem_rhs;
-		m = p->sem_rhs_idents;
-
 		embedded = TRUE;
 	}
 
-	for( ; l && m; l = list_next( l ), m = list_next( m ))
+	plist_for( l, e )
 	{
-		if( embedded && list_count( l ) > list_count( p->rhs ) )
+		if( embedded && plist_count( l ) > plist_count( p->rhs ) )
 			fprintf( stream, "<<" );
 		else
 		{
-			sym = (SYMBOL*)( l->pptr );
+			sym = (SYMBOL*)plist_access( e );
 			print_symbol( stream, sym );
 		}
 
-		ident = (char*)( m->pptr );
-		if( semantics && ident )
-			fprintf( stream, ":%s", ident );
+		if( semantics && plist_key( e ) )
+			fprintf( stream, ":%s", plist_key( e ) );
 
 		fprintf( stream, " " );
 	}

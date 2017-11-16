@@ -285,8 +285,6 @@ definition:		lhs goal_mark type "->" productions				{
 																	LIST* l;
 																	PROD* p;
 
-																	((SYMBOL*)(#1.ptr))->productions = #5.ptr;
-
 																	if( #2.ch == '$' )
 																	{
 																		if( parser->goal )
@@ -306,6 +304,8 @@ definition:		lhs goal_mark type "->" productions				{
 																	for( l = #5.ptr; l; l = l->next )
 																	{
 																		p = l->pptr;
+
+																		plist_push( ((SYMBOL*)(#1.ptr))->productions, p );
 																		p->lhs = #1.ptr;
 																	}
 

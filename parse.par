@@ -558,6 +558,7 @@ definition			->	lhs:primary
 
 						[*
 							LIST* 	l;
+							LIST*	m;
 							PROD* 	p;
 							SYMBOL*	lhs;
 							VTYPE*	vt		= (VTYPE*)NULL;
@@ -584,10 +585,14 @@ definition			->	lhs:primary
 							/* Link productions with this left-hand sides */
 							for( l = @productions; l; l = l->next )
 							{
+								LIST*	m;
+
 								p = (PROD*)list_access( l );
 
 								p->lhs = @primary;
-								p->all_lhs = list_dup( @all );
+
+								LISTFOR( @all, m )
+									plist_push( p->all_lhs, list_access( m ) );
 							}
 
 							list_free( @productions );

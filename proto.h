@@ -13,8 +13,8 @@ Usage:	Prototype declarations
 #define P_PROTO_H
 
 /* first.c */
-void compute_first( LIST* symbols );
-int seek_rhs_first( LIST** first, LIST* rhs );
+void compute_first( PARSER* parser );
+int seek_rhs_first( plist* first, plistel* rhs );
 
 /* lalr.c */
 void generate_tables( PARSER* parser );
@@ -29,7 +29,7 @@ void free_symbol( SYMBOL* sym );
 PROD* create_production( PARSER* p, SYMBOL* lhs );
 void append_to_production( PROD* p, SYMBOL* sym, char* name );
 void free_production( PROD* prod );
-ITEM* create_item( STATE* st, PROD* p, LIST* lookahead );
+ITEM* create_item( STATE* st, PROD* p );
 void free_item( ITEM* it );
 STATE* create_state( PARSER* p );
 void free_state( STATE* st );
@@ -67,7 +67,6 @@ void fix_precedences( PARSER* parser );
 void inherit_fixiations( PARSER* parser );
 void inherit_vtypes( PARSER* parser );
 void setup_single_goal( PARSER* parser );
-void sort_symbols( PARSER* parser );
 void charsets_to_ptn( PARSER* parser );
 
 /* virtual.c */

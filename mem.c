@@ -26,8 +26,8 @@ pointer to the ccl, else an identifying name.
 Returns a SYMBOL*-pointer to the SYMBOL structure representing the symbol. */
 SYMBOL* get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 {
-	char		keych;
 	char*		keyname;
+	char		keych;
 	char*		name		= (char*)dfn;
 	SYMBOL*		sym			= (SYMBOL*)NULL;
 	plistel*	e;
@@ -101,60 +101,47 @@ SYMBOL* get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 	sprintf( keyname, "%c%s", keych, name );
 	VARS( "keyname", "%s", keyname );
 
-	/*
-	plist_for( p->definitions, e )
+	if( !( e = plist_get_by_key( p->symbols, keyname ) ) && create )
 	{
-		sym = (SYMBOL*)plist_access( e );
-		fprintf( stderr, ">%s< >%s<\n", sym->name, plist_key( e ) );
-	}
-	*/
-
-	if( !( e = plist_get_by_key( p->definitions, keyname ) ) && create )
-	{
-		MSG( "Hash table not found - going to create entry" );
-
-		if( !( sym = (SYMBOL*)pmalloc( sizeof( SYMBOL ) ) ) )
-		{
-			OUTOFMEM;
-			RETURN( (SYMBOL*)NULL );
-		}
-
-		memset( sym, 0, sizeof( SYMBOL ) );
+		/* Create symbol */
+		if( !( sym = (SYMBOL*)plist_access( plist_insert( p->symbols,
+										(plistel*)NULL, keyname,
+											(void*)NULL ) ) ) )
+			RETURN( sym );
 
 		/* Set up attributes */
-		sym->id = list_count( p->symbols );
+		sym->id = plist_count( p->symbols ) - 1;
 		sym->type = type;
 		sym->line = -1;
 		sym->nullable = FALSE;
 		sym->greedy = TRUE;
 
-		/* Initialize options table */
-		sym->options = plist_create( sizeof( OPT ), PLIST_MOD_EXTKEYS );
+		sym->first = plist_create( 0, PLIST_MOD_PTR );
 
 		/* Terminal symbols have always theirself in the FIRST-set... */
 		if( IS_TERMINAL( sym ) )
-			sym->first = list_push( sym->first, sym );
+		{
+			plist_push( sym->first, sym );
+			sym->all_sym = plist_create( 0, PLIST_MOD_PTR );
+		}
+		else
+			sym->productions = plist_create( 0, PLIST_MOD_PTR );
+
+		/* Initialize options table */
+		sym->options = plist_create( sizeof( OPT ), PLIST_MOD_EXTKEYS );
 
 		/* Identifying name */
 		if( type == SYM_CCL_TERMINAL )
 			sym->ccl = (pccl*)dfn;
+
+		sym->keyname = keyname;
+		keyname = (char*)NULL;
 
 		if( !( sym->name = pstrdup( name ) ) )
 		{
 			OUTOFMEM;
 			RETURN( (SYMBOL*)NULL );
 		}
-
-		/* Insert pointer into hash-table */
-		if( !( plist_insert( p->definitions, (plistel*)NULL,
-					keyname, (void*)sym ) ) )
-		{
-			OUTOFMEM;
-			RETURN( (SYMBOL*)NULL );
-		}
-
-		/* Insert pointer into symbol list */
-		p->symbols = list_push( p->symbols, sym );
 
 		/* System terminals are linked to the parser object */
 		if( type == SYM_SYSTEM_TERMINAL )
@@ -188,13 +175,11 @@ void free_symbol( SYMBOL* sym )
 	else
 		sym->ccl = p_ccl_free( sym->ccl );
 
-	list_free( sym->first );
-	list_free( sym->productions );
-	list_free( sym->all_sym );
+	plist_free( sym->first );
+	plist_free( sym->productions );
+	plist_free( sym->all_sym );
 
 	sym->options = free_opts( sym->options );
-
-	pfree( sym );
 }
 
 /** Creates a production for an according left-hand side and inserts it into the
@@ -213,23 +198,12 @@ PROD* create_production( PARSER* p, SYMBOL* lhs )
 	if( !p )
 		return (PROD*)NULL;
 
-	if( !( prod = (PROD*)pmalloc( sizeof( PROD ) ) ) )
-	{
-		OUTOFMEM;
-		return (PROD*)NULL;
-	}
+	prod = (PROD*)plist_malloc( p->productions );
+	prod->id = plist_count( p->productions ) - 1;
 
-	memset( prod, 0, sizeof( PROD ) );
-
-	prod->id = list_count( p->productions );
-
-	/* Insert into production table */
-	if( !( p->productions = list_push( p->productions, prod ) ) )
-	{
-		OUTOFMEM;
-		pfree( prod );
-		return (PROD*)NULL;
-	}
+	prod->rhs = plist_create( 0, PLIST_MOD_PTR );
+	prod->sem_rhs = plist_create( 0, PLIST_MOD_PTR );
+	prod->all_lhs = plist_create( 0, PLIST_MOD_PTR );
 
 	/* Initialize options table */
 	prod->options = plist_create( sizeof( OPT ), PLIST_MOD_EXTKEYS );
@@ -238,17 +212,9 @@ PROD* create_production( PARSER* p, SYMBOL* lhs )
 	if( lhs )
 	{
 		prod->lhs = lhs;
-		prod->all_lhs = list_push( prod->all_lhs, (void*)lhs );
 
-		lhs->productions = list_push( lhs->productions, prod );
-
-		/* Add to left-hand side non-terminal */
-		if( !( lhs->productions ) )
-		{
-			OUTOFMEM;
-			pfree( prod );
-			return (PROD*)NULL;
-		}
+		plist_push( prod->all_lhs, lhs );
+		plist_push( lhs->productions, prod );
 	}
 
 	return prod;
@@ -264,66 +230,44 @@ side, can be (char*)NULL.
 */
 void append_to_production( PROD* p, SYMBOL* sym, char* name )
 {
-	/*
-	11.07.2010	Jan Max Meyer
-	Use name of derived symbol in case of virtual productions.
-	*/
-
-	if( p && sym )
+	if( !( p && sym ) )
 	{
-		if( !( p->rhs = list_push( p->rhs, sym ) ) )
-			OUTOFMEM;
-
-		/* If no name is given, then use the symbol's name, if it's a
-			nonterminal or a regex-terminal. */
-		if( !name )
-		{
-			while( sym->derived_from )
-				sym = sym->derived_from;
-
-			if( !( sym->generated ) &&
-					( sym->type == SYM_NON_TERMINAL
-						|| sym->type == SYM_REGEX_TERMINAL ) )
-			{
-				if( !( name = pstrdup( sym->name ) ) )
-					OUTOFMEM;
-			}
-		}
-
-		if( !( p->rhs_idents = list_push( p->rhs_idents, name ) ) )
-			OUTOFMEM;
+		WRONGPARAM;
+		return;
 	}
-}
 
+	/* If no name is given, then use the symbol's name, if it's a
+		nonterminal or a regex-terminal. */
+	if( !name )
+	{
+		/*
+		11.07.2010	Jan Max Meyer
+		Use name of derived symbol in case of virtual productions.
+		*/
+		while( sym->derived_from )
+			sym = sym->derived_from;
+
+		if( !( sym->generated ) &&
+				( sym->type == SYM_NON_TERMINAL
+					|| sym->type == SYM_REGEX_TERMINAL ) )
+			name = sym->name;
+	}
+
+	plist_insert( p->rhs, (plistel*)NULL, name, sym );
+}
 
 /** Frees a production structure and all its members.
 
 //prod// is the production to be freed. */
 void free_production( PROD* prod )
 {
-	LIST*	li		= (LIST*)NULL;
-
-	/* Real right-hand sides */
-	for( li = prod->rhs_idents; li; li = li->next )
-		pfree( li->pptr );
-
-	list_free( prod->rhs_idents );
-	list_free( prod->rhs );
-
-	list_free( prod->all_lhs );
-
-	/* Semantic right-hand sides */
-	for( li = prod->sem_rhs_idents; li; li = li->next )
-		pfree( li->pptr );
-
-	list_free( prod->sem_rhs );
-	list_free( prod->sem_rhs_idents );
+	plist_free( prod->rhs );
+	plist_free( prod->sem_rhs );
+	plist_free( prod->all_lhs );
 
 	pfree( prod->code );
 
 	prod->options = free_opts( prod->options );
-
-	pfree( prod );
 }
 
 
@@ -338,25 +282,19 @@ This can also be filled later.
 
 Returns an ITEM*-pointer to the newly created item, (ITEM*)NULL in error case.
 */
-ITEM* create_item( STATE* st, PROD* p, LIST* lookahead )
+ITEM* create_item( STATE* st, PROD* p )
 {
 	ITEM*		i		= (ITEM*)NULL;
 
 	i = (ITEM*)pmalloc( sizeof( ITEM ) );
 	if( i )
 	{
-		memset( i, 0, sizeof( ITEM ) );
-
 		i->prod = p;
-
-		if( p->rhs != (LIST*)NULL )
-			i->next_symbol = p->rhs->pptr;
+		i->next_symbol = (SYMBOL*)plist_access( plist_first( p->rhs ) );
+		i->lookahead = plist_create( 0, PLIST_MOD_PTR );
 
 		if( st != (STATE*)NULL )
 			st->kernel = list_push( st->kernel, i );
-
-		if( lookahead != (LIST*)NULL )
-			i->lookahead = list_dup( lookahead );
 	}
 	else
 		OUTOFMEM;
@@ -369,7 +307,7 @@ ITEM* create_item( STATE* st, PROD* p, LIST* lookahead )
 //it// is the pointer to item structure to be freed. */
 void free_item( ITEM* it )
 {
-	list_free( it->lookahead );
+	plist_free( it->lookahead );
 	pfree( it );
 }
 
@@ -548,6 +486,28 @@ plist* free_opts( plist* options )
 	return plist_free( options );
 }
 
+
+static int sort_symbols( plist* lst, plistel* el, plistel* er )
+{
+	SYMBOL*		l	= (SYMBOL*)plist_access( el );
+	SYMBOL*		r	= (SYMBOL*)plist_access( er );
+
+	if( l->type < r->type )
+		return 1;
+	else if( l->type > r->type )
+		return -1;
+
+	if( l->type == SYM_REGEX_TERMINAL && r->type == SYM_REGEX_TERMINAL )
+	{
+		if( l->keyword < r->keyword )
+			return 1;
+		else if( l->keyword > r->keyword )
+			return -1;
+	}
+
+	return 0;
+}
+
 /** Allocates and initializes a new parser information structure.
 
 Returns a PARSER* Pointer to the newly created PARSER-structure,
@@ -566,7 +526,11 @@ PARSER* create_parser( void )
 	memset( pptr, 0, sizeof( PARSER ) );
 
 	/* Initialize the hash table for fast symbol access */
-	pptr->definitions = plist_create( sizeof( SYMBOL* ), PLIST_MOD_PTR );
+	pptr->symbols = plist_create( sizeof( SYMBOL ),
+						PLIST_MOD_EXTKEYS | PLIST_MOD_UNIQUE );
+	plist_set_sortfn( pptr->symbols, sort_symbols );
+
+	pptr->productions = plist_create( sizeof( PROD ), PLIST_MOD_NONE );
 
 	/* Setup defaults */
 	pptr->p_mode = MODE_SENSITIVE;
@@ -588,16 +552,15 @@ PARSER* create_parser( void )
 //parser// is the Parser structure to be freed. */
 void free_parser( PARSER* parser )
 {
+	plistel*	e;
 	LIST*		it			= (LIST*)NULL;
 	pregex_dfa*	dfa;
 
-	plist_free( parser->definitions );
+	plist_for( parser->symbols, e )
+		free_symbol( (SYMBOL*)plist_access( e ) );
 
-	for( it = parser->symbols; it; it = it->next )
-		free_symbol( it->pptr );
-
-	for( it = parser->productions; it; it = it->next )
-		free_production( it->pptr );
+	/*plist_for( parser->productions, e )
+		free_production( (PROD*)plist_access( e ) );*/
 
 	for( it = parser->lalr_states; it; it = it->next )
 		free_state( it->pptr );
@@ -611,8 +574,9 @@ void free_parser( PARSER* parser )
 		pregex_dfa_free( dfa );
 	}
 
-	list_free( parser->symbols );
-	list_free( parser->productions );
+	plist_free( parser->symbols );
+	plist_free( parser->productions );
+
 	list_free( parser->lalr_states );
 	list_free( parser->vtypes );
 	list_free( parser->dfas );

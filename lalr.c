@@ -40,7 +40,7 @@ static int test_same_kernel( LIST* kernel1, LIST* kernel2 )
 
 				if( item1->prod == item2->prod
 					&& item1->dot_offset == item2->dot_offset
-						&& item1->next_symbol == item1->next_symbol )
+						&& item1->next_symbol == item2->next_symbol )
 				{
 					checklist = list_push( checklist, j->pptr );
 				}
@@ -87,14 +87,14 @@ item seed to a closure set.
 //closure_set// is the pointer to the closure set list which can possibly
 be enhanced.
 */
-static void close_item( LIST* productions, ITEM* it, LIST** closure_set )
+static void close_item( plist* productions, ITEM* it, LIST** closure_set )
 {
-	LIST*		j		= (LIST*)NULL;
-	LIST*		k		= (LIST*)NULL;
+	LIST*		l		= (LIST*)NULL;
+	plistel*	e;
+	plistel*	f;
 	ITEM*		cit		= (ITEM*)NULL;
 	PROD*		prod	= (PROD*)NULL;
-	LIST*		first	= (LIST*)NULL;
-	int			pos		= 0;
+	plist*		first	= (plist*)NULL;
 
 	/* Only perform closure if the symbol right to the dot
 		of the current kernel item is a non-terminal */
@@ -103,23 +103,23 @@ static void close_item( LIST* productions, ITEM* it, LIST** closure_set )
 		if( it->next_symbol->type == SYM_NON_TERMINAL )
 		{
 			/* Find all right-hand sides of this non-terminal */
-			for( j = productions; j; j = j->next )
+			plist_for( productions, f )
 			{
-				prod = j->pptr;
+				prod = (PROD*)plist_access( f );
 
 				if( prod->lhs == it->next_symbol )
 				{
 					/* Check if there is not already such an item
 						that uses this production! */
-					for( k = *closure_set; k; k = k->next )
+					for( l = *closure_set; l; l = l->next )
 					{
-						cit = k->pptr;
+						cit = l->pptr;
 						if( cit->prod == prod )
 							break;
 					}
 
 					/* Add new item! */
-					if( !k )
+					if( !l )
 					{
 #if ON_ALGORITHM_DEBUG
 						fprintf( stderr, "\n===> Closure: Creating new "
@@ -127,8 +127,9 @@ static void close_item( LIST* productions, ITEM* it, LIST** closure_set )
 						dump_item_set( (FILE*)NULL, "Partial closure:",
 							*closure_set );
 #endif
-						cit = create_item( (STATE*)NULL,
-								prod, (LIST*)NULL );
+						cit = create_item( (STATE*)NULL, prod );
+						cit->lookahead = plist_create( 0, PLIST_MOD_PTR );
+
 						*closure_set = list_push( *closure_set, cit );
 					}
 #if ON_ALGORITHM_DEBUG
@@ -150,26 +151,19 @@ static void close_item( LIST* productions, ITEM* it, LIST** closure_set )
 					/* --- Passing the lookaheads ... --- */
 
 					/* If this is the last symbol... */
-					if( it->prod->rhs != (LIST*)NULL )
+					if( plist_count( it->prod->rhs ) > 0 )
 					{
-						for( k = it->prod->rhs, pos = 0; k;
-								k = k->next, pos++ )
-						{
-							if( pos == it->dot_offset + 1 )
-								break;
-						}
-
 #if ON_ALGORITHM_DEBUG
-						fprintf( stderr, "\n===> Closure: dot %d, pos = %d, "
+						fprintf( stderr, "\n===> Closure: dot %d, "
 											"rhs %d len = %d \n",
-								it->dot_offset, pos, it->prod->id,
-										list_count( it->prod->rhs ) );
+								it->dot_offset, it->prod->id,
+										plist_count( it->prod->rhs ) );
 #endif
 
-						if( !k )
+						if( !( e = plist_get( it->prod->rhs,
+												it->dot_offset + 1 ) ) )
 						{
-							cit->lookahead = list_union( cit->lookahead,
-								it->lookahead );
+							plist_union( cit->lookahead, it->lookahead );
 #if ON_ALGORITHM_DEBUG
 							fprintf( stderr, "\n===> Closure: Dot at the end, "
 												"taking lookahead \n");
@@ -179,21 +173,22 @@ static void close_item( LIST* productions, ITEM* it, LIST** closure_set )
 						}
 						else
 						{
-							first = (LIST*)NULL;
+							if( !first )
+								first = plist_create( 0,
+											PLIST_MOD_PTR | PLIST_MOD_RECYCLE );
+							else
+								plist_erase( first );
 
-							if( seek_rhs_first( &first, k ) )
-								first = list_union( first, it->lookahead );
+							if( seek_rhs_first( first, e ) )
+								plist_union( first, it->lookahead );
 
-							cit->lookahead = list_union(
-												cit->lookahead, first );
-
-							list_free( first );
+							plist_union( cit->lookahead, first );
 
 #if ON_ALGORITHM_DEBUG
-						fprintf( stderr, "\n===> Closure: "
-											"Calculated lookahead\n");
-						dump_item_set( (FILE*)NULL, "Partial closure:",
-							*closure_set );
+							fprintf( stderr, "\n===> Closure: "
+												"Calculated lookahead\n");
+							dump_item_set( (FILE*)NULL, "Partial closure:",
+								*closure_set );
 #endif
 						}
 					}
@@ -201,6 +196,8 @@ static void close_item( LIST* productions, ITEM* it, LIST** closure_set )
 			}
 		}
 	}
+
+	plist_free( first );
 }
 
 /** Drops and frees a list of items.
@@ -311,10 +308,10 @@ static void lalr1_closure( PARSER* parser, STATE* st )
 				The complete memory must be mirrored and re-allocated to
 				create a single, independend item!
 			*/
-			cit = create_item( (STATE*)NULL, it->prod, (LIST*)NULL );
+			cit = create_item( (STATE*)NULL, it->prod );
 
 			memcpy( cit, it, sizeof( ITEM ) );
-			cit->lookahead = list_dup( it->lookahead );
+			cit->lookahead = plist_dup( it->lookahead );
 
 			closure_set = list_push( closure_set, cit );
 		}
@@ -327,7 +324,7 @@ static void lalr1_closure( PARSER* parser, STATE* st )
 	for( i = closure_set; i; )
 	{
 		it = i->pptr;
-		if( it->prod->rhs == (LIST*)NULL )
+		if( !plist_count( it->prod->rhs ) )
 		{
 			/* For all items with the same epsilon transitions,
 				merge the lookaheads! */
@@ -344,9 +341,8 @@ static void lalr1_closure( PARSER* parser, STATE* st )
 			}
 			else
 			{
-				cit->lookahead = list_union( cit->lookahead, it->lookahead );
-
-				list_free( it->lookahead );
+				plist_union( cit->lookahead, it->lookahead );
+				plist_free( it->lookahead );
 				free( it );
 			}
 
@@ -449,10 +445,12 @@ static void lalr1_closure( PARSER* parser, STATE* st )
 			if( sym_before_move == (SYMBOL*)NULL )
 				sym_before_move = it->next_symbol;
 
-			if( it->dot_offset < list_count( it->prod->rhs ) )
+			if( it->dot_offset < plist_count( it->prod->rhs ) )
 			{
 				it->dot_offset++;
-				it->next_symbol = list_getptr( it->prod->rhs, it->dot_offset );
+				it->next_symbol = (SYMBOL*)plist_access(
+									plist_get( it->prod->rhs,
+													it->dot_offset ) );
 			}
 		}
 
@@ -554,14 +552,13 @@ static void lalr1_closure( PARSER* parser, STATE* st )
 						j = j->next, k = k->next )
 				{
 					it = j->pptr;
-					prev_cnt += list_count( it->lookahead );
+					prev_cnt += plist_count( it->lookahead );
 
-					it->lookahead = list_union( it->lookahead,
-										((ITEM*)(k->pptr))->lookahead );
+					plist_union( it->lookahead, ((ITEM*)(k->pptr))->lookahead );
 
-					cnt += list_count( it->lookahead );
+					cnt += plist_count( it->lookahead );
 
-					list_free( ((ITEM*)(k->pptr))->lookahead );
+					plist_free( ((ITEM*)(k->pptr))->lookahead );
 					free( k->pptr );
 				}
 
@@ -625,7 +622,7 @@ created for.
 //it// is the item where the reduce-entries should be created for. */
 static void reduce_item( PARSER* parser, STATE* st, ITEM* it )
 {
-	LIST*		i		= (LIST*)NULL;
+	plistel* 	e;
 	SYMBOL*		sym		= (SYMBOL*)NULL;
 	TABCOL*		act		= (TABCOL*)NULL;
 	int			resolved;
@@ -640,9 +637,9 @@ static void reduce_item( PARSER* parser, STATE* st, ITEM* it )
 
 	if( it->next_symbol == (SYMBOL*)NULL )
 	{
-		for( i = it->lookahead; i; i = i->next )
+		plist_for( it->lookahead, e )
 		{
-			sym = i->pptr;
+			sym = (SYMBOL*)plist_access( e );
 
 			/*
 				Check out if there is already an action!
@@ -765,10 +762,11 @@ void generate_tables( PARSER* parser )
 	}
 
 	st = create_state( parser );
-	it = create_item( st, parser->goal->productions->pptr, (LIST*)NULL );
+	it = create_item( st, (PROD*)plist_access(
+								plist_first( parser->goal->productions ) ) );
 
 	/* The goal item's lookahead is the end_of_input symbol */
-	it->lookahead = list_push( it->lookahead, parser->end_of_input );
+	plist_push( it->lookahead, parser->end_of_input );
 
 	while( ( st = get_undone_state( parser->lalr_states ) ) != (STATE*)NULL )
 	{
@@ -790,17 +788,17 @@ lexical analysis generation.
 //parser// is the pointer to the parser information structure. */
 void detect_default_productions( PARSER* parser )
 {
-	STATE*	st;
-	PROD*	cur;
-	TABCOL*	act;
+	STATE*		st;
+	PROD*		cur;
+	TABCOL*		act;
 
-	LIST*	st_list;
-	LIST*	p_list;
-	LIST*	a_list;
-	LIST*	n_list;
+	plistel*	e;
+	LIST*		st_list;
+	LIST*		a_list;
+	LIST*		n_list;
 
-	int		max,
-			count;
+	int			max;
+	int			count;
 
 	for( st_list = parser->lalr_states; st_list;
 			st_list = list_next( st_list ) )
@@ -810,10 +808,9 @@ void detect_default_productions( PARSER* parser )
 
 		/* Find the most common reduction and use this as default
 			(quick and dirty...) */
-		for( p_list = parser->productions; p_list;
-				p_list = list_next( p_list ) )
+		plist_for( parser->productions, e )
 		{
-			cur = (PROD*)list_access( p_list );
+			cur = (PROD*)plist_access( e );
 
 			for( a_list = st->actions, count = 0; a_list;
 					a_list = list_next( a_list ) )

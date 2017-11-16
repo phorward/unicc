@@ -98,7 +98,7 @@ void construct_single_lexer( PARSER* parser )
 {
 	pregex_nfa*			nfa;
 	pregex_dfa*			dfa;
-	LIST*				l;
+	plistel*			e;
 	SYMBOL*				s;
 
 	PROC( "construct_single_lexer" );
@@ -108,9 +108,9 @@ void construct_single_lexer( PARSER* parser )
 	nfa = pregex_nfa_create();
 	dfa = pregex_dfa_create();
 
-	LISTFOR( parser->symbols, l )
+	plist_for( parser->symbols, e )
 	{
-		s = (SYMBOL*)list_access( l );
+		s = (SYMBOL*)plist_access( e );
 		VARS( "s->id", "%d", s->id );
 
 		nfa_from_symbol( parser, nfa, s );
