@@ -1,4 +1,4 @@
-# UniCC [![Build Status](https://travis-ci.org/phorward/unicc.svg?branch=develop)](https://travis-ci.org/phorward/unicc)
+# UniCC [![Build Status](https://travis-ci.org/phorward/unicc.svg?branch=master)](https://travis-ci.org/phorward/unicc)
 
 **UniCC** is a target-language independent parser generator.
 
