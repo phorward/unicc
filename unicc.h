@@ -75,9 +75,6 @@ Usage:	Global declarations, structures and includes
 #define SHIFT					2 	/* Shift 			1 0 */
 #define SHIFT_REDUCE			3 	/* Shift-Reduce 	1 1 */
 
-/* Number of hash-table buckets */
-#define BUCKET_COUNT			64
-
 /* Length of a string that is always long enough (sorry, insider!) */
 #define ONE_LINE				80
 
