@@ -68,6 +68,7 @@ void inherit_fixiations( PARSER* parser );
 void inherit_vtypes( PARSER* parser );
 void setup_single_goal( PARSER* parser );
 void charsets_to_ptn( PARSER* parser );
+void symbol_orders( PARSER* parser );
 
 /* virtual.c */
 SYMBOL* positive_closure( PARSER* parser, SYMBOL* base );

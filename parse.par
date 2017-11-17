@@ -162,46 +162,10 @@ static void set_assoc_and_prec( LIST* symbols, int assoc )
 
 static void make_semantic_rhs( PROD* p )
 {
-	int		i;
-	LIST*	l		= (LIST*)NULL;
-	char*	dup;
-
 	if( current_prod && current_prod->rhs )
-	{
-		p->sem_rhs = list_dup( current_prod->rhs );
-		for( l = p->sem_rhs; list_next( l ); l = list_next( l ) )
-			;
+		plist_concat( p->sem_rhs, current_prod->rhs );
 
-		l->next = list_dup( p->rhs );
-	}
-	else
-		p->sem_rhs = list_dup( p->rhs );
-
-	for( i = 0; i < 2; i++ )
-	{
-		if( !i )
-		{
-			if( current_prod )
-				l = current_prod->rhs_idents;
-			else
-				l = (LIST*)NULL;
-		}
-		else
-			l = p->rhs_idents;
-
-		for( ; l; l = list_next( l ) )
-		{
-			dup = (char*)list_access( l );
-			if( dup )
-			{
-				if( !( dup = pstrdup( dup ) ) )
-					OUTOFMEM;
-			}
-
-			p->sem_rhs_idents = list_push(
-				p->sem_rhs_idents, (void*)dup );
-		}
-	}
+	plist_concat( p->sem_rhs, p->rhs );
 }
 
 static OPT* set_option( plist* opts, char* key, char* val, int line )
@@ -578,7 +542,10 @@ definition			->	lhs:primary
 							for( l = @all; l; l = list_next( l ) )
 							{
 								lhs = (SYMBOL*)list_access( l );
-								lhs->productions = list_dup( @productions );
+
+								LISTFOR( @productions, m )
+									plist_push( lhs->productions,
+										list_access( m ) );
 								lhs->vtype = vt;
 							}
 
@@ -675,7 +642,9 @@ definition			->	lhs:primary
 
 							/* Assign the list of all possible symbols to
 								the primary symbol */
-							primary->all_sym = @alt_regex_sym;
+							LISTFOR( @alt_regex_sym, l )
+								plist_push( primary->all_sym,
+									list_access( l ) );
 
 							current_sym = (SYMBOL*)NULL;
 						*]
@@ -854,16 +823,16 @@ sym<SYMBOL*>		-> terminal
 							}
 
 							/* Associate the productions */
-							@@->productions = @productions;
 							current_prod = @stack_cur_prod;
 
 							/* Link productions with this left-hand side */
-							for( l = @@->productions; l; l = list_next( l ) )
+							for( l = @productions; l; l = list_next( l ) )
 							{
 								prod = (PROD*)list_access( l );
 
-								prod->lhs = @@ ;
-								prod->all_lhs = list_push( (LIST*)NULL, @@ );
+								prod->lhs = @@;
+								plist_push( @@->productions, prod );
+								plist_push( prod->all_lhs, @@ );
 								make_semantic_rhs( prod );
 							}
 						*]

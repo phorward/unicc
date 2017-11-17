@@ -180,8 +180,7 @@ void rewrite_grammar( PARSER* parser )
 
 							p = create_production( parser, nsym );
 							append_to_production( p, sym, (char*)NULL );
-							append_to_production( p, ws_optlist,
-															(char*)NULL );
+							append_to_production( p, ws_optlist, (char*)NULL );
 
 							/* dump_production( stdout, p, TRUE, FALSE ); */
 
@@ -600,6 +599,26 @@ void charsets_to_ptn( PARSER* parser )
 
 		if( sym->type == SYM_CCL_TERMINAL )
 			sym->ptn = pregex_ptn_create_char( sym->ccl );
+	}
+
+	VOIDRET;
+}
+
+
+/** Re-arrange symbol orders. */
+void symbol_orders( PARSER* parser )
+{
+	plist*	e;
+	SYMBOL*	sym;
+
+	PROC( "symbol_orders" );
+	PARMS( "parser", "%p", parser );
+
+	plist_sort( parser->symbols );
+	plist_for( parser->symbols, e )
+	{
+		sym = (SYMBOL*)plist_access( e );
+		sym->id = plist_offset( e );
 	}
 
 	VOIDRET;

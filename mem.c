@@ -230,6 +230,8 @@ side, can be (char*)NULL.
 */
 void append_to_production( PROD* p, SYMBOL* sym, char* name )
 {
+	SYMBOL*		deriv	= sym;
+
 	if( !( p && sym ) )
 	{
 		WRONGPARAM;
@@ -244,13 +246,13 @@ void append_to_production( PROD* p, SYMBOL* sym, char* name )
 		11.07.2010	Jan Max Meyer
 		Use name of derived symbol in case of virtual productions.
 		*/
-		while( sym->derived_from )
-			sym = sym->derived_from;
+		while( deriv->derived_from )
+			deriv = deriv->derived_from;
 
-		if( !( sym->generated ) &&
-				( sym->type == SYM_NON_TERMINAL
-					|| sym->type == SYM_REGEX_TERMINAL ) )
-			name = sym->name;
+		if( !( deriv->generated ) &&
+				( deriv->type == SYM_NON_TERMINAL
+					|| deriv->type == SYM_REGEX_TERMINAL ) )
+			name = deriv->name;
 	}
 
 	plist_insert( p->rhs, (plistel*)NULL, name, sym );
@@ -492,16 +494,16 @@ static int sort_symbols( plist* lst, plistel* el, plistel* er )
 	SYMBOL*		l	= (SYMBOL*)plist_access( el );
 	SYMBOL*		r	= (SYMBOL*)plist_access( er );
 
-	if( l->type < r->type )
+	if( l->type > r->type )
 		return 1;
-	else if( l->type > r->type )
+	else if( l->type < r->type )
 		return -1;
 
 	if( l->type == SYM_REGEX_TERMINAL && r->type == SYM_REGEX_TERMINAL )
 	{
-		if( l->keyword < r->keyword )
+		if( l->keyword > r->keyword )
 			return 1;
-		else if( l->keyword > r->keyword )
+		else if( l->keyword < r->keyword )
 			return -1;
 	}
 

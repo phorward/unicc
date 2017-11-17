@@ -300,7 +300,7 @@ int main( int argc, char** argv )
 					rewrite_grammar( parser );
 
 				unique_charsets( parser );
-				plist_sort( parser->symbols );
+				symbol_orders( parser );
 				charsets_to_ptn( parser );
 
 				if( parser->p_mode == MODE_SENSITIVE )

@@ -128,7 +128,6 @@ static void close_item( plist* productions, ITEM* it, LIST** closure_set )
 							*closure_set );
 #endif
 						cit = create_item( (STATE*)NULL, prod );
-						cit->lookahead = plist_create( 0, PLIST_MOD_PTR );
 
 						*closure_set = list_push( *closure_set, cit );
 					}
