@@ -1,0 +1,371 @@
+<parser model="insensitive" name="calc" source="calc" basename="calc" target-language="C" char-min="0" char-max="65534">
+	<symbols>
+		<symbol type="terminal" id="0" name="WHITESPACE" terminal-type="regular-expression" is-whitespace="yes" defined-at="14">
+			<dfa>
+				<state id="0">
+					<transition goto="2">
+						<character-class count="1">
+							<range from="47" to="47" />
+						</character-class>
+					</transition>
+					<transition goto="1">
+						<character-class count="4">
+							<range from="9" to="10" />
+							<range from="13" to="13" />
+							<range from="32" to="32" />
+						</character-class>
+					</transition>
+				</state>
+				<state id="1" accept="0">
+					<transition goto="1">
+						<character-class count="4">
+							<range from="9" to="10" />
+							<range from="13" to="13" />
+							<range from="32" to="32" />
+						</character-class>
+					</transition>
+				</state>
+				<state id="2">
+					<transition goto="4">
+						<character-class count="1">
+							<range from="42" to="42" />
+						</character-class>
+					</transition>
+				</state>
+				<state id="3" accept="0" />
+				<state id="4" default-transition="4">
+					<transition goto="5">
+						<character-class count="1">
+							<range from="42" to="42" />
+						</character-class>
+					</transition>
+					<transition goto="4">
+						<character-class count="65534">
+							<range from="0" to="41" />
+							<range from="43" to="65534" />
+						</character-class>
+					</transition>
+				</state>
+				<state id="5" default-transition="4">
+					<transition goto="3">
+						<character-class count="1">
+							<range from="47" to="47" />
+						</character-class>
+					</transition>
+					<transition goto="4">
+						<character-class count="65534">
+							<range from="0" to="46" />
+							<range from="48" to="65534" />
+						</character-class>
+					</transition>
+				</state>
+			</dfa>
+		</symbol>
+		<symbol type="terminal" id="1" name="INT" terminal-type="regular-expression" defined-at="18">
+			<dfa>
+				<state id="0">
+					<transition goto="1">
+						<character-class count="10">
+							<range from="48" to="57" />
+						</character-class>
+					</transition>
+				</state>
+				<state id="1" accept="1">
+					<transition goto="1">
+						<character-class count="10">
+							<range from="48" to="57" />
+						</character-class>
+					</transition>
+				</state>
+			</dfa>
+			<code defined-at="18">
+				<raw> </raw>
+				<return-value />
+				<raw> = atoi( </raw>
+				<begin-of-match />
+				<raw> ); </raw>
+			</code>
+		</symbol>
+		<symbol type="terminal" id="2" name="\x0" terminal-type="character-class">
+			<character-class count="1">
+				<range from="0" to="0" />
+			</character-class>
+		</symbol>
+		<symbol type="terminal" id="3" name=";" terminal-type="character-class">
+			<character-class count="1">
+				<range from="59" to="59" />
+			</character-class>
+		</symbol>
+		<symbol type="terminal" id="4" name="+" terminal-type="character-class">
+			<character-class count="1">
+				<range from="43" to="43" />
+			</character-class>
+		</symbol>
+		<symbol type="terminal" id="5" name="(" terminal-type="character-class">
+			<character-class count="1">
+				<range from="40" to="40" />
+			</character-class>
+		</symbol>
+		<symbol type="terminal" id="6" name=")" terminal-type="character-class">
+			<character-class count="1">
+				<range from="41" to="41" />
+			</character-class>
+		</symbol>
+		<symbol type="non-terminal" id="7" name="s" defined-at="22" />
+		<symbol type="non-terminal" id="8" name="expr" defined-at="25" />
+		<symbol type="non-terminal" id="9" name="factor" defined-at="29" />
+		<symbol type="non-terminal" id="10" name="s'" />
+	</symbols>
+	<productions>
+		<production id="0" length="2" defined-at="22">
+			<left-hand-side symbol-id="7" offset="0" />
+			<right-hand-side symbol-id="8" offset="0" named="expr" />
+			<right-hand-side symbol-id="3" offset="1" />
+			<code>
+				<raw>	</raw>
+				<left-hand-side />
+				<raw> = </raw>
+				<right-hand-side offset="1" />
+				<raw>; </raw>
+			</code>
+		</production>
+		<production id="1" length="3" defined-at="25">
+			<left-hand-side symbol-id="8" offset="0" />
+			<right-hand-side symbol-id="8" offset="0" named="expr" />
+			<right-hand-side symbol-id="4" offset="1" />
+			<right-hand-side symbol-id="9" offset="2" named="factor" />
+			<code defined-at="25">
+				<raw> </raw>
+				<left-hand-side />
+				<raw> = </raw>
+				<right-hand-side offset="2" />
+				<raw> + </raw>
+				<right-hand-side offset="1" />
+				<raw>; </raw>
+			</code>
+		</production>
+		<production id="2" length="1" defined-at="26">
+			<left-hand-side symbol-id="8" offset="0" />
+			<right-hand-side symbol-id="9" offset="0" named="factor" />
+			<code>
+				<raw>	</raw>
+				<left-hand-side />
+				<raw> = </raw>
+				<right-hand-side offset="0" />
+				<raw>; </raw>
+			</code>
+		</production>
+		<production id="3" length="1" defined-at="29">
+			<left-hand-side symbol-id="9" offset="0" />
+			<right-hand-side symbol-id="1" offset="0" named="INT" />
+			<code>
+				<raw>	</raw>
+				<left-hand-side />
+				<raw> = </raw>
+				<right-hand-side offset="0" />
+				<raw>; </raw>
+			</code>
+		</production>
+		<production id="4" length="3" defined-at="30">
+			<left-hand-side symbol-id="9" offset="0" />
+			<right-hand-side symbol-id="5" offset="0" />
+			<right-hand-side symbol-id="8" offset="1" named="expr" />
+			<right-hand-side symbol-id="6" offset="2" />
+			<code>
+				<raw>	</raw>
+				<left-hand-side />
+				<raw> = </raw>
+				<right-hand-side offset="2" />
+				<raw>; </raw>
+			</code>
+		</production>
+		<production id="5" length="2">
+			<left-hand-side symbol-id="10" offset="0" />
+			<right-hand-side symbol-id="7" offset="0" named="s" />
+			<right-hand-side symbol-id="2" offset="1" />
+			<code>
+				<raw>	</raw>
+				<left-hand-side />
+				<raw> = </raw>
+				<right-hand-side offset="1" />
+				<raw>; </raw>
+			</code>
+		</production>
+	</productions>
+	<states>
+		<state id="0">
+			<shift-reduce symbol-id="1" by-production="3" />
+			<shift symbol-id="5" to-state="3" />
+			<goto symbol-id="7" to-state="1" />
+			<goto symbol-id="8" to-state="2" />
+			<goto symbol-id="9" by-production="2" />
+		</state>
+		<state id="1" derived-from-state="0">
+			<shift-reduce symbol-id="2" by-production="5" />
+		</state>
+		<state id="2" derived-from-state="0">
+			<shift-reduce symbol-id="3" by-production="0" />
+			<shift symbol-id="4" to-state="4" />
+		</state>
+		<state id="3" derived-from-state="0">
+			<shift-reduce symbol-id="1" by-production="3" />
+			<shift symbol-id="5" to-state="3" />
+			<goto symbol-id="8" to-state="5" />
+			<goto symbol-id="9" by-production="2" />
+		</state>
+		<state id="4" derived-from-state="2">
+			<shift-reduce symbol-id="1" by-production="3" />
+			<shift symbol-id="5" to-state="3" />
+			<goto symbol-id="9" by-production="1" />
+		</state>
+		<state id="5" derived-from-state="3">
+			<shift symbol-id="4" to-state="4" />
+			<shift-reduce symbol-id="6" by-production="4" />
+		</state>
+	</states>
+	<lexers>
+		<lexer>
+			<state id="0">
+				<transition goto="1">
+					<character-class count="10">
+						<range from="48" to="57" />
+					</character-class>
+				</transition>
+				<transition goto="2">
+					<character-class count="1">
+						<range from="0" to="0" />
+					</character-class>
+				</transition>
+				<transition goto="3">
+					<character-class count="1">
+						<range from="59" to="59" />
+					</character-class>
+				</transition>
+				<transition goto="4">
+					<character-class count="1">
+						<range from="43" to="43" />
+					</character-class>
+				</transition>
+				<transition goto="5">
+					<character-class count="1">
+						<range from="40" to="40" />
+					</character-class>
+				</transition>
+				<transition goto="6">
+					<character-class count="1">
+						<range from="41" to="41" />
+					</character-class>
+				</transition>
+				<transition goto="8">
+					<character-class count="1">
+						<range from="47" to="47" />
+					</character-class>
+				</transition>
+				<transition goto="7">
+					<character-class count="4">
+						<range from="9" to="10" />
+						<range from="13" to="13" />
+						<range from="32" to="32" />
+					</character-class>
+				</transition>
+			</state>
+			<state id="1" accept="1">
+				<transition goto="1">
+					<character-class count="10">
+						<range from="48" to="57" />
+					</character-class>
+				</transition>
+			</state>
+			<state id="2" accept="2" />
+			<state id="3" accept="3" />
+			<state id="4" accept="4" />
+			<state id="5" accept="5" />
+			<state id="6" accept="6" />
+			<state id="7" accept="0">
+				<transition goto="7">
+					<character-class count="4">
+						<range from="9" to="10" />
+						<range from="13" to="13" />
+						<range from="32" to="32" />
+					</character-class>
+				</transition>
+			</state>
+			<state id="8">
+				<transition goto="10">
+					<character-class count="1">
+						<range from="42" to="42" />
+					</character-class>
+				</transition>
+			</state>
+			<state id="9" accept="0" />
+			<state id="10" default-transition="10">
+				<transition goto="11">
+					<character-class count="1">
+						<range from="42" to="42" />
+					</character-class>
+				</transition>
+				<transition goto="10">
+					<character-class count="65534">
+						<range from="0" to="41" />
+						<range from="43" to="65534" />
+					</character-class>
+				</transition>
+			</state>
+			<state id="11" default-transition="10">
+				<transition goto="9">
+					<character-class count="1">
+						<range from="47" to="47" />
+					</character-class>
+				</transition>
+				<transition goto="10">
+					<character-class count="65534">
+						<range from="0" to="46" />
+						<range from="48" to="65534" />
+					</character-class>
+				</transition>
+			</state>
+		</lexer>
+	</lexers>
+	<prologue />
+	<epilogue />
+	<pcb />
+	<source>#!model			context-insensitive;
+#parser 		"calc";
+
+#language		'C';
+#end of input	'\0';
+//#whitespaces 	ws ;
+#whitespaces			@WHITESPACE ;
+
+/*
+ * Lexeme symbols
+ */
+
+@WHITESPACE				
+						 "/*" ( !'*' | '*' !'/' )* "*/"	//Multi-line comment
+						| ' \t\r\n'+					//blanks
+						;
+						
+@INT					'0-9'+		[* @@ = atoi( @&gt; ); *];
+
+#default action	[*	@@ = @1; *];
+
+s$		-&gt;		expr ';'
+		;
+
+expr	-&gt;		expr '+' factor			[* @@ = @1 + @2; *]
+		|		factor
+		;
+
+factor	-&gt;		@INT
+		|		'(' expr ')'
+		;
+
+
+/*
+ws		-&gt; 		' \t\r\n'
+		|		"//" !'\0'
+		;
+*/
+</source>
+</parser>

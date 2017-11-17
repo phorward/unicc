@@ -1,0 +1,43 @@
+<parser model="sensitive" source="clean" basename="clean" target-language="C" char-min="0" char-max="65534">
+	<symbols>
+		<symbol type="terminal" id="0" name="a" terminal-type="character-class">
+			<character-class count="1">
+				<range from="97" to="97" />
+			</character-class>
+		</symbol>
+		<symbol type="terminal" id="1" name="(error_resync)" terminal-type="error-resynchronization" />
+		<symbol type="non-terminal" id="2" name="start" defined-at="1" />
+	</symbols>
+	<productions>
+		<production id="0" length="2" defined-at="1">
+			<left-hand-side symbol-id="2" offset="0" />
+			<right-hand-side symbol-id="0" offset="0" />
+			<right-hand-side symbol-id="1" offset="1" />
+		</production>
+	</productions>
+	<states>
+		<state id="0" lexer="0">
+			<shift symbol-id="0" to-state="1" />
+		</state>
+		<state id="1" derived-from-state="0">
+			<shift-reduce symbol-id="1" by-production="0" />
+		</state>
+	</states>
+	<lexers>
+		<lexer>
+			<state id="0">
+				<transition goto="1">
+					<character-class count="1">
+						<range from="97" to="97" />
+					</character-class>
+				</transition>
+			</state>
+			<state id="1" accept="0" />
+		</lexer>
+	</lexers>
+	<prologue />
+	<epilogue />
+	<pcb />
+	<source>start$ -&gt; 'a' #error ;
+</source>
+</parser>
