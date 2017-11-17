@@ -1,14 +1,4 @@
-p_parse.c
-p_parse.h
-p_parse.dbg
-p_lalr1_cc*
-*.xml*
 *.o
-boot_unicc?
-unicc
-old
-test
-bak
 parse_boot1.c
 parse_boot2.c
 parse_boot2.h
@@ -18,4 +8,5 @@ boot_min_lalr1
 unicc_boot1
 unicc_boot2
 unicc_boot3
+unicc
 Makefile

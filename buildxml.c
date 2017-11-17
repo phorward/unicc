@@ -824,7 +824,8 @@ static void print_xml_productions( PARSER* parser, XML_T par )
 		*/
 		if( is_default_code &&
 			( p->lhs->whitespace ||
-				plist_get_by_ptr( p->rhs, parser->error ) ) )
+				( parser->error && plist_get_by_ptr( p->rhs, parser->error ) ) )
+					)
 		{
 			act = (char*)NULL;
 		}
