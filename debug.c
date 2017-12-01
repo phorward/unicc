@@ -268,7 +268,6 @@ output is written to stdout.
 */
 void dump_lalr_states( FILE* stream, PARSER* parser )
 {
-	LIST*	l;
 	STATE*	st;
 
 	if( !stream )
@@ -282,10 +281,8 @@ void dump_lalr_states( FILE* stream, PARSER* parser )
 		( parser->p_name ? parser->p_name : "" ),
 			( parser->p_name ? ": " : "" ) );
 
-	for( l = parser->lalr_states; l; l = l->next )
+	parray_for( parser->states, st )
 	{
-		st = (STATE*)(l->pptr);
-
 		fprintf( stream, "  State %d:\n", st->state_id );
 		dump_item_set( stream, "Kernel:", st->kernel );
 		dump_item_set( stream, "Epsilon:", st->epsilon );

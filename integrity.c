@@ -164,8 +164,8 @@ static BOOLEAN check_nfa_matches_parser(
 
 		Nelson: "Haaahaaaa" ... never! I think... ;)
 	*/
-	if( ( st = list_getptr( parser->lalr_states, start ) ) )
-		stack[ tos++ ] = st->derived_from->state_id;
+	if( ( st = (STATE*)parray_get( parser->states, start ) ) )
+		stack[ tos++ ] = st->derived_from;
 	else
 		stack[ tos++ ] = start;
 
@@ -177,7 +177,7 @@ static BOOLEAN check_nfa_matches_parser(
 	{
 		act = 0;
 		idx = 0;
-		st = list_getptr( parser->lalr_states, stack[ tos ] );
+		st = (STATE*)parray_get( parser->states, stack[ tos ] );
 
 		for( l = st->actions; l; l = l->next )
 		{
@@ -241,7 +241,7 @@ static BOOLEAN check_nfa_matches_parser(
 			*/
 			tos++;
 
-			st = list_getptr( parser->lalr_states, stack[ tos - 1 ] );
+			st = (STATE*)parray_get( parser->states, stack[ tos - 1 ] );
 
 			for( l = st->gotos; l; l = l->next )
 			{
@@ -294,7 +294,6 @@ Returns TRUE if regex anomalies where found, FALSE otherwise. */
 BOOLEAN check_regex_anomalies( PARSER* parser )
 {
 	STATE*			st;
-	LIST*			l;
 	LIST*			m;
 	LIST*			n;
 	plistel*		e;
@@ -336,10 +335,8 @@ BOOLEAN check_regex_anomalies( PARSER* parser )
 		beginning from the state that forms the keyword, by running the
 		parser on its existing tables.
 	*/
-	for( l = parser->lalr_states; l; l = l->next )
+	parray_for( parser->states, st )
 	{
-		st = (STATE*)l->pptr;
-
 		/* First of all, count all possible reduces in the current state. */
 		for( m = st->actions, cnt = 0; m; m = m->next )
 		{

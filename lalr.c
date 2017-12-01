@@ -56,29 +56,6 @@ static int test_same_kernel( LIST* kernel1, LIST* kernel2 )
 	return ret;
 }
 
-/** Gets the next undone state to be closed from the global states array, which
-contains all states of the LALR(1) parse table.
-
-//lalr_states// is the list of LALR(1) states.
-
-Returns a STATE*-pointer to the next state item, if no more undone states are
-found, (STATE*)NULL is returned.
-*/
-static STATE* get_undone_state( LIST* lalr_states )
-{
-	STATE*		st		= (STATE*)NULL;
-	LIST*		l		= (LIST*)NULL;
-
-	for( l = lalr_states; l; l = l->next )
-	{
-		st = l->pptr;
-		if( st->done == 0 )
-			return st;
-	}
-
-	return (STATE*)NULL;
-}
-
 /** This is the key function which performs the major closure from one kernel
 item seed to a closure set.
 
@@ -228,9 +205,10 @@ closure.
 
 //parser// is the pointer to the parser information structure.
 //st// is the state to be closed. */
-static void lalr1_closure( PARSER* parser, STATE* st )
+static void lalr1_closure( PARSER* parser, int state_id )
 {
-	LIST*		closure_start		= st->kernel;
+	STATE*		st;
+	LIST*		closure_start;
 	LIST*		closure_set			= (LIST*)NULL;
 	LIST*		i					= (LIST*)NULL;
 	LIST*		j					= (LIST*)NULL;
@@ -245,6 +223,14 @@ static void lalr1_closure( PARSER* parser, STATE* st )
 
 	int			prev_cnt			= 0;
 	int			cnt					= 0;
+
+	if( !( st = parray_get( parser->states, state_id ) ) )
+	{
+		WRONGPARAM;
+		return;
+	}
+
+	closure_start = st->kernel;
 
 	/*
 		03.03.2008	Jan Max Meyer
@@ -502,19 +488,18 @@ static void lalr1_closure( PARSER* parser, STATE* st )
 			/*
 				Proceed normally
 			*/
-			for( j = parser->lalr_states; j; j = j->next )
-			{
-				nstate = j->pptr;
-
+			parray_for( parser->states, nstate )
 				if( test_same_kernel( nstate->kernel, i->pptr ) )
 					break;
-			}
 
-			if( !j )
+			if( !nstate )
 			{
 				nstate = create_state( parser );
 				nstate->kernel = i->pptr;
-				nstate->derived_from = st;
+				nstate->derived_from = state_id;
+
+				/* Re-get current state due possibly heap re-allocation */
+				st = (STATE*)parray_get( parser->states, state_id );
 
 #if ON_ALGORITHM_DEBUG
 				fprintf( stderr, "\n===> Creating new State %d...\n",
@@ -563,7 +548,7 @@ static void lalr1_closure( PARSER* parser, STATE* st )
 
 				/* Had new lookaheads been added? */
 				if( cnt > prev_cnt )
-					nstate->done = 0;
+					nstate->done = FALSE;
 
 #if ON_ALGORITHM_DEBUG
 				fprintf( stderr, "\n...it's now...\n" );
@@ -749,7 +734,6 @@ void generate_tables( PARSER* parser )
 {
 	STATE*	st		= (STATE*)NULL;
 	ITEM*	it		= (ITEM*)NULL;
-	LIST*	i		= (LIST*)NULL;
 
 	if( !( parser->symbols || parser->productions ) )
 		return;
@@ -767,17 +751,24 @@ void generate_tables( PARSER* parser )
 	/* The goal item's lookahead is the end_of_input symbol */
 	plist_push( it->lookahead, parser->end_of_input );
 
-	while( ( st = get_undone_state( parser->lalr_states ) ) != (STATE*)NULL )
+	/* Perform closure algorithm until no more undone states are found */
+	do
 	{
-		st->done = 1;
-		lalr1_closure( parser, st );
+		parray_for( parser->states, st )
+		{
+			if( !st->done )
+			{
+				st->done = TRUE;
+				lalr1_closure( parser, st->state_id );
+				break;
+			}
+		}
 	}
+	while( st );
 
-	for( i = parser->lalr_states; i; i = i->next )
-	{
-		st = (STATE*)list_access( i );
+	/* Perform parse table generation. */
+	parray_for( parser->states, st )
 		perform_reductions( parser, st );
-	}
 }
 
 /** Performs a default production detection. This must be done immediatelly
@@ -792,18 +783,15 @@ void detect_default_productions( PARSER* parser )
 	TABCOL*		act;
 
 	plistel*	e;
-	LIST*		st_list;
 	LIST*		a_list;
 	LIST*		n_list;
 
 	int			max;
 	int			count;
 
-	for( st_list = parser->lalr_states; st_list;
-			st_list = list_next( st_list ) )
+	parray_for( parser->states, st )
 	{
 		max = 0;
-		st = (STATE*)list_access( st_list );
 
 		/* Find the most common reduction and use this as default
 			(quick and dirty...) */

@@ -847,7 +847,6 @@ static void print_xml_productions( PARSER* parser, XML_T par )
 
 static void print_xml_states( PARSER* parser, XML_T par )
 {
-	LIST*			l;
 	LIST*			m;
 
 	STATE*			st;
@@ -868,11 +867,9 @@ static void print_xml_states( PARSER* parser, XML_T par )
 	if( !( state_tab = xml_add_child( par, "states", 0 ) ) )
 		OUTOFMEM;
 
-	for( l = parser->lalr_states, i = 0; l; l = list_next( l ), i++ )
+	i = 0;
+	parray_for( parser->states, st )
 	{
-		/* Get state pointer */
-		st = (STATE*)list_access( l );
-
 		/* Add state entity */
 		if( !( state = xml_add_child( state_tab, "state", 0 ) ) )
 			OUTOFMEM;
@@ -892,7 +889,7 @@ static void print_xml_states( PARSER* parser, XML_T par )
 		/* Derived from state CHECK! */
 		if( st->derived_from )
 			xml_set_int_attr( state, "derived-from-state",
-				st->derived_from->state_id );
+				st->derived_from );
 
 		/* Action table */
 		for( m = st->actions; m; m = list_next( m ) )
@@ -967,18 +964,7 @@ static void print_xml_states( PARSER* parser, XML_T par )
 			}
 		}
 
-		/* TODO Kernel */
-		/*
-		LISTFOR( st->kernel, m )
-		{
-			item = (ITEM*)list_access( m );
-
-			LISTFOR( item->prod->rhs, n )
-			{
-
-			}
-		}
-		*/
+		i++;
 	}
 
 	VOIDRET;

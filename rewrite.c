@@ -608,8 +608,8 @@ void charsets_to_ptn( PARSER* parser )
 /** Re-arrange symbol orders. */
 void symbol_orders( PARSER* parser )
 {
-	plist*	e;
-	SYMBOL*	sym;
+	plistel*	e;
+	SYMBOL*		sym;
 
 	PROC( "symbol_orders" );
 	PARMS( "parser", "%p", parser );

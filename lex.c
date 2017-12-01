@@ -21,7 +21,6 @@ void merge_symbols_to_dfa( PARSER* parser )
 	pregex_nfa*	nfa;
 	pregex_dfa*	dfa;
 	pregex_dfa*	ex_dfa;
-	LIST*	l;
 	LIST*	m;
 	STATE*	s;
 	TABCOL*	col;
@@ -29,10 +28,8 @@ void merge_symbols_to_dfa( PARSER* parser )
 	PROC( "merge_symbols_to_dfa" );
 	PARMS( "parser", "%p", parser );
 
-	LISTFOR( parser->lalr_states, l )
+	parray_for( parser->states, s )
 	{
-		s = (STATE*)list_access( l );
-
 		VARS( "s->state_id", "%d", s->state_id );
 		nfa = pregex_nfa_create();
 

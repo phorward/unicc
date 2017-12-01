@@ -421,10 +421,10 @@ int main( int argc, char** argv )
 			}
 
 			if( parser->stats )
-				fprintf( status, "%s%s produced %d states "
+				fprintf( status, "%s%s produced %ld states "
 							"(%d error%s, %d warning%s), %d file%s\n",
 					( parser->verbose ? "\n" : "" ),
-					filename, list_count( parser->lalr_states ),
+					filename, parray_count( parser->states ),
 						error_count, ( error_count == 1 ) ? "" : "s",
 						warning_count, ( warning_count == 1 ) ? "" : "s",
 						parser->files_count,

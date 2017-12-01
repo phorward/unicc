@@ -891,10 +891,10 @@ void build_code( PARSER* parser )
 
 	/* Build action, goto and dfa_select tables */
 	MSG( "Action, Goto and DFA selection table" );
-	for( l = parser->lalr_states, i = 0; l; l = l->next, i++ )
-	{
-		st = (STATE*)(l->pptr);
 
+	i = 0;
+	parray_for( parser->states, st )
+	{
 		/* Action table */
 		action_table_row = pstrrender( gen->acttab.row_start,
 				GEN_WILD_PREFIX "number-of-columns",
@@ -932,7 +932,7 @@ void build_code( PARSER* parser )
 						int_to_str( st->state_id ), TRUE,
 							(char*)NULL ), TRUE );
 
-		if( l->next )
+		if( parray_next( parser->states, st ) )
 			action_table_row = pstrcatstr( action_table_row,
 				gen->acttab.row_sep, FALSE );
 
@@ -978,7 +978,7 @@ void build_code( PARSER* parser )
 						int_to_str( st->state_id ), TRUE,
 					(char*)NULL ), TRUE );
 
-		if( l->next )
+		if( parray_next( parser->states, st ) )
 			goto_table_row = pstrcatstr( goto_table_row,
 				gen->gotab.row_sep, FALSE );
 
@@ -994,7 +994,7 @@ void build_code( PARSER* parser )
 						int_to_str( list_find( parser->dfas, st->dfa ) ), TRUE,
 							(char*)NULL ), TRUE );
 
-			if( l->next )
+			if( parray_next( parser->states, st ) )
 				dfa_select = pstrcatstr( dfa_select,
 								gen->dfa_select.col_sep, FALSE );
 		}
@@ -1009,8 +1009,10 @@ void build_code( PARSER* parser )
 							( ( st->def_prod ) ? st->def_prod->id : -1 ) ),
 								TRUE, (char*)NULL ), TRUE );
 
-		if( l->next )
+		if( parray_next( parser->states, st ) )
 			def_prod = pstrcatstr( def_prod, gen->defprod.col_sep, FALSE );
+
+		i++;
 	}
 
 	/* Lexical recognition machine table composition */
@@ -1406,7 +1408,7 @@ void build_code( PARSER* parser )
 			GEN_WILD_PREFIX "number-of-symbols",
 				int_to_str( plist_count( parser->symbols ) ), TRUE,
 			GEN_WILD_PREFIX "number-of-states",
-				int_to_str( list_count( parser->lalr_states ) ), TRUE,
+				int_to_str( parray_count( parser->states ) ), TRUE,
 			GEN_WILD_PREFIX "number-of-productions",
 				int_to_str( plist_count( parser->productions ) ), TRUE,
 			GEN_WILD_PREFIX "number-of-dfa-machines",

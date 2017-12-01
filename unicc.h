@@ -258,7 +258,7 @@ struct _state
 	pregex_dfa*	dfa;			/* DFA machine for regex recognition
 									in this state */
 
-	STATE*		derived_from;	/* Previous state */
+	int			derived_from;	/* Previous state */
 };
 
 /* Action/Goto table column */
@@ -293,7 +293,7 @@ struct _parser
 {
 	plist*		symbols;		/* Symbol table */
 	plist*		productions;	/* Productions */
-	LIST*		lalr_states;	/* Linked list of LALR(1) states */
+	parray*		states;			/* LALR(1) states */
 	LIST*		dfa;			/* List containing the DFA for
 									regex terminal recognition */
 

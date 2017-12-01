@@ -321,24 +321,19 @@ Returns a STATE* Pointer to the newly created state, (STATE*)NULL in error case.
 */
 STATE* create_state( PARSER* p )
 {
-	STATE*		st		= (STATE*)NULL;
+	STATE*		st;
 
-	if( p )
+	if( !p )
 	{
-		st = (STATE*)pmalloc( sizeof( STATE ) );
-		if( st )
-		{
-			memset( st, 0, sizeof( STATE ) );
-
-			/* Set state unique key */
-			st->state_id = list_count( p->lalr_states );
-
-			/* Append to current parser states */
-			p->lalr_states = list_push( p->lalr_states, st );
-		}
-		else
-			OUTOFMEM;
+		WRONGPARAM;
+		return (STATE*)NULL;
 	}
+
+	st = (STATE*)parray_malloc( p->states );
+
+	/* Set state unique key */
+	st->state_id = parray_count( p->states ) - 1;
+
 	return st;
 }
 
@@ -347,7 +342,7 @@ STATE* create_state( PARSER* p )
 //st// is the Pointer to state structure to be freed. */
 void free_state( STATE* st )
 {
-	LIST*	li		= (LIST*)NULL;
+	LIST*	li;
 
 	for( li = st->kernel; li; li = li->next )
 		free_item( li->pptr );
@@ -365,8 +360,6 @@ void free_state( STATE* st )
 	list_free( st->epsilon );
 	list_free( st->actions );
 	list_free( st->gotos );
-
-	pfree( st );
 }
 
 /** Creates a table column to be added to a state's goto-table or action-table
@@ -527,12 +520,14 @@ PARSER* create_parser( void )
 
 	memset( pptr, 0, sizeof( PARSER ) );
 
-	/* Initialize the hash table for fast symbol access */
+	/* Initialize any dynamic lists and arrays */
 	pptr->symbols = plist_create( sizeof( SYMBOL ),
 						PLIST_MOD_EXTKEYS | PLIST_MOD_UNIQUE );
 	plist_set_sortfn( pptr->symbols, sort_symbols );
 
 	pptr->productions = plist_create( sizeof( PROD ), PLIST_MOD_NONE );
+
+	pptr->states = parray_create( sizeof( STATE ), 32 );
 
 	/* Setup defaults */
 	pptr->p_mode = MODE_SENSITIVE;
@@ -554,18 +549,8 @@ PARSER* create_parser( void )
 //parser// is the Parser structure to be freed. */
 void free_parser( PARSER* parser )
 {
-	plistel*	e;
 	LIST*		it			= (LIST*)NULL;
 	pregex_dfa*	dfa;
-
-	plist_for( parser->symbols, e )
-		free_symbol( (SYMBOL*)plist_access( e ) );
-
-	/*plist_for( parser->productions, e )
-		free_production( (PROD*)plist_access( e ) );*/
-
-	for( it = parser->lalr_states; it; it = it->next )
-		free_state( it->pptr );
 
 	for( it = parser->vtypes; it; it = it->next )
 		free_vtype( it->pptr );
@@ -576,10 +561,15 @@ void free_parser( PARSER* parser )
 		pregex_dfa_free( dfa );
 	}
 
+	plist_iter_access( parser->symbols, (plistfn)free_symbol );
 	plist_free( parser->symbols );
+
+	/* plist_iterate( parser->productions, free_production ); */
 	plist_free( parser->productions );
 
-	list_free( parser->lalr_states );
+	parray_iter( parser->states, (parrayfn)&free_state );
+	parray_free( parser->states );
+
 	list_free( parser->vtypes );
 	list_free( parser->dfas );
 
