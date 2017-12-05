@@ -97,15 +97,15 @@ am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(top_srcdir)/configure \
-	$(am__configure_deps) $(dist_templates_DATA) \
-	$(dist_unicc_DATA) $(am__DIST_COMMON)
+	$(am__configure_deps) $(dist_targets_DATA) $(dist_unicc_DATA) \
+	$(am__DIST_COMMON)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" \
-	"$(DESTDIR)$(templatesdir)" "$(DESTDIR)$(uniccdir)"
+	"$(DESTDIR)$(targetsdir)" "$(DESTDIR)$(uniccdir)"
 PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
 am__boot_min_lalr1_SOURCES_DIST = min_lalr1/min_lalr1.c
 am__dirstamp = $(am__leading_dot)dirstamp
@@ -246,7 +246,7 @@ am__uninstall_files_from_dir = { \
 man1dir = $(mandir)/man1
 NROFF = nroff
 MANS = $(man1_MANS)
-DATA = $(dist_templates_DATA) $(dist_unicc_DATA)
+DATA = $(dist_targets_DATA) $(dist_unicc_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
@@ -382,10 +382,10 @@ bin_PROGRAMS = unicc$(EXEEXT)
 
 man1_MANS = unicc.1.man
 uniccdir = $(datadir)/unicc
-templatesdir = $(uniccdir)/templates
-dist_templates_DATA = templates/c.tlt templates/python.tlt
+targetsdir = $(uniccdir)/targets
+dist_targets_DATA = targets/c.tlt targets/python.tlt
 dist_unicc_DATA = unicc.dtd LICENSE README.md
-AM_CPPFLAGS = -DTLTDIR=\"$(templatesdir)\"
+AM_CPPFLAGS = -DTLTDIR=\"$(targetsdir)\"
 
 #
 # All sources except the grammar parser are equal in all bootstrappers.
@@ -1412,27 +1412,27 @@ uninstall-man1:
 	} | sed -e 's,.*/,,;h;s,.*\.,,;s,^[^1][0-9a-z]*$$,1,;x' \
 	      -e 's,\.[0-9a-z]*$$,,;$(transform);G;s,\n,.,'`; \
 	dir='$(DESTDIR)$(man1dir)'; $(am__uninstall_files_from_dir)
-install-dist_templatesDATA: $(dist_templates_DATA)
+install-dist_targetsDATA: $(dist_targets_DATA)
 	@$(NORMAL_INSTALL)
-	@list='$(dist_templates_DATA)'; test -n "$(templatesdir)" || list=; \
+	@list='$(dist_targets_DATA)'; test -n "$(targetsdir)" || list=; \
 	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(templatesdir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(templatesdir)" || exit 1; \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(targetsdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(targetsdir)" || exit 1; \
 	fi; \
 	for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  echo "$$d$$p"; \
 	done | $(am__base_list) | \
 	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(templatesdir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(templatesdir)" || exit $$?; \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(targetsdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(targetsdir)" || exit $$?; \
 	done
 
-uninstall-dist_templatesDATA:
+uninstall-dist_targetsDATA:
 	@$(NORMAL_UNINSTALL)
-	@list='$(dist_templates_DATA)'; test -n "$(templatesdir)" || list=; \
+	@list='$(dist_targets_DATA)'; test -n "$(targetsdir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(templatesdir)'; $(am__uninstall_files_from_dir)
+	dir='$(DESTDIR)$(targetsdir)'; $(am__uninstall_files_from_dir)
 install-dist_uniccDATA: $(dist_unicc_DATA)
 	@$(NORMAL_INSTALL)
 	@list='$(dist_unicc_DATA)'; test -n "$(uniccdir)" || list=; \
@@ -1682,7 +1682,7 @@ check: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) check-am
 all-am: Makefile $(PROGRAMS) $(MANS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(templatesdir)" "$(DESTDIR)$(uniccdir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)" "$(DESTDIR)$(targetsdir)" "$(DESTDIR)$(uniccdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: $(BUILT_SOURCES)
@@ -1743,7 +1743,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-dist_templatesDATA install-dist_uniccDATA \
+install-data-am: install-dist_targetsDATA install-dist_uniccDATA \
 	install-man
 
 install-dvi: install-dvi-am
@@ -1791,7 +1791,7 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-dist_templatesDATA \
+uninstall-am: uninstall-binPROGRAMS uninstall-dist_targetsDATA \
 	uninstall-dist_uniccDATA uninstall-man
 
 uninstall-man: uninstall-man1
@@ -1806,7 +1806,7 @@ uninstall-man: uninstall-man1
 	distclean-generic distclean-tags distcleancheck distdir \
 	distuninstallcheck dvi dvi-am html html-am info info-am \
 	install install-am install-binPROGRAMS install-data \
-	install-data-am install-dist_templatesDATA \
+	install-data-am install-dist_targetsDATA \
 	install-dist_uniccDATA install-dvi install-dvi-am install-exec \
 	install-exec-am install-html install-html-am install-info \
 	install-info-am install-man install-man1 install-pdf \
@@ -1814,9 +1814,8 @@ uninstall-man: uninstall-man1
 	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-binPROGRAMS \
-	uninstall-dist_templatesDATA uninstall-dist_uniccDATA \
-	uninstall-man uninstall-man1
+	uninstall-am uninstall-binPROGRAMS uninstall-dist_targetsDATA \
+	uninstall-dist_uniccDATA uninstall-man uninstall-man1
 
 .PRECIOUS: Makefile
 

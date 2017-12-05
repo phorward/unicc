@@ -2,12 +2,19 @@
 
 This file is used to document any relevant changes done to UniCC.
 
+## v1.3
+
+Released on: Not released yet.
+
+- Huge internal revisions
+- Renamed folder "templates/" into "targets/"
+
 ## v1.2
 
 Released on: December 7, 2017
 
 - Started an (yet incomplete) new standard template to provide parser generation
-  support for the Python programming language (templates/python.tlt).
+  support for the Python programming language (targets/python.tlt).
 - Imported the source code of the C standard template into the UniCC repository
   for further developments, the previous repository gets closed.
   (tempates/c.tlt)

@@ -812,14 +812,14 @@ void build_code( PARSER* parser )
 	sprintf( tlt_file, "%s%s", pstrlwr(parser->p_template), UNICC_TLT_EXTENSION );
 	VARS( "tlt_file", "%s", tlt_file );
 
-	if( !( tlt_path = pwhich( tlt_file, "templates" ) )
+	if( !( tlt_path = pwhich( tlt_file, "targets" ) )
 		&& !( tlt_path = pwhich( tlt_file, getenv( "UNICC_TPLDIR" ) ) )
 #ifndef _WIN32
 			&& !( tlt_path = pwhich( tlt_file,
 #ifdef TLTDIR
 			TLTDIR
 #else
-			"/usr/share/unicc/templates"
+			"/usr/share/unicc/targets"
 #endif
 			) )
 #endif

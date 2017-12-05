@@ -14,11 +14,11 @@ endif
 man1_MANS = unicc.1.man
 
 uniccdir = $(datadir)/unicc
-templatesdir = $(uniccdir)/templates
-dist_templates_DATA = templates/c.tlt templates/python.tlt
+targetsdir = $(uniccdir)/targets
+dist_targets_DATA = targets/c.tlt targets/python.tlt
 dist_unicc_DATA = unicc.dtd LICENSE README.md
 
-AM_CPPFLAGS = -DTLTDIR=\"$(templatesdir)\"
+AM_CPPFLAGS = -DTLTDIR=\"$(targetsdir)\"
 
 #
 # All sources except the grammar parser are equal in all bootstrappers.
