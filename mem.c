@@ -275,8 +275,6 @@ void free_production( PROD* prod )
 
 /** Creates a new state item to be used for performing the closure.
 
-//st// is the state-pointer where to add the new item to.
-
 //p// is the pointer to the production that should be associated by the item.
 
 //lookahead// is a possible list of lookahead terminal symbol pointers
@@ -284,22 +282,14 @@ This can also be filled later.
 
 Returns an ITEM*-pointer to the newly created item, (ITEM*)NULL in error case.
 */
-ITEM* create_item( STATE* st, PROD* p )
+ITEM* create_item( PROD* p )
 {
 	ITEM*		i		= (ITEM*)NULL;
 
 	i = (ITEM*)pmalloc( sizeof( ITEM ) );
-	if( i )
-	{
-		i->prod = p;
-		i->next_symbol = (SYMBOL*)plist_access( plist_first( p->rhs ) );
-		i->lookahead = plist_create( 0, PLIST_MOD_PTR );
-
-		if( st != (STATE*)NULL )
-			st->kernel = list_push( st->kernel, i );
-	}
-	else
-		OUTOFMEM;
+	i->prod = p;
+	i->next_symbol = (SYMBOL*)plist_access( plist_first( p->rhs ) );
+	i->lookahead = plist_create( 0, PLIST_MOD_PTR );
 
 	return i;
 }

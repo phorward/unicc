@@ -29,7 +29,7 @@ void free_symbol( SYMBOL* sym );
 PROD* create_production( PARSER* p, SYMBOL* lhs );
 void append_to_production( PROD* p, SYMBOL* sym, char* name );
 void free_production( PROD* prod );
-ITEM* create_item( STATE* st, PROD* p );
+ITEM* create_item( PROD* p );
 void free_item( ITEM* it );
 STATE* create_state( PARSER* p );
 void free_state( STATE* st );

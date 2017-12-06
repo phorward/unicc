@@ -75,7 +75,7 @@ static void close_item( plist* productions, ITEM* it, LIST** closure_set )
 
 	/* Only perform closure if the symbol right to the dot
 		of the current kernel item is a non-terminal */
-	if( it->next_symbol != (SYMBOL*)NULL )
+	if( it->next_symbol )
 	{
 		if( it->next_symbol->type == SYM_NON_TERMINAL )
 		{
@@ -104,7 +104,7 @@ static void close_item( plist* productions, ITEM* it, LIST** closure_set )
 						dump_item_set( (FILE*)NULL, "Partial closure:",
 							*closure_set );
 #endif
-						cit = create_item( (STATE*)NULL, prod );
+						cit = create_item( prod );
 
 						*closure_set = list_push( *closure_set, cit );
 					}
@@ -293,7 +293,7 @@ static void lalr1_closure( PARSER* parser, int state_id )
 				The complete memory must be mirrored and re-allocated to
 				create a single, independend item!
 			*/
-			cit = create_item( (STATE*)NULL, it->prod );
+			cit = create_item( it->prod );
 
 			memcpy( cit, it, sizeof( ITEM ) );
 			cit->lookahead = plist_dup( it->lookahead );
@@ -745,8 +745,9 @@ void generate_tables( PARSER* parser )
 	}
 
 	st = create_state( parser );
-	it = create_item( st, (PROD*)plist_access(
-								plist_first( parser->goal->productions ) ) );
+	it = create_item( (PROD*)plist_access( plist_first(
+							parser->goal->productions ) ) );
+	st->kernel = list_push( st->kernel, it );
 
 	/* The goal item's lookahead is the end_of_input symbol */
 	plist_push( it->lookahead, parser->end_of_input );
