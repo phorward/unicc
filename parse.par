@@ -515,10 +515,12 @@ regex_sym<SYMBOL*>	-> identifier
 						*]
 					;
 
+defines				->	"->" | ':' ;
+
 definition			->	lhs:primary
 						goal_mark:is_goal
 						alt_lhs_list?:all type
-						"->" productions
+						defines productions
 
 						[*
 							LIST* 	l;

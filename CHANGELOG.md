@@ -6,8 +6,9 @@ This file is used to document any relevant changes done to UniCC.
 
 Released on: Not released yet.
 
-- Huge internal revisions
-- Renamed folder "templates/" into "targets/"
+- Additionally allow ":" in case of "->" in grammar definitions.
+- Internal code revisions started, but interrupted for now.
+- Renamed folder "templates/" into "targets/".
 
 ## v1.2
 
