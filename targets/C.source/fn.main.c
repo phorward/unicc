@@ -13,7 +13,7 @@
 #endif
 %%%ifgen UNICC4C
 #ifndef UNICC_MAIN
-%%%code L( &out, "#define UNICC_MAIN %d", pstrlen( xml_txt( 
+%%%code L( &out, "#define UNICC_MAIN %d", pstrlen( xml_txt(
 %%%code					xml_child( parser,"epilogue" ) ) ) > 0 ? 1 : 0 );
 #endif
 %%%end
@@ -29,26 +29,26 @@ UNICC_STATIC void @@prefix_syntree_print( FILE* stream,
 
 	if( !node )
 		return;
-		
+
 	if( !stream )
 		stream = stderr;
-	
+
 	while( node )
 	{
 		for( i = 0; i < rec; i++ )
 			fprintf( stream,  "." );
-			
+
 		fprintf( stream, "%s", node->symbol.symbol->name );
-		
+
 		if( node->token )
 			fprintf( stream, ": '%s'", node->token );
-		
+
 		fprintf( stream, "\n" );
-		
+
 		rec++;
 		@@prefix_syntree_print( stream, pcb, node->child );
 		rec--;
-		
+
 		node = node->next;
 	}
 }
@@ -119,12 +119,12 @@ int main( int argc, char** argv )
 %%%ifgen STDTPL
 		if( @@name_len > 0 && @@version_len > 0 )
 			printf( "@@name v@@version\n" );
-		
+
 		if( @@copyright_len > 0 )
 			printf( "@@copyright\n\n" );
 %%%ifgen UNICC4C
 %%%code{
-	if( pstrlen( xml_attr( parser, "name" ) ) && 
+	if( pstrlen( xml_attr( parser, "name" ) ) &&
 			pstrlen( xml_attr( parser, "version" ) ) )
 		TL( &out, 2 "printf( \"%s v%s\\n\" );",
 			xml_attr( parser, "name" ),
@@ -150,16 +150,19 @@ int main( int argc, char** argv )
 			pcb.eof = '\n';
 		else
 			pcb.eof = EOF;
-	
+
 		@@prefix_parse( &pcb );
 
 #if UNICC_SYNTAXTREE
-		@@prefix_syntree_print( stderr, &pcb, pcb.syntax_tree );
+		/* Print syntax tree */
+		if( !pcb.error_count )
+			@@prefix_syntree_print( stderr, &pcb, pcb.syntax_tree );
+
 		pcb.syntax_tree = @@prefix_syntree_free( pcb.syntax_tree );
 #endif
 	}
 	while( flags & UNICCMAIN_ENDLESS );
-	
+
 	return 0;
 }
 #endif

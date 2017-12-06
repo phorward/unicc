@@ -1849,26 +1849,26 @@ UNICC_STATIC void @@prefix_syntree_print( FILE* stream,
 
 	if( !node )
 		return;
-		
+
 	if( !stream )
 		stream = stderr;
-	
+
 	while( node )
 	{
 		for( i = 0; i &lt; rec; i++ )
 			fprintf( stream,  "." );
-			
+
 		fprintf( stream, "%s", node-&gt;symbol.symbol-&gt;name );
-		
+
 		if( node-&gt;token )
 			fprintf( stream, ": '%s'", node-&gt;token );
-		
+
 		fprintf( stream, "\n" );
-		
+
 		rec++;
 		@@prefix_syntree_print( stream, pcb, node-&gt;child );
 		rec--;
-		
+
 		node = node-&gt;next;
 	}
 }
@@ -1938,7 +1938,7 @@ int main( int argc, char** argv )
 	{
 		if( @@name_len &gt; 0 &amp;&amp; @@version_len &gt; 0 )
 			printf( "@@name v@@version\n" );
-		
+
 		if( @@copyright_len &gt; 0 )
 			printf( "@@copyright\n\n" );
 	}
@@ -1956,16 +1956,19 @@ int main( int argc, char** argv )
 			pcb.eof = '\n';
 		else
 			pcb.eof = EOF;
-	
+
 		@@prefix_parse( &amp;pcb );
 
 #if UNICC_SYNTAXTREE
-		@@prefix_syntree_print( stderr, &amp;pcb, pcb.syntax_tree );
+		/* Print syntax tree */
+		if( !pcb.error_count )
+			@@prefix_syntree_print( stderr, &amp;pcb, pcb.syntax_tree );
+
 		pcb.syntax_tree = @@prefix_syntree_free( pcb.syntax_tree );
 #endif
 	}
 	while( flags &amp; UNICCMAIN_ENDLESS );
-	
+
 	return 0;
 }
 #endif
