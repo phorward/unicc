@@ -144,6 +144,7 @@ typedef union _VTYPE
 typedef struct
 {
 	char*			name;
+	char*			emit;
 	short			type;
 	UNICC_BOOLEAN	lexem;
 	UNICC_BOOLEAN	whitespace;
@@ -154,17 +155,34 @@ typedef struct
 typedef struct
 {
 	char*	definition;
+	char*	emit;
 	int		length;
 	int		lhs;
 } _prodinfo;
 
 
+/* Abstract Syntax Tree */
+typedef struct _AST _ast;
+
+struct _AST
+{
+	char*			emit;
+	UNICC_SCHAR*	token;
+
+	_ast*	parent;
+	_ast*	child;
+	_ast*	prev;
+	_ast*	next;
+};
+
 /* Stack Token */
 typedef struct
 {
 	_vtype		value;
+	_ast*		node;
 
 	_syminfo*	symbol;
+
 	int					state;
 	unsigned int		line;
 	unsigned int		column;
@@ -184,8 +202,9 @@ struct _SYNTREE
 	_syntree*	child;
 	_syntree*	prev;
 	_syntree*	next;
-}; 
+};
 #endif
+
 
 /* Parser Control Block */
 typedef struct
@@ -196,16 +215,16 @@ typedef struct
 
 	/* Stack size */
 	unsigned int		stacksize;
-	
+
 	/* Values */
 	_vtype		ret;
 	_vtype		test;
-	
+
 	/* State */
 	int					act;
 	int					idx;
 	int					lhs;
-	
+
 	/* Lookahead */
 	int					sym;
 	int					old_sym;
@@ -221,11 +240,11 @@ typedef struct
 	UNICC_CHAR			next;
 	UNICC_CHAR			eof;
 	UNICC_BOOLEAN		is_eof;
-	
+
 	/* Error handling */
 	int					error_delay;
 	int					error_count;
-	
+
 	unsigned int		line;
 	unsigned int		column;
 
@@ -233,7 +252,8 @@ typedef struct
 	/* Syntax tree */
 	_syntree*	syntax_tree;
 #endif
-	
+	_ast*		ast;
+
 	/* User-defined components */
 	
 

@@ -11,5 +11,6 @@ struct @@prefix_SYNTREE
 	@@prefix_syntree*	child;
 	@@prefix_syntree*	prev;
 	@@prefix_syntree*	next;
-}; 
+};
 #endif
+

@@ -15,7 +15,7 @@ Usage:	Grammar definition parser
 /*
  * IMPORTANT NOTIFICATION ON THIS PARSER
  * -------------------------------------
- * This module underlies to a special coding convention: Because UniCC is boot-
+ * This parser underlies to a special coding convention: Because UniCC is boot-
  * strapped from an older parser that is compiled using min_lalr1 (parse.min),
  * the use of some features is prohibited because they are only featured by the
  * parser defined in this module. The old parser is not tended anymore with new
@@ -27,6 +27,7 @@ Usage:	Grammar definition parser
  * 3. Don't set precedence to productions
  * 4. Don't use long-string identifiers for symbols
  * 5. Don't use the multiple left-hand side feature here
+ * 6. Don't use AST notations
  *
  * Some other rules may be inserted here in future versions.
  */
@@ -515,7 +516,11 @@ regex_sym<SYMBOL*>	-> identifier
 						*]
 					;
 
-defines				->	"->" | ':' ;
+defines<BOOLEAN>	->	"->"			[* @@ = FALSE; *]
+					| ':'				[* @@ = FALSE; *]
+					| "=>" 				[* @@ = TRUE; *]	// Defines ast node
+					| ":=" 				[* @@ = TRUE; *]	// Defines ast node
+					;
 
 definition			->	lhs:primary
 						goal_mark:is_goal
@@ -548,6 +553,7 @@ definition			->	lhs:primary
 								LISTFOR( @productions, m )
 									plist_push( lhs->productions,
 										list_access( m ) );
+
 								lhs->vtype = vt;
 							}
 
@@ -562,6 +568,10 @@ definition			->	lhs:primary
 
 								LISTFOR( @all, m )
 									plist_push( p->all_lhs, list_access( m ) );
+
+								/* AST */
+								if( @defines && !p->emit )
+									p->emit = pstrdup( @primary->name );
 							}
 
 							list_free( @productions );
@@ -584,7 +594,8 @@ definition			->	lhs:primary
 							}
 						*]
 
-					| '@' alt_regex_sym type regex code_opt sym_option*
+					| '@' alt_regex_sym type regex code_opt ast_node
+							sym_option*
 
 						[*
 							SYMBOL*	primary;
@@ -596,6 +607,7 @@ definition			->	lhs:primary
 
 							primary->ptn = @4;
 							primary->greedy = greedy;
+							primary->emit = @ast_node;
 
 							greedy = TRUE;
 
@@ -688,7 +700,13 @@ productions<LIST*>	->	productions '|' production
 						[*	@@ = list_push( (LIST*)NULL, @1 ); *]
 					;
 
+ast_node<char*>		->	'=' identifier		[* @@ = pstrdup( strbuf ); *]
+					|	'=' string			[* @@ = pstrdup( strbuf ); *]
+					|						[* @@ = (char*)NULL; *]
+					;
+
 production<PROD*>	->	line_number rhs_opt:rhs code_opt_dup:act
+							ast_node
 							prod_directives*
 						[*
 							@rhs->line = @line_number;
@@ -698,6 +716,8 @@ production<PROD*>	->	line_number rhs_opt:rhs code_opt_dup:act
 								@rhs->code = @act;
 								@rhs->code_at = last_code_begin;
 							}
+
+							@rhs->emit = @ast_node;
 
 							@@ = @rhs;
 
@@ -795,7 +815,7 @@ sym<SYMBOL*>		-> terminal
 						*]
 
 					//Embedded productions
-					| type '('  stack_cur_prod productions ')'
+					| type '(' stack_cur_prod productions ')'
 
 						[*
 							char	temp_nonterm[ ONE_LINE + 1 ];
@@ -872,6 +892,7 @@ terminal<SYMBOL*>	->	ccl
 							@@->used = TRUE;
 							@@->defined = TRUE;
 							@@->keyword = TRUE;
+							@@->emit = pstrdup( strbuf );
 
 							@@->ptn = pregex_ptn_create_string( strbuf,
 										parser->p_cis_strings ?

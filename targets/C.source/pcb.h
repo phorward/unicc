@@ -7,16 +7,16 @@ typedef struct
 
 	/* Stack size */
 	unsigned int		stacksize;
-	
+
 	/* Values */
 	@@prefix_vtype		ret;
 	@@prefix_vtype		test;
-	
+
 	/* State */
 	int					act;
 	int					idx;
 	int					lhs;
-	
+
 	/* Lookahead */
 	int					sym;
 	int					old_sym;
@@ -32,11 +32,11 @@ typedef struct
 	UNICC_CHAR			next;
 	UNICC_CHAR			eof;
 	UNICC_BOOLEAN		is_eof;
-	
+
 	/* Error handling */
 	int					error_delay;
 	int					error_count;
-	
+
 	unsigned int		line;
 	unsigned int		column;
 
@@ -44,7 +44,8 @@ typedef struct
 	/* Syntax tree */
 	@@prefix_syntree*	syntax_tree;
 #endif
-	
+	@@prefix_ast*		ast;
+
 	/* User-defined components */
 	@@pcb
 

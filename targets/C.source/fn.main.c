@@ -153,6 +153,13 @@ int main( int argc, char** argv )
 
 		@@prefix_parse( &pcb );
 
+		/* Print AST */
+		if( pcb.ast )
+		{
+			@@prefix_ast_print( stderr, pcb.ast );
+			@@prefix_ast_free( pcb.ast );
+		}
+
 #if UNICC_SYNTAXTREE
 		/* Print syntax tree */
 		if( !pcb.error_count )

@@ -153,6 +153,7 @@ struct _symbol
 
 	char*		keyname;		/* Key name */
 	char*		name;			/* Symbol name */
+	char*		emit;
 
 	pccl*		ccl;			/* Character-class definition */
 
@@ -209,6 +210,8 @@ struct _prod
 
 	SYMBOL*		lhs;			/* Primary left-hand side symbol */
 	plist*		all_lhs;		/* List of all possible left-hand sides */
+
+	char*		emit;			/* AST node generation */
 
 	plist*		rhs;			/* Right-hand side symbols */
 	plist*		sem_rhs;		/* Semantic right-hand side; This

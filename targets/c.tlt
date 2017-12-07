@@ -51,7 +51,7 @@ Please check the UniCC user manual for detailed information and notes on using
 the UniCC Standard C Parser Template.
 -->
 
-<generator name="C" long-name="UniCC Standard C Template" version="1.2">
+<generator name="C" long-name="UniCC Standard C Template" version="1.3">
 	<!--
 	****************************************************************************
 	Escape sequences
@@ -549,7 +549,7 @@ the UniCC Standard C Parser Template.
 												as whitespace symbol, 0 if not.
 	-->
 	<symbols>
-		<col>	{ /* @@symbol */ "@@symbol-name", @@type, @@lexem, @@whitespace, @@greedy }</col>
+		<col>	{ /* @@symbol */ "@@symbol-name", "@@emit", @@type, @@lexem, @@whitespace, @@greedy }</col>
 		<col_sep>,&#x0A;</col_sep>
 	</symbols>
 
@@ -575,7 +575,7 @@ the UniCC Standard C Parser Template.
 												not covered here.
 	-->
 	<productions>
-		<col>	{ /* @@production-number */ "@@production", @@length, @@lhs }</col>
+		<col>	{ /* @@production-number */ "@@production", "@@emit", @@length, @@lhs }</col>
 		<col_sep>,&#x0A;</col_sep>
 	</productions>
 
@@ -867,7 +867,7 @@ UNICC_STATIC @@prefix_syntree* @@prefix_syntree_free( @@prefix_syntree* node )
 
 	if( node-&gt;token )
 		free( node-&gt;token );
-	
+
 	free( node );
 	return (@@prefix_syntree*)NULL;
 }
@@ -895,12 +895,12 @@ UNICC_STATIC @@prefix_syntree* @@prefix_syntree_append(
 			UNICC_OUTOFMEM;
 		#endif
 	}
-	
+
 	if( ( last = pcb-&gt;syntax_tree ) )
 	{
 		while( last-&gt;next )
 			last = last-&gt;next;
-		
+
 		last-&gt;next = node;
 		node-&gt;prev = last;
 	}
@@ -910,6 +910,77 @@ UNICC_STATIC @@prefix_syntree* @@prefix_syntree_append(
 	return node;
 }
 #endif
+
+UNICC_STATIC @@prefix_ast* @@prefix_ast_free( @@prefix_ast* node )
+{
+	if( !node )
+		return (@@prefix_ast*)NULL;
+
+	@@prefix_ast_free( node-&gt;child );
+	@@prefix_ast_free( node-&gt;next );
+
+	if( node-&gt;token )
+		free( node-&gt;token );
+
+	free( node );
+	return (@@prefix_ast*)NULL;
+}
+
+UNICC_STATIC @@prefix_ast* @@prefix_ast_create( char* emit, UNICC_SCHAR* token )
+{
+	@@prefix_ast*	node;
+
+	if( !( node = (@@prefix_ast*)malloc( sizeof( @@prefix_ast ) ) ) )
+		UNICC_OUTOFMEM;
+
+	memset( node, 0, sizeof( @@prefix_ast ) );
+
+	node-&gt;emit = emit;
+
+	if( token )
+	{
+		#if !UNICC_WCHAR
+		if( !( node-&gt;token = strdup( token ) ) )
+			UNICC_OUTOFMEM;
+		#else
+		if( !( node-&gt;token = wcsdup( token ) ) )
+			UNICC_OUTOFMEM;
+		#endif
+	}
+
+	return node;
+}
+
+UNICC_STATIC void @@prefix_ast_print( FILE* stream, @@prefix_ast* node )
+{
+	int 		i;
+	static int 	rec;
+
+	if( !node )
+		return;
+
+	if( !stream )
+		stream = stderr;
+
+	while( node )
+	{
+		for( i = 0; i &lt; rec; i++ )
+			fprintf( stream,  " " );
+
+		fprintf( stream, "%s", node-&gt;emit );
+
+		if( node-&gt;token &amp;&amp; strcmp( node-&gt;emit, node-&gt;token ) != 0 )
+			fprintf( stream, " (%s)", node-&gt;token );
+
+		fprintf( stream, "\n" );
+
+		rec++;
+		@@prefix_ast_print( stream, node-&gt;child );
+		rec--;
+
+		node = node-&gt;next;
+	}
+}
 
 UNICC_STATIC int @@prefix_get_act( @@prefix_pcb* pcb )
 {
@@ -1527,13 +1598,16 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 {
 	@@goal-type			ret;
 	@@prefix_pcb*		pcb_org		= pcb;
+	int					i;
 
 #if UNICC_SYNTAXTREE
 	@@prefix_syntree*	child;
 	@@prefix_syntree*	last		= (@@prefix_syntree*)NULL;
 #endif
+	@@prefix_ast*		node;
+	@@prefix_ast*		lnode;
+
 #if UNICC_DEBUG
-	int					i;
 	@@prefix_vtype*		vptr;
 	FILE* 				@@prefix_dbg;
 
@@ -1681,6 +1755,13 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 			last = @@prefix_syntree_append( pcb, @@prefix_lexem( pcb ) );
 #endif
 
+			if( *pcb-&gt;tos-&gt;symbol-&gt;emit )
+				pcb-&gt;tos-&gt;node = @@prefix_ast_create(
+									pcb-&gt;tos-&gt;symbol-&gt;emit,
+										@@prefix_lexem( pcb ) );
+			else
+				pcb-&gt;tos-&gt;node = (@@prefix_ast*)NULL;
+
 			pcb-&gt;buf[ pcb-&gt;len ] = pcb-&gt;next;
 
 			/* Perform the shift on input */
@@ -1716,7 +1797,29 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 
 			/* Drop right-hand side */
 			/* TODO: Destructor callbacks? */
-			pcb-&gt;tos -= @@prefix_productions[ pcb-&gt;idx ].length;
+			for( i = 0, node = (@@prefix_ast*)NULL;
+					i &lt; @@prefix_productions[ pcb-&gt;idx ].length;
+						i++ )
+			{
+				if( pcb-&gt;tos-&gt;node )
+				{
+					if( node )
+					{
+						while( node-&gt;prev )
+							node = node-&gt;prev;
+
+						node-&gt;prev = pcb-&gt;tos-&gt;node;
+						pcb-&gt;tos-&gt;node-&gt;next = node;
+					}
+
+					node = pcb-&gt;tos-&gt;node;
+					pcb-&gt;tos-&gt;node = (@@prefix_ast*)NULL;
+				}
+
+				pcb-&gt;tos--;
+			}
+
+			/* pcb-&gt;tos -= @@prefix_productions[ pcb-&gt;idx ].length; */
 
 #if UNICC_SYNTAXTREE
 			/* Parse tree */
@@ -1735,12 +1838,36 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 			else
 				child = (@@prefix_syntree*)NULL;
 #endif
+			if( node )
+			{
+				if( lnode = pcb-&gt;tos-&gt;node )
+				{
+					while( lnode-&gt;next )
+						lnode = lnode-&gt;next;
+
+					lnode-&gt;next = node;
+					node-&gt;prev = lnode;
+				}
+				else
+					pcb-&gt;tos-&gt;node = node;
+			}
+
+			if( *@@prefix_productions[ pcb-&gt;idx ].emit )
+			{
+				node = @@prefix_ast_create(
+							@@prefix_productions[ pcb-&gt;idx ].emit,
+								(UNICC_SCHAR*)NULL);
+
+				node-&gt;child = pcb-&gt;tos-&gt;node;
+				pcb-&gt;tos-&gt;node = node;
+			}
 
 			/* Goal symbol reduced, and stack is empty? */
 			if( pcb-&gt;lhs == @@goal &amp;&amp; pcb-&gt;tos == pcb-&gt;stack )
 			{
 				memcpy( &amp;( pcb-&gt;tos-&gt;value ), &amp;( pcb-&gt;ret ),
 							sizeof( @@prefix_vtype ) );
+				pcb-&gt;ast = pcb-&gt;tos-&gt;node;
 
 				UNICC_CLEARIN( pcb );
 
@@ -1959,6 +2086,13 @@ int main( int argc, char** argv )
 
 		@@prefix_parse( &amp;pcb );
 
+		/* Print AST */
+		if( pcb.ast )
+		{
+			@@prefix_ast_print( stderr, pcb.ast );
+			@@prefix_ast_free( pcb.ast );
+		}
+
 #if UNICC_SYNTAXTREE
 		/* Print syntax tree */
 		if( !pcb.error_count )
@@ -2109,6 +2243,7 @@ int main( int argc, char** argv )
 typedef struct
 {
 	char*			name;
+	char*			emit;
 	short			type;
 	UNICC_BOOLEAN	lexem;
 	UNICC_BOOLEAN	whitespace;
@@ -2119,17 +2254,34 @@ typedef struct
 typedef struct
 {
 	char*	definition;
+	char*	emit;
 	int		length;
 	int		lhs;
 } @@prefix_prodinfo;
 
 
+/* Abstract Syntax Tree */
+typedef struct @@prefix_AST @@prefix_ast;
+
+struct @@prefix_AST
+{
+	char*			emit;
+	UNICC_SCHAR*	token;
+
+	@@prefix_ast*	parent;
+	@@prefix_ast*	child;
+	@@prefix_ast*	prev;
+	@@prefix_ast*	next;
+};
+
 /* Stack Token */
 typedef struct
 {
 	@@prefix_vtype		value;
+	@@prefix_ast*		node;
 
 	@@prefix_syminfo*	symbol;
+
 	int					state;
 	unsigned int		line;
 	unsigned int		column;
@@ -2149,8 +2301,9 @@ struct @@prefix_SYNTREE
 	@@prefix_syntree*	child;
 	@@prefix_syntree*	prev;
 	@@prefix_syntree*	next;
-}; 
+};
 #endif
+
 
 /* Parser Control Block */
 typedef struct
@@ -2161,16 +2314,16 @@ typedef struct
 
 	/* Stack size */
 	unsigned int		stacksize;
-	
+
 	/* Values */
 	@@prefix_vtype		ret;
 	@@prefix_vtype		test;
-	
+
 	/* State */
 	int					act;
 	int					idx;
 	int					lhs;
-	
+
 	/* Lookahead */
 	int					sym;
 	int					old_sym;
@@ -2186,11 +2339,11 @@ typedef struct
 	UNICC_CHAR			next;
 	UNICC_CHAR			eof;
 	UNICC_BOOLEAN		is_eof;
-	
+
 	/* Error handling */
 	int					error_delay;
 	int					error_count;
-	
+
 	unsigned int		line;
 	unsigned int		column;
 
@@ -2198,7 +2351,8 @@ typedef struct
 	/* Syntax tree */
 	@@prefix_syntree*	syntax_tree;
 #endif
-	
+	@@prefix_ast*		ast;
+
 	/* User-defined components */
 	@@pcb
 

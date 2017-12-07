@@ -1,5 +1,5 @@
 <?xml version="1.0" standalone="yes"?>
-<generator name="Python" long-name="UniCC Standard Python Template" version="0.2">
+<generator name="Python" long-name="UniCC Standard Python Template" version="0.3">
 	<escape-sequence for="\" do="\\" />
 	<escape-sequence for="&#x22;" do="\&#x22;" />
 	<code_localization />
@@ -67,27 +67,27 @@
 
 	<dfa_idx>
 		<row_start>&#x09;&#x09;(</row_start>
-		<row_end>)</row_end>
-		<row_sep>,&#x0A;</row_sep>
+		<row_end>),</row_end>
+		<row_sep>&#x0A;</row_sep>
 		<col>@@index</col>
 		<col_sep>, </col_sep>
 	</dfa_idx>
 
 	<dfa_accept>
 		<row_start>&#x09;&#x09;(</row_start>
-		<row_end>)</row_end>
-		<row_sep>,&#x0A;</row_sep>
+		<row_end>),</row_end>
+		<row_sep>&#x0A;</row_sep>
 		<col>@@accept</col>
 		<col_sep>, </col_sep>
 	</dfa_accept>
 
 	<symbols>
-		<col>&#x09;&#x09;("@@symbol-name", @@type, @@lexem, @@whitespace, @@greedy)</col>
+		<col>&#x09;&#x09;("@@symbol-name", "@@emit", @@type, @@lexem, @@whitespace, @@greedy)</col>
 		<col_sep>,&#x0A;</col_sep>
 	</symbols>
 
 	<productions>
-		<col>&#x09;&#x09;("@@production", @@length, @@lhs)</col>
+		<col>&#x09;&#x09;("@@production", "@@emit", @@length, @@lhs)</col>
 		<col_sep>,&#x0A;</col_sep>
 	</productions>
 
@@ -96,10 +96,34 @@
 
 @@prologue
 
+class @@prefixNode(object):
+	"""
+	This is an AST node.
+	"""
+
+	def __init__(self, emit = None, match = None, children = None):
+		self.emit = emit
+		self.match = match
+		self.children = children or []
+
+	def dump(self, level=0):
+		if self.emit:
+			txt = "%s%s" % (level * " ", self.emit)
+			if self.match and self.match != self.emit:
+				txt += " (%s)" % self.match
+
+			print(txt)
+			level += 1
+
+		for child in self.children:
+			child.dump(level)
+
 class @@prefixParserToken(object):
 	state = 0
 	line = 0
 	column = 0
+
+	node = None
 
 	@@value-type-definition
 
@@ -184,7 +208,7 @@ class @@prefixParser(object):
 			if sym == pcb.sym:
 				return True if pcb.act else False #enforced parse error
 
-		# Apply default production
+		# Otherwise, apply default production
 		pcb.idx = self._def_prod[pcb.tos.state]
 		if pcb.idx &gt; -1:
 			pcb.act = self._REDUCE
@@ -271,12 +295,12 @@ class @@prefixParser(object):
 				if (next &gt;= self._dfa_chars[idx][0]
 					and next &lt;= self._dfa_chars[idx][1]):
 
+					length += 1
 					state = self._dfa_trans[idx]
 
 					if self._dfa_accept[machine][state] &gt; 0:
-						length += 1
-						pcb.length = length
 						pcb.sym = self._dfa_accept[machine][state] - 1
+						pcb.length = length
 
 						# Test! (??)
 						if pcb.sym == @@eof:
@@ -284,7 +308,7 @@ class @@prefixParser(object):
 							break
 
 						# Stop if matched symbol should be parsed nongreedy
-						if not self._symbols[pcb.sym][4]:
+						if not self._symbols[pcb.sym][5]:
 							state = -1
 							break
 
@@ -309,7 +333,8 @@ class @@prefixParser(object):
 				self._lex(pcb)
 
 				# check for whitespace
-				if pcb.sym &gt; -1 and self._symbols[pcb.sym][3]:
+				if pcb.sym &gt; -1 and self._symbols[pcb.sym][4]:
+					self._clear_input(pcb)
 					continue
 
 				break
@@ -343,17 +368,19 @@ class @@prefixParser(object):
 		pcb.stack.append(pcb.tos)
 
 		while True:
-			#print("pcb.tos.state = %d" % pcb.tos.state)
+			#print("state = %d" % pcb.tos.state)
 
 			# TODO: Error Recovery
 			self._get_sym(pcb)
 
-			#print("pcb.sym = %d" % pcb.sym)
+			#print("pcb.sym = %d (%s)" % (pcb.sym, self._symbols[pcb.sym][0]))
 			#print("pcb.length = %d" % pcb.length)
 
 			# Get action table entry
 			if not self._get_act(pcb):
 				print("Parse Error")
+				print("Expecting %s" % ", ".join(self._symbols[sym][0]
+					for (sym, pcb.act, pcb.idx) in self._act[pcb.tos.state]))
 				break
 
 			#print("pcb.act = %d" % pcb.act)
@@ -370,9 +397,13 @@ class @@prefixParser(object):
 
 				pcb.tos.state = -1 if pcb.act &amp; self._REDUCE else pcb.idx
 				pcb.tos.symbol = self._symbols[pcb.sym]
+
 				pcb.tos.line = pcb.line
 				pcb.tos.column = pcb.column
 				@@top-value = pcb.buf[:pcb.length]
+
+				if pcb.tos.symbol[1]:
+					pcb.tos.node = @@prefixNode(pcb.tos.symbol[1], @@top-value)
 
 				if pcb.sym != @@eof and pcb.sym != @@error:
 					self._clear_input(pcb)
@@ -382,9 +413,9 @@ class @@prefixParser(object):
 			while pcb.act &amp; self._REDUCE:
 
 				# Set default left-hand side
-				pcb.lhs = self._productions[pcb.idx][2]
+				pcb.lhs = self._productions[pcb.idx][3]
 
-				#print("REDUCE", pcb.idx, self._symbols[pcb.lhs])
+				#print("REDUCE", pcb.idx, self._productions[pcb.idx][0])
 				#print("state", pcb.tos.state)
 
 				# Call reduce function
@@ -392,13 +423,33 @@ class @@prefixParser(object):
 				getattr(self, "_reduce_action_%d" % pcb.idx)(pcb)
 
 				# Drop right-hand side
-				for _ in range(0, self._productions[pcb.idx][1]):
-					pcb.stack.pop()
+				cnodes = None
+				for _ in range(0, self._productions[pcb.idx][2]):
+					item = pcb.stack.pop()
+
+					if item.node:
+						if cnodes is None:
+							cnodes = []
+
+						if isinstance(item.node, list):
+							cnodes = item.node + cnodes
+						else:
+							cnodes.insert(0, item.node)
 
 				pcb.tos = pcb.stack[-1]
 
+				# Handle AST nodes
+				if self._productions[pcb.idx][1]:
+					#print("%s = %s" % (self._productions[pcb.idx][0], self._productions[pcb.idx][1]))
+					node = @@prefixNode(self._productions[pcb.idx][1],
+											children=cnodes)
+
+				else:
+					node = None
+
 				# Goal symbol reduced, and stack is empty?
 				if pcb.lhs == @@goal and len(pcb.stack) == 1:
+					pcb.tos.node = node or cnodes
 					self._clear_input(pcb)
 					break
 
@@ -409,14 +460,26 @@ class @@prefixParser(object):
 
 				pcb.tos.symbol = self._symbols[pcb.lhs]
 				pcb.tos.state = -1 if pcb.act &amp; self._REDUCE else pcb.idx
+				pcb.tos.value = pcb.ret
+				pcb.tos.node = node or cnodes
 				pcb.tos.line = pcb.line
 				pcb.tos.column = pcb.column
-				pcb.tos.value = pcb.ret
 
 			if pcb.act &amp; self._REDUCE and pcb.idx == @@goal-production:
 				break
 
-		return pcb.ret
+		if pcb.ret is None and pcb.tos.node:
+			if isinstance(pcb.tos.node, list):
+				if len(pcb.tos.node) > 1:
+					node = @@prefixNode(children=pcb.tos.node)
+				else:
+					node = pcb.tos.node[0]
+			else:
+				node = pcb.tos.node
+		else:
+			node = None
+
+		return pcb.ret or node
 
 @@epilogue
 
@@ -424,7 +487,10 @@ if __name__ == "__main__":
 	import sys
 
 	p = @@prefixParser()
-	p.parse(sys.argv[1] if len(sys.argv) &gt; 1 else None)
+	ret = p.parse(sys.argv[1] if len(sys.argv) &gt; 1 else None)
+
+	if isinstance(ret, @@prefixNode):
+		ret.dump()
 
 </file>
 </generator>

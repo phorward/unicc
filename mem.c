@@ -169,6 +169,7 @@ void free_symbol( SYMBOL* sym )
 {
 	pfree( sym->code );
 	pfree( sym->name );
+	pfree( sym->emit );
 
 	if( sym->ptn )
 		pregex_ptn_free( sym->ptn );
@@ -268,6 +269,7 @@ void free_production( PROD* prod )
 	plist_free( prod->all_lhs );
 
 	pfree( prod->code );
+	pfree( prod->emit );
 
 	prod->options = free_opts( prod->options );
 }

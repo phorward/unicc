@@ -2,6 +2,7 @@
 typedef struct
 {
 	char*			name;
+	char*			emit;
 	short			type;
 	UNICC_BOOLEAN	lexem;
 	UNICC_BOOLEAN	whitespace;

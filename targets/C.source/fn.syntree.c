@@ -9,7 +9,7 @@ UNICC_STATIC @@prefix_syntree* @@prefix_syntree_free( @@prefix_syntree* node )
 
 	if( node->token )
 		free( node->token );
-	
+
 	free( node );
 	return (@@prefix_syntree*)NULL;
 }
@@ -37,12 +37,12 @@ UNICC_STATIC @@prefix_syntree* @@prefix_syntree_append(
 			UNICC_OUTOFMEM;
 		#endif
 	}
-	
+
 	if( ( last = pcb->syntax_tree ) )
 	{
 		while( last->next )
 			last = last->next;
-		
+
 		last->next = node;
 		node->prev = last;
 	}

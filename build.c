@@ -18,7 +18,7 @@ Usage:	The dynamic program module generator of the UniCC parser generator,
 
 extern FILE*	status;
 
-/** Escapes the input-string according to the parser template's
+/** Escapes the input-string according to the parser templates
 escaping-sequence definitions. This function is used to print identifiers and
 character-class definitions to the target parser without getting trouble with
 the target language's escape characters (e.g. as in C - I love C!!!).
@@ -27,7 +27,7 @@ the target language's escape characters (e.g. as in C - I love C!!!).
 //str// is the source string
 //clear// is, if TRUE, str will be free'd, else not
 
-Returns a char*, which is the final (escaped) string
+Returns a char*, which is the final (escaped) string.
 */
 char* escape_for_target( GENERATOR* g, char* str, BOOLEAN clear )
 {
@@ -36,7 +36,7 @@ char* escape_for_target( GENERATOR* g, char* str, BOOLEAN clear )
 	char*	tmp;
 
 	if( !( ret = pstrdup( str ) ) )
-		OUTOFMEM;
+		ret = pstrdup( "" );
 
 	if( clear )
 		str = pfree( str );
@@ -1164,6 +1164,8 @@ void build_code( PARSER* parser )
 		symbols = pstrcatstr( symbols, pstrrender( gen->symbols.col,
 				GEN_WILD_PREFIX "symbol-name",
 					escape_for_target( gen, sym->name, FALSE ), TRUE,
+				GEN_WILD_PREFIX "emit",
+					escape_for_target( gen, sym->emit, FALSE ), TRUE,
 				GEN_WILD_PREFIX "symbol",
 					int_to_str( sym->id ), TRUE,
 				GEN_WILD_PREFIX "type",
@@ -1294,6 +1296,8 @@ void build_code( PARSER* parser )
 				GEN_WILD_PREFIX "production",
 					escape_for_target( gen, mkproduction_str( p ), TRUE ),
 						TRUE,
+				GEN_WILD_PREFIX "emit",
+					escape_for_target( gen, p->emit, TRUE ), TRUE,
 				GEN_WILD_PREFIX "length",
 					int_to_str( plist_count( p->rhs ) ), TRUE,
 				GEN_WILD_PREFIX "lhs",

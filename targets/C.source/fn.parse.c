@@ -2,13 +2,16 @@
 {
 	@@goal-type			ret;
 	@@prefix_pcb*		pcb_org		= pcb;
+	int					i;
 
 #if UNICC_SYNTAXTREE
 	@@prefix_syntree*	child;
 	@@prefix_syntree*	last		= (@@prefix_syntree*)NULL;
 #endif
+	@@prefix_ast*		node;
+	@@prefix_ast*		lnode;
+
 #if UNICC_DEBUG
-	int					i;
 	@@prefix_vtype*		vptr;
 	FILE* 				@@prefix_dbg;
 
@@ -164,6 +167,13 @@
 			last = @@prefix_syntree_append( pcb, @@prefix_lexem( pcb ) );
 #endif
 
+			if( *pcb->tos->symbol->emit )
+				pcb->tos->node = @@prefix_ast_create(
+									pcb->tos->symbol->emit,
+										@@prefix_lexem( pcb ) );
+			else
+				pcb->tos->node = (@@prefix_ast*)NULL;
+
 			pcb->buf[ pcb->len ] = pcb->next;
 
 			/* Perform the shift on input */
@@ -199,7 +209,29 @@
 
 			/* Drop right-hand side */
 			/* TODO: Destructor callbacks? */
-			pcb->tos -= @@prefix_productions[ pcb->idx ].length;
+			for( i = 0, node = (@@prefix_ast*)NULL;
+					i < @@prefix_productions[ pcb->idx ].length;
+						i++ )
+			{
+				if( pcb->tos->node )
+				{
+					if( node )
+					{
+						while( node->prev )
+							node = node->prev;
+
+						node->prev = pcb->tos->node;
+						pcb->tos->node->next = node;
+					}
+
+					node = pcb->tos->node;
+					pcb->tos->node = (@@prefix_ast*)NULL;
+				}
+
+				pcb->tos--;
+			}
+
+			/* pcb->tos -= @@prefix_productions[ pcb->idx ].length; */
 
 #if UNICC_SYNTAXTREE
 			/* Parse tree */
@@ -218,12 +250,36 @@
 			else
 				child = (@@prefix_syntree*)NULL;
 #endif
+			if( node )
+			{
+				if( lnode = pcb->tos->node )
+				{
+					while( lnode->next )
+						lnode = lnode->next;
+
+					lnode->next = node;
+					node->prev = lnode;
+				}
+				else
+					pcb->tos->node = node;
+			}
+
+			if( *@@prefix_productions[ pcb->idx ].emit )
+			{
+				node = @@prefix_ast_create(
+							@@prefix_productions[ pcb->idx ].emit,
+								(UNICC_SCHAR*)NULL);
+
+				node->child = pcb->tos->node;
+				pcb->tos->node = node;
+			}
 
 			/* Goal symbol reduced, and stack is empty? */
 			if( pcb->lhs == @@goal && pcb->tos == pcb->stack )
 			{
 				memcpy( &( pcb->tos->value ), &( pcb->ret ),
 							sizeof( @@prefix_vtype ) );
+				pcb->ast = pcb->tos->node;
 
 				UNICC_CLEARIN( pcb );
 

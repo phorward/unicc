@@ -1,0 +1,21 @@
+#!language "c"; //Works both with C and Python!
+
+#whitespaces    ' \t';
+
+@integer        '0-9'+                       =int;
+
+#left           '+' '-';
+#left           '*' '/';
+
+//Defining the grammar
+calculator$     : expression
+                ;
+
+expression      : expression '+' expression  =add
+                | expression '-' expression  =sub
+                | expression '*' expression  =mul
+                | expression '/' expression  =div
+                | '(' expression ')'
+                | @integer
+                ;
+
