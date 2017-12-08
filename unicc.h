@@ -353,6 +353,7 @@ struct _parser
 	BOOLEAN		gen_prog;
 	BOOLEAN		gen_xml;
 	BOOLEAN		to_stdout;
+	char*		target;			/* Target language by command-line */
 	int			files_count;
 
 	/* Debug and maintainance */

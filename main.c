@@ -112,6 +112,7 @@ void print_usage( FILE* stream, char* progname )
 		"  -b   --basename NAME   Use basename NAME for output files\n"
 		"  -G   --grammar         Dump final (rewritten) grammar\n"
 		"  -h   --help            Print this help and exit\n"
+		"  -l   --language TARGET Specify target language (default: %s)\n"
 		"  -n   --no-opt          Disables state optimization\n"
 		"                         (this will cause more states)\n"
 		"  -P   --productions     Dump final productions\n"
@@ -129,7 +130,7 @@ void print_usage( FILE* stream, char* progname )
 		"Errors and warnings are printed to stderr, "
 			"everything else to stdout.\n"
 
-		"", progname );
+		"", progname, UNICC_DEFAULT_LNG );
 }
 
 /** Analyzes the command line parameters passed to the parser generator.
@@ -154,10 +155,10 @@ BOOLEAN get_command_line( int argc, char** argv, char** filename,
 
 	for( i = 0;
 			( rc = pgetopt( opt, &param, &next, argc, argv,
-						"ab:Ghno:PsStTvVwxX",
-						"all grammar help no-opt output: basename: productions"
-							"stats states stdout symbols verbose version "
-								"warnings xml XML", i ) ) == 0; i++ )
+						"ab:Ghl:no:PsStTvVwxX",
+						"all grammar help language: no-opt output: basename: "
+							"productions stats states stdout symbols verbose "
+								"version warnings xml XML", i ) ) == 0; i++ )
 	{
 		if( !strcmp( opt, "output" ) || !strcmp( opt, "o" )
 			|| !strcmp( opt, "basename" ) || !strcmp( opt, "b" ) )
@@ -166,6 +167,13 @@ BOOLEAN get_command_line( int argc, char** argv, char** filename,
 				print_error( parser, ERR_CMD_LINE, ERRSTYLE_FATAL, opt );
 			else
 				*output = param;
+		}
+		else if( !strcmp( opt, "language" ) || !strcmp( opt, "l" ) )
+		{
+			if( !param )
+				print_error( parser, ERR_CMD_LINE, ERRSTYLE_FATAL, opt );
+			else
+				parser->target = param;
 		}
 		else if( !strcmp( opt, "verbose" ) || !strcmp( opt, "v" ) )
 		{
@@ -237,7 +245,6 @@ int main( int argc, char** argv )
 	char*	mbase_name	= (char*)NULL;
 	PARSER*	parser;
 	BOOLEAN	recursions	= FALSE;
-	BOOLEAN	def_lang	= FALSE;
 
 	status = stdout;
 	parser = create_parser();
@@ -385,17 +392,17 @@ int main( int argc, char** argv )
 
 					/* Code generator */
 					if( !( parser->p_template ) )
-					{
-						parser->p_template = pstrdup( UNICC_DEFAULT_LNG );
-						def_lang = TRUE;
-					}
+						parser->p_template = parser->target;
 
 					if( parser->gen_prog )
 					{
 						if( parser->verbose )
 							fprintf( status, "Code generation target: %s%s\n",
 								parser->p_template,
-									( def_lang ? " (default)" : "" ) );
+									( parser->p_template == parser->target
+										&& strcmp( parser->target,
+											UNICC_DEFAULT_LNG ) == 0 ?
+											" (default)" : "" ) );
 
 						PROGRESS( "Invoking code generator" )
 						build_code( parser );

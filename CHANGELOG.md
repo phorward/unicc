@@ -6,6 +6,9 @@ This file is used to document any relevant changes done to UniCC.
 
 Released on: Not released yet.
 
+- New command-line parameter "-l" or "--language" to specify a target language
+  via command-line. This is useful when a grammar only contains AST definitions,
+  which allows to render in any target.
 - Abstract syntax tree generation support:
   - Drafting an abstract syntax tree definition syntax for the grammar language,
     by using the "=" operator.

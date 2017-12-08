@@ -29,10 +29,10 @@ This is the full definition for a four-function arithmetic syntax including thei
 #left           '*' '/';
 
 //Defining the grammar
-calc$           -> expr          [* printf( "= %d\n", @expr ) *]
+calc$           : expr           [* printf( "= %d\n", @expr ) *]
                 ;
 
-expr            -> expr '+' expr [* @@ = @1 + @3 *]
+expr            : expr '+' expr  [* @@ = @1 + @3 *]
                 | expr '-' expr  [* @@ = @1 - @3 *]
                 | expr '*' expr  [* @@ = @1 * @3 *]
                 | expr '/' expr  [* @@ = @1 / @3 *]
@@ -40,7 +40,7 @@ expr            -> expr '+' expr [* @@ = @1 + @3 *]
                 | int
                 ;
 
-int             -> '0-9'         [* @@ = @1 - '0' *]
+int             : '0-9'          [* @@ = @1 - '0' *]
                 | int '0-9'      [* @@ = @int * 10 + @2 - '0' *]
                 ;
 ```

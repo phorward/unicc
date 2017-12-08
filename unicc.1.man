@@ -53,6 +53,10 @@ before the parse\-tables are generated.
 .SS -h, --help
 .P
 Prints a short overview about the command\-line options and exists.
+.SS -l TARGET, --language TARGET
+.P
+Sets the target laguage via command\-line. A "#!language" directive in the
+grammar definition will override this value.
 .SS -n, --no-opt
 .P
 Disables state optimization; By default, the resulting LALR(1) parse

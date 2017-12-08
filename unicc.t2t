@@ -63,6 +63,11 @@ before the parse-tables are generated.
 
 Prints a short overview about the command-line options and exists.
 
+== -l TARGET, --language TARGET ==
+
+Sets the target laguage via command-line. A "#!language" directive in the
+grammar definition will override this value.
+
 == -n, --no-opt ==
 
 Disables state optimization; By default, the resulting LALR(1) parse

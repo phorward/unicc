@@ -526,6 +526,7 @@ PARSER* create_parser( void )
 	pptr->p_universe = PCCL_MAX;
 	pptr->optimize_states = TRUE;
 	pptr->gen_prog = TRUE;
+	pptr->target = UNICC_DEFAULT_LNG;
 
 	/* Initialize options table */
 	pptr->options = plist_create( sizeof( OPT ), PLIST_MOD_EXTKEYS );
@@ -567,7 +568,10 @@ void free_parser( PARSER* parser )
 
 	pfree( parser->p_name );
 	pfree( parser->p_desc );
-	pfree( parser->p_template );
+
+	if( parser->p_template != parser->target )
+		pfree( parser->p_template );
+
 	pfree( parser->p_copyright );
 	pfree( parser->p_version );
 	pfree( parser->p_prefix );
