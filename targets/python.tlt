@@ -312,8 +312,8 @@ class @@prefixParser(object):
 							state = -1
 							break
 
-						next = self._get_input(pcb, length)
-						break
+					next = self._get_input(pcb, length)
+					break
 
 				idx += 1
 
