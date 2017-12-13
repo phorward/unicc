@@ -6,16 +6,17 @@ This file is used to document any relevant changes done to UniCC.
 
 Released on: Not released yet.
 
+- Code generator does not emit action code when the action is empty.
 - New command-line parameter "-l" or "--language" to specify a target language
   via command-line. This is useful when a grammar only contains AST definitions,
-  which allows to render in any target.
+  which allows to render and run it in any target.
 - Abstract syntax tree generation support:
   - Drafting an abstract syntax tree definition syntax for the grammar language,
-    by using the "=" operator.
-  - See examples/expr.ast.par for an example working with C and Python
+    by using the operators "=" and ":=". See examples/expr.ast.par for an
+    example working under both C and Python without any modifications.
   - C and Python parser targets extended to construct abstract syntax tree
     data structures dynamically.
-  - These are first attempts for an upcoming UniCC v2, where the targets shall
+  - These are first changes for an upcoming UniCC v2, where the targets shall
     be re-used with only few improvements.
 - Fixed several bugs in the Python target on insensitive mode.
 - Additionally allow ":" in case of "->" in grammar definitions.
@@ -24,7 +25,7 @@ Released on: Not released yet.
 
 ## v1.2
 
-Released on: December 7, 2017
+Released on: November 7, 2017
 
 - Started an (yet incomplete) new standard template to provide parser generation
   support for the Python programming language (targets/python.tlt).

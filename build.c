@@ -1238,10 +1238,6 @@ void build_code( PARSER* parser )
 	{
 		p = (PROD*)plist_access( e );
 
-		actions = pstrcatstr( actions, pstrrender( gen->action_start,
-			GEN_WILD_PREFIX "production-number", int_to_str( p->id ), TRUE,
-				(char*)NULL ), TRUE );
-
 		/* Select the semantic code to be processed! */
 		act = (char*)NULL;
 
@@ -1268,8 +1264,14 @@ void build_code( PARSER* parser )
 			act = (char*)NULL;
 		}
 
-		if( act )
+		if( act && *act )
 		{
+			/* Generate action start */
+			actions = pstrcatstr( actions, pstrrender( gen->action_start,
+				GEN_WILD_PREFIX "production-number", int_to_str( p->id ), TRUE,
+					(char*)NULL ), TRUE );
+
+			/* Generate code localization */
 			if( gen->code_localization && p->code_at > 0 )
 			{
 				actions = pstrcatstr( actions,
@@ -1280,13 +1282,15 @@ void build_code( PARSER* parser )
 					TRUE );
 			}
 
+			/* Generate the action code */
 			act = build_action( parser, gen, p, act, is_default_code );
 			actions = pstrcatstr( actions, act, TRUE );
-		}
 
-		actions = pstrcatstr( actions, pstrrender( gen->action_end,
-			GEN_WILD_PREFIX "production-number", int_to_str( p->id ), TRUE,
-				(char*)NULL ), TRUE );
+			/* Generate the action end */
+			actions = pstrcatstr( actions, pstrrender( gen->action_end,
+				GEN_WILD_PREFIX "production-number", int_to_str( p->id ), TRUE,
+					(char*)NULL ), TRUE );
+		}
 
 		/* Generate production information table */
 		productions = pstrcatstr( productions, pstrrender(
