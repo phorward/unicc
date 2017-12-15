@@ -1,5 +1,3 @@
-#!language "c"; //Works both with C and Python!
-
 #whitespaces    ' \t';
 
 @integer        '0-9'+                       =int;
