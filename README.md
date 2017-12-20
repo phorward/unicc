@@ -4,13 +4,13 @@
 
 ## About
 
-UniCC (UNIversal Compiler Compiler) is a LALR(1) parser generator. It compiles an augmented grammar definition into a program source code that parses the grammar. Because UniCC is intended to be target-language independent, it can be configured via template definition files to emit parsers in nearly any programming language.
+UniCC (UNIversal Compiler Compiler) is a LALR(1) parser generator. It compiles an augmented grammar definition into a program source code that parses that grammar. Parsing is the process of transferring input matching a particular grammar, like e.g. a source code written in a programming language, into a well-formed data structure. Because UniCC is intended to be target-language independent, it can be configured via template definition files to emit parsers in nearly any programming language.
 
 UniCC supports parser code generation for the following programming languages so far:
 
 - **C** is fully supported (and reference implementation),
-- **Python** is under development, but already running in first tests,
-- **ECMAScript** is prototyped in a stub, but may come soon.
+- **Python** is well supported,
+- **ECMAScript** is prototyped in a stub, but will come soon.
 
 More target languages can easily be added by creating specific target language templates.
 
@@ -55,16 +55,17 @@ $ ./expr -sl
 = 23
 ```
 
-More real-world examples for parsers implemented with UniCC are [xpl](https://github.com/phorward/xpl) and [rapidbatch](https://github.com/phorward/rapidbatch).
+More real-world examples for parsers implemented with UniCC can are [xpl](https://github.com/phorward/xpl) and [rapidbatch](https://github.com/phorward/rapidbatch), or can be found in the [examples-folder](https://github.com/phorward/unicc/tree/develop/examples).
 
 ## Features
 
-UniCC features the following, unique tools and possibilities.
+UniCC features the following features, tools and possibilities.
 
 - Powerful BNF-based grammar definition language
 - Full unicode support
 - Build-in lexical analyzer
 - Grammar prototyping features
+- Abstract Syntax Tree notations
 - Virtual productions
 - Anonymous nonterminals
 - Semantically determined symbols
