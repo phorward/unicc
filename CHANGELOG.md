@@ -31,7 +31,7 @@ Released on: November 7, 2017
   support for the Python programming language (targets/python.tlt).
 - Imported the source code of the C standard template into the UniCC repository
   for further developments, the previous repository gets closed.
-  (tempates/c.tlt)
+  (targets/c.tlt)
 - Fixed bug in the lexical analyzer generation by linking against
   libphorward 0.20 that caused a massive overhead of deterministic finite
   automation states in context-sensitive mode due an arbitrary character

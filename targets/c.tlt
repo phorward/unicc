@@ -8,9 +8,9 @@ It should be possible to abstract this template and given expansion macros
 to several other programming languages, not only C-like ones.
 
 In this template, there are many expansion macros used. Expansion macros begin
-with "@@" and an following identifier. These macros are expaned in several
-stages, some macros represend values that directly come from the code generator,
-other macros define code-parts that had already been constructed by subsequent
+with "@@" and a followed identifier. These macros are expaned in several stages,
+some macros represent values that directly come from the code generator, other
+macros define code-parts that had already been constructed by subsequent
 construction stages and are inserted in particular positions. All macros are
 pre-defined by the UniCC program module generator, is is not possible to build
 own expansion macros or deviating construction logics due the statical structure
@@ -23,35 +23,17 @@ No XML-tag is 'really' required. UniCC will drop a warning when it misses a tag,
 but continues code generation with the tags it finds.
 
 Some of the following comments begin with 1D TABLE or 2D TABLE. A 1D TABLE
-expands to a one-dimensional array, a 2D TABLE into a two-dimensional array;
+expands into an one-dimensional array, a 2D TABLE into a two-dimensional array;
 To obtain the sizes for both dimensions, there are expanding macros both in the
-<file>-tag and realted to every table.
+<file>-tag and related to every table.
 
 1D Tables always consist of a <col> and a <col_sep> tag.
 2D Tables always consist of a <row_start>, <row_end>, <row_sep>, <col> and a
 <col_sep> tag. <row_sep> and <col_sep> define separators that will be inserted
 between the rows/columns, except the last row/column.
-
-The UniCC Standard C Parser Template provides the following features.
-
-- Well tested, feature proven, used by UniCC's own grammar parser
-- Platform and C-compiler independent, based on the C standard library only
-- ANSI C89 and C99 compliant
-- Thread-safe, parsers can recursively be called using an extendible
-  Parser Control Block (pcb)
-- Wide-character and UTF-8 Unicode input support
-- Trace and stack trace facilities
-- Build-in error recovery
-- Build-in syntax tree generator
-- Symbol and production tables for debug and syntax tree construction
-- Provides a default parser test environment if no semantic code is given
-- Dynamic end-of-file behavior
-
-Please check the UniCC user manual for detailed information and notes on using
-the UniCC Standard C Parser Template.
 -->
 
-<generator name="C" long-name="UniCC Standard C Template" version="1.3">
+<generator name="C" long-name="Standard C Target" version="1.3">
 	<!--
 	****************************************************************************
 	Escape sequences
@@ -65,14 +47,6 @@ the UniCC Standard C Parser Template.
 	<escape-sequence for="\" do="\\" />
 	<!-- Escape double quotation marks -->
 	<escape-sequence for="&#x22;" do="\&#x22;" />
-
-	<!--
-	****************************************************************************
-	The unset value
-	****************************************************************************
-	This defines the value that stands for Nothing, Empty, Unset, 0.
-	-->
-	<null-value>NULL</null-value>
 
 	<!--
 	****************************************************************************
