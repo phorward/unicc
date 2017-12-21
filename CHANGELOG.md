@@ -4,7 +4,7 @@ This file is used to document any relevant changes done to UniCC.
 
 ## v1.3
 
-Released on: Not released yet.
+Released on: December 21, 2017
 
 - Code generator does not emit action code when the action is empty.
 - New command-line parameter "-l" or "--language" to specify a target language

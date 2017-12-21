@@ -1,4 +1,4 @@
-.TH "UNICC" 1 "Nov 2017" "Version 1.2"
+.TH "UNICC" 1 "Dec 2017" "Version 1.3"
 
 .SH NAME
 .P
@@ -55,7 +55,7 @@ before the parse\-tables are generated.
 Prints a short overview about the command\-line options and exists.
 .SS -l TARGET, --language TARGET
 .P
-Sets the target laguage via command\-line. A "#!language" directive in the
+Sets the target language via command\-line. A "#!language" directive in the
 grammar definition will override this value.
 .SS -n, --no-opt
 .P

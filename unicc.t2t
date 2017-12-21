@@ -1,6 +1,6 @@
 UNICC
-Version 1.2
-Nov 2017
+Version 1.3
+Dec 2017
 %!postproc(md): '```(.?)' '```\1'
 %!postproc(md): '^	([^-$])' '\1'
 %!postproc(md): '^ \* ' '- '
@@ -65,7 +65,7 @@ Prints a short overview about the command-line options and exists.
 
 == -l TARGET, --language TARGET ==
 
-Sets the target laguage via command-line. A "#!language" directive in the
+Sets the target language via command-line. A "#!language" directive in the
 grammar definition will override this value.
 
 == -n, --no-opt ==

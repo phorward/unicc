@@ -85,7 +85,7 @@ Usage:	Global declarations, structures and includes
 #define UNICC_VER_MAJOR			1
 #define UNICC_VER_MINOR			3
 #define UNICC_VER_PATCH			0
-#define UNICC_VER_EXTSTR		"-develop"
+#define UNICC_VER_EXTSTR		""
 
 /* Default target language */
 #define UNICC_DEFAULT_LNG		"C"
