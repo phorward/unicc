@@ -2405,6 +2405,7 @@ int _parse( _pcb* pcb )
 
 			_alloc_stack( pcb );
 			pcb->tos++;
+			pcb->tos->node = (_ast*)NULL;
 
 			/*
 				Execute scanner actions, if existing.
@@ -5414,6 +5415,7 @@ int _parse( _pcb* pcb )
 			_get_go( pcb );
 
 			pcb->tos++;
+			pcb->tos->node = (_ast*)NULL;
 
 			memcpy( &( pcb->tos->value ), &( pcb->ret ),
 						sizeof( _vtype ) );
