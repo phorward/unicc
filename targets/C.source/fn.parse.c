@@ -141,6 +141,7 @@
 
 			@@prefix_alloc_stack( pcb );
 			pcb->tos++;
+			pcb->tos->node = (@@prefix_ast*)NULL;
 
 			/*
 				Execute scanner actions, if existing.
@@ -311,6 +312,7 @@
 			@@prefix_get_go( pcb );
 
 			pcb->tos++;
+			pcb->tos->node = (@@prefix_ast*)NULL;
 
 			memcpy( &( pcb->tos->value ), &( pcb->ret ),
 						sizeof( @@prefix_vtype ) );

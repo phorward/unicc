@@ -1711,6 +1711,7 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 
 			@@prefix_alloc_stack( pcb );
 			pcb-&gt;tos++;
+			pcb-&gt;tos-&gt;node = (@@prefix_ast*)NULL;
 
 			/*
 				Execute scanner actions, if existing.
@@ -1881,6 +1882,7 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 			@@prefix_get_go( pcb );
 
 			pcb-&gt;tos++;
+			pcb-&gt;tos-&gt;node = (@@prefix_ast*)NULL;
 
 			memcpy( &amp;( pcb-&gt;tos-&gt;value ), &amp;( pcb-&gt;ret ),
 						sizeof( @@prefix_vtype ) );
