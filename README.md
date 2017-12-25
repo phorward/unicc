@@ -84,7 +84,7 @@ The [UniCC User's Manual](https://www.phorward-software.com/products/unicc-lalr1
 
 ## Installation
 
-UniCC can be build and installed like any GNU-style program, with
+On Linux and OS X, UniCC can be build and installed like any GNU-style program, with
 
 ```sh
 ./configure
@@ -93,6 +93,8 @@ make install
 ```
 
 Previously, the [Phorward Toolkit](https://github.com/phorward/phorward) must be compiled and installed, because UniCC depends on it.
+
+Windows users may checkout the pre-built setup package that can be found on the Phorward download server at https://phorward.info/download/unicc.
 
 ## Contributions
 
