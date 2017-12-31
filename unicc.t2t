@@ -43,7 +43,7 @@ further tasks.
 == -a, --all-warnings ==
 
 Runs UniCC to print all warnings that come up with the grammar. UniCC
-normaly supresses some warning messages that raise up during the parse
+normally suppresses some warning messages that raise up during the parse
 table constructions according to their importance.
 
 == -b NAME, --basename NAME ==
@@ -56,7 +56,7 @@ files.
 
 == -G, --grammar ==
 
-Dumps an overview of the finally constructred grammar to stderr, right
+Dumps an overview of the finally constructed grammar to stderr, right
 before the parse-tables are generated.
 
 == -h, --help ==
@@ -120,7 +120,7 @@ Print relevant warnings.
 Triggers UniCC to run the parser description file generator additionally
 to the program module generator. The parser description file generator
 outputs an XML-based parser representation of the generated parse tables,
-which can be used by third-party code generators or grammar analsys and
+which can be used by third-party code generators or grammar analysis and
 debugging tools.
 
 == -X, --XML ==
