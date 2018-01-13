@@ -10,7 +10,7 @@ UniCC supports parser code generation for the following programming languages so
 
 - **C** is fully supported (and reference implementation),
 - **Python** is well supported,
-- **ECMAScript** is prototyped in a stub, but will come soon.
+- **C++** and **ECMAScript** are prototyped, and will come soon.
 
 More target languages can easily be added by creating specific target language templates.
 
