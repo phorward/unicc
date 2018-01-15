@@ -73,7 +73,7 @@
 	</defprod>
 
 	<acttab>
-		<row_start>&#x09;{ @@number-of-columns</row_start>
+		<row_start>			{ @@number-of-columns</row_start>
 		<row_end> }</row_end>
 		<row_sep>,&#x0A;</row_sep>
 		<col>, @@symbol,@@action,@@index </col>
@@ -81,7 +81,7 @@
 	</acttab>
 
 	<gotab>
-		<row_start>&#x09;{ @@number-of-columns</row_start>
+		<row_start>			{ @@number-of-columns</row_start>
 		<row_end> }</row_end>
 		<row_sep>,&#x0A;</row_sep>
 		<col>, @@symbol,@@action,@@index </col>
@@ -104,7 +104,7 @@
 	</dfa_trans>
 
 	<dfa_idx>
-		<row_start>&#x09;{ </row_start>
+		<row_start>			{ </row_start>
 		<row_end> }</row_end>
 		<row_sep>,&#x0A;</row_sep>
 		<col>@@index * 2</col>
@@ -112,7 +112,7 @@
 	</dfa_idx>
 
 	<dfa_accept>
-		<row_start>&#x09;{ </row_start>
+		<row_start>			{ </row_start>
 		<row_end> }</row_end>
 		<row_sep>,&#x0A;</row_sep>
 		<col>@@accept</col>
@@ -126,12 +126,12 @@
 	-->
 
 	<symbols>
-		<col>	{ /* @@symbol */ "@@symbol-name", "@@emit", @@type, bool(@@lexem), bool(@@whitespace), bool(@@greedy) }</col>
+		<col>			{ /* @@symbol */ "@@symbol-name", "@@emit", @@type, bool(@@lexem), bool(@@whitespace), bool(@@greedy) }</col>
 		<col_sep>,&#x0A;</col_sep>
 	</symbols>
 
 	<productions>
-		<col>	{ /* @@production-number */ "@@production", "@@emit", @@length, @@lhs }</col>
+		<col>			{ /* @@production-number */ "@@production", "@@emit", @@length, @@lhs }</col>
 		<col_sep>,&#x0A;</col_sep>
 	</productions>
 
@@ -661,18 +661,18 @@ bool @@prefix_parser::handle_error( FILE* @@prefix_dbg )
 				"%s: error recovery: current token %d (%s)\n",
 					UNICC_PARSER, UNICC_PARSER, this-&gt;sym,
 						( ( this-&gt;sym &gt;= 0 ) ?
-							@@prefix_symbols[ this-&gt;sym ].name :
+							this-&gt;symbols[ this-&gt;sym ].name :
 								"(null)" ) );
 
 		fprintf( @@prefix_dbg,
 				"%s: error recovery: expecting ", UNICC_PARSER );
 
-		for( int i = 1; i &lt; @@prefix_act[ this-&gt;tos-&gt;state ][0] * 3; i += 3 )
+		for( int i = 1; i &lt; this-&gt;actions[ this-&gt;tos-&gt;state ][0] * 3; i += 3 )
 		{
 			fprintf( @@prefix_dbg, "%d (%s)%s",
-				@@prefix_act[ this-&gt;tos-&gt;state ][i],
-				@@prefix_symbols[ @@prefix_act[ this-&gt;tos-&gt;state ][i] ].name,
-				( i == @@prefix_act[ this-&gt;tos-&gt;state ][0] * 3 - 3 ) ?
+				this-&gt;actions[ this-&gt;tos-&gt;state ][i],
+				this-&gt;symbols[ this-&gt;actions[ this-&gt;tos-&gt;state ][i] ].name,
+				( i == this-&gt;actions[ this-&gt;tos-&gt;state ][0] * 3 - 3 ) ?
 						"\n" : ", " );
 		}
 
@@ -797,6 +797,7 @@ bool @@prefix_parser::handle_error( FILE* @@prefix_dbg )
 
 	memset( this-&gt;tos, 0, sizeof( @@prefix_tok ) );
 
+	this-&gt;is_eof = false;
 	this-&gt;sym = this-&gt;old_sym = -1;
 	this-&gt;line = this-&gt;column = 1;
 
@@ -1043,13 +1044,20 @@ bool @@prefix_parser::handle_error( FILE* @@prefix_dbg )
 	ret = @@goal-value;
 
 	/* Clean up parser control block */
-	if( this-&gt;buf )
-		free( this-&gt;buf );
+	UNICC_CLEARIN( this );
+
 	if( this-&gt;stack )
+	{
 		free( this-&gt;stack );
+		this-&gt;stack = NULL;
+	}
+
 #if UNICC_UTF8
 	if( this-&gt;lexem )
+	{
 		free( this-&gt;lexem );
+		this-&gt;lexem = NULL;
+	}
 #endif
 
 	return ret;
@@ -1127,16 +1135,16 @@ int main( int argc, char** argv )
 		}
 	}
 
+	if( flags &amp; UNICCMAIN_LINEMODE )
+		parser-&gt;eof = '\n';
+	else
+		parser-&gt;eof = EOF;
+
 	/* Parser invocation loop */
 	do
 	{
 		if( !( flags &amp; UNICCMAIN_SILENT ) )
 			printf( "\nok\n" );
-
-		if( flags &amp; UNICCMAIN_LINEMODE )
-			parser-&gt;eof = '\n';
-		else
-			parser-&gt;eof = EOF;
 
 		parser-&gt;parse();
 
@@ -1144,7 +1152,7 @@ int main( int argc, char** argv )
 		if( parser-&gt;ast )
 		{
 			parser-&gt;ast_print( stderr, parser-&gt;ast );
-			parser-&gt;ast_free( parser-&gt;ast );
+			parser-&gt;ast = parser-&gt;ast_free( parser-&gt;ast );
 		}
 	}
 	while( flags &amp; UNICCMAIN_ENDLESS );
@@ -1241,11 +1249,6 @@ int main( int argc, char** argv )
 								exit( 1 )
 #endif
 
-/* Static switch */
-#ifndef UNICC_STATIC
-#define UNICC_STATIC			static
-#endif
-
 #ifdef UNICC_PARSER
 #undef UNICC_PARSER
 #endif
@@ -1315,14 +1318,16 @@ struct @@prefix_AST
 /* Stack Token */
 typedef struct
 {
-	@@prefix_vtype			value;
-	@@prefix_ast*			node;
+	@@prefix_vtype		value;
+	@@prefix_ast*		node;
 
-	const @@prefix_syminfo*	symbol;
+	const
+	@@prefix_syminfo*	symbol;
 
-	int						state;
-	unsigned int			line;
-	unsigned int			column;
+	int					state;
+
+	size_t				line;
+	size_t				column;
 } @@prefix_tok;
 
 
@@ -1335,13 +1340,13 @@ class @@prefix_parser
 		// Action Table
 		const int actions[ @@number-of-states ][ @@deepest-action-row * 3 + 1 ] =
 		{
-		@@action-table
+@@action-table
 		};
 
 		// GoTo Table
 		const int go[ @@number-of-states ][ @@deepest-goto-row * 3 + 1 ] =
 		{
-		@@goto-table
+@@goto-table
 		};
 
 		// Default productions per state
@@ -1362,7 +1367,7 @@ class @@prefix_parser
 		// DFA index table
 		const int dfa_idx[ @@number-of-dfa-machines ][ @@deepest-dfa-index-row ] =
 		{
-		@@dfa-index
+@@dfa-index
 		};
 
 		// DFA transition chars
@@ -1380,7 +1385,7 @@ class @@prefix_parser
 		// DFA acception states
 		const int dfa_accept[ @@number-of-dfa-machines ][ @@deepest-dfa-accept-row ] =
 		{
-		@@dfa-accept
+@@dfa-accept
 		};
 
 		#endif
@@ -1388,54 +1393,54 @@ class @@prefix_parser
 		// Symbol information table
 		const @@prefix_syminfo symbols[ @@number-of-symbols ] =
 		{
-		@@symbols
+@@symbols
 		};
 
 		// Production information table
 		const @@prefix_prodinfo productions[ @@number-of-productions ] =
 		{
-		@@productions
+@@productions
 		};
 
 		// --- Runtime ---
 
 		// Stack
-		@@prefix_tok*		stack;
-		@@prefix_tok*		tos;
+		@@prefix_tok*	stack;
+		@@prefix_tok*	tos;
 
 		// Stack size
-		unsigned int		stacksize;
+		size_t			stacksize;
 
 		// Values
-		@@prefix_vtype		ret;
-		@@prefix_vtype		test;
+		@@prefix_vtype	ret;
+		@@prefix_vtype	test;
 
 		// State
-		int					act;
-		int					idx;
-		int					lhs;
+		int				act;
+		int				idx;
+		int				lhs;
 
 		// Lookahead
-		int					sym;
-		int					old_sym;
-		unsigned int		len;
+		int				sym;
+		int				old_sym;
+		size_t			len;
 
 		// Input buffering
-		UNICC_SCHAR*		lexem;
-		UNICC_CHAR*			buf;
-		UNICC_CHAR*			bufend;
-		UNICC_CHAR*			bufsize;
+		UNICC_SCHAR*	lexem;
+		UNICC_CHAR*		buf;
+		UNICC_CHAR*		bufend;
+		UNICC_CHAR*		bufsize;
 
 		// Lexical analysis
-		UNICC_CHAR			next;
-		bool				is_eof;
+		UNICC_CHAR		next;
+		bool			is_eof;
 
 		// Error handling
-		int					error_delay;
-		int					error_count;
+		int				error_delay;
+		int				error_count;
 
-		unsigned int		line;
-		unsigned int		column;
+		size_t			line;
+		size_t			column;
 
 		// User-defined components
 		@@pcb

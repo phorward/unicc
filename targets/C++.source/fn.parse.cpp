@@ -15,6 +15,7 @@
 
 	memset( this->tos, 0, sizeof( @@prefix_tok ) );
 
+	this->is_eof = false;
 	this->sym = this->old_sym = -1;
 	this->line = this->column = 1;
 
@@ -261,13 +262,20 @@
 	ret = @@goal-value;
 
 	/* Clean up parser control block */
-	if( this->buf )
-		free( this->buf );
+	UNICC_CLEARIN( this );
+
 	if( this->stack )
+	{
 		free( this->stack );
+		this->stack = NULL;
+	}
+
 #if UNICC_UTF8
 	if( this->lexem )
+	{
 		free( this->lexem );
+		this->lexem = NULL;
+	}
 #endif
 
 	return ret;

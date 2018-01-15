@@ -77,11 +77,6 @@
 								exit( 1 )
 #endif
 
-/* Static switch */
-#ifndef UNICC_STATIC
-#define UNICC_STATIC			static
-#endif
-
 #ifdef UNICC_PARSER
 #undef UNICC_PARSER
 #endif

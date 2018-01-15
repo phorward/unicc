@@ -70,16 +70,16 @@ int main( int argc, char** argv )
 		}
 	}
 
+	if( flags & UNICCMAIN_LINEMODE )
+		parser->eof = '\n';
+	else
+		parser->eof = EOF;
+
 	/* Parser invocation loop */
 	do
 	{
 		if( !( flags & UNICCMAIN_SILENT ) )
 			printf( "\nok\n" );
-
-		if( flags & UNICCMAIN_LINEMODE )
-			parser->eof = '\n';
-		else
-			parser->eof = EOF;
 
 		parser->parse();
 
@@ -87,7 +87,7 @@ int main( int argc, char** argv )
 		if( parser->ast )
 		{
 			parser->ast_print( stderr, parser->ast );
-			parser->ast_free( parser->ast );
+			parser->ast = parser->ast_free( parser->ast );
 		}
 	}
 	while( flags & UNICCMAIN_ENDLESS );

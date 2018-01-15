@@ -7,13 +7,13 @@ class @@prefix_parser
 		// Action Table
 		const int actions[ @@number-of-states ][ @@deepest-action-row * 3 + 1 ] =
 		{
-		@@action-table
+@@action-table
 		};
 
 		// GoTo Table
 		const int go[ @@number-of-states ][ @@deepest-goto-row * 3 + 1 ] =
 		{
-		@@goto-table
+@@goto-table
 		};
 
 		// Default productions per state
@@ -34,7 +34,7 @@ class @@prefix_parser
 		// DFA index table
 		const int dfa_idx[ @@number-of-dfa-machines ][ @@deepest-dfa-index-row ] =
 		{
-		@@dfa-index
+@@dfa-index
 		};
 
 		// DFA transition chars
@@ -52,7 +52,7 @@ class @@prefix_parser
 		// DFA acception states
 		const int dfa_accept[ @@number-of-dfa-machines ][ @@deepest-dfa-accept-row ] =
 		{
-		@@dfa-accept
+@@dfa-accept
 		};
 
 		#endif
@@ -60,54 +60,54 @@ class @@prefix_parser
 		// Symbol information table
 		const @@prefix_syminfo symbols[ @@number-of-symbols ] =
 		{
-		@@symbols
+@@symbols
 		};
 
 		// Production information table
 		const @@prefix_prodinfo productions[ @@number-of-productions ] =
 		{
-		@@productions
+@@productions
 		};
 
 		// --- Runtime ---
 
 		// Stack
-		@@prefix_tok*		stack;
-		@@prefix_tok*		tos;
+		@@prefix_tok*	stack;
+		@@prefix_tok*	tos;
 
 		// Stack size
-		unsigned int		stacksize;
+		size_t			stacksize;
 
 		// Values
-		@@prefix_vtype		ret;
-		@@prefix_vtype		test;
+		@@prefix_vtype	ret;
+		@@prefix_vtype	test;
 
 		// State
-		int					act;
-		int					idx;
-		int					lhs;
+		int				act;
+		int				idx;
+		int				lhs;
 
 		// Lookahead
-		int					sym;
-		int					old_sym;
-		unsigned int		len;
+		int				sym;
+		int				old_sym;
+		size_t			len;
 
 		// Input buffering
-		UNICC_SCHAR*		lexem;
-		UNICC_CHAR*			buf;
-		UNICC_CHAR*			bufend;
-		UNICC_CHAR*			bufsize;
+		UNICC_SCHAR*	lexem;
+		UNICC_CHAR*		buf;
+		UNICC_CHAR*		bufend;
+		UNICC_CHAR*		bufsize;
 
 		// Lexical analysis
-		UNICC_CHAR			next;
-		bool				is_eof;
+		UNICC_CHAR		next;
+		bool			is_eof;
 
 		// Error handling
-		int					error_delay;
-		int					error_count;
+		int				error_delay;
+		int				error_count;
 
-		unsigned int		line;
-		unsigned int		column;
+		size_t			line;
+		size_t			column;
 
 		// User-defined components
 		@@pcb

@@ -7,18 +7,18 @@ bool @@prefix_parser::handle_error( FILE* @@prefix_dbg )
 				"%s: error recovery: current token %d (%s)\n",
 					UNICC_PARSER, UNICC_PARSER, this->sym,
 						( ( this->sym >= 0 ) ?
-							@@prefix_symbols[ this->sym ].name :
+							this->symbols[ this->sym ].name :
 								"(null)" ) );
 
 		fprintf( @@prefix_dbg,
 				"%s: error recovery: expecting ", UNICC_PARSER );
 
-		for( int i = 1; i < @@prefix_act[ this->tos->state ][0] * 3; i += 3 )
+		for( int i = 1; i < this->actions[ this->tos->state ][0] * 3; i += 3 )
 		{
 			fprintf( @@prefix_dbg, "%d (%s)%s",
-				@@prefix_act[ this->tos->state ][i],
-				@@prefix_symbols[ @@prefix_act[ this->tos->state ][i] ].name,
-				( i == @@prefix_act[ this->tos->state ][0] * 3 - 3 ) ?
+				this->actions[ this->tos->state ][i],
+				this->symbols[ this->actions[ this->tos->state ][i] ].name,
+				( i == this->actions[ this->tos->state ][0] * 3 - 3 ) ?
 						"\n" : ", " );
 		}
 
