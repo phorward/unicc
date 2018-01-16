@@ -76,7 +76,7 @@ approaches relating the whitespace handling
 file generator
 - Platform-independent (console-based)
 - Standard LALR(1) conflict resolution
-- Supporting C and Python target languages so far
+- Parser generation in C, C++ and Python so far
 
 ## Documentation
 
