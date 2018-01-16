@@ -1,5 +1,5 @@
 <?xml version="1.0" standalone="yes"?>
-<generator name="Python" long-name="Standard Python Target" version="0.3">
+<generator name="Python" long-name="Standard Python Target" version="0.4">
 	<escape-sequence for="\" do="\\" />
 	<escape-sequence for="&#x22;" do="\&#x22;" />
 	<null-value>None</null-value>
@@ -121,6 +121,22 @@ class @@prefixNode(object):
 		for child in self.children:
 			child.dump(level)
 
+
+class @@prefixParseError(Exception):
+	"""
+	Exception to be raised on a parse error.
+	"""
+
+	def __init__(self, row, col, expecting):
+		super(ParseError, self).__init__(
+			"Parse error at line %d, column %d, expecting %s" % (row, col,
+				", ".join([("%r" % symbol[0]) for symbol in expecting])))
+
+		self.line = row
+		self.column = col
+		self.expecting = expecting
+
+
 class @@prefixParserToken(object):
 	state = 0
 	line = 0
@@ -130,10 +146,11 @@ class @@prefixParserToken(object):
 
 	@@value-type-definition
 
+
 class @@prefixParserControlBlock(object):
 
 	# Stack
-	stack = []
+	stack = None
 	tos = None
 
 	# Values
@@ -368,6 +385,7 @@ class @@prefixParser(object):
 				s = input(">")
 
 		pcb = @@prefixParserControlBlock()
+		pcb.stack = []
 		pcb.input = s
 
 		pcb.tos = @@prefixParserToken()
@@ -384,10 +402,10 @@ class @@prefixParser(object):
 
 			# Get action table entry
 			if not self._get_act(pcb):
-				print("Parse Error")
-				print("Expecting %s" % ", ".join(self._symbols[sym][0]
-					for (sym, pcb.act, pcb.idx) in self._act[pcb.tos.state]))
-				break
+				raise @@prefixParseError(pcb.line, pcb.column,
+					[self._symbols[sym]
+						for (sym, pcb.act, pcb.idx)
+							in self._act[pcb.tos.state]])
 
 			#print("pcb.act = %d" % pcb.act)
 

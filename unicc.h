@@ -84,7 +84,7 @@ Usage:	Global declarations, structures and includes
 /* UniCC version number */
 #define UNICC_VER_MAJOR			1
 #define UNICC_VER_MINOR			3
-#define UNICC_VER_PATCH			1
+#define UNICC_VER_PATCH			2
 #define UNICC_VER_EXTSTR		""
 
 /* Default target language */
