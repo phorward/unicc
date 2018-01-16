@@ -6,6 +6,9 @@ This file is used to document any relevant changes done to UniCC.
 
 Released on: December 21, 2017
 
+- v1.3.2: Python target 0.4
+  - Raising parse error exceptions
+  - Bugfix to avoid working with previous stack values 
 - v1.3.1: Bugfix in the C target working with uninitialized values
 - Code generator does not emit action code when the action is empty.
 - New command-line parameter "-l" or "--language" to specify a target language
