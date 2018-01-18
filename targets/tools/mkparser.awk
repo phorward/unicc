@@ -78,7 +78,7 @@ BEGIN		{
 			}
 
 /%%%include/{
-				system( ARGV[0] " -v genwhat=" genwhat " -f mkparser.awk " $2 )
+				system( ARGV[0] " -v genwhat=" genwhat " -f ../tools/mkparser.awk " $2 )
 				next
 			}
 

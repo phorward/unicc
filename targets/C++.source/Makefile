@@ -1,7 +1,7 @@
 OUTPUT		= 	../c++.tlt
 BASE		=	C++.xml
 
-MKPARSER	=	mkparser.awk
+MKPARSER	=	../tools/mkparser.awk
 
 SOURCE		=	\
 				defines.h \
@@ -30,7 +30,7 @@ all: $(OUTPUT)
 
 $(OUTPUT): $(SOURCE) $(BASE) $(MKPARSER)
 	awk -f $(MKPARSER) $(BASE) >$@
-	@echo XML standard template generated
+	@echo C++ standard target generated
 
 clean:
 	-$(RM) $(OUTPUT)
