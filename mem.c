@@ -476,6 +476,7 @@ plist* free_opts( plist* options )
 
 static int sort_symbols( plist* lst, plistel* el, plistel* er )
 {
+	int			ret	= 0;
 	SYMBOL*		l	= (SYMBOL*)plist_access( el );
 	SYMBOL*		r	= (SYMBOL*)plist_access( er );
 
@@ -487,12 +488,15 @@ static int sort_symbols( plist* lst, plistel* el, plistel* er )
 	if( l->type == SYM_REGEX_TERMINAL && r->type == SYM_REGEX_TERMINAL )
 	{
 		if( l->keyword > r->keyword )
-			return 1;
+			ret = 1;
 		else if( l->keyword < r->keyword )
-			return -1;
+			ret = -1;
 	}
 
-	return 0;
+	if( l->id > r->id )
+		ret = 1;
+
+	return ret;
 }
 
 /** Allocates and initializes a new parser information structure.
