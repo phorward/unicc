@@ -83,8 +83,8 @@ Usage:	Global declarations, structures and includes
 
 /* UniCC version number */
 #define UNICC_VER_MAJOR			1
-#define UNICC_VER_MINOR			3
-#define UNICC_VER_PATCH			3
+#define UNICC_VER_MINOR			4
+#define UNICC_VER_PATCH			0
 #define UNICC_VER_EXTSTR		""
 
 /* Default target language */
@@ -385,6 +385,7 @@ struct _generator_1d_tab
 struct _generator
 {
 	char*		name;						/* Target language name */
+	char*		prefix;						/* Replacement variable prefix */
 	char*		driver;						/* Driver source code */
 	char*		vstack_def_type;			/* Default-type for nonterminals
 												if no type is specified */
