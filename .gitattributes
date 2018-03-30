@@ -1,0 +1,10 @@
+*.gnu linguist-language=Makefile
+targets/C.source/unicc4c/proto.h linguist-language=C
+aclocal.m4 linguist-generated=true
+ar-lib linguist-generated=true
+compile linguist-generated=true
+configure linguist-generated=true
+depcomp linguist-generated=true
+install-sh linguist-generated=true
+Makefile.in linguist-generated=true
+missing linguist-generated=true
