@@ -398,7 +398,7 @@ char* build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s, char* base )
 	char*			last		= base;
 	char*			start;
 	char*			end;
-	int				match;
+	unsigned int	match;
 	char*			ret			= (char*)NULL;
 	char*			tmp;
 	plistel*		e;
@@ -1117,7 +1117,7 @@ void build_code( PARSER* parser )
 			dfa_accept_row = pstrcatstr( dfa_accept_row,
 				pstrrender( gen->dfa_accept.col,
 					GEN_WILD_PREFIX "accept",
-						int_to_str( dfa_st->accept.accept ), TRUE,
+						int_to_str( dfa_st->accept ), TRUE,
 					(char*)NULL ), TRUE );
 
 			/* Iterate trough all transitions */
@@ -1135,7 +1135,7 @@ void build_code( PARSER* parser )
 								GEN_WILD_PREFIX "to",
 									int_to_str( end ), TRUE,
 								GEN_WILD_PREFIX "goto",
-									int_to_str( dfa_st->accept.accept ), TRUE,
+									int_to_str( dfa_st->accept ), TRUE,
 								(char*)NULL ), TRUE );
 
 					dfa_trans = pstrcatstr( dfa_trans,

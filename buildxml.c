@@ -94,7 +94,7 @@ static BOOLEAN build_xml_action( XML_T code_xml, PARSER* parser, PROD* p,
 	char*			last		= base;
 	char*			start;
 	char*			end;
-	int				match;
+	unsigned int	match;
 	char*			chk;
 	char*			tmp;
 	plistel*		e;
@@ -359,7 +359,7 @@ static BOOLEAN build_xml_scan_action(
 	char*			last	= base;
 	char*			start;
 	char*			end;
-	int				match;
+	unsigned int	match;
 	char*			raw;
 	XML_T			code;
 	char*			tmp;
@@ -522,8 +522,8 @@ static void build_xml_dfa( XML_T parent, pregex_dfa* dfa )
 		if( !( xml_set_int_attr( state, "id", i ) ) )
 				OUTOFMEM;
 
-		if( st->accept.accept &&
-			!( xml_set_int_attr( state, "accept", st->accept.accept ) ) )
+		if( st->accept &&
+			!( xml_set_int_attr( state, "accept", st->accept ) ) )
 				OUTOFMEM;
 
 		if( st->def_trans )
@@ -633,11 +633,7 @@ static void print_xml_symbols( PARSER* parser, XML_T par )
 						tmp_nfa = pregex_nfa_create();
 						tmp_dfa = pregex_dfa_create();
 
-						if( !sym->ptn->accept )
-							sym->ptn->accept = (pregex_accept*)pmalloc(
-													sizeof( pregex_accept ) );
-
-						sym->ptn->accept->accept = sym->id;
+						sym->ptn->accept = sym->id;
 
 						pregex_ptn_to_nfa( tmp_nfa, sym->ptn );
 

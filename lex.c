@@ -201,7 +201,7 @@ pregex_dfa* find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
 			dfa_st[0] = (pregex_dfa_st*)plist_access( e );
 			dfa_st[1] = (pregex_dfa_st*)plist_access( f );
 
-			if( !( dfa_st[0]->accept.accept == dfa_st[1]->accept.accept
+			if( !( dfa_st[0]->accept == dfa_st[1]->accept
 					&& plist_count( dfa_st[0]->trans )
 							== plist_count( dfa_st[1]->trans ) ) )
 			{
@@ -267,10 +267,7 @@ void nfa_from_symbol( PARSER* parser, pregex_nfa* nfa, SYMBOL* sym )
 
 	if( sym->ptn )
 	{
-		if( !sym->ptn->accept )
-			sym->ptn->accept = pmalloc( sizeof( pregex_accept ) );
-
-		sym->ptn->accept->accept = sym->id + 1;
+		sym->ptn->accept = sym->id + 1;
 		pregex_ptn_to_nfa( nfa, sym->ptn );
 	}
 
