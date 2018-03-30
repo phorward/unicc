@@ -119,8 +119,8 @@ unicc: $(unicc_OBJECTS) $(LIBPHORWARD)
 # Now documentation generation follows, using txt2tags.
 #
 
-doc: unicc.1.man
+doc: unicc.man
 
-unicc.1.man: unicc.t2t
+unicc.man: unicc.t2t
 	txt2tags -t man -o $@ $?
 
