@@ -380,7 +380,7 @@ bin_PROGRAMS = unicc$(EXEEXT)
 @WITH_BOOTSTRAP_TRUE@					unicc_boot2$(EXEEXT) \
 @WITH_BOOTSTRAP_TRUE@					unicc_boot3$(EXEEXT)
 
-man1_MANS = unicc.1.man
+man1_MANS = unicc.man
 uniccdir = $(datadir)/unicc
 targetsdir = $(uniccdir)/targets
 dist_targets_DATA = targets/c.tlt targets/python.tlt

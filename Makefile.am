@@ -11,7 +11,7 @@ noinst_PROGRAMS = boot_min_lalr1$(EXEEXT) \
 					unicc_boot3$(EXEEXT)
 endif
 
-man1_MANS = unicc.1.man
+man1_MANS = unicc.man
 
 uniccdir = $(datadir)/unicc
 targetsdir = $(uniccdir)/targets
