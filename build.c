@@ -18,6 +18,9 @@ Usage:	The dynamic program module generator of the UniCC parser generator,
 
 extern FILE*	status;
 
+static plex*	action_lex;
+static plex*	scan_lex;
+
 /** Escapes the input-string according to the parser templates
 escaping-sequence definitions. This function is used to print identifiers and
 character-class definitions to the target parser without getting trouble with
@@ -113,20 +116,29 @@ Returns a char*-pointer to the generated code - must be freed by the caller.
 char* build_action( PARSER* parser, GENERATOR* g, PROD* p,
 			char* base, BOOLEAN def_code )
 {
-	plex*			lex;
-	char*			last	= base;
+	char*			last			= base;
 	char*			start;
 	char*			end;
 	int				off;
-	int				match;
-	char*			ret		= (char*)NULL;
+	unsigned int	match;
+	char*			ret				= (char*)NULL;
 	char*			chk;
 	char*			tmp;
 	char*			att;
 	plistel*		e;
-	plist*			rhs			= p->rhs;
-	BOOLEAN			on_error	= FALSE;
+	plist*			rhs				= p->rhs;
+	BOOLEAN			on_error		= FALSE;
 	SYMBOL*			sym;
+	int				i;
+	char			rx				[ ONE_LINE + 1 ];
+	char*			rx_postfix[]	= {
+										"'([^']|\\')*'",
+										"\"([^\"]|\\\")*\"",
+										"[A-Za-z_][A-Za-z0-9_]*",
+										"[0-9]+",
+										"@",
+										"!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*"
+									};
 
 	PROC( "build_action" );
 	PARMS( "parser", "%p", parser );
@@ -135,24 +147,33 @@ char* build_action( PARSER* parser, GENERATOR* g, PROD* p,
 	PARMS( "base", "%s", base );
 	PARMS( "def_code", "%s", BOOLEAN_STR( def_code ) );
 
-	/* Prepare regular expression engine */
-	lex = plex_create( 0 );
-
-	if( !( plex_define( lex, "@'([^']|\\')*'", 1, 0 )
-			&& plex_define( lex, "@\"([^\"]|\\\")*\"", 1, 0 )
-			&& plex_define( lex, "@[A-Za-z_][A-Za-z0-9_]*", 2, 0 )
-			&& plex_define( lex, "@[0-9]+", 3, 0 )
-			&& plex_define( lex, "@@", 4, 0 )
-			/*
-			 * Hmm ... this way looks "cooler" for future versions, maybe
-			 * this would be a nice extension: @<command>:<parameters>
-			 */
-			&& plex_define( lex, "@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*",
-										5, 0 )
-		) )
+	/* Once generate a lexer */
+	if( !action_lex )
 	{
-		plex_free( lex );
-		RETURN( (char*)NULL );
+		/* Prepare regular expression engine */
+		action_lex = plex_create( 0 );
+
+		for( i = 0; i < 6; i++ )
+		{
+			if( pstrlen( g->prefix ) + pstrlen( rx_postfix[ i ] )
+					>= sizeof( rx ) )
+			{
+				MSG( "Buffer too small!" );
+				RETURN( (char*)NULL );
+			}
+
+			sprintf( rx, "%s%s", g->prefix, rx_postfix[ i ] );
+
+			VARS( "i", "%d", i );
+			VARS( "rx", "%s", rx );
+
+			/* Watch out: First two regex match same id! */
+			if( !plex_define( action_lex, rx, !i ? 1 : i, 0 ) )
+			{
+				MSG( "Something went wrong with the action lexer definition" );
+				RETURN( (char*)NULL );
+			}
+		}
 	}
 
 	VARS( "p->sem_rhs counts", "%d", plist_count( p->sem_rhs ) );
@@ -166,7 +187,8 @@ char* build_action( PARSER* parser, GENERATOR* g, PROD* p,
 
 	MSG( "Iterating trough matches" );
 
-	while( ( start = plex_next( lex, last, &match, &end ) ) && !on_error )
+	while( ( start = plex_next( action_lex, last, &match, &end ) )
+				&& !on_error )
 	{
 		off = 0;
 		tmp = (char*)NULL;
@@ -185,8 +207,8 @@ char* build_action( PARSER* parser, GENERATOR* g, PROD* p,
 		switch( match )
 		{
 			case 1:
-				start++;
-				end--;
+				start += 1;
+				end -= 1;
 
 			case 2:
 				MSG( "Identifier" );
@@ -196,8 +218,10 @@ char* build_action( PARSER* parser, GENERATOR* g, PROD* p,
 					chk = plist_key( e );
 					VARS( "chk", "%s", chk ? chk : "(NULL)" );
 
-					if( chk && !strncmp( chk, start + 1, end - start - 1 )
-							&& pstrlen( chk ) == end - start - 1 )
+					if( chk && !strncmp( chk, start + pstrlen( g->prefix ),
+									end - start - pstrlen( g->prefix ) )
+							&& pstrlen( chk ) ==
+									end - start - pstrlen( g->prefix ) )
 					{
 						break;
 					}
@@ -216,7 +240,7 @@ char* build_action( PARSER* parser, GENERATOR* g, PROD* p,
 
 			case 3:
 				MSG( "Offset" );
-				off = atoi( start + 1 );
+				off = atoi( start + pstrlen( g->prefix ) );
 				break;
 
 			case 4:
@@ -242,9 +266,11 @@ char* build_action( PARSER* parser, GENERATOR* g, PROD* p,
 				off = 0;
 
 				if( !( tmp = pasprintf( "%.*s",
-								end - start - ( pstrlen( SYMBOL_VAR ) + 3 ),
-								start + ( pstrlen( SYMBOL_VAR ) + 3 )
-									) ) )
+								end - start - ( pstrlen( SYMBOL_VAR )
+										+ 2 + pstrlen( g->prefix ) ),
+								start + ( pstrlen( SYMBOL_VAR )
+										+ 2 + pstrlen( g->prefix ) )
+					) ) )
 				{
 					OUTOFMEM;
 					RETURN( (char*)NULL );
@@ -356,8 +382,6 @@ char* build_action( PARSER* parser, GENERATOR* g, PROD* p,
 	VARS( "ret", "%s", ret );
 	VARS( "on_error", "%s", BOOLEAN_STR( on_error ) );
 
-	plex_free( lex );
-
 	if( on_error && ret )
 	{
 		MSG( "Okay, on error, everything will be deleted!" );
@@ -371,15 +395,23 @@ char* build_action( PARSER* parser, GENERATOR* g, PROD* p,
 /** Construct the scanner action code from templates. */
 char* build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s, char* base )
 {
-	plex*			lex;
 	char*			last		= base;
 	char*			start;
 	char*			end;
-	int				match;
+	unsigned int	match;
 	char*			ret			= (char*)NULL;
 	char*			tmp;
 	plistel*		e;
 	SYMBOL*			sym;
+
+	int				i;
+	char			rx				[ ONE_LINE + 1 ];
+	char*			rx_postfix[]	= {
+										">",
+										"<",
+										"@",
+										"!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*"
+									};
 
 	PROC( "build_scan_action" );
 	PARMS( "parser", "%p", parser );
@@ -387,22 +419,41 @@ char* build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s, char* base )
 	PARMS( "s", "%p", s );
 	PARMS( "base", "%s", base );
 
-	/* Prepare regular expression engine */
-	lex = plex_create( PREGEX_COMP_NOANCHORS );
 
-	if( !( plex_define( lex, "@>", 1, 0 )
-		&& plex_define( lex, "@<", 2, 0 )
-		&& plex_define( lex, "@@", 3, 0 )
-		&& plex_define( lex, "@!" SYMBOL_VAR ":[A-Za-z_][A-Za-z0-9_]*", 4, 0 )
-			) )
+	/* Once generate a lexer */
+	if( !scan_lex )
 	{
-		plex_free( lex );
-		RETURN( (char*)NULL );
+		/* Prepare regular expression engine */
+		scan_lex = plex_create( 0 );
+
+		for( i = 0; i < 4; i++ )
+		{
+			if( pstrlen( g->prefix ) + pstrlen( rx_postfix[ i ] )
+					>= sizeof( rx ) )
+			{
+				MSG( "Buffer too small!" );
+
+				plex_free( scan_lex );
+				RETURN( (char*)NULL ); /* Not the best way to handle this */
+			}
+
+			sprintf( rx, "%s%s", g->prefix, rx_postfix[ i ] );
+
+			VARS( "i", "%d", i );
+			VARS( "rx", "%s", rx );
+
+			if( !plex_define( scan_lex, rx, i + 1, 0 ) )
+			{
+				plex_free( scan_lex );
+				MSG( "Something went wrong with the action lexer definition" );
+				RETURN( (char*)NULL );
+			}
+		}
 	}
 
 	MSG( "Iterating trough matches" );
 
-	while( ( start = plex_next( lex, last, &match, &end ) ) )
+	while( ( start = plex_next( scan_lex, last, &match, &end ) ) )
 	{
 		if( last < start )
 		{
@@ -451,9 +502,11 @@ char* build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s, char* base )
 				MSG( "Set terminal symbol" );
 
 				if( !( tmp = pasprintf( "%.*s",
-								end - start - ( pstrlen( SYMBOL_VAR ) + 3 ),
-								start + ( pstrlen( SYMBOL_VAR ) + 3 )
-									) ) )
+								end - start - ( pstrlen( SYMBOL_VAR )
+										+ 2 + pstrlen( g->prefix ) ),
+								start + ( pstrlen( SYMBOL_VAR )
+										+ 2 + pstrlen( g->prefix ) )
+					) ) )
 					OUTOFMEM;
 
 				VARS( "tmp", "%s", tmp );
@@ -496,8 +549,6 @@ char* build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s, char* base )
 
 	if( last && *last )
 		ret = pstrcatstr( ret, last, FALSE );
-
-	plex_free( lex );
 
 	VARS( "ret", "%s", ret );
 	RETURN( ret );
@@ -621,9 +672,12 @@ BOOLEAN load_generator( PARSER* parser, GENERATOR* g, char* genfile )
 		return FALSE;
 	}
 
-	/* GET_XML_DEF( g->xml, g->driver, "driver" ); */
 	GET_XML_DEF( g->xml, g->vstack_def_type, "vstack_def_type" );
 	GET_XML_DEF( g->xml, g->vstack_term_type, "vstack_term_type" );
+
+	if( ! *( g->prefix = (char*)xml_txt(
+				xml_child( g->xml, "action_prefix" ) ) ) )
+		g->prefix = "@";
 
 	GET_XML_DEF( g->xml, g->action_start, "action_start" );
 	GET_XML_DEF( g->xml, g->action_end, "action_end" );
@@ -1063,7 +1117,7 @@ void build_code( PARSER* parser )
 			dfa_accept_row = pstrcatstr( dfa_accept_row,
 				pstrrender( gen->dfa_accept.col,
 					GEN_WILD_PREFIX "accept",
-						int_to_str( dfa_st->accept.accept ), TRUE,
+						int_to_str( dfa_st->accept ), TRUE,
 					(char*)NULL ), TRUE );
 
 			/* Iterate trough all transitions */
@@ -1081,7 +1135,7 @@ void build_code( PARSER* parser )
 								GEN_WILD_PREFIX "to",
 									int_to_str( end ), TRUE,
 								GEN_WILD_PREFIX "goto",
-									int_to_str( dfa_st->accept.accept ), TRUE,
+									int_to_str( dfa_st->accept ), TRUE,
 								(char*)NULL ), TRUE );
 
 					dfa_trans = pstrcatstr( dfa_trans,
@@ -1576,6 +1630,10 @@ void build_code( PARSER* parser )
 	pfree( gen->for_sequences );
 	pfree( gen->do_sequences );
 	xml_free( gen->xml );
+
+	/* Free local lexers */
+	plex_free( action_lex );
+	plex_free( scan_lex );
 
 	VOIDRET;
 }

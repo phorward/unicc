@@ -62,10 +62,9 @@ consumed by a NFA machine state.
 
 Returns the result of the transition on the given character class,
 0 if there is no transition. */
-static int nfa_transition_on_ccl(
-	pregex_nfa* nfa, plist* res, int* accept, pccl* check_with )
+static int nfa_transition_on_ccl( pregex_nfa* nfa, plist* res,
+									unsigned int* accept, pccl* check_with )
 {
-	pregex_accept	acc;
 	int				i;
 	wchar_t			beg;
 	wchar_t			end;
@@ -77,12 +76,8 @@ static int nfa_transition_on_ccl(
 	if( !plist_count( res ) )
 		plist_push( res, plist_access( plist_first( nfa->states ) ) );
 
-	memset( &acc, 0, sizeof( pregex_accept ) );
-
-	pregex_nfa_epsilon_closure( nfa, res, &acc );
+	pregex_nfa_epsilon_closure( nfa, res, accept, (int*)NULL );
 	ret_res = plist_create( 0, PLIST_MOD_PTR );
-
-	*accept = acc.accept;
 
 	for( i = 0; p_ccl_get( &beg, &end, check_with, i ); i++ )
 	{
@@ -132,18 +127,18 @@ FALSE else.
 static BOOLEAN check_nfa_matches_parser(
 	PARSER* parser, pregex_nfa* nfa, plist* start_res, int start )
 {
-	int			stack[ 1024 ];
-	int			act;
-	int			accept;
-	int			idx;
-	int			tos 			= 0;
-	PROD*		rprod;
-	STATE*		st;
-	TABCOL*		col;
-	plist*		res;
-	plistel*	e;
-	BOOLEAN		ret				= TRUE;
-	LIST*		l;
+	int				stack[ 1024 ];
+	int				act;
+	unsigned int	accept;
+	int				idx;
+	int				tos 			= 0;
+	PROD*			rprod;
+	STATE*			st;
+	TABCOL*			col;
+	plist*			res;
+	plistel*		e;
+	BOOLEAN			ret				= TRUE;
+	LIST*			l;
 
 	/*
 		06.03.2008	Jan Max Meyer
@@ -308,7 +303,7 @@ BOOLEAN check_regex_anomalies( PARSER* parser )
 
 	plist*			res;
 	pregex_nfa*		nfa;
-	int				accept;
+	unsigned int	accept;
 
 	/*
 	06.03.2008	Jan Max Meyer
@@ -366,11 +361,7 @@ BOOLEAN check_regex_anomalies( PARSER* parser )
 				*/
 				nfa = pregex_nfa_create();
 
-				if( !col->symbol->ptn->accept )
-					col->symbol->ptn->accept =
-						(pregex_accept*)pmalloc( sizeof( pregex_accept ) );
-
-				col->symbol->ptn->accept->accept = col->symbol->id + 1;
+				col->symbol->ptn->accept = col->symbol->id + 1;
 
 				pregex_ptn_to_nfa( nfa, col->symbol->ptn );
 
