@@ -8,7 +8,7 @@ Current development version.
 
 - Compiled and linked against libphorward 0.22
 - C++ target forked from the C target startet
-- //action_prefix// value can be defined in target language templates to
+- *action_prefix* value can be defined in target language templates to
   redefine the ``@``-prefix for action code variables by any other desired
   prefix. This change has been done to make target language processing easier
   for languages where the ``@``-sign is part of the target language syntax.

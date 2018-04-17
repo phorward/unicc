@@ -1,11 +1,16 @@
 *.o
+
 parse_boot1.c
 parse_boot2.c
 parse_boot2.h
 parse_boot3.c
 parse_boot3.h
+
 boot_min_lalr1
+
 unicc_boot1
 unicc_boot2
 unicc_boot3
 unicc
+
+Makefile
