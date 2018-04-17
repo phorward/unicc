@@ -1,6 +1,6 @@
 UNICC
-Version 1.3
-Dec 2017
+Version 1.4
+Apr 2018
 %!postproc(md): '```(.?)' '```\1'
 %!postproc(md): '^	([^-$])' '\1'
 %!postproc(md): '^ \* ' '- '
@@ -28,11 +28,12 @@ UniCC supports parser code generation for the following programming languages
 so far:
 
 - **C** is fully supported (and reference implementation),
-- **Python** is under development, but already running in first tests,
+- **C++** is well supported,
+- **Python** is well supported,
 - **ECMAScript** is prototyped in a stub, but may come soon.
 
 
-The official user's manual can be obtained for free here: https://www.phorward-software.com/products/unicc/unicc.pdf
+The official user's manual can be obtained for free here: https://phorward.info/products/unicc/unicc.pdf
 
 = COMMAND-LINE OPTIONS =
 
@@ -141,6 +142,6 @@ https://github.com/phorward/unicc/issues
 
 = COPYRIGHT =
 
-Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer.
+Copyright (C) 2006-2018 by Phorward Software Technologies, Jan Max Meyer.
 
 You may use, modify and distribute this software under the terms and conditions of the 3-clause BSD license.

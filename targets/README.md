@@ -1,6 +1,6 @@
-# Target language templates
+# Targets
 
-This folder holds the target language templates (tlt-files) for the different
+This folder holds the target language templates ("tlt-files") for the different
 targets supported by UniCC. A target language template is an XML-formatted text
 file that contains several code snippets to be glued together into the later
 running source code files.
@@ -13,16 +13,21 @@ comments that serve as a full documentation about which variables are used in
 which contexts, and how they are made up. Please refer to this file when adding
 new targets is wanted, or simply ask for help.
 
-## C (c.tlt) / C++ (c++.tlt)
+## C (c.tlt)
 
-The tlt-files for C and C++ are generated from their respective source folders,
-which are _C.source_ and _C++.source_. Run the Makefile there to build the
-files from the different source files.
+The C target is generated from the source folder _C.source_ .
+Run the Makefile there to build the target from the different raw source files.
+
+## C++ (c++.tlt)
+
+The C++ target is a fork of the C target and is generated from the source folder
+_C++.source_ . Run the Makefile there to build the target from the different
+raw source files.
 
 ## Python (python.tlt)
 
 The Python target stands on its own, and is not generated from a folder.
 
-## ECMAScript (javascript.tlt)
+## ECMAScript (ecmascript.tlt)
 
-Is currently only a stub on its own.
+Is currently only a stub on its own, and does not generate working parsers.

@@ -34,7 +34,7 @@ all: $(C_XML)
 
 $(C_XML): $(SOURCE) $(C_XML_SRC) $(MKPARSER)
 	awk -f $(MKPARSER) $(C_XML_SRC) >$@
-	@echo C standard target generated
+	@echo C target generated
 
 clean:
 	-$(RM) $(C_XML)

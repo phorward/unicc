@@ -15,7 +15,10 @@ man1_MANS = unicc.man
 
 uniccdir = $(datadir)/unicc
 targetsdir = $(uniccdir)/targets
-dist_targets_DATA = targets/c.tlt targets/python.tlt
+dist_targets_DATA = targets/c.tlt \
+					targets/c++.tlt \
+					targets/python.tlt \
+					targets/ecmascript.tlt
 dist_unicc_DATA = unicc.dtd LICENSE README.md
 
 AM_CPPFLAGS = -DTLTDIR=\"$(targetsdir)\"

@@ -1,6 +1,6 @@
 /* -HEADER----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2018 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
@@ -117,7 +117,6 @@ Usage:	Global declarations, structures and includes
  */
 typedef struct _list				LIST;
 typedef struct _symbol 				SYMBOL;
-typedef struct _def					DEF;
 typedef struct _prod 				PROD;
 typedef struct _item 				ITEM;
 typedef struct _state 				STATE;

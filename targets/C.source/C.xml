@@ -33,7 +33,7 @@ To obtain the sizes for both dimensions, there are expanding macros both in the
 between the rows/columns, except the last row/column.
 -->
 
-<generator name="C" long-name="Standard C Target" version="1.3">
+<generator name="C" long-name="C target" version="1.3">
 	<!--
 	****************************************************************************
 	Escape sequences

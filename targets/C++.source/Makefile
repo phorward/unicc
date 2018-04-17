@@ -30,7 +30,7 @@ all: $(OUTPUT)
 
 $(OUTPUT): $(SOURCE) $(BASE) $(MKPARSER)
 	awk -f $(MKPARSER) $(BASE) >$@
-	@echo C++ standard target generated
+	@echo C++ target generated
 
 clean:
 	-$(RM) $(OUTPUT)

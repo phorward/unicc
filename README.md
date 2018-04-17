@@ -9,10 +9,11 @@ UniCC (UNIversal Compiler Compiler) is a LALR(1) parser generator. It compiles a
 UniCC supports parser code generation for the following programming languages so far:
 
 - **C** is fully supported (and reference implementation),
+- **C++** is well supported,
 - **Python** is well supported,
-- **C++** and **ECMAScript** are prototyped, and will come soon.
+- **ECMAScript** is prototyped, and may come soon.
 
-More target languages can easily be added by creating specific target language templates.
+More targets can easily be added by creating specific template files.
 
 ## Example
 
@@ -116,6 +117,6 @@ Some other projects by the author are:
 
 This software is an open source project released under the terms and conditions of the 3-clause BSD license. See the LICENSE file for more information.
 
-Copyright (C) 2006-2017 by Phorward Software Technologies, Jan Max Meyer.
+Copyright (C) 2006-2018 by Phorward Software Technologies, Jan Max Meyer.
 
 You may use, modify and distribute this software under the terms and conditions of the 3-clause BSD license. The full license terms can be obtained from the file LICENSE.

@@ -1,5 +1,5 @@
 <?xml version="1.0" standalone="yes"?>
-<generator name="Python" long-name="Standard Python Target" version="0.5">
+<generator name="Python" long-name="Python target" version="1.0">
 	<escape-sequence for="\" do="\\" />
 	<escape-sequence for="&#x22;" do="\&#x22;" />
 

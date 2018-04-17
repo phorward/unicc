@@ -2,13 +2,24 @@
 
 This file is used to document any relevant changes done to UniCC.
 
+## v1.4
+
+Current development version.
+
+- Compiled and linked against libphorward 0.22
+- C++ target forked from the C target startet
+- //action_prefix// value can be defined in target language templates to
+  redefine the ``@``-prefix for action code variables by any other desired
+  prefix. This change has been done to make target language processing easier
+  for languages where the ``@``-sign is part of the target language syntax.
+
 ## v1.3
 
 Released on: December 21, 2017
 
 - v1.3.2: Python target 0.4
   - Raising parse error exceptions
-  - Bugfix to avoid working with previous stack values 
+  - Bugfix to avoid working with previous stack values
 - v1.3.1: Bugfix in the C target working with uninitialized values
 - Code generator does not emit action code when the action is empty.
 - New command-line parameter "-l" or "--language" to specify a target language
