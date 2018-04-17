@@ -4,7 +4,7 @@ This file is used to document any relevant changes done to UniCC.
 
 ## v1.4
 
-Current development version.
+Released on: April 17, 2018
 
 - Compiled and linked against libphorward 0.22
 - C++ target forked from the C target startet
