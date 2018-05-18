@@ -217,7 +217,7 @@ pregex_dfa* find_equal_dfa( PARSER* parser, pregex_dfa* ndfa )
 				dfa_ent[0] = (pregex_dfa_tr*)plist_access( g );
 				dfa_ent[1] = (pregex_dfa_tr*)plist_access( h );
 
-				if( !( p_ccl_compare( dfa_ent[0]->ccl, dfa_ent[1]->ccl )
+				if( !( pccl_compare( dfa_ent[0]->ccl, dfa_ent[1]->ccl )
 							== 0
 						&& dfa_ent[0]->go_to == dfa_ent[1]->go_to ) )
 				{

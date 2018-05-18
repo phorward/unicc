@@ -25,7 +25,7 @@ void print_symbol( FILE* stream, SYMBOL* sym )
 		stream = stderr;
 
 	if( sym->type == SYM_CCL_TERMINAL )
-		fprintf( stream, "'%s'", p_ccl_to_str( sym->ccl, TRUE ) );
+		fprintf( stream, "'%s'", pccl_to_str( sym->ccl, TRUE ) );
 	else if( sym->type == SYM_REGEX_TERMINAL && sym->keyword )
 		fprintf( stream, "\"%s\"", sym->name );
 	else if( sym->type == SYM_REGEX_TERMINAL && !( sym->keyword ) )

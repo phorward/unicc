@@ -79,7 +79,7 @@ static int nfa_transition_on_ccl( pregex_nfa* nfa, plist* res,
 	pregex_nfa_epsilon_closure( nfa, res, accept, (int*)NULL );
 	ret_res = plist_create( 0, PLIST_MOD_PTR );
 
-	for( i = 0; p_ccl_get( &beg, &end, check_with, i ); i++ )
+	for( i = 0; pccl_get( &beg, &end, check_with, i ); i++ )
 	{
 		/*
 			This may be the source for large run time latency.
@@ -385,7 +385,7 @@ BOOLEAN check_regex_anomalies( PARSER* parser )
 						/*
 						fprintf( stderr, "col = >%s< ccol = >%s<\n",
 							col->symbol->name,
-								p_ccl_to_str( ccol->symbol->ccl, TRUE ) );
+								pccl_to_str( ccol->symbol->ccl, TRUE ) );
 						*/
 
 						/*

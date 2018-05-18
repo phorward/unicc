@@ -1126,7 +1126,7 @@ void build_code( PARSER* parser )
 			{
 				dfa_ent = (pregex_dfa_tr*)plist_access( f );
 
-				for( i = 0; p_ccl_get( &beg, &end, dfa_ent->ccl, i ); i++ )
+				for( i = 0; pccl_get( &beg, &end, dfa_ent->ccl, i ); i++ )
 				{
 					dfa_char = pstrcatstr( dfa_char,
 								pstrrender( gen->dfa_char.col,

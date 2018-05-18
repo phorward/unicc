@@ -37,9 +37,9 @@ static void build_xml_ccl( XML_T parent_xml, pccl* ccl )
 	if( !( ccl_xml = xml_add_child( parent_xml, "character-class", 0 ) ) )
 		OUTOFMEM;
 
-	xml_set_int_attr( ccl_xml, "count", p_ccl_count( ccl ) );
+	xml_set_int_attr( ccl_xml, "count", pccl_count( ccl ) );
 
-	for( i = 0; p_ccl_get( &beg, &end, ccl, i ); i++ )
+	for( i = 0; pccl_get( &beg, &end, ccl, i ); i++ )
 	{
 		if( !( range_xml = xml_add_child( ccl_xml, "range", 0 ) ) )
 			OUTOFMEM;

@@ -435,10 +435,10 @@ sym:			terminal										{	##.ptr = #1.ptr; 	}
 terminal:		ccl												{ 	SYMBOL* s;
 																	pccl*	ccl;
 
-																	ccl = p_ccl_create( -1, -1, strbuf );
+																	ccl = pccl_create( -1, -1, strbuf );
 
 																	if( #1.negative )
-																		p_ccl_negate( ccl );
+																		pccl_negate( ccl );
 
 
 																	s = get_symbol( parser,
@@ -543,9 +543,9 @@ re_factor:		ccl
 					{
 						pccl*		ccl;
 
-						ccl = p_ccl_create( -1, -1, strbuf );
+						ccl = pccl_create( -1, -1, strbuf );
 						if( #1.negative )
-							p_ccl_negate( ccl );
+							pccl_negate( ccl );
 
 						##.ptn = pregex_ptn_create_char( ccl );
 					}
@@ -562,9 +562,9 @@ re_factor:		ccl
 						pccl*	ccl;
 						greedy = FALSE;
 
-						ccl = p_ccl_create( -1, -1, (char*)NULL );
+						ccl = pccl_create( -1, -1, (char*)NULL );
 
-						p_ccl_addrange( ccl, PCCL_MIN, PCCL_MAX );
+						pccl_addrange( ccl, PCCL_MIN, PCCL_MAX );
 
 						##.ptn = pregex_ptn_create_char( ccl );
 					}

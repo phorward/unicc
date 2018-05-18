@@ -279,8 +279,8 @@ void unique_charsets( PARSER* parser )
 			VARS( "sym->name", "%s", sym->name );
 
 			/*
-			fprintf( stderr, "sym->ccl: %d\n", p_ccl_size( sym->ccl ) );
-			p_ccl_print( stderr, sym->ccl, 1 );
+			fprintf( stderr, "sym->ccl: %d\n", pccl_size( sym->ccl ) );
+			pccl_print( stderr, sym->ccl, 1 );
 			*/
 
 			/* Find overlapping character classes */
@@ -294,13 +294,13 @@ void unique_charsets( PARSER* parser )
 
 				VARS( "tsym->name", "%s", tsym->name );
 
-				inter = p_ccl_intersect( sym->ccl, tsym->ccl );
+				inter = pccl_intersect( sym->ccl, tsym->ccl );
 
 				/*
 				fprintf( stdout, "inter = >%s< sym = >%s< tsym = >%s<\n",
-					p_ccl_to_str( inter, TRUE ),
-					p_ccl_to_str( sym->ccl, TRUE ),
-					p_ccl_to_str( tsym->ccl, TRUE ) );
+					pccl_to_str( inter, TRUE ),
+					pccl_to_str( sym->ccl, TRUE ),
+					pccl_to_str( tsym->ccl, TRUE ) );
 				*/
 
 				VARS( "inter", "%p", inter );
@@ -309,11 +309,11 @@ void unique_charsets( PARSER* parser )
 					MSG( "Intersections found with tsym" );
 
 					/* Create charclass-symbol for remaining symbols */
-					diff = p_ccl_diff( tsym->ccl, inter );
-					if( !p_ccl_size( diff ) )
+					diff = pccl_diff( tsym->ccl, inter );
+					if( !pccl_size( diff ) )
 					{
-						diff = p_ccl_free( diff );
-						inter = p_ccl_free( inter );
+						diff = pccl_free( diff );
+						inter = pccl_free( inter );
 						continue;
 					}
 
@@ -322,9 +322,9 @@ void unique_charsets( PARSER* parser )
 					{
 						print_error( parser, ERR_CHARCLASS_OVERLAP,
 									ERRSTYLE_FATAL,
-										p_ccl_to_str( inter, TRUE ));
+										pccl_to_str( inter, TRUE ));
 
-						inter = p_ccl_free( inter );
+						inter = pccl_free( inter );
 						continue;
 					}
 
@@ -338,7 +338,7 @@ void unique_charsets( PARSER* parser )
 						nsym->defined = TRUE;
 					}
 					else
-						inter = p_ccl_free( inter );
+						inter = pccl_free( inter );
 
 					rsym = get_symbol( parser, (void*)diff,
 									SYM_CCL_TERMINAL, TRUE );
@@ -346,7 +346,7 @@ void unique_charsets( PARSER* parser )
 					rsym->defined = TRUE;
 
 					/* Re-configure symbol */
-					tsym->ccl = p_ccl_free( tsym->ccl );
+					tsym->ccl = pccl_free( tsym->ccl );
 					tsym->name = pstrcatstr( tsym->name,
 									P_REWRITTEN_CCL, FALSE );
 					tsym->type = SYM_NON_TERMINAL;

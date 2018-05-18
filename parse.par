@@ -870,9 +870,9 @@ terminal<SYMBOL*>	->	ccl
 
 						[*	pccl*		ccl;
 
-							ccl = p_ccl_create( -1, -1, strbuf );
+							ccl = pccl_create( -1, -1, strbuf );
 							if( @1 )
-								p_ccl_negate( ccl );
+								pccl_negate( ccl );
 
 							@@ = get_symbol( parser, (void*)ccl,
 									SYM_CCL_TERMINAL, TRUE );
@@ -991,9 +991,9 @@ re_factor<pregex_ptn*>
 					[*
 						pccl*		ccl;
 
-						ccl = p_ccl_create( -1, -1, strbuf );
+						ccl = pccl_create( -1, -1, strbuf );
 						if( @1 )
-							p_ccl_negate( ccl );
+							pccl_negate( ccl );
 
 						@@ = pregex_ptn_create_char( ccl );
 					*]
@@ -1010,9 +1010,9 @@ re_factor<pregex_ptn*>
 						pccl*	ccl;
 						greedy = FALSE;
 
-						ccl = p_ccl_create( -1, -1, (char*)NULL );
+						ccl = pccl_create( -1, -1, (char*)NULL );
 
-						p_ccl_addrange( ccl, PCCL_MIN, PCCL_MAX );
+						pccl_addrange( ccl, PCCL_MIN, PCCL_MAX );
 
 						@@ = pregex_ptn_create_char( ccl );
 					*]

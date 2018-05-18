@@ -53,7 +53,7 @@ SYMBOL* get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create )
 	if( type == SYM_CCL_TERMINAL )
 	{
 		MSG( "SYM_CCL_TERMINAL detected - converting character class" );
-		name = p_ccl_to_str( (pccl*)dfn, TRUE );
+		name = pccl_to_str( (pccl*)dfn, TRUE );
 
 		VARS( "name", "%s", name );
 	}
@@ -174,7 +174,7 @@ void free_symbol( SYMBOL* sym )
 	if( sym->ptn )
 		pregex_ptn_free( sym->ptn );
 	else
-		sym->ccl = p_ccl_free( sym->ccl );
+		sym->ccl = pccl_free( sym->ccl );
 
 	plist_free( sym->first );
 	plist_free( sym->productions );

@@ -3442,9 +3442,9 @@ int _parse( _pcb* pcb )
 					#line 871 "parse.par"
 	pccl*		ccl;
 
-							ccl = p_ccl_create( -1, -1, strbuf );
+							ccl = pccl_create( -1, -1, strbuf );
 							if( ( ( pcb->tos - 0 )->value.value_1 ) )
-								p_ccl_negate( ccl );
+								pccl_negate( ccl );
 
 							pcb->ret.value_3 = get_symbol( parser, (void*)ccl,
 									SYM_CCL_TERMINAL, TRUE );
@@ -3600,9 +3600,9 @@ int _parse( _pcb* pcb )
 
 						pccl*		ccl;
 
-						ccl = p_ccl_create( -1, -1, strbuf );
+						ccl = pccl_create( -1, -1, strbuf );
 						if( ( ( pcb->tos - 0 )->value.value_1 ) )
-							p_ccl_negate( ccl );
+							pccl_negate( ccl );
 
 						pcb->ret.value_6 = pregex_ptn_create_char( ccl );
 					
@@ -3623,9 +3623,9 @@ int _parse( _pcb* pcb )
 						pccl*	ccl;
 						greedy = FALSE;
 
-						ccl = p_ccl_create( -1, -1, (char*)NULL );
+						ccl = pccl_create( -1, -1, (char*)NULL );
 
-						p_ccl_addrange( ccl, PCCL_MIN, PCCL_MAX );
+						pccl_addrange( ccl, PCCL_MIN, PCCL_MAX );
 
 						pcb->ret.value_6 = pregex_ptn_create_char( ccl );
 					
