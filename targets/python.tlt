@@ -119,7 +119,8 @@ class @@prefixNode(object):
 			level += 1
 
 		for child in self.children:
-			child.dump(level)
+			if child:
+				child.dump(level)
 
 
 class @@prefixParseException(Exception):
