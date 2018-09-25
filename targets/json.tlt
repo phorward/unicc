@@ -1,0 +1,188 @@
+<?xml version="1.0" standalone="yes"?>
+<generator name="JSON" version="1.0">
+	<code_localization />
+
+	<!--
+	****************************************************************************
+	Escape sequences
+	****************************************************************************
+	-->
+
+	<!-- Backslash must be double-quoted -->
+	<escape-sequence for="\" do="\\" />
+	<!-- Escape double quotation marks -->
+	<escape-sequence for="&#x22;" do="\&#x22;" />
+
+	<!--
+	****************************************************************************
+	Value-stack templates
+	****************************************************************************
+	-->
+
+	<vstack_def_type>any</vstack_def_type>
+	<vstack_term_type>any</vstack_term_type>
+	<vstack_union_att>@@value-type-id</vstack_union_att>
+	<vstack_union_def>@@attribute: null, </vstack_union_def>
+	<vstack_single>value: null</vstack_single>
+	<vstack_union_start>value: {</vstack_union_start>
+	<vstack_union_end>}</vstack_union_end>
+
+	<!--
+	****************************************************************************
+	Semantic action templates
+	****************************************************************************
+	-->
+
+	<action_start>&#x09;&#x09;&#x09;&#x09;case @@production-number:&#x0A;&#x09;&#x09;&#x09;&#x09;{&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;</action_start>
+	<action_end>&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;;&#x0A;&#x09;&#x09;&#x09;&#x09;}&#x09;&#x09;&#x09;&#x09;break;
+	</action_end>
+
+	<action_single>( ( this.tos - @@offset ).value )</action_single>
+
+	<action_union>( ( this.tos - @@offset ).value.@@attribute )</action_union>
+	<action_lhs_single>this.ret</action_lhs_single>
+	<action_lhs_union>this.ret.@@attribute</action_lhs_union>
+
+	<action_set_lhs>( this.lhs = @@sym )</action_set_lhs>
+
+	<!--
+	****************************************************************************
+	Semantic terminal action templates
+	****************************************************************************
+	-->
+
+	<scan_action_start>&#x09;&#x09;&#x09;&#x09;case @@symbol-number:&#x0A;&#x09;&#x09;&#x09;&#x09;{&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;</scan_action_start>
+	<scan_action_end>&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;;&#x0A;&#x09;&#x09;&#x09;&#x09;}&#x09;&#x09;&#x09;&#x09;break;
+	</scan_action_end>
+
+	<scan_action_begin_offset>this.lexem( pcb )</scan_action_begin_offset>
+	<scan_action_end_offset>this.len</scan_action_end_offset>
+	<scan_action_ret_single>this.tos.value</scan_action_ret_single>
+	<scan_action_ret_union>( this.tos.value.@@attribute )</scan_action_ret_union>
+
+	<scan_action_set_symbol>( this.sym = @@sym )</scan_action_set_symbol>
+
+	<!--
+	****************************************************************************
+	Parse table templates
+	****************************************************************************
+	-->
+
+	<defprod>
+		<col>@@production-number</col>
+		<col_sep>, </col_sep>
+	</defprod>
+
+	<acttab>
+		<row_start>				[ </row_start>
+		<row_end> ]</row_end>
+		<row_sep>,&#x0A;</row_sep>
+		<col>@@symbol,@@action,@@index </col>
+		<col_sep>, </col_sep>
+	</acttab>
+
+	<gotab>
+		<row_start>				[ </row_start>
+		<row_end> ]</row_end>
+		<row_sep>,&#x0A;</row_sep>
+		<col>@@symbol,@@action,@@index </col>
+		<col_sep>, </col_sep>
+	</gotab>
+
+	<!--
+	****************************************************************************
+	Lexer
+	****************************************************************************
+	-->
+
+	<dfa_select>
+		<col>@@machine</col>
+		<col_sep>, </col_sep>
+	</dfa_select>
+
+	<dfa_char>
+		<col>@@from, @@to</col>
+		<col_sep>, </col_sep>
+	</dfa_char>
+
+	<dfa_trans>
+		<col>@@goto</col>
+		<col_sep>, </col_sep>
+	</dfa_trans>
+
+	<dfa_idx>
+		<row_start>				[ </row_start>
+		<row_end> ]</row_end>
+		<row_sep>,&#x0A;</row_sep>
+		<col>@@index</col>
+		<col_sep>, </col_sep>
+	</dfa_idx>
+
+	<dfa_accept>
+		<row_start>				[ </row_start>
+		<row_end> ]</row_end>
+		<row_sep>,&#x0A;</row_sep>
+		<col>@@accept</col>
+		<col_sep>, </col_sep>
+	</dfa_accept>
+
+	<!--
+	****************************************************************************
+	Symbol and production information tables
+	****************************************************************************
+	-->
+
+	<symbols>
+		<col>		{ "symbol": "@@symbol-name", "emit": "@@emit", "is-terminal": @@type, "is-lexem": @@lexem, "is-whitespace": @@whitespace, "is-greedy": @@greedy }</col>
+		<col_sep>,&#x0A;</col_sep>
+	</symbols>
+
+	<productions>
+		<col>		{ "production": "@@production", "emit": "@@emit", "length": @@length, "left-hand-side": @@lhs }</col>
+		<col_sep>,&#x0A;</col_sep>
+	</productions>
+
+	<!--
+	****************************************************************************
+	JSON-File
+	****************************************************************************
+	-->
+
+<file filename="@@basename.json">{
+	"grammar": {
+		"symbols": [
+			@@symbols
+		],
+		"productions": [
+			@@productions
+		],
+		"goal": @@goal
+	},
+	"lexer": {
+		"select": [ @@dfa-select ],
+		"index": [
+@@dfa-index
+		],
+		"chars": [
+@@dfa-char
+		],
+		"transitions": [
+@@dfa-trans
+		],
+		"accept": [
+@@dfa-accept
+		]
+	},
+	"parser": {
+		"action": [
+@@action-table
+		],
+		"goto": [
+@@goto-table
+		],
+		"default-production": [ @@default-productions ]
+	}
+}
+</file>
+
+</generator>
