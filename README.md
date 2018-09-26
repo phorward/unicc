@@ -1,17 +1,12 @@
-# UniCC [![Build Status](https://travis-ci.org/phorward/unicc.svg?branch=master)](https://travis-ci.org/phorward/unicc)
+# UniCC [![Build Status](https://travis-ci.org/phorward/unicc.svg?branch=develop)](https://travis-ci.org/phorward/unicc)
 
-**UniCC** is a target-language independent parser generator.
+**UniCC** is a universal LALR(1) parser generator, targetting C, C++, Python, JavaScript, JSON and XML.
 
 ## About
 
 UniCC (UNIversal Compiler Compiler) is a LALR(1) parser generator. It compiles an augmented grammar definition into a program source code that parses that grammar. Parsing is the process of transferring input matching a particular grammar, like e.g. a source code written in a programming language, into a well-formed data structure. Because UniCC is intended to be target-language independent, it can be configured via template definition files to emit parsers in nearly any programming language.
 
-UniCC supports parser code generation for the following programming languages so far:
-
-- **C** is fully supported (and reference implementation),
-- **C++** is well supported,
-- **Python** is well supported,
-- **ECMAScript** is prototyped, and may come soon.
+UniCC comes with out of the box support for the programming languages **C**, **C++**, **Python** and **JavaScript**. Parsers can also be generated in **JSON** and **XML**.
 
 More targets can easily be added by creating specific template files.
 
@@ -56,28 +51,22 @@ $ ./expr -sl
 = 23
 ```
 
-More real-world examples for parsers implemented with UniCC can are [xpl](https://github.com/phorward/xpl) and [rapidbatch](https://github.com/phorward/rapidbatch), or can be found in the [examples-folder](https://github.com/phorward/unicc/tree/develop/examples).
+More real-world examples for parsers implemented with UniCC are [xpl](https://github.com/phorward/xpl) and [rapidbatch](https://github.com/phorward/rapidbatch), [ViUR logics](https://github.com/viur-framework/logics) or can be found in the [examples-folder](https://github.com/phorward/unicc/tree/develop/examples).
 
 ## Features
 
 UniCC features the following features, tools and possibilities.
 
 - Powerful BNF-based grammar definition language
-- Full unicode support
-- Build-in lexical analyzer
+- Generates parsers in C, C++, Python, JavaScript, JSON and XML
+- Build-in scanner generator with full Unicode support
 - Grammar prototyping features
-- Abstract Syntax Tree notations
+- Abstract Syntax Tree notation features
 - Virtual productions
 - Anonymous nonterminals
 - Semantically determined symbols
-- Two parser construction modes allow the use of different algorithmic
-approaches relating the whitespace handling
-- Target-language independent parser development
-- Template-based program-module generator and XML-based parser description
-file generator
 - Platform-independent (console-based)
 - Standard LALR(1) conflict resolution
-- Parser generation in C, C++ and Python so far
 
 ## Documentation
 

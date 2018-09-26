@@ -28,6 +28,6 @@ raw source files.
 
 The Python target stands on its own, and is not generated from a folder.
 
-## ECMAScript (ecmascript.tlt)
+## JavaScript (javascript.tlt)
 
-Is currently only a stub on its own, and does not generate working parsers.
+The JavaScript target stands on its own, and is not generated from a folder.
