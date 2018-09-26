@@ -1,5 +1,7 @@
 *.gnu linguist-language=Makefile
 targets/C.source/unicc4c/proto.h linguist-language=C
+targets/python.tlt linguist-language=Python
+targets/javascript.tlt linguist-language=JavaScript
 aclocal.m4 linguist-generated=true
 ar-lib linguist-generated=true
 compile linguist-generated=true
