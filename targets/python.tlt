@@ -296,8 +296,7 @@ class @@prefixParser(object):
 		if pcb.buf:
 
 			# Perform position counting.
-			for pos in range(0, pcb.len):
-				ch = pcb.buf[pos]
+			for ch in pcb.buf[0: pcb.len]:
 				if ch == '\n':
 					pcb.line += 1
 					pcb.column = 0
@@ -324,7 +323,7 @@ class @@prefixParser(object):
 			idx = self._dfa_index[machine][state]
 			state = -1
 
-			while self._dfa_chars[idx][0] > -1:
+			while self._dfa_chars[idx][0] &gt; -1:
 				if (next &gt;= self._dfa_chars[idx][0]
 					and next &lt;= self._dfa_chars[idx][1]):
 
@@ -472,6 +471,7 @@ class @@prefixParser(object):
 							cnodes.insert(0, item.node)
 
 				pcb.tos = pcb.stack[-1]
+				pcb.tos.value = pcb.ret
 
 				# Handle AST nodes
 				if self._productions[pcb.idx][1]:
@@ -505,7 +505,7 @@ class @@prefixParser(object):
 
 		if pcb.ret is None and pcb.tos.node:
 			if isinstance(pcb.tos.node, list):
-				if len(pcb.tos.node) > 1:
+				if len(pcb.tos.node) &gt; 1:
 					node = @@prefixNode(children=pcb.tos.node)
 				else:
 					node = pcb.tos.node[0]
@@ -526,6 +526,8 @@ if __name__ == "__main__":
 
 	if isinstance(ret, @@prefixNode):
 		ret.dump()
+	else:
+		print(ret)
 
 </file>
 </generator>
