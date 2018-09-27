@@ -135,7 +135,7 @@ TESTRESULT="= 2303"
 $(TESTPREFIX)c_expr:
 	./unicc -v -o $@ examples/expr.c.par
 	cc -o $@  $@.c
-	test "`echo $(TESTEXPR) | ./$@ -sl`" == $(TESTRESULT)
+	test "`echo $(TESTEXPR) | ./$@ -sl`" = $(TESTRESULT)
 
 $(TESTPREFIX)c_ast:
 	./unicc -v -o $@ examples/expr.ast.par
@@ -152,7 +152,7 @@ test_c: $(TESTPREFIX)c_expr $(TESTPREFIX)c_ast
 $(TESTPREFIX)cpp_expr:
 	./unicc -v -o $@ examples/expr.cpp.par
 	g++ -o $@  $@.cpp
-	test "`echo $(TESTEXPR) | ./$@ -sl`" == $(TESTRESULT)
+	test "`echo $(TESTEXPR) | ./$@ -sl`" = $(TESTRESULT)
 
 $(TESTPREFIX)cpp_ast:
 	./unicc -v -l C++ -o $@ examples/expr.ast.par
@@ -167,8 +167,8 @@ test_cpp: $(TESTPREFIX)cpp_expr $(TESTPREFIX)cpp_ast
 
 $(TESTPREFIX)py_expr:
 	./unicc -v -o $@ examples/expr.py.par
-	test "`python2 $@.py $(TESTEXPR) | head -n 1`" == $(TESTRESULT)
-	test "`python3 $@.py $(TESTEXPR) | head -n 1`" == $(TESTRESULT)
+	test "`python2 $@.py $(TESTEXPR) | head -n 1`" = $(TESTRESULT)
+	test "`python3 $@.py $(TESTEXPR) | head -n 1`" = $(TESTRESULT)
 
 $(TESTPREFIX)py_ast:
 	./unicc -v -l Python -o $@ examples/expr.ast.par
@@ -184,7 +184,7 @@ test_py: $(TESTPREFIX)py_expr $(TESTPREFIX)py_ast
 $(TESTPREFIX)js_expr:
 	./unicc -v -o $@ examples/expr.js.par
 	@echo "var p = new Parser(); p.parse(process.argv[2]);" >>$@.js
-	test "`node $@.js $(TESTEXPR) | head -n 1`" == $(TESTRESULT)
+	test "`node $@.js $(TESTEXPR) | head -n 1`" = $(TESTRESULT)
 
 $(TESTPREFIX)js_ast:
 	./unicc -v -l JavaScript -o $@ examples/expr.ast.par
