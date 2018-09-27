@@ -1,5 +1,5 @@
 <?xml version="1.0" standalone="yes"?>
-<generator name="Python" long-name="Python target" version="1.0">
+<generator name="Python">
 	<escape-sequence for="\" do="\\" />
 	<escape-sequence for="&#x22;" do="\&#x22;" />
 
@@ -155,42 +155,43 @@ class @@prefixParserToken(object):
 
 
 class @@prefixParserControlBlock(object):
+	def __init__(self, input):
 
-	# Stack
-	stack = None
-	tos = None
+		# Stack
+		self.stack = []
+		self.tos = None
 
-	# Values
-	ret = None
+		# Values
+		self.ret = None
 
-	# State
-	act = None
-	idx = None
-	lhs = None
+		# State
+		self.act = 0
+		self.idx = None
+		self.lhs = None
 
-	# Lookahead
-	sym = -1
-	old_sym = -1
-	len = 0
+		# Lookahead
+		self.sym = -1
+		self.old_sym = -1
+		self.len = 0
 
-	# Lexical analysis
-	lexem = None
-	next = None
-	eof = None
-	is_eof = None
+		# Lexical analysis
+		self.lexem = None
+		self.next = None
+		self.eof = None
+		self.is_eof = None
 
-	# Input buffering
-	input = None
-	buf = ""
+		# Input buffering
+		self.input = input
+		self.buf = ""
 
-	# Error handling
-	error_delay = 3
-	error_count = 0
+		# Error handling
+		self.error_delay = 3
+		self.error_count = 0
 
-	line = 1
-	column = 1
+		self.line = 1
+		self.column = 1
 
-	@@pcb
+		@@pcb
 
 
 class @@prefixParser(object):
@@ -390,56 +391,13 @@ class @@prefixParser(object):
 			except NameError:
 				s = input(">")
 
-		pcb = @@prefixParserControlBlock()
-		pcb.stack = []
-		pcb.input = s
+		pcb = @@prefixParserControlBlock(s)
 
 		pcb.tos = @@prefixParserToken()
 		pcb.stack.append(pcb.tos)
 
 		while True:
 			#print("state = %d" % pcb.tos.state)
-
-			# TODO: Error Recovery
-			self._get_sym(pcb)
-
-			#print("pcb.sym = %d (%s)" % (pcb.sym, self._symbols[pcb.sym][0]))
-			#print("pcb.len = %d" % pcb.len)
-
-			# Get action table entry
-			if not self._get_act(pcb):
-				raise @@prefixParseException(pcb.line, pcb.column,
-					[self._symbols[sym]
-						for (sym, pcb.act, pcb.idx)
-							in self._act[pcb.tos.state]])
-
-			#print("pcb.act = %d" % pcb.act)
-
-			# Shift
-			if pcb.act &amp; self._SHIFT:
-				#print("SHIFT", pcb.sym, self._symbols[pcb.sym])
-
-				pcb.tos = @@prefixParserToken()
-				pcb.stack.append(pcb.tos)
-
-				# Execute scanner actions, if existing.
-				scan_fn = getattr(self, "_scan_action_%d" % pcb.sym, None)
-				if scan_fn:
-					scan_fn(pcb)
-
-				pcb.tos.state = -1 if pcb.act &amp; self._REDUCE else pcb.idx
-				pcb.tos.symbol = self._symbols[pcb.sym]
-
-				pcb.tos.line = pcb.line
-				pcb.tos.column = pcb.column
-				@@top-value = pcb.buf[:pcb.len]
-
-				if pcb.tos.symbol[1]:
-					pcb.tos.node = @@prefixNode(pcb.tos.symbol[1], @@top-value)
-
-				if pcb.sym != @@eof and pcb.sym != @@error:
-					self._clear_input(pcb)
-					pcb.old_sym = -1
 
 			# Reduce
 			while pcb.act &amp; self._REDUCE:
@@ -502,6 +460,48 @@ class @@prefixParser(object):
 
 			if pcb.act &amp; self._REDUCE and pcb.idx == @@goal-production:
 				break
+
+			# Get next input symbol
+			self._get_sym(pcb)
+
+			#print("pcb.sym = %d (%s)" % (pcb.sym, self._symbols[pcb.sym][0]))
+			#print("pcb.len = %d" % pcb.len)
+
+			# Get action table entry
+			if not self._get_act(pcb):
+				# TODO: Error Recovery
+				raise @@prefixParseException(pcb.line, pcb.column,
+					[self._symbols[sym]
+						for (sym, pcb.act, pcb.idx)
+							in self._act[pcb.tos.state]])
+
+			#print("pcb.act = %d" % pcb.act)
+
+			# Shift
+			if pcb.act &amp; self._SHIFT:
+				#print("SHIFT", pcb.sym, self._symbols[pcb.sym])
+
+				pcb.tos = @@prefixParserToken()
+				pcb.stack.append(pcb.tos)
+
+				# Execute scanner actions, if existing.
+				scan_fn = getattr(self, "_scan_action_%d" % pcb.sym, None)
+				if scan_fn:
+					scan_fn(pcb)
+
+				pcb.tos.state = -1 if pcb.act &amp; self._REDUCE else pcb.idx
+				pcb.tos.symbol = self._symbols[pcb.sym]
+
+				pcb.tos.line = pcb.line
+				pcb.tos.column = pcb.column
+				@@top-value = pcb.buf[:pcb.len]
+
+				if pcb.tos.symbol[1]:
+					pcb.tos.node = @@prefixNode(pcb.tos.symbol[1], @@top-value)
+
+				if pcb.sym != @@eof and pcb.sym != @@error:
+					self._clear_input(pcb)
+					pcb.old_sym = -1
 
 		if pcb.ret is None and pcb.tos.node:
 			if isinstance(pcb.tos.node, list):

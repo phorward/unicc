@@ -15,6 +15,7 @@
 
 	memset( this->tos, 0, sizeof( @@prefix_tok ) );
 
+	this->act = 0;
 	this->is_eof = false;
 	this->sym = this->old_sym = -1;
 	this->line = this->column = 1;
@@ -24,6 +25,112 @@
 	/* Begin of main parser loop */
 	while( true )
 	{
+		/* Reduce */
+		while( this->act & UNICC_REDUCE )
+		{
+#if UNICC_DEBUG
+			fprintf( @@prefix_dbg, "%s: << "
+					"reducing by production %d (%s)\n",
+						UNICC_PARSER, this->idx,
+							this->productions[ this->idx ].definition );
+#endif
+			/* Set default left-hand side */
+			this->lhs = this->productions[ this->idx ].lhs;
+
+			/* Run reduction code */
+			memset( &( this->ret ), 0, sizeof( @@prefix_vtype ) );
+
+			switch( this->idx )
+			{
+@@actions
+			}
+
+			/* Drop right-hand side */
+			node = NULL;
+
+			for( int i = 0; i < this->productions[ this->idx ].length; i++ )
+			{
+				if( this->tos->node )
+				{
+					if( node )
+					{
+						while( node->prev )
+							node = node->prev;
+
+						node->prev = this->tos->node;
+						this->tos->node->next = node;
+					}
+
+					node = this->tos->node;
+					this->tos->node = NULL;
+				}
+
+				this->tos--;
+			}
+
+			if( node )
+			{
+				if( lnode = this->tos->node )
+				{
+					while( lnode->next )
+						lnode = lnode->next;
+
+					lnode->next = node;
+					node->prev = lnode;
+				}
+				else
+					this->tos->node = node;
+			}
+
+			if( *this->productions[ this->idx ].emit )
+			{
+				node = this->ast_create(
+							this->productions[ this->idx ].emit, NULL);
+
+				node->child = this->tos->node;
+				this->tos->node = node;
+			}
+
+			/* Goal symbol reduced, and stack is empty? */
+			if( this->lhs == @@goal && this->tos == this->stack )
+			{
+				memcpy( &( this->tos->value ), &( this->ret ),
+							sizeof( @@prefix_vtype ) );
+				this->ast = this->tos->node;
+
+				UNICC_CLEARIN( this );
+
+				#if UNICC_DEBUG
+				fprintf( stderr, "%s: goal symbol reduced, exiting parser\n",
+						UNICC_PARSER );
+				#endif
+				break;
+			}
+
+			#if UNICC_DEBUG
+			fprintf( @@prefix_dbg, "%s: after reduction, "
+						"shifting nonterminal %d (%s)\n",
+							UNICC_PARSER, this->lhs,
+								this->symbols[ this->lhs ].name );
+			#endif
+
+			this->get_go();
+
+			this->tos++;
+			this->tos->node = NULL;
+
+			memcpy( &( this->tos->value ), &( this->ret ),
+						sizeof( @@prefix_vtype ) );
+			this->tos->symbol = &( this->symbols[ this->lhs ] );
+			this->tos->state = ( this->act & UNICC_REDUCE ) ? -1 : this->idx;
+			this->tos->line = this->line;
+			this->tos->column = this->column;
+		}
+
+		if( this->act & UNICC_REDUCE
+				&& this->idx == @@goal-production )
+			break;
+
 		/* If in error recovery, replace old-symbol */
 		if( this->error_delay == UNICC_ERROR_DELAY
 				&& ( this->sym = this->old_sym ) < 0 )
@@ -145,112 +252,6 @@
 			if( this->error_delay )
 				this->error_delay--;
 		}
-
-		/* Reduce */
-		while( this->act & UNICC_REDUCE )
-		{
-#if UNICC_DEBUG
-			fprintf( @@prefix_dbg, "%s: << "
-					"reducing by production %d (%s)\n",
-						UNICC_PARSER, this->idx,
-							this->productions[ this->idx ].definition );
-#endif
-			/* Set default left-hand side */
-			this->lhs = this->productions[ this->idx ].lhs;
-
-			/* Run reduction code */
-			memset( &( this->ret ), 0, sizeof( @@prefix_vtype ) );
-
-			switch( this->idx )
-			{
-@@actions
-			}
-
-			/* Drop right-hand side */
-			node = NULL;
-
-			for( int i = 0; i < this->productions[ this->idx ].length; i++ )
-			{
-				if( this->tos->node )
-				{
-					if( node )
-					{
-						while( node->prev )
-							node = node->prev;
-
-						node->prev = this->tos->node;
-						this->tos->node->next = node;
-					}
-
-					node = this->tos->node;
-					this->tos->node = NULL;
-				}
-
-				this->tos--;
-			}
-
-			if( node )
-			{
-				if( lnode = this->tos->node )
-				{
-					while( lnode->next )
-						lnode = lnode->next;
-
-					lnode->next = node;
-					node->prev = lnode;
-				}
-				else
-					this->tos->node = node;
-			}
-
-			if( *this->productions[ this->idx ].emit )
-			{
-				node = this->ast_create(
-							this->productions[ this->idx ].emit, NULL);
-
-				node->child = this->tos->node;
-				this->tos->node = node;
-			}
-
-			/* Goal symbol reduced, and stack is empty? */
-			if( this->lhs == @@goal && this->tos == this->stack )
-			{
-				memcpy( &( this->tos->value ), &( this->ret ),
-							sizeof( @@prefix_vtype ) );
-				this->ast = this->tos->node;
-
-				UNICC_CLEARIN( this );
-
-				#if UNICC_DEBUG
-				fprintf( stderr, "%s: goal symbol reduced, exiting parser\n",
-						UNICC_PARSER );
-				#endif
-				break;
-			}
-
-			#if UNICC_DEBUG
-			fprintf( @@prefix_dbg, "%s: after reduction, "
-						"shifting nonterminal %d (%s)\n",
-							UNICC_PARSER, this->lhs,
-								this->symbols[ this->lhs ].name );
-			#endif
-
-			this->get_go();
-
-			this->tos++;
-			this->tos->node = NULL;
-
-			memcpy( &( this->tos->value ), &( this->ret ),
-						sizeof( @@prefix_vtype ) );
-			this->tos->symbol = &( this->symbols[ this->lhs ] );
-			this->tos->state = ( this->act & UNICC_REDUCE ) ? -1 : this->idx;
-			this->tos->line = this->line;
-			this->tos->column = this->column;
-		}
-
-		if( this->act & UNICC_REDUCE
-				&& this->idx == @@goal-production )
-			break;
 	}
 
 	#if UNICC_DEBUG

@@ -51,143 +51,6 @@
 	/* Begin of main parser loop */
 	while( 1 )
 	{
-		/* If in error recovery, replace old-symbol */
-		if( pcb->error_delay == UNICC_ERROR_DELAY
-				&& ( pcb->sym = pcb->old_sym ) < 0 )
-		{
-			/* If symbol is invalid, try to find new token */
-			#if UNICC_DEBUG
-			fprintf( @@prefix_dbg, "%s: error recovery: "
-				"old token invalid, requesting new token\n",
-						UNICC_PARSER );
-			#endif
-
-%%%ifgen STDTPL
-			while( !@@prefix_get_sym( pcb ) )
-%%%ifgen UNICC4C
-			while( !@@prefix_lex( pcb ) )
-%%%end
-			{
-				/* Skip one character */
-				pcb->len = 1;
-
-				UNICC_CLEARIN( pcb );
-			}
-
-			#if UNICC_DEBUG
-			fprintf( @@prefix_dbg, "%s: error recovery: "
-				"new token %d (%s)\n", UNICC_PARSER, pcb->sym,
-					@@prefix_symbols[ pcb->sym ].name );
-			#endif
-		}
-		else
-		{
-%%%ifgen STDTPL
-			@@prefix_get_sym( pcb );
-%%%ifgen UNICC4C
-			@@prefix_lex( pcb );
-%%%end
-		}
-
-#if UNICC_DEBUG
-		fprintf( @@prefix_dbg, "%s: current token %d (%s)\n",
-					UNICC_PARSER, pcb->sym,
-						( pcb->sym < 0 ) ? "(null)" :
-							@@prefix_symbols[ pcb->sym ].name );
-#endif
-
-		/* Get action table entry */
-		if( !@@prefix_get_act( pcb ) )
-		{
-			/* Error state, try to recover */
-			if( @@prefix_handle_error( pcb,
-#if UNICC_DEBUG
-					@@prefix_dbg
-#else
-					(FILE*)NULL
-#endif
-					) )
-				break;
-		}
-
-#if UNICC_DEBUG
-		fprintf( @@prefix_dbg,
-			"%s: sym = %d (%s) [len = %d] tos->state = %d act = %s idx = %d\n",
-				UNICC_PARSER, pcb->sym,
-					( ( pcb->sym >= 0 ) ?
-						@@prefix_symbols[ pcb->sym ].name :
-							"(invalid symbol id)" ),
-					pcb->len, pcb->tos->state,
-						( ( pcb->act == UNICC_SHIFT & UNICC_REDUCE ) ?
-								"shift/reduce" :
-							( pcb->act & UNICC_SHIFT ) ?
-									"shift" : "reduce" ), pcb->idx );
-#if UNICC_STACKDEBUG
-		@@prefix_dbg_stack( @@prefix_dbg, pcb->stack, pcb->tos );
-#endif
-#endif
-
-
-		/* Shift */
-		if( pcb->act & UNICC_SHIFT )
-		{
-			pcb->next = pcb->buf[ pcb->len ];
-			pcb->buf[ pcb->len ] = '\0';
-
-#if UNICC_DEBUG
-			fprintf( @@prefix_dbg, "%s: >> shifting terminal %d (%s)\n",
-			UNICC_PARSER, pcb->sym, @@prefix_symbols[ pcb->sym ].name );
-#endif
-
-			@@prefix_alloc_stack( pcb );
-			pcb->tos++;
-			pcb->tos->node = (@@prefix_ast*)NULL;
-
-			/*
-				Execute scanner actions, if existing.
-				Here, UNICC_ON_SHIFT is set to 1, so that shifting-
-				related operations will be performed.
-			*/
-#define UNICC_ON_SHIFT	1
-			switch( pcb->sym )
-			{
-@@scan_actions
-
-				default:
-					@@top-value = @@prefix_get_input( pcb, 0 );
-					break;
-			}
-#undef UNICC_ON_SHIFT
-
-			pcb->tos->state = ( pcb->act & UNICC_REDUCE ) ? -1 : pcb->idx;
-			pcb->tos->symbol = &( @@prefix_symbols[ pcb->sym ] );
-			pcb->tos->line = pcb->line;
-			pcb->tos->column = pcb->column;
-
-#if UNICC_SYNTAXTREE
-			last = @@prefix_syntree_append( pcb, @@prefix_lexem( pcb ) );
-#endif
-
-			if( *pcb->tos->symbol->emit )
-				pcb->tos->node = @@prefix_ast_create(
-									pcb->tos->symbol->emit,
-										@@prefix_lexem( pcb ) );
-			else
-				pcb->tos->node = (@@prefix_ast*)NULL;
-
-			pcb->buf[ pcb->len ] = pcb->next;
-
-			/* Perform the shift on input */
-			if( pcb->sym != @@eof && pcb->sym != @@error )
-			{
-				UNICC_CLEARIN( pcb );
-				pcb->old_sym = -1;
-			}
-
-			if( pcb->error_delay )
-				pcb->error_delay--;
-		}
-
 		/* Reduce */
 		while( pcb->act & UNICC_REDUCE )
 		{
@@ -334,6 +197,143 @@
 
 		if( pcb->act & UNICC_REDUCE && pcb->idx == @@goal-production )
 			break;
+
+		/* If in error recovery, replace old-symbol */
+		if( pcb->error_delay == UNICC_ERROR_DELAY
+				&& ( pcb->sym = pcb->old_sym ) < 0 )
+		{
+			/* If symbol is invalid, try to find new token */
+			#if UNICC_DEBUG
+			fprintf( @@prefix_dbg, "%s: error recovery: "
+				"old token invalid, requesting new token\n",
+						UNICC_PARSER );
+			#endif
+
+%%%ifgen STDTPL
+			while( !@@prefix_get_sym( pcb ) )
+%%%ifgen UNICC4C
+			while( !@@prefix_lex( pcb ) )
+%%%end
+			{
+				/* Skip one character */
+				pcb->len = 1;
+
+				UNICC_CLEARIN( pcb );
+			}
+
+			#if UNICC_DEBUG
+			fprintf( @@prefix_dbg, "%s: error recovery: "
+				"new token %d (%s)\n", UNICC_PARSER, pcb->sym,
+					@@prefix_symbols[ pcb->sym ].name );
+			#endif
+		}
+		else
+		{
+%%%ifgen STDTPL
+			@@prefix_get_sym( pcb );
+%%%ifgen UNICC4C
+			@@prefix_lex( pcb );
+%%%end
+		}
+
+#if UNICC_DEBUG
+		fprintf( @@prefix_dbg, "%s: current token %d (%s)\n",
+					UNICC_PARSER, pcb->sym,
+						( pcb->sym < 0 ) ? "(null)" :
+							@@prefix_symbols[ pcb->sym ].name );
+#endif
+
+		/* Get action table entry */
+		if( !@@prefix_get_act( pcb ) )
+		{
+			/* Error state, try to recover */
+			if( @@prefix_handle_error( pcb,
+#if UNICC_DEBUG
+					@@prefix_dbg
+#else
+					(FILE*)NULL
+#endif
+					) )
+				break;
+		}
+
+#if UNICC_DEBUG
+		fprintf( @@prefix_dbg,
+			"%s: sym = %d (%s) [len = %d] tos->state = %d act = %s idx = %d\n",
+				UNICC_PARSER, pcb->sym,
+					( ( pcb->sym >= 0 ) ?
+						@@prefix_symbols[ pcb->sym ].name :
+							"(invalid symbol id)" ),
+					pcb->len, pcb->tos->state,
+						( ( pcb->act == UNICC_SHIFT & UNICC_REDUCE ) ?
+								"shift/reduce" :
+							( pcb->act & UNICC_SHIFT ) ?
+									"shift" : "reduce" ), pcb->idx );
+#if UNICC_STACKDEBUG
+		@@prefix_dbg_stack( @@prefix_dbg, pcb->stack, pcb->tos );
+#endif
+#endif
+
+
+		/* Shift */
+		if( pcb->act & UNICC_SHIFT )
+		{
+			pcb->next = pcb->buf[ pcb->len ];
+			pcb->buf[ pcb->len ] = '\0';
+
+#if UNICC_DEBUG
+			fprintf( @@prefix_dbg, "%s: >> shifting terminal %d (%s)\n",
+			UNICC_PARSER, pcb->sym, @@prefix_symbols[ pcb->sym ].name );
+#endif
+
+			@@prefix_alloc_stack( pcb );
+			pcb->tos++;
+			pcb->tos->node = (@@prefix_ast*)NULL;
+
+			/*
+				Execute scanner actions, if existing.
+				Here, UNICC_ON_SHIFT is set to 1, so that shifting-
+				related operations will be performed.
+			*/
+#define UNICC_ON_SHIFT	1
+			switch( pcb->sym )
+			{
+@@scan_actions
+
+				default:
+					@@top-value = @@prefix_get_input( pcb, 0 );
+					break;
+			}
+#undef UNICC_ON_SHIFT
+
+			pcb->tos->state = ( pcb->act & UNICC_REDUCE ) ? -1 : pcb->idx;
+			pcb->tos->symbol = &( @@prefix_symbols[ pcb->sym ] );
+			pcb->tos->line = pcb->line;
+			pcb->tos->column = pcb->column;
+
+#if UNICC_SYNTAXTREE
+			last = @@prefix_syntree_append( pcb, @@prefix_lexem( pcb ) );
+#endif
+
+			if( *pcb->tos->symbol->emit )
+				pcb->tos->node = @@prefix_ast_create(
+									pcb->tos->symbol->emit,
+										@@prefix_lexem( pcb ) );
+			else
+				pcb->tos->node = (@@prefix_ast*)NULL;
+
+			pcb->buf[ pcb->len ] = pcb->next;
+
+			/* Perform the shift on input */
+			if( pcb->sym != @@eof && pcb->sym != @@error )
+			{
+				UNICC_CLEARIN( pcb );
+				pcb->old_sym = -1;
+			}
+
+			if( pcb->error_delay )
+				pcb->error_delay--;
+		}
 	}
 
 	#if UNICC_DEBUG
