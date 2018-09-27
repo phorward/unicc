@@ -135,7 +135,7 @@ TESTRESULT="= 2303"
 $(TESTPREFIX)c_expr:
 	./unicc -v -o $@ examples/expr.c.par
 	cc -o $@  $@.c
-	test "`echo "$(TESTEXPR)" | ./$@ -sl`" == $(TESTRESULT)
+	test "`echo $(TESTEXPR) | ./$@ -sl`" == $(TESTRESULT)
 
 $(TESTPREFIX)c_ast:
 	./unicc -v -o $@ examples/expr.ast.par
@@ -152,7 +152,7 @@ test_c: $(TESTPREFIX)c_expr $(TESTPREFIX)c_ast
 $(TESTPREFIX)cpp_expr:
 	./unicc -v -o $@ examples/expr.cpp.par
 	g++ -o $@  $@.cpp
-	test "`echo "$(TESTEXPR)" | ./$@ -sl`" == $(TESTRESULT)
+	test "`echo $(TESTEXPR) | ./$@ -sl`" == $(TESTRESULT)
 
 $(TESTPREFIX)cpp_ast:
 	./unicc -v -l C++ -o $@ examples/expr.ast.par
