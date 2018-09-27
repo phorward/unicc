@@ -124,3 +124,79 @@ doc: unicc.man
 unicc.man: unicc.t2t
 	txt2tags -t man -o $@ $?
 
+# --- UniCC CI Test Suite ------------------------------------------------------
+
+TESTPREFIX=test_
+TESTEXPR="42*23+1337"
+TESTRESULT="2303"
+
+# C
+
+$(TESTPREFIX)c_expr:
+	./unicc -v -o $@ examples/expr.c.par
+	cc -o $@  $@.c
+	test "`echo "$(TESTEXPR)" | ./$@ -sl`" == "= $(TESTRESULT)"
+
+$(TESTPREFIX)c_ast:
+	./unicc -v -o $@ examples/expr.ast.par
+	cc -o $@ $@.c
+	echo $(TESTEXPR) | ./$@ -sl
+
+test_c: $(TESTPREFIX)c_expr $(TESTPREFIX)c_ast
+	@echo "--- $@ succeeded ---"
+	@rm $(TESTPREFIX)*
+
+
+# C++
+
+$(TESTPREFIX)cpp_expr:
+	./unicc -v -o $@ examples/expr.cpp.par
+	g++ -o $@  $@.cpp
+	test "`echo "$(TESTEXPR)" | ./$@ -sl`" == "= $(TESTRESULT)"
+
+$(TESTPREFIX)cpp_ast:
+	./unicc -v -l C++ -o $@ examples/expr.ast.par
+	g++ -o $@ $@.cpp
+	echo $(TESTEXPR) | ./$@ -sl
+
+test_cpp: $(TESTPREFIX)cpp_expr $(TESTPREFIX)cpp_ast
+	@echo "--- $@ succeeded ---"
+	@rm $(TESTPREFIX)*
+
+# Python
+
+$(TESTPREFIX)py_expr:
+	./unicc -v -o $@ examples/expr.py.par
+	test "`python2 $@.py $(TESTEXPR) | head -n 1`" == "= $(TESTRESULT)"
+	test "`python3 $@.py $(TESTEXPR) | head -n 1`" == "= $(TESTRESULT)"
+
+$(TESTPREFIX)py_ast:
+	./unicc -v -l Python -o $@ examples/expr.ast.par
+	python2 $@.py $(TESTEXPR)
+	python3 $@.py $(TESTEXPR)
+
+test_py: $(TESTPREFIX)py_expr $(TESTPREFIX)py_ast
+	@echo "--- $@ succeeded ---"
+	@rm $(TESTPREFIX)*
+
+# JavaScript
+
+$(TESTPREFIX)js_expr:
+	./unicc -v -o $@ examples/expr.js.par
+	@echo "var p = new Parser(); p.parse(process.argv[2]);" >>$@.js
+	test "`node $@.js $(TESTEXPR) | head -n 1`" == "= $(TESTRESULT)"
+
+$(TESTPREFIX)js_ast:
+	./unicc -v -l JavaScript -o $@ examples/expr.ast.par
+	@echo "var p = new Parser(); var t = p.parse(process.argv[2]); t.dump();" >>$@.js
+	node $@.js $(TESTEXPR)
+
+test_js: $(TESTPREFIX)js_expr $(TESTPREFIX)js_ast
+	@echo "--- $@ succeded ---"
+	@rm $(TESTPREFIX)*
+
+# Test
+
+test: test_c test_cpp test_py test_js
+	@echo "=== $+ succeeded ==="
+
