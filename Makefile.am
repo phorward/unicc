@@ -18,7 +18,9 @@ targetsdir = $(uniccdir)/targets
 dist_targets_DATA = targets/c.tlt \
 					targets/c++.tlt \
 					targets/python.tlt \
-					targets/ecmascript.tlt
+					targets/javascript.tlt \
+					targets/json.tlt
+
 dist_unicc_DATA = unicc.dtd LICENSE README.md
 
 AM_CPPFLAGS = -DTLTDIR=\"$(targetsdir)\"

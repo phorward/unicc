@@ -2,6 +2,16 @@
 
 This file is used to document any relevant changes done to UniCC.
 
+## v1.5
+
+Yet unreleased.
+
+- Compiled and linked against libphorward 0.23
+- Test suite
+- New JavaScript and JSON targets
+- Updated C, C++ and Python targets
+
+
 ## v1.4
 
 Released on: April 17, 2018
