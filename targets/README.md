@@ -31,3 +31,8 @@ The Python target stands on its own, and is not generated from a folder.
 ## JavaScript (javascript.tlt)
 
 The JavaScript target stands on its own, and is not generated from a folder.
+
+## JSON (json.tlt)
+
+The JSON target stands on its own, and is not generated from a folder.
+

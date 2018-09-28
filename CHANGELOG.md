@@ -7,10 +7,9 @@ This file is used to document any relevant changes done to UniCC.
 Yet unreleased.
 
 - Compiled and linked against libphorward 0.23
-- Test suite
 - New JavaScript and JSON targets
 - Updated C, C++ and Python targets
-
+- Started a grammar and templates test suite for better continous integration
 
 ## v1.4
 
