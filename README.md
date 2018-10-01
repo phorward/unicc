@@ -4,15 +4,15 @@
 
 ## About
 
-UniCC (UNIversal Compiler Compiler) is a LALR(1) parser generator. It compiles an augmented grammar definition into a program source code that parses that grammar. Parsing is the process of transferring input matching a particular grammar, like e.g. a source code written in a programming language, into a well-formed data structure. Because UniCC is intended to be target-language independent, it can be configured via template definition files to emit parsers in nearly any programming language.
+UniCC (UNIversal Compiler-Compiler) is a LALR(1) parser generator.
 
-UniCC comes with out of the box support for the programming languages **C**, **C++**, **Python** and **JavaScript**. Parsers can also be generated in **JSON** and **XML**.
+It compiles an augmented grammar definition into a program source code that parses the described grammar. Because UniCC is intended to be target-language independent, it can be configured via template definition files to emit parsers in almost any programming language.
 
-More targets can easily be added by creating specific template files.
+UniCC comes with out of the box support for the programming languages **C**, **C++**, **Python** (both 2.x and 3.x) and **JavaScript**. Parsers can also be generated into **JSON** and **XML**.
 
 ## Example
 
-This is the full definition for a four-function arithmetic syntax including their integer calculation semantics (in C).
+This is the full definition of a four-function arithmetic syntax including their integer calculation semantics (in C).
 
 ```c
 #!language      "C";	// <- target language!
@@ -51,26 +51,24 @@ $ ./expr -sl
 = 23
 ```
 
-More real-world examples for parsers implemented with UniCC are [xpl](https://github.com/phorward/xpl) and [rapidbatch](https://github.com/phorward/rapidbatch), [ViUR logics](https://github.com/viur-framework/logics) or can be found in the [examples-folder](https://github.com/phorward/unicc/tree/develop/examples).
+More real-world examples for parsers implemented with UniCC are [xpl](https://github.com/phorward/xpl), [rapidbatch](https://github.com/phorward/rapidbatch) and [ViUR logics](https://github.com/viur-framework/logics) or can be found in the [examples-folder](https://github.com/phorward/unicc/tree/develop/examples).
 
 ## Features
 
-UniCC features the following features, tools and possibilities.
+UniCC provides the following features and tools:
 
-- Powerful BNF-based grammar definition language
+- Grammars are expressed in a powerful Backus-Naur-style meta language
 - Generates parsers in C, C++, Python, JavaScript, JSON and XML
 - Build-in scanner generator with full Unicode support
-- Grammar prototyping features
-- Abstract Syntax Tree notation features
-- Virtual productions
-- Anonymous nonterminals
+- Grammar prototyping features, virtual productions and anonymous nonterminals
+- Abstract syntax tree notation features
 - Semantically determined symbols
-- Platform-independent (console-based)
 - Standard LALR(1) conflict resolution
+- Platform-independent (console-based)
 
 ## Documentation
 
-The [UniCC User's Manual](https://www.phorward-software.com/products/unicc-lalr1-parser-generator/user-manual_index.html) is the official documentation of the UniCC Parser Generator. Download it for free [here](https://www.phorward-software.com/products/unicc/unicc.pdf).
+The **UniCC User's Manual** is the official standard documentation of the UniCC Parser Generator. Download it for free [here](https://www.phorward-software.com/products/unicc/unicc.pdf).
 
 ## Installation
 
@@ -84,23 +82,15 @@ make install
 
 Previously, the [Phorward Toolkit](https://github.com/phorward/phorward) must be compiled and installed, because UniCC depends on it.
 
-Windows users may checkout the pre-built setup package that can be found on the Phorward download server at https://phorward.info/download/unicc.
+Windows users may download the pre-built setup package that can be found on the Phorward download server at https://phorward.info/download/unicc.
 
 ## Contributions
 
-Contributions, ideas, concepts and code is always welcome!
-Please feel free to contact us if you have any questions.
+Contributions, ideas, concepts and code is always welcome. Please feel free to contact me if you have any questions.
 
 ## Credits
 
 UniCC is developed and maintained by Jan Max Meyer, Phorward Software Technologies.
-
-Some other projects by the author are:
-
-- [libphorward](https://github.com/phorward/phorward), a free toolkit for parser development, lexical analysis, regular expressions and more.
-- [RapidBATCH](https://github.com/phorward/rapidbatch), a scripting language.
-- [pynetree](https://github.com/phorward/pynetree), a light-weight parsing toolkit written in pure Python.
-- [JS/CC](http://jscc.brobston.com), the JavaScript parser generator.
 
 ## License
 
