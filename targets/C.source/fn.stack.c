@@ -7,7 +7,7 @@ UNICC_STATIC int @@prefix_alloc_stack( @@prefix_pcb* pcb )
 		if( !( pcb->tos = pcb->stack = (@@prefix_tok*)malloc(
 				UNICC_MALLOCSTEP * sizeof( @@prefix_tok ) ) ) )
 		{
-			UNICC_OUTOFMEM;
+			UNICC_OUTOFMEM( pcb );
 			return -1;
 		}
 
@@ -20,7 +20,7 @@ UNICC_STATIC int @@prefix_alloc_stack( @@prefix_pcb* pcb )
 				( pcb->stacksize + UNICC_MALLOCSTEP )
 					* sizeof( @@prefix_tok ) ) ) )
 		{
-			UNICC_OUTOFMEM;
+			UNICC_OUTOFMEM( pcb );
 			return -1;
 		}
 

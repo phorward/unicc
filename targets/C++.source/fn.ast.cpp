@@ -18,7 +18,10 @@
 	@@prefix_ast*	node;
 
 	if( !( node = (@@prefix_ast*)malloc( sizeof( @@prefix_ast ) ) ) )
-		UNICC_OUTOFMEM;
+	{
+		UNICC_OUTOFMEM( this );
+		return node;
+	}
 
 	memset( node, 0, sizeof( @@prefix_ast ) );
 
@@ -28,10 +31,18 @@
 	{
 		#if !UNICC_WCHAR
 		if( !( node->token = strdup( token ) ) )
-			UNICC_OUTOFMEM;
+		{
+			UNICC_OUTOFMEM( this );
+			free( node );
+			return (@@prefix_ast*)NULL;
+		}
 		#else
 		if( !( node->token = wcsdup( token ) ) )
-			UNICC_OUTOFMEM;
+		{
+			UNICC_OUTOFMEM( this );
+			free( node );
+			return (@@prefix_ast*)NULL;
+		}
 		#endif
 	}
 

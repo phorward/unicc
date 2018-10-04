@@ -24,7 +24,7 @@
 		if( !( pcb = (@@prefix_pcb*)malloc( sizeof( @@prefix_pcb ) ) ) )
 		{
 			/* Can't allocate memory */
-			UNICC_OUTOFMEM;
+			UNICC_OUTOFMEM( pcb );
 			return (@@goal-type)0;
 		}
 
@@ -37,6 +37,7 @@
 
 	memset( pcb->tos, 0, sizeof( @@prefix_tok ) );
 
+	pcb->act = UNICC_SHIFT;
 	pcb->sym = -1;
 	pcb->old_sym = -1;
 	pcb->line = 1;
@@ -130,13 +131,17 @@
 
 			if( *@@prefix_productions[ pcb->idx ].emit )
 			{
-				node = @@prefix_ast_create(
+				node = @@prefix_ast_create( pcb,
 							@@prefix_productions[ pcb->idx ].emit,
 								(UNICC_SCHAR*)NULL);
 
 				node->child = pcb->tos->node;
 				pcb->tos->node = node;
 			}
+
+			/* Enforced error in semantic actions? */
+			if( pcb->act == UNICC_ERROR )
+				break;
 
 			/* Goal symbol reduced, and stack is empty? */
 			if( pcb->lhs == @@goal && pcb->tos == pcb->stack )
@@ -157,13 +162,14 @@
 				}
 #endif
 
+				pcb->act = UNICC_SUCCESS;
+
 				#if UNICC_DEBUG
 				fprintf( stderr, "%s: goal symbol reduced, exiting parser\n",
 						UNICC_PARSER );
 				#endif
 				break;
 			}
-
 
 			#if UNICC_DEBUG
 			fprintf( @@prefix_dbg, "%s: after reduction, "
@@ -195,7 +201,7 @@
 #endif
 		}
 
-		if( pcb->act & UNICC_REDUCE && pcb->idx == @@goal-production )
+		if( pcb->act == UNICC_SUCCESS || pcb->act == UNICC_ERROR )
 			break;
 
 		/* If in error recovery, replace old-symbol */
@@ -274,7 +280,6 @@
 #endif
 #endif
 
-
 		/* Shift */
 		if( pcb->act & UNICC_SHIFT )
 		{
@@ -316,7 +321,7 @@
 #endif
 
 			if( *pcb->tos->symbol->emit )
-				pcb->tos->node = @@prefix_ast_create(
+				pcb->tos->node = @@prefix_ast_create( pcb,
 									pcb->tos->symbol->emit,
 										@@prefix_lexem( pcb ) );
 			else

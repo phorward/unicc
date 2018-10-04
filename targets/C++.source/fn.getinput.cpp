@@ -17,7 +17,10 @@ UNICC_CHAR @@prefix_parser::get_input( size_t offset )
 				( UNICC_MALLOCSTEP + 1 ) * sizeof( UNICC_CHAR ) );
 
 			if( !this->buf )
-				UNICC_OUTOFMEM;
+			{
+				UNICC_OUTOFMEM( this );
+				return 0;
+			}
 
 			*this->buf = 0;
 		}
@@ -31,7 +34,10 @@ UNICC_CHAR @@prefix_parser::get_input( size_t offset )
 							* sizeof( UNICC_CHAR ) );
 
 			if( !this->buf )
-				UNICC_OUTOFMEM;
+			{
+				UNICC_OUTOFMEM( this );
+				return 0;
+			}
 
 			this->bufend = this->buf + size;
 		}

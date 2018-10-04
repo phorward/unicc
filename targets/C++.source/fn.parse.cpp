@@ -15,17 +15,17 @@
 
 	memset( this->tos, 0, sizeof( @@prefix_tok ) );
 
-	this->act = 0;
+	this->act = UNICC_SHIFT;
 	this->is_eof = false;
 	this->sym = this->old_sym = -1;
 	this->line = this->column = 1;
 
 	memset( &this->test, 0, sizeof( @@prefix_vtype ) );
 
-	/* Begin of main parser loop */
+	// Begin of main parser loop
 	while( true )
 	{
-		/* Reduce */
+		// Reduce
 		while( this->act & UNICC_REDUCE )
 		{
 #if UNICC_DEBUG
@@ -34,10 +34,10 @@
 						UNICC_PARSER, this->idx,
 							this->productions[ this->idx ].definition );
 #endif
-			/* Set default left-hand side */
+			// Set default left-hand side
 			this->lhs = this->productions[ this->idx ].lhs;
 
-			/* Run reduction code */
+			// Run reduction code
 			memset( &( this->ret ), 0, sizeof( @@prefix_vtype ) );
 
 			switch( this->idx )
@@ -45,7 +45,7 @@
 @@actions
 			}
 
-			/* Drop right-hand side */
+			// Drop right-hand side
 			node = NULL;
 
 			for( int i = 0; i < this->productions[ this->idx ].length; i++ )
@@ -91,7 +91,11 @@
 				this->tos->node = node;
 			}
 
-			/* Goal symbol reduced, and stack is empty? */
+			// Enforced error in semantic actions?
+			if( this->act == UNICC_ERROR )
+				break;
+
+			// Goal symbol reduced, and stack is empty?
 			if( this->lhs == @@goal && this->tos == this->stack )
 			{
 				memcpy( &( this->tos->value ), &( this->ret ),
@@ -99,6 +103,8 @@
 				this->ast = this->tos->node;
 
 				UNICC_CLEARIN( this );
+
+				this->act = UNICC_SUCCESS;
 
 				#if UNICC_DEBUG
 				fprintf( stderr, "%s: goal symbol reduced, exiting parser\n",
@@ -127,8 +133,7 @@
 			this->tos->column = this->column;
 		}
 
-		if( this->act & UNICC_REDUCE
-				&& this->idx == @@goal-production )
+		if( this->act == UNICC_SUCCESS || this->act == UNICC_ERROR )
 			break;
 
 		/* If in error recovery, replace old-symbol */
@@ -259,10 +264,10 @@
 		UNICC_PARSER, this->error_count );
 	#endif
 
-	/* Save return value */
+	// Save return value
 	ret = @@goal-value;
 
-	/* Clean up parser control block */
+	// Clean up parser control block
 	UNICC_CLEARIN( this );
 
 	if( this->stack )

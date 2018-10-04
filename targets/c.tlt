@@ -817,14 +817,14 @@ UNICC_STATIC UNICC_SCHAR* @@prefix_lexem( @@prefix_pcb* pcb )
 	size_t		size;
 
 	size = wcstombs( (char*)NULL, pcb-&gt;buf, 0 );
-	
+
 	if( pcb-&gt;lexem )
 		free( pcb-&gt;lexem );
-	
+
 	if( !( pcb-&gt;lexem = (UNICC_SCHAR*)malloc(
 			( size + 1 ) * sizeof( UNICC_SCHAR ) ) ) )
 	{
-		UNICC_OUTOFMEM;
+		UNICC_OUTOFMEM( pcb );
 		return (UNICC_SCHAR*)NULL;
 	}
 
@@ -862,7 +862,7 @@ UNICC_STATIC @@prefix_syntree* @@prefix_syntree_append(
 
 	if( !( node = (@@prefix_syntree*)malloc(
 			sizeof( @@prefix_syntree ) ) ) )
-		UNICC_OUTOFMEM;
+		UNICC_OUTOFMEM( pcb );
 
 	memset( node, 0, sizeof( @@prefix_syntree ) );
 	memcpy( &amp;( node-&gt;symbol ), pcb-&gt;tos, sizeof( @@prefix_tok ) );
@@ -871,10 +871,10 @@ UNICC_STATIC @@prefix_syntree* @@prefix_syntree_append(
 	{
 		#if !UNICC_WCHAR
 		if( !( node-&gt;token = strdup( token ) ) )
-			UNICC_OUTOFMEM;
+			UNICC_OUTOFMEM( pcb );
 		#else
 		if( !( node-&gt;token = wcsdup( token ) ) )
-			UNICC_OUTOFMEM;
+			UNICC_OUTOFMEM( pcb );
 		#endif
 	}
 
@@ -908,12 +908,16 @@ UNICC_STATIC @@prefix_ast* @@prefix_ast_free( @@prefix_ast* node )
 	return (@@prefix_ast*)NULL;
 }
 
-UNICC_STATIC @@prefix_ast* @@prefix_ast_create( char* emit, UNICC_SCHAR* token )
+UNICC_STATIC @@prefix_ast* @@prefix_ast_create( @@prefix_pcb* pcb, char* emit,
+													UNICC_SCHAR* token )
 {
 	@@prefix_ast*	node;
 
 	if( !( node = (@@prefix_ast*)malloc( sizeof( @@prefix_ast ) ) ) )
-		UNICC_OUTOFMEM;
+	{
+		UNICC_OUTOFMEM( pcb );
+		return node;
+	}
 
 	memset( node, 0, sizeof( @@prefix_ast ) );
 
@@ -923,10 +927,18 @@ UNICC_STATIC @@prefix_ast* @@prefix_ast_create( char* emit, UNICC_SCHAR* token )
 	{
 		#if !UNICC_WCHAR
 		if( !( node-&gt;token = strdup( token ) ) )
-			UNICC_OUTOFMEM;
+		{
+			UNICC_OUTOFMEM( pcb );
+			free( node );
+			return (@@prefix_ast*)NULL;
+		}
 		#else
 		if( !( node-&gt;token = wcsdup( token ) ) )
-			UNICC_OUTOFMEM;
+		{
+			UNICC_OUTOFMEM( pcb );
+			free( node );
+			return (@@prefix_ast*)NULL;
+		}
 		#endif
 	}
 
@@ -1017,7 +1029,7 @@ UNICC_STATIC int @@prefix_alloc_stack( @@prefix_pcb* pcb )
 		if( !( pcb-&gt;tos = pcb-&gt;stack = (@@prefix_tok*)malloc(
 				UNICC_MALLOCSTEP * sizeof( @@prefix_tok ) ) ) )
 		{
-			UNICC_OUTOFMEM;
+			UNICC_OUTOFMEM( pcb );
 			return -1;
 		}
 
@@ -1030,7 +1042,7 @@ UNICC_STATIC int @@prefix_alloc_stack( @@prefix_pcb* pcb )
 				( pcb-&gt;stacksize + UNICC_MALLOCSTEP )
 					* sizeof( @@prefix_tok ) ) ) )
 		{
-			UNICC_OUTOFMEM;
+			UNICC_OUTOFMEM( pcb );
 			return -1;
 		}
 
@@ -1110,7 +1122,7 @@ UNICC_STATIC UNICC_CHAR @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offs
 	fprintf( stderr, "%s: get input: pcb-&gt;buf + offset = %p pcb-&gt;bufend = %p\n",
 				UNICC_PARSER, pcb-&gt;buf + offset, pcb-&gt;bufend );
 #endif
-	
+
 	while( pcb-&gt;buf + offset &gt;= pcb-&gt;bufend )
 	{
 #if UNICC_DEBUG	&gt; 2
@@ -1121,10 +1133,10 @@ UNICC_STATIC UNICC_CHAR @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offs
 		{
 			pcb-&gt;bufend = pcb-&gt;buf = (UNICC_CHAR*)malloc(
 				( UNICC_MALLOCSTEP + 1 ) * sizeof( UNICC_CHAR ) );
-	
+
 			if( !pcb-&gt;buf )
-				UNICC_OUTOFMEM;
-	
+				UNICC_OUTOFMEM( pcb );
+
 			*pcb-&gt;buf = 0;
 		}
 		else if( *pcb-&gt;buf &amp;&amp; !( ( pcb-&gt;bufend - pcb-&gt;buf ) %
@@ -1135,10 +1147,10 @@ UNICC_STATIC UNICC_CHAR @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offs
 			pcb-&gt;buf = (UNICC_CHAR*)realloc( pcb-&gt;buf,
 						( size + UNICC_MALLOCSTEP + 1 )
 							* sizeof( UNICC_CHAR ) );
-	
+
 			if( !pcb-&gt;buf )
-				UNICC_OUTOFMEM;
-	
+				UNICC_OUTOFMEM( pcb );
+
 			pcb-&gt;bufend = pcb-&gt;buf + size;
 		}
 
@@ -1153,19 +1165,19 @@ UNICC_STATIC UNICC_CHAR @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offs
 			return pcb-&gt;eof;
 		}
 #if UNICC_DEBUG	&gt; 2
-		fprintf( stderr, "%s: get input: read char &gt;%c&lt; %d\n", 
+		fprintf( stderr, "%s: get input: read char &gt;%c&lt; %d\n",
 					UNICC_PARSER, (char)*( pcb-&gt;bufend ), *( pcb-&gt;bufend ) );
 #endif
-		
+
 #if UNICC_DEBUG	&gt; 2
-		fprintf( stderr, "%s: get input: reading character &gt;%c&lt; %d\n", 
+		fprintf( stderr, "%s: get input: reading character &gt;%c&lt; %d\n",
 					UNICC_PARSER, (char)*( pcb-&gt;bufend ), *( pcb-&gt;bufend ) );
 #endif
 
 		*( ++pcb-&gt;bufend ) = 0;
 	}
 
-#if UNICC_DEBUG	&gt; 2 
+#if UNICC_DEBUG	&gt; 2
 	{
 		UNICC_CHAR*		chptr;
 
@@ -1602,7 +1614,7 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 		if( !( pcb = (@@prefix_pcb*)malloc( sizeof( @@prefix_pcb ) ) ) )
 		{
 			/* Can't allocate memory */
-			UNICC_OUTOFMEM;
+			UNICC_OUTOFMEM( pcb );
 			return (@@goal-type)0;
 		}
 
@@ -1615,6 +1627,7 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 
 	memset( pcb-&gt;tos, 0, sizeof( @@prefix_tok ) );
 
+	pcb-&gt;act = UNICC_SHIFT;
 	pcb-&gt;sym = -1;
 	pcb-&gt;old_sym = -1;
 	pcb-&gt;line = 1;
@@ -1708,13 +1721,17 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 
 			if( *@@prefix_productions[ pcb-&gt;idx ].emit )
 			{
-				node = @@prefix_ast_create(
+				node = @@prefix_ast_create( pcb,
 							@@prefix_productions[ pcb-&gt;idx ].emit,
 								(UNICC_SCHAR*)NULL);
 
 				node-&gt;child = pcb-&gt;tos-&gt;node;
 				pcb-&gt;tos-&gt;node = node;
 			}
+
+			/* Enforced error in semantic actions? */
+			if( pcb-&gt;act == UNICC_ERROR )
+				break;
 
 			/* Goal symbol reduced, and stack is empty? */
 			if( pcb-&gt;lhs == @@goal &amp;&amp; pcb-&gt;tos == pcb-&gt;stack )
@@ -1735,13 +1752,14 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 				}
 #endif
 
+				pcb-&gt;act = UNICC_SUCCESS;
+
 				#if UNICC_DEBUG
 				fprintf( stderr, "%s: goal symbol reduced, exiting parser\n",
 						UNICC_PARSER );
 				#endif
 				break;
 			}
-
 
 			#if UNICC_DEBUG
 			fprintf( @@prefix_dbg, "%s: after reduction, "
@@ -1773,7 +1791,7 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 #endif
 		}
 
-		if( pcb-&gt;act &amp; UNICC_REDUCE &amp;&amp; pcb-&gt;idx == @@goal-production )
+		if( pcb-&gt;act == UNICC_SUCCESS || pcb-&gt;act == UNICC_ERROR )
 			break;
 
 		/* If in error recovery, replace old-symbol */
@@ -1844,7 +1862,6 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 #endif
 #endif
 
-
 		/* Shift */
 		if( pcb-&gt;act &amp; UNICC_SHIFT )
 		{
@@ -1886,7 +1903,7 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 #endif
 
 			if( *pcb-&gt;tos-&gt;symbol-&gt;emit )
-				pcb-&gt;tos-&gt;node = @@prefix_ast_create(
+				pcb-&gt;tos-&gt;node = @@prefix_ast_create( pcb,
 									pcb-&gt;tos-&gt;symbol-&gt;emit,
 										@@prefix_lexem( pcb ) );
 			else
@@ -2179,7 +2196,7 @@ int main( int argc, char** argv )
 
 /* Call this when running out of memory during memory allocation */
 #ifndef UNICC_OUTOFMEM
-#define UNICC_OUTOFMEM			fprintf( stderr, \
+#define UNICC_OUTOFMEM( pcb )	fprintf( stderr, \
 									"Fatal error, ran out of memory\n" ), \
 								exit( 1 )
 #endif
@@ -2198,11 +2215,14 @@ int main( int argc, char** argv )
 #ifndef UNICC_ERROR
 #define UNICC_ERROR				0
 #endif
+#ifndef UNICC_REDUCE
+#define UNICC_REDUCE			1
+#endif
 #ifndef UNICC_SHIFT
 #define UNICC_SHIFT				2
 #endif
-#ifndef UNICC_REDUCE
-#define UNICC_REDUCE			1
+#ifndef UNICC_SUCCESS
+#define UNICC_SUCCESS			4
 #endif
 
 /* Error delay after recovery */

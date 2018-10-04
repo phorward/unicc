@@ -200,6 +200,7 @@ class @@prefixParser(object):
 	_ERROR = 0
 	_REDUCE = 1
 	_SHIFT = 2
+	_SUCCESS = 4
 
 	# Parse tables
 	_symbols = (
@@ -392,6 +393,7 @@ class @@prefixParser(object):
 				s = input(">")
 
 		pcb = @@prefixParserControlBlock(s)
+		pcb.act = self._SHIFT
 
 		pcb.tos = @@prefixParserToken()
 		pcb.stack.append(pcb.tos)
@@ -440,10 +442,15 @@ class @@prefixParser(object):
 				else:
 					node = None
 
+				# Error enforced by semantics?
+				if pcb.act == self._ERROR:
+					break
+
 				# Goal symbol reduced, and stack is empty?
 				if pcb.lhs == @@goal and len(pcb.stack) == 1:
 					pcb.tos.node = node or cnodes
 					self._clear_input(pcb)
+					pcb.act = self._SUCCESS;
 					break
 
 				self._get_go(pcb)
@@ -458,7 +465,7 @@ class @@prefixParser(object):
 				pcb.tos.line = pcb.line
 				pcb.tos.column = pcb.column
 
-			if pcb.act &amp; self._REDUCE and pcb.idx == @@goal-production:
+			if pcb.act == self._SUCCESS or pcb.act == self._ERROR:
 				break
 
 			# Get next input symbol

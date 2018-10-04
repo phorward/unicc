@@ -432,13 +432,15 @@ function @@prefixParser() {
 
 @@prefixParser.prototype.parse = function(s) {
 	// Constants
-	const ERROR = 0;
-	const REDUCE = 1;
-	const SHIFT = 2;
+	const ERROR		= 0;
+	const REDUCE	= 1;
+	const SHIFT		= 2;
+	const SUCCESS	= 4;
 
 	// Start of parse function
 	pcb = new @@prefixParserControlBlock()
 	pcb.input = s
+	pcb.act = SHIFT;
 
 	pcb.tos = new @@prefixParserToken()
 	pcb.stack.push(pcb.tos)
@@ -492,6 +494,7 @@ function @@prefixParser() {
 			if( pcb.lhs == @@goal &amp;&amp; pcb.stack.length == 1 ) {
 				pcb.tos.node = node ? node : cnodes;
 				this.clear_input(pcb);
+				pcb.act = SUCCESS;
 				break;
 			}
 
@@ -513,7 +516,7 @@ function @@prefixParser() {
 			pcb.tos.column = pcb.column;
 		}
 
-		if( pcb.act &amp; REDUCE &amp;&amp; pcb.idx == @@goal-production )
+		if( pcb.act == SUCCESS || pcb.act == ERROR )
 			break;
 
 		// Get next input symbol

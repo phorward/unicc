@@ -5,7 +5,7 @@ bool @@prefix_parser::alloc_stack( void )
 		if( !( this->tos = this->stack = (@@prefix_tok*)malloc(
 				UNICC_MALLOCSTEP * sizeof( @@prefix_tok ) ) ) )
 		{
-			UNICC_OUTOFMEM;
+			UNICC_OUTOFMEM( this );
 			return false;
 		}
 
@@ -19,7 +19,7 @@ bool @@prefix_parser::alloc_stack( void )
 				( this->stacksize + UNICC_MALLOCSTEP )
 					* sizeof( @@prefix_tok ) ) ) )
 		{
-			UNICC_OUTOFMEM;
+			UNICC_OUTOFMEM( this );
 			return false;
 		}
 

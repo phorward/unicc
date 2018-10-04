@@ -13,12 +13,16 @@ UNICC_STATIC @@prefix_ast* @@prefix_ast_free( @@prefix_ast* node )
 	return (@@prefix_ast*)NULL;
 }
 
-UNICC_STATIC @@prefix_ast* @@prefix_ast_create( char* emit, UNICC_SCHAR* token )
+UNICC_STATIC @@prefix_ast* @@prefix_ast_create( @@prefix_pcb* pcb, char* emit,
+													UNICC_SCHAR* token )
 {
 	@@prefix_ast*	node;
 
 	if( !( node = (@@prefix_ast*)malloc( sizeof( @@prefix_ast ) ) ) )
-		UNICC_OUTOFMEM;
+	{
+		UNICC_OUTOFMEM( pcb );
+		return node;
+	}
 
 	memset( node, 0, sizeof( @@prefix_ast ) );
 
@@ -28,10 +32,18 @@ UNICC_STATIC @@prefix_ast* @@prefix_ast_create( char* emit, UNICC_SCHAR* token )
 	{
 		#if !UNICC_WCHAR
 		if( !( node->token = strdup( token ) ) )
-			UNICC_OUTOFMEM;
+		{
+			UNICC_OUTOFMEM( pcb );
+			free( node );
+			return (@@prefix_ast*)NULL;
+		}
 		#else
 		if( !( node->token = wcsdup( token ) ) )
-			UNICC_OUTOFMEM;
+		{
+			UNICC_OUTOFMEM( pcb );
+			free( node );
+			return (@@prefix_ast*)NULL;
+		}
 		#endif
 	}
 

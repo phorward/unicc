@@ -4,7 +4,7 @@ UNICC_STATIC UNICC_CHAR @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offs
 	fprintf( stderr, "%s: get input: pcb->buf + offset = %p pcb->bufend = %p\n",
 				UNICC_PARSER, pcb->buf + offset, pcb->bufend );
 #endif
-	
+
 	while( pcb->buf + offset >= pcb->bufend )
 	{
 #if UNICC_DEBUG	> 2
@@ -15,10 +15,13 @@ UNICC_STATIC UNICC_CHAR @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offs
 		{
 			pcb->bufend = pcb->buf = (UNICC_CHAR*)malloc(
 				( UNICC_MALLOCSTEP + 1 ) * sizeof( UNICC_CHAR ) );
-	
+
 			if( !pcb->buf )
-				UNICC_OUTOFMEM;
-	
+			{
+				UNICC_OUTOFMEM( pcb );
+				return 0;
+			}
+
 			*pcb->buf = 0;
 		}
 		else if( *pcb->buf && !( ( pcb->bufend - pcb->buf ) %
@@ -29,10 +32,13 @@ UNICC_STATIC UNICC_CHAR @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offs
 			pcb->buf = (UNICC_CHAR*)realloc( pcb->buf,
 						( size + UNICC_MALLOCSTEP + 1 )
 							* sizeof( UNICC_CHAR ) );
-	
+
 			if( !pcb->buf )
-				UNICC_OUTOFMEM;
-	
+			{
+				UNICC_OUTOFMEM( pcb );
+				return 0;
+			}
+
 			pcb->bufend = pcb->buf + size;
 		}
 
@@ -47,19 +53,19 @@ UNICC_STATIC UNICC_CHAR @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offs
 			return pcb->eof;
 		}
 #if UNICC_DEBUG	> 2
-		fprintf( stderr, "%s: get input: read char >%c< %d\n", 
+		fprintf( stderr, "%s: get input: read char >%c< %d\n",
 					UNICC_PARSER, (char)*( pcb->bufend ), *( pcb->bufend ) );
 #endif
-		
+
 #if UNICC_DEBUG	> 2
-		fprintf( stderr, "%s: get input: reading character >%c< %d\n", 
+		fprintf( stderr, "%s: get input: reading character >%c< %d\n",
 					UNICC_PARSER, (char)*( pcb->bufend ), *( pcb->bufend ) );
 #endif
 
 		*( ++pcb->bufend ) = 0;
 	}
 
-#if UNICC_DEBUG	> 2 
+#if UNICC_DEBUG	> 2
 	{
 		UNICC_CHAR*		chptr;
 

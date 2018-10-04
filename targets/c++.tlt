@@ -170,7 +170,7 @@ UNICC_SCHAR* @@prefix_parser::get_lexem( void )
 	if( !( this-&gt;lexem = (UNICC_SCHAR*)malloc(
 			( size + 1 ) * sizeof( UNICC_SCHAR ) ) ) )
 	{
-		UNICC_OUTOFMEM;
+		UNICC_OUTOFMEM( this );
 		return NULL;
 	}
 
@@ -204,7 +204,10 @@ UNICC_SCHAR* @@prefix_parser::get_lexem( void )
 	@@prefix_ast*	node;
 
 	if( !( node = (@@prefix_ast*)malloc( sizeof( @@prefix_ast ) ) ) )
-		UNICC_OUTOFMEM;
+	{
+		UNICC_OUTOFMEM( this );
+		return node;
+	}
 
 	memset( node, 0, sizeof( @@prefix_ast ) );
 
@@ -214,10 +217,18 @@ UNICC_SCHAR* @@prefix_parser::get_lexem( void )
 	{
 		#if !UNICC_WCHAR
 		if( !( node-&gt;token = strdup( token ) ) )
-			UNICC_OUTOFMEM;
+		{
+			UNICC_OUTOFMEM( this );
+			free( node );
+			return (@@prefix_ast*)NULL;
+		}
 		#else
 		if( !( node-&gt;token = wcsdup( token ) ) )
-			UNICC_OUTOFMEM;
+		{
+			UNICC_OUTOFMEM( this );
+			free( node );
+			return (@@prefix_ast*)NULL;
+		}
 		#endif
 	}
 
@@ -302,7 +313,7 @@ bool @@prefix_parser::alloc_stack( void )
 		if( !( this-&gt;tos = this-&gt;stack = (@@prefix_tok*)malloc(
 				UNICC_MALLOCSTEP * sizeof( @@prefix_tok ) ) ) )
 		{
-			UNICC_OUTOFMEM;
+			UNICC_OUTOFMEM( this );
 			return false;
 		}
 
@@ -316,7 +327,7 @@ bool @@prefix_parser::alloc_stack( void )
 				( this-&gt;stacksize + UNICC_MALLOCSTEP )
 					* sizeof( @@prefix_tok ) ) ) )
 		{
-			UNICC_OUTOFMEM;
+			UNICC_OUTOFMEM( this );
 			return false;
 		}
 
@@ -346,7 +357,10 @@ UNICC_CHAR @@prefix_parser::get_input( size_t offset )
 				( UNICC_MALLOCSTEP + 1 ) * sizeof( UNICC_CHAR ) );
 
 			if( !this-&gt;buf )
-				UNICC_OUTOFMEM;
+			{
+				UNICC_OUTOFMEM( this );
+				return 0;
+			}
 
 			*this-&gt;buf = 0;
 		}
@@ -360,7 +374,10 @@ UNICC_CHAR @@prefix_parser::get_input( size_t offset )
 							* sizeof( UNICC_CHAR ) );
 
 			if( !this-&gt;buf )
-				UNICC_OUTOFMEM;
+			{
+				UNICC_OUTOFMEM( this );
+				return 0;
+			}
 
 			this-&gt;bufend = this-&gt;buf + size;
 		}
@@ -797,17 +814,17 @@ bool @@prefix_parser::handle_error( FILE* @@prefix_dbg )
 
 	memset( this-&gt;tos, 0, sizeof( @@prefix_tok ) );
 
-	this-&gt;act = 0;
+	this-&gt;act = UNICC_SHIFT;
 	this-&gt;is_eof = false;
 	this-&gt;sym = this-&gt;old_sym = -1;
 	this-&gt;line = this-&gt;column = 1;
 
 	memset( &amp;this-&gt;test, 0, sizeof( @@prefix_vtype ) );
 
-	/* Begin of main parser loop */
+	// Begin of main parser loop
 	while( true )
 	{
-		/* Reduce */
+		// Reduce
 		while( this-&gt;act &amp; UNICC_REDUCE )
 		{
 #if UNICC_DEBUG
@@ -816,10 +833,10 @@ bool @@prefix_parser::handle_error( FILE* @@prefix_dbg )
 						UNICC_PARSER, this-&gt;idx,
 							this-&gt;productions[ this-&gt;idx ].definition );
 #endif
-			/* Set default left-hand side */
+			// Set default left-hand side
 			this-&gt;lhs = this-&gt;productions[ this-&gt;idx ].lhs;
 
-			/* Run reduction code */
+			// Run reduction code
 			memset( &amp;( this-&gt;ret ), 0, sizeof( @@prefix_vtype ) );
 
 			switch( this-&gt;idx )
@@ -827,7 +844,7 @@ bool @@prefix_parser::handle_error( FILE* @@prefix_dbg )
 @@actions
 			}
 
-			/* Drop right-hand side */
+			// Drop right-hand side
 			node = NULL;
 
 			for( int i = 0; i &lt; this-&gt;productions[ this-&gt;idx ].length; i++ )
@@ -873,7 +890,11 @@ bool @@prefix_parser::handle_error( FILE* @@prefix_dbg )
 				this-&gt;tos-&gt;node = node;
 			}
 
-			/* Goal symbol reduced, and stack is empty? */
+			// Enforced error in semantic actions?
+			if( this-&gt;act == UNICC_ERROR )
+				break;
+
+			// Goal symbol reduced, and stack is empty?
 			if( this-&gt;lhs == @@goal &amp;&amp; this-&gt;tos == this-&gt;stack )
 			{
 				memcpy( &amp;( this-&gt;tos-&gt;value ), &amp;( this-&gt;ret ),
@@ -881,6 +902,8 @@ bool @@prefix_parser::handle_error( FILE* @@prefix_dbg )
 				this-&gt;ast = this-&gt;tos-&gt;node;
 
 				UNICC_CLEARIN( this );
+
+				this-&gt;act = UNICC_SUCCESS;
 
 				#if UNICC_DEBUG
 				fprintf( stderr, "%s: goal symbol reduced, exiting parser\n",
@@ -909,8 +932,7 @@ bool @@prefix_parser::handle_error( FILE* @@prefix_dbg )
 			this-&gt;tos-&gt;column = this-&gt;column;
 		}
 
-		if( this-&gt;act &amp; UNICC_REDUCE
-				&amp;&amp; this-&gt;idx == @@goal-production )
+		if( this-&gt;act == UNICC_SUCCESS || this-&gt;act == UNICC_ERROR )
 			break;
 
 		/* If in error recovery, replace old-symbol */
@@ -1041,10 +1063,10 @@ bool @@prefix_parser::handle_error( FILE* @@prefix_dbg )
 		UNICC_PARSER, this-&gt;error_count );
 	#endif
 
-	/* Save return value */
+	// Save return value
 	ret = @@goal-value;
 
-	/* Clean up parser control block */
+	// Clean up parser control block
 	UNICC_CLEARIN( this );
 
 	if( this-&gt;stack )
@@ -1245,9 +1267,9 @@ int main( int argc, char** argv )
 
 /* Call this when running out of memory during memory allocation */
 #ifndef UNICC_OUTOFMEM
-#define UNICC_OUTOFMEM			fprintf( stderr, \
-									"Fatal error, ran out of memory\n" ), \
-								exit( 1 )
+#define UNICC_OUTOFMEM( parser )	fprintf( stderr, \
+										"Fatal error, ran out of memory\n" ), \
+									exit( 1 )
 #endif
 
 #ifdef UNICC_PARSER
@@ -1259,11 +1281,14 @@ int main( int argc, char** argv )
 #ifndef UNICC_ERROR
 #define UNICC_ERROR				0
 #endif
+#ifndef UNICC_REDUCE
+#define UNICC_REDUCE			1
+#endif
 #ifndef UNICC_SHIFT
 #define UNICC_SHIFT				2
 #endif
-#ifndef UNICC_REDUCE
-#define UNICC_REDUCE			1
+#ifndef UNICC_SUCCESS
+#define UNICC_SUCCESS			4
 #endif
 
 /* Error delay after recovery */

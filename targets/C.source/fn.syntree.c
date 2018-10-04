@@ -22,7 +22,7 @@ UNICC_STATIC @@prefix_syntree* @@prefix_syntree_append(
 
 	if( !( node = (@@prefix_syntree*)malloc(
 			sizeof( @@prefix_syntree ) ) ) )
-		UNICC_OUTOFMEM;
+		UNICC_OUTOFMEM( pcb );
 
 	memset( node, 0, sizeof( @@prefix_syntree ) );
 	memcpy( &( node->symbol ), pcb->tos, sizeof( @@prefix_tok ) );
@@ -31,10 +31,10 @@ UNICC_STATIC @@prefix_syntree* @@prefix_syntree_append(
 	{
 		#if !UNICC_WCHAR
 		if( !( node->token = strdup( token ) ) )
-			UNICC_OUTOFMEM;
+			UNICC_OUTOFMEM( pcb );
 		#else
 		if( !( node->token = wcsdup( token ) ) )
-			UNICC_OUTOFMEM;
+			UNICC_OUTOFMEM( pcb );
 		#endif
 	}
 

@@ -77,7 +77,7 @@
 
 /* Call this when running out of memory during memory allocation */
 #ifndef UNICC_OUTOFMEM
-#define UNICC_OUTOFMEM			fprintf( stderr, \
+#define UNICC_OUTOFMEM( pcb )	fprintf( stderr, \
 									"Fatal error, ran out of memory\n" ), \
 								exit( 1 )
 #endif
@@ -96,11 +96,14 @@
 #ifndef UNICC_ERROR
 #define UNICC_ERROR				0
 #endif
+#ifndef UNICC_REDUCE
+#define UNICC_REDUCE			1
+#endif
 #ifndef UNICC_SHIFT
 #define UNICC_SHIFT				2
 #endif
-#ifndef UNICC_REDUCE
-#define UNICC_REDUCE			1
+#ifndef UNICC_SUCCESS
+#define UNICC_SUCCESS			4
 #endif
 
 /* Error delay after recovery */

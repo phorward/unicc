@@ -13,7 +13,7 @@ UNICC_SCHAR* @@prefix_parser::get_lexem( void )
 	if( !( this->lexem = (UNICC_SCHAR*)malloc(
 			( size + 1 ) * sizeof( UNICC_SCHAR ) ) ) )
 	{
-		UNICC_OUTOFMEM;
+		UNICC_OUTOFMEM( this );
 		return NULL;
 	}
 

@@ -6,14 +6,14 @@ UNICC_STATIC UNICC_SCHAR* @@prefix_lexem( @@prefix_pcb* pcb )
 	size_t		size;
 
 	size = wcstombs( (char*)NULL, pcb->buf, 0 );
-	
+
 	if( pcb->lexem )
 		free( pcb->lexem );
-	
+
 	if( !( pcb->lexem = (UNICC_SCHAR*)malloc(
 			( size + 1 ) * sizeof( UNICC_SCHAR ) ) ) )
 	{
-		UNICC_OUTOFMEM;
+		UNICC_OUTOFMEM( pcb );
 		return (UNICC_SCHAR*)NULL;
 	}
 
