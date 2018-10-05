@@ -26,6 +26,8 @@
 		memset( pcb, 0, sizeof( @@prefix_pcb ) );
 		pcb->is_internal = 1;
 	}
+	else
+		pcb->is_internal = 0;
 
 	/* Initialize Parser Control Block */
 	pcb->stacksize = 0;

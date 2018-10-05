@@ -1579,6 +1579,8 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 		memset( pcb, 0, sizeof( @@prefix_pcb ) );
 		pcb-&gt;is_internal = 1;
 	}
+	else
+		pcb-&gt;is_internal = 0;
 
 	/* Initialize Parser Control Block */
 	pcb-&gt;stacksize = 0;
