@@ -111,11 +111,6 @@
 #define UNICC_ERROR_DELAY		3
 #endif
 
-/* Syntax tree construction */
-#ifndef UNICC_SYNTAXTREE
-#define UNICC_SYNTAXTREE		0
-#endif
-
 /* Enable/Disable terminal selection in semantic actions */
 #ifndef UNICC_SEMANTIC_TERM_SEL
 #define UNICC_SEMANTIC_TERM_SEL	0

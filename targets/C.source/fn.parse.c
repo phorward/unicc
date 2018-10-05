@@ -1,13 +1,8 @@
 @@goal-type @@prefix_parse( @@prefix_pcb* pcb )
 {
 	@@goal-type			ret;
-	@@prefix_pcb*		pcb_org		= pcb;
 	int					i;
 
-#if UNICC_SYNTAXTREE
-	@@prefix_syntree*	child;
-	@@prefix_syntree*	last		= (@@prefix_syntree*)NULL;
-#endif
 	@@prefix_ast*		node;
 	@@prefix_ast*		lnode;
 
@@ -29,11 +24,13 @@
 		}
 
 		memset( pcb, 0, sizeof( @@prefix_pcb ) );
+		pcb->is_internal = 1;
 	}
 
 	/* Initialize Parser Control Block */
 	pcb->stacksize = 0;
-	@@prefix_alloc_stack( pcb );
+	if( @@prefix_alloc_stack( pcb ) < 0 )
+		return (@@goal-type)0;
 
 	memset( pcb->tos, 0, sizeof( @@prefix_tok ) );
 
@@ -42,10 +39,6 @@
 	pcb->old_sym = -1;
 	pcb->line = 1;
 	pcb->column = 1;
-
-#if UNICC_SYNTAXTREE
-	@@prefix_syntree_append( pcb, (char*)NULL );
-#endif
 
 	memset( &pcb->test, 0, sizeof( @@prefix_vtype ) );
 
@@ -96,25 +89,9 @@
 				pcb->tos--;
 			}
 
+			/* This could be done if no AST construction would be done: */
 			/* pcb->tos -= @@prefix_productions[ pcb->idx ].length; */
 
-#if UNICC_SYNTAXTREE
-			/* Parse tree */
-			if( @@prefix_productions[ pcb->idx ].length )
-			{
-				int		cnt;
-
-				for( cnt = 1, child = last;
-						cnt < @@prefix_productions[ pcb->idx ].length;
-							cnt++ )
-					child = child->prev;
-
-				child->prev->next = (@@prefix_syntree*)NULL;
-				child->prev = (@@prefix_syntree*)NULL;
-			}
-			else
-				child = (@@prefix_syntree*)NULL;
-#endif
 			if( node )
 			{
 				if( lnode = pcb->tos->node )
@@ -152,16 +129,6 @@
 
 				UNICC_CLEARIN( pcb );
 
-#if UNICC_SYNTAXTREE
-				if( child )
-				{
-					pcb->syntax_tree->child = child;
-					child->parent = pcb->syntax_tree;
-					pcb->syntax_tree->symbol.symbol =
-						&( @@prefix_symbols[ pcb->lhs ] );
-				}
-#endif
-
 				pcb->act = UNICC_SUCCESS;
 
 				#if UNICC_DEBUG
@@ -189,16 +156,6 @@
 			pcb->tos->state = ( pcb->act & UNICC_REDUCE ) ? -1 : pcb->idx;
 			pcb->tos->line = pcb->line;
 			pcb->tos->column = pcb->column;
-
-#if UNICC_SYNTAXTREE
-			last = @@prefix_syntree_append( pcb, (char*)NULL );
-
-			if( child )
-			{
-				last->child = child;
-				child->parent = last;
-			}
-#endif
 		}
 
 		if( pcb->act == UNICC_SUCCESS || pcb->act == UNICC_ERROR )
@@ -291,7 +248,9 @@
 			UNICC_PARSER, pcb->sym, @@prefix_symbols[ pcb->sym ].name );
 #endif
 
-			@@prefix_alloc_stack( pcb );
+			if( @@prefix_alloc_stack( pcb ) < 0 )
+				return (@@goal-type)0;
+
 			pcb->tos++;
 			pcb->tos->node = (@@prefix_ast*)NULL;
 
@@ -315,10 +274,6 @@
 			pcb->tos->symbol = &( @@prefix_symbols[ pcb->sym ] );
 			pcb->tos->line = pcb->line;
 			pcb->tos->column = pcb->column;
-
-#if UNICC_SYNTAXTREE
-			last = @@prefix_syntree_append( pcb, @@prefix_lexem( pcb ) );
-#endif
 
 			if( *pcb->tos->symbol->emit )
 				pcb->tos->node = @@prefix_ast_create( pcb,
@@ -360,13 +315,8 @@
 #endif
 
 	/* Clean memory of self-allocated parser control block */
-	if( !pcb_org )
-	{
-#if UNICC_SYNTAXTREE
-		@@prefix_syntree_free( pcb->syntax_tree );
-#endif
+	if( pcb->is_internal )
 		free( pcb );
-	}
 
 	return ret;
 }

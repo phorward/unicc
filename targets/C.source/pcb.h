@@ -1,6 +1,9 @@
 /* Parser Control Block */
 typedef struct
 {
+	/* Is this PCB allocated by parser? */
+	char				is_internal;
+
 	/* Stack */
 	@@prefix_tok*		stack;
 	@@prefix_tok*		tos;
@@ -40,10 +43,7 @@ typedef struct
 	unsigned int		line;
 	unsigned int		column;
 
-#if UNICC_SYNTAXTREE
-	/* Syntax tree */
-	@@prefix_syntree*	syntax_tree;
-#endif
+	/* Abstract Syntax Tree */
 	@@prefix_ast*		ast;
 
 	/* User-defined components */

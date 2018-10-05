@@ -28,17 +28,24 @@ UNICC_CHAR @@prefix_parser::get_input( size_t offset )
 					UNICC_MALLOCSTEP ) )
 		{
 			size_t size	= this->bufend - this->buf;
+			UNICC_CHAR*	buf;
 
-			this->buf = (UNICC_CHAR*)realloc( this->buf,
+			if( !( buf = (UNICC_CHAR*)realloc( this->buf,
 						( size + UNICC_MALLOCSTEP + 1 )
-							* sizeof( UNICC_CHAR ) );
-
-			if( !this->buf )
+							* sizeof( UNICC_CHAR ) ) ) )
 			{
 				UNICC_OUTOFMEM( this );
+
+				if( this->buf )
+				{
+					free( this->buf );
+					this->buf = NULL;
+				}
+
 				return 0;
 			}
 
+			this->buf = buf;
 			this->bufend = this->buf + size;
 		}
 

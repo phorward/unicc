@@ -1524,61 +1524,6 @@ UNICC_STATIC UNICC_SCHAR* _lexem( _pcb* pcb )
 	return pcb->lexem;
 }
 
-#if UNICC_SYNTAXTREE
-UNICC_STATIC _syntree* _syntree_free( _syntree* node )
-{
-	if( !node )
-		return (_syntree*)NULL;
-
-	_syntree_free( node->child );
-	_syntree_free( node->next );
-
-	if( node->token )
-		free( node->token );
-
-	free( node );
-	return (_syntree*)NULL;
-}
-
-UNICC_STATIC _syntree* _syntree_append(
-	_pcb* pcb, UNICC_SCHAR* token )
-{
-	_syntree*	node;
-	_syntree*	last;
-
-	if( !( node = (_syntree*)malloc(
-			sizeof( _syntree ) ) ) )
-		UNICC_OUTOFMEM( pcb );
-
-	memset( node, 0, sizeof( _syntree ) );
-	memcpy( &( node->symbol ), pcb->tos, sizeof( _tok ) );
-
-	if( token )
-	{
-		#if !UNICC_WCHAR
-		if( !( node->token = strdup( token ) ) )
-			UNICC_OUTOFMEM( pcb );
-		#else
-		if( !( node->token = wcsdup( token ) ) )
-			UNICC_OUTOFMEM( pcb );
-		#endif
-	}
-
-	if( ( last = pcb->syntax_tree ) )
-	{
-		while( last->next )
-			last = last->next;
-
-		last->next = node;
-		node->prev = last;
-	}
-	else
-		pcb->syntax_tree = node;
-
-	return node;
-}
-#endif
-
 UNICC_STATIC _ast* _ast_free( _ast* node )
 {
 	if( !node )
@@ -1724,13 +1669,21 @@ UNICC_STATIC int _alloc_stack( _pcb* pcb )
 	else if( ( size = (unsigned int)( pcb->tos - pcb->stack ) )
 				== pcb->stacksize )
 	{
-		if( !( pcb->tos = pcb->stack = (_tok*)realloc( pcb->tos,
+		_tok*	ptr;
+
+		if( !( ptr = (_tok*)realloc( pcb->stack,
 				( pcb->stacksize + UNICC_MALLOCSTEP )
 					* sizeof( _tok ) ) ) )
 		{
 			UNICC_OUTOFMEM( pcb );
+
+			if( pcb->stack )
+				free( pcb->stack );
+
 			return -1;
 		}
+
+		pcb->tos = pcb->stack = ptr;
 
 		pcb->stacksize += UNICC_MALLOCSTEP;
 		pcb->tos += size;
@@ -1821,22 +1774,32 @@ UNICC_STATIC UNICC_CHAR _get_input( _pcb* pcb, unsigned int offset )
 				( UNICC_MALLOCSTEP + 1 ) * sizeof( UNICC_CHAR ) );
 
 			if( !pcb->buf )
+			{
 				UNICC_OUTOFMEM( pcb );
+				return 0;
+			}
 
 			*pcb->buf = 0;
 		}
 		else if( *pcb->buf && !( ( pcb->bufend - pcb->buf ) %
 					UNICC_MALLOCSTEP ) )
 		{
-			unsigned int size	= (unsigned int)( pcb->bufend - pcb->buf );
+			unsigned int 	size	= (unsigned int)( pcb->bufend - pcb->buf );
+			UNICC_CHAR*		buf;
 
-			pcb->buf = (UNICC_CHAR*)realloc( pcb->buf,
+			if( !( buf = (UNICC_CHAR*)realloc( pcb->buf,
 						( size + UNICC_MALLOCSTEP + 1 )
-							* sizeof( UNICC_CHAR ) );
-
-			if( !pcb->buf )
+							* sizeof( UNICC_CHAR ) ) ) )
+			{
 				UNICC_OUTOFMEM( pcb );
 
+				if( pcb->buf )
+					free( pcb->buf );
+
+				return 0;
+			}
+
+			pcb->buf = buf;
 			pcb->bufend = pcb->buf + size;
 		}
 
@@ -2285,13 +2248,8 @@ UNICC_STATIC int _handle_error( _pcb* pcb, FILE* _dbg )
 int _parse( _pcb* pcb )
 {
 	int			ret;
-	_pcb*		pcb_org		= pcb;
 	int					i;
 
-#if UNICC_SYNTAXTREE
-	_syntree*	child;
-	_syntree*	last		= (_syntree*)NULL;
-#endif
 	_ast*		node;
 	_ast*		lnode;
 
@@ -2313,11 +2271,13 @@ int _parse( _pcb* pcb )
 		}
 
 		memset( pcb, 0, sizeof( _pcb ) );
+		pcb->is_internal = 1;
 	}
 
 	/* Initialize Parser Control Block */
 	pcb->stacksize = 0;
-	_alloc_stack( pcb );
+	if( _alloc_stack( pcb ) < 0 )
+		return (int)0;
 
 	memset( pcb->tos, 0, sizeof( _tok ) );
 
@@ -2326,10 +2286,6 @@ int _parse( _pcb* pcb )
 	pcb->old_sym = -1;
 	pcb->line = 1;
 	pcb->column = 1;
-
-#if UNICC_SYNTAXTREE
-	_syntree_append( pcb, (char*)NULL );
-#endif
 
 	memset( &pcb->test, 0, sizeof( _vtype ) );
 
@@ -5211,25 +5167,9 @@ int _parse( _pcb* pcb )
 				pcb->tos--;
 			}
 
+			/* This could be done if no AST construction would be done: */
 			/* pcb->tos -= _productions[ pcb->idx ].length; */
 
-#if UNICC_SYNTAXTREE
-			/* Parse tree */
-			if( _productions[ pcb->idx ].length )
-			{
-				int		cnt;
-
-				for( cnt = 1, child = last;
-						cnt < _productions[ pcb->idx ].length;
-							cnt++ )
-					child = child->prev;
-
-				child->prev->next = (_syntree*)NULL;
-				child->prev = (_syntree*)NULL;
-			}
-			else
-				child = (_syntree*)NULL;
-#endif
 			if( node )
 			{
 				if( lnode = pcb->tos->node )
@@ -5267,16 +5207,6 @@ int _parse( _pcb* pcb )
 
 				UNICC_CLEARIN( pcb );
 
-#if UNICC_SYNTAXTREE
-				if( child )
-				{
-					pcb->syntax_tree->child = child;
-					child->parent = pcb->syntax_tree;
-					pcb->syntax_tree->symbol.symbol =
-						&( _symbols[ pcb->lhs ] );
-				}
-#endif
-
 				pcb->act = UNICC_SUCCESS;
 
 				#if UNICC_DEBUG
@@ -5304,16 +5234,6 @@ int _parse( _pcb* pcb )
 			pcb->tos->state = ( pcb->act & UNICC_REDUCE ) ? -1 : pcb->idx;
 			pcb->tos->line = pcb->line;
 			pcb->tos->column = pcb->column;
-
-#if UNICC_SYNTAXTREE
-			last = _syntree_append( pcb, (char*)NULL );
-
-			if( child )
-			{
-				last->child = child;
-				child->parent = last;
-			}
-#endif
 		}
 
 		if( pcb->act == UNICC_SUCCESS || pcb->act == UNICC_ERROR )
@@ -5398,7 +5318,9 @@ int _parse( _pcb* pcb )
 			UNICC_PARSER, pcb->sym, _symbols[ pcb->sym ].name );
 #endif
 
-			_alloc_stack( pcb );
+			if( _alloc_stack( pcb ) < 0 )
+				return (int)0;
+
 			pcb->tos++;
 			pcb->tos->node = (_ast*)NULL;
 
@@ -5430,10 +5352,6 @@ int _parse( _pcb* pcb )
 			pcb->tos->symbol = &( _symbols[ pcb->sym ] );
 			pcb->tos->line = pcb->line;
 			pcb->tos->column = pcb->column;
-
-#if UNICC_SYNTAXTREE
-			last = _syntree_append( pcb, _lexem( pcb ) );
-#endif
 
 			if( *pcb->tos->symbol->emit )
 				pcb->tos->node = _ast_create( pcb,
@@ -5475,13 +5393,8 @@ int _parse( _pcb* pcb )
 #endif
 
 	/* Clean memory of self-allocated parser control block */
-	if( !pcb_org )
-	{
-#if UNICC_SYNTAXTREE
-		_syntree_free( pcb->syntax_tree );
-#endif
+	if( pcb->is_internal )
 		free( pcb );
-	}
 
 	return ret;
 }
@@ -5553,40 +5466,6 @@ int parse_grammar( PARSER* p, char* src )
 #endif
 
 #if UNICC_MAIN
-
-#if UNICC_SYNTAXTREE
-UNICC_STATIC void _syntree_print( FILE* stream,
-		_pcb* pcb, _syntree* node )
-{
-	int 		i;
-	static int 	rec;
-
-	if( !node )
-		return;
-
-	if( !stream )
-		stream = stderr;
-
-	while( node )
-	{
-		for( i = 0; i < rec; i++ )
-			fprintf( stream,  "." );
-
-		fprintf( stream, "%s", node->symbol.symbol->name );
-
-		if( node->token )
-			fprintf( stream, ": '%s'", node->token );
-
-		fprintf( stream, "\n" );
-
-		rec++;
-		_syntree_print( stream, pcb, node->child );
-		rec--;
-
-		node = node->next;
-	}
-}
-#endif
 
 int main( int argc, char** argv )
 {
@@ -5679,14 +5558,6 @@ int main( int argc, char** argv )
 			_ast_print( stderr, pcb.ast );
 			_ast_free( pcb.ast );
 		}
-
-#if UNICC_SYNTAXTREE
-		/* Print syntax tree */
-		if( !pcb.error_count )
-			_syntree_print( stderr, &pcb, pcb.syntax_tree );
-
-		pcb.syntax_tree = _syntree_free( pcb.syntax_tree );
-#endif
 	}
 	while( flags & UNICCMAIN_ENDLESS );
 

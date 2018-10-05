@@ -838,61 +838,6 @@ UNICC_STATIC UNICC_SCHAR* @@prefix_lexem( @@prefix_pcb* pcb )
 	return pcb-&gt;lexem;
 }
 
-#if UNICC_SYNTAXTREE
-UNICC_STATIC @@prefix_syntree* @@prefix_syntree_free( @@prefix_syntree* node )
-{
-	if( !node )
-		return (@@prefix_syntree*)NULL;
-
-	@@prefix_syntree_free( node-&gt;child );
-	@@prefix_syntree_free( node-&gt;next );
-
-	if( node-&gt;token )
-		free( node-&gt;token );
-
-	free( node );
-	return (@@prefix_syntree*)NULL;
-}
-
-UNICC_STATIC @@prefix_syntree* @@prefix_syntree_append(
-	@@prefix_pcb* pcb, UNICC_SCHAR* token )
-{
-	@@prefix_syntree*	node;
-	@@prefix_syntree*	last;
-
-	if( !( node = (@@prefix_syntree*)malloc(
-			sizeof( @@prefix_syntree ) ) ) )
-		UNICC_OUTOFMEM( pcb );
-
-	memset( node, 0, sizeof( @@prefix_syntree ) );
-	memcpy( &amp;( node-&gt;symbol ), pcb-&gt;tos, sizeof( @@prefix_tok ) );
-
-	if( token )
-	{
-		#if !UNICC_WCHAR
-		if( !( node-&gt;token = strdup( token ) ) )
-			UNICC_OUTOFMEM( pcb );
-		#else
-		if( !( node-&gt;token = wcsdup( token ) ) )
-			UNICC_OUTOFMEM( pcb );
-		#endif
-	}
-
-	if( ( last = pcb-&gt;syntax_tree ) )
-	{
-		while( last-&gt;next )
-			last = last-&gt;next;
-
-		last-&gt;next = node;
-		node-&gt;prev = last;
-	}
-	else
-		pcb-&gt;syntax_tree = node;
-
-	return node;
-}
-#endif
-
 UNICC_STATIC @@prefix_ast* @@prefix_ast_free( @@prefix_ast* node )
 {
 	if( !node )
@@ -1038,13 +983,21 @@ UNICC_STATIC int @@prefix_alloc_stack( @@prefix_pcb* pcb )
 	else if( ( size = (unsigned int)( pcb-&gt;tos - pcb-&gt;stack ) )
 				== pcb-&gt;stacksize )
 	{
-		if( !( pcb-&gt;tos = pcb-&gt;stack = (@@prefix_tok*)realloc( pcb-&gt;tos,
+		@@prefix_tok*	ptr;
+
+		if( !( ptr = (@@prefix_tok*)realloc( pcb-&gt;stack,
 				( pcb-&gt;stacksize + UNICC_MALLOCSTEP )
 					* sizeof( @@prefix_tok ) ) ) )
 		{
 			UNICC_OUTOFMEM( pcb );
+
+			if( pcb-&gt;stack )
+				free( pcb-&gt;stack );
+
 			return -1;
 		}
+
+		pcb-&gt;tos = pcb-&gt;stack = ptr;
 
 		pcb-&gt;stacksize += UNICC_MALLOCSTEP;
 		pcb-&gt;tos += size;
@@ -1135,22 +1088,32 @@ UNICC_STATIC UNICC_CHAR @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offs
 				( UNICC_MALLOCSTEP + 1 ) * sizeof( UNICC_CHAR ) );
 
 			if( !pcb-&gt;buf )
+			{
 				UNICC_OUTOFMEM( pcb );
+				return 0;
+			}
 
 			*pcb-&gt;buf = 0;
 		}
 		else if( *pcb-&gt;buf &amp;&amp; !( ( pcb-&gt;bufend - pcb-&gt;buf ) %
 					UNICC_MALLOCSTEP ) )
 		{
-			unsigned int size	= (unsigned int)( pcb-&gt;bufend - pcb-&gt;buf );
+			unsigned int 	size	= (unsigned int)( pcb-&gt;bufend - pcb-&gt;buf );
+			UNICC_CHAR*		buf;
 
-			pcb-&gt;buf = (UNICC_CHAR*)realloc( pcb-&gt;buf,
+			if( !( buf = (UNICC_CHAR*)realloc( pcb-&gt;buf,
 						( size + UNICC_MALLOCSTEP + 1 )
-							* sizeof( UNICC_CHAR ) );
-
-			if( !pcb-&gt;buf )
+							* sizeof( UNICC_CHAR ) ) ) )
+			{
 				UNICC_OUTOFMEM( pcb );
 
+				if( pcb-&gt;buf )
+					free( pcb-&gt;buf );
+
+				return 0;
+			}
+
+			pcb-&gt;buf = buf;
 			pcb-&gt;bufend = pcb-&gt;buf + size;
 		}
 
@@ -1591,13 +1554,8 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 @@goal-type @@prefix_parse( @@prefix_pcb* pcb )
 {
 	@@goal-type			ret;
-	@@prefix_pcb*		pcb_org		= pcb;
 	int					i;
 
-#if UNICC_SYNTAXTREE
-	@@prefix_syntree*	child;
-	@@prefix_syntree*	last		= (@@prefix_syntree*)NULL;
-#endif
 	@@prefix_ast*		node;
 	@@prefix_ast*		lnode;
 
@@ -1619,11 +1577,13 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 		}
 
 		memset( pcb, 0, sizeof( @@prefix_pcb ) );
+		pcb-&gt;is_internal = 1;
 	}
 
 	/* Initialize Parser Control Block */
 	pcb-&gt;stacksize = 0;
-	@@prefix_alloc_stack( pcb );
+	if( @@prefix_alloc_stack( pcb ) &lt; 0 )
+		return (@@goal-type)0;
 
 	memset( pcb-&gt;tos, 0, sizeof( @@prefix_tok ) );
 
@@ -1632,10 +1592,6 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 	pcb-&gt;old_sym = -1;
 	pcb-&gt;line = 1;
 	pcb-&gt;column = 1;
-
-#if UNICC_SYNTAXTREE
-	@@prefix_syntree_append( pcb, (char*)NULL );
-#endif
 
 	memset( &amp;pcb-&gt;test, 0, sizeof( @@prefix_vtype ) );
 
@@ -1686,25 +1642,9 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 				pcb-&gt;tos--;
 			}
 
+			/* This could be done if no AST construction would be done: */
 			/* pcb-&gt;tos -= @@prefix_productions[ pcb-&gt;idx ].length; */
 
-#if UNICC_SYNTAXTREE
-			/* Parse tree */
-			if( @@prefix_productions[ pcb-&gt;idx ].length )
-			{
-				int		cnt;
-
-				for( cnt = 1, child = last;
-						cnt &lt; @@prefix_productions[ pcb-&gt;idx ].length;
-							cnt++ )
-					child = child-&gt;prev;
-
-				child-&gt;prev-&gt;next = (@@prefix_syntree*)NULL;
-				child-&gt;prev = (@@prefix_syntree*)NULL;
-			}
-			else
-				child = (@@prefix_syntree*)NULL;
-#endif
 			if( node )
 			{
 				if( lnode = pcb-&gt;tos-&gt;node )
@@ -1742,16 +1682,6 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 
 				UNICC_CLEARIN( pcb );
 
-#if UNICC_SYNTAXTREE
-				if( child )
-				{
-					pcb-&gt;syntax_tree-&gt;child = child;
-					child-&gt;parent = pcb-&gt;syntax_tree;
-					pcb-&gt;syntax_tree-&gt;symbol.symbol =
-						&amp;( @@prefix_symbols[ pcb-&gt;lhs ] );
-				}
-#endif
-
 				pcb-&gt;act = UNICC_SUCCESS;
 
 				#if UNICC_DEBUG
@@ -1779,16 +1709,6 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 			pcb-&gt;tos-&gt;state = ( pcb-&gt;act &amp; UNICC_REDUCE ) ? -1 : pcb-&gt;idx;
 			pcb-&gt;tos-&gt;line = pcb-&gt;line;
 			pcb-&gt;tos-&gt;column = pcb-&gt;column;
-
-#if UNICC_SYNTAXTREE
-			last = @@prefix_syntree_append( pcb, (char*)NULL );
-
-			if( child )
-			{
-				last-&gt;child = child;
-				child-&gt;parent = last;
-			}
-#endif
 		}
 
 		if( pcb-&gt;act == UNICC_SUCCESS || pcb-&gt;act == UNICC_ERROR )
@@ -1873,7 +1793,9 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 			UNICC_PARSER, pcb-&gt;sym, @@prefix_symbols[ pcb-&gt;sym ].name );
 #endif
 
-			@@prefix_alloc_stack( pcb );
+			if( @@prefix_alloc_stack( pcb ) &lt; 0 )
+				return (@@goal-type)0;
+
 			pcb-&gt;tos++;
 			pcb-&gt;tos-&gt;node = (@@prefix_ast*)NULL;
 
@@ -1897,10 +1819,6 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 			pcb-&gt;tos-&gt;symbol = &amp;( @@prefix_symbols[ pcb-&gt;sym ] );
 			pcb-&gt;tos-&gt;line = pcb-&gt;line;
 			pcb-&gt;tos-&gt;column = pcb-&gt;column;
-
-#if UNICC_SYNTAXTREE
-			last = @@prefix_syntree_append( pcb, @@prefix_lexem( pcb ) );
-#endif
 
 			if( *pcb-&gt;tos-&gt;symbol-&gt;emit )
 				pcb-&gt;tos-&gt;node = @@prefix_ast_create( pcb,
@@ -1942,13 +1860,8 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 #endif
 
 	/* Clean memory of self-allocated parser control block */
-	if( !pcb_org )
-	{
-#if UNICC_SYNTAXTREE
-		@@prefix_syntree_free( pcb-&gt;syntax_tree );
-#endif
+	if( pcb-&gt;is_internal )
 		free( pcb );
-	}
 
 	return ret;
 }
@@ -1967,40 +1880,6 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 #endif
 
 #if UNICC_MAIN
-
-#if UNICC_SYNTAXTREE
-UNICC_STATIC void @@prefix_syntree_print( FILE* stream,
-		@@prefix_pcb* pcb, @@prefix_syntree* node )
-{
-	int 		i;
-	static int 	rec;
-
-	if( !node )
-		return;
-
-	if( !stream )
-		stream = stderr;
-
-	while( node )
-	{
-		for( i = 0; i &lt; rec; i++ )
-			fprintf( stream,  "." );
-
-		fprintf( stream, "%s", node-&gt;symbol.symbol-&gt;name );
-
-		if( node-&gt;token )
-			fprintf( stream, ": '%s'", node-&gt;token );
-
-		fprintf( stream, "\n" );
-
-		rec++;
-		@@prefix_syntree_print( stream, pcb, node-&gt;child );
-		rec--;
-
-		node = node-&gt;next;
-	}
-}
-#endif
 
 int main( int argc, char** argv )
 {
@@ -2093,14 +1972,6 @@ int main( int argc, char** argv )
 			@@prefix_ast_print( stderr, pcb.ast );
 			@@prefix_ast_free( pcb.ast );
 		}
-
-#if UNICC_SYNTAXTREE
-		/* Print syntax tree */
-		if( !pcb.error_count )
-			@@prefix_syntree_print( stderr, &amp;pcb, pcb.syntax_tree );
-
-		pcb.syntax_tree = @@prefix_syntree_free( pcb.syntax_tree );
-#endif
 	}
 	while( flags &amp; UNICCMAIN_ENDLESS );
 
@@ -2230,11 +2101,6 @@ int main( int argc, char** argv )
 #define UNICC_ERROR_DELAY		3
 #endif
 
-/* Syntax tree construction */
-#ifndef UNICC_SYNTAXTREE
-#define UNICC_SYNTAXTREE		0
-#endif
-
 /* Enable/Disable terminal selection in semantic actions */
 #ifndef UNICC_SEMANTIC_TERM_SEL
 #define UNICC_SEMANTIC_TERM_SEL	0
@@ -2292,26 +2158,12 @@ typedef struct
 } @@prefix_tok;
 
 
-#if UNICC_SYNTAXTREE
-/* Parse tree node */
-typedef struct @@prefix_SYNTREE @@prefix_syntree;
-
-struct @@prefix_SYNTREE
-{
-	@@prefix_tok		symbol;
-	UNICC_SCHAR*		token;
-
-	@@prefix_syntree*	parent;
-	@@prefix_syntree*	child;
-	@@prefix_syntree*	prev;
-	@@prefix_syntree*	next;
-};
-#endif
-
-
 /* Parser Control Block */
 typedef struct
 {
+	/* Is this PCB allocated by parser? */
+	char				is_internal;
+
 	/* Stack */
 	@@prefix_tok*		stack;
 	@@prefix_tok*		tos;
@@ -2351,10 +2203,7 @@ typedef struct
 	unsigned int		line;
 	unsigned int		column;
 
-#if UNICC_SYNTAXTREE
-	/* Syntax tree */
-	@@prefix_syntree*	syntax_tree;
-#endif
+	/* Abstract Syntax Tree */
 	@@prefix_ast*		ast;
 
 	/* User-defined components */

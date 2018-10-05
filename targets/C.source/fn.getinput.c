@@ -27,18 +27,22 @@ UNICC_STATIC UNICC_CHAR @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offs
 		else if( *pcb->buf && !( ( pcb->bufend - pcb->buf ) %
 					UNICC_MALLOCSTEP ) )
 		{
-			unsigned int size	= (unsigned int)( pcb->bufend - pcb->buf );
+			unsigned int 	size	= (unsigned int)( pcb->bufend - pcb->buf );
+			UNICC_CHAR*		buf;
 
-			pcb->buf = (UNICC_CHAR*)realloc( pcb->buf,
+			if( !( buf = (UNICC_CHAR*)realloc( pcb->buf,
 						( size + UNICC_MALLOCSTEP + 1 )
-							* sizeof( UNICC_CHAR ) );
-
-			if( !pcb->buf )
+							* sizeof( UNICC_CHAR ) ) ) )
 			{
 				UNICC_OUTOFMEM( pcb );
+
+				if( pcb->buf )
+					free( pcb->buf );
+
 				return 0;
 			}
 
+			pcb->buf = buf;
 			pcb->bufend = pcb->buf + size;
 		}
 

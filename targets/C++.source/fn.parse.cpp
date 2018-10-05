@@ -11,7 +11,8 @@
 
 	// Initialize parser
 	this->stacksize = 0;
-	this->alloc_stack();
+	if( !this->alloc_stack() )
+		return (@@goal-type)NULL;
 
 	memset( this->tos, 0, sizeof( @@prefix_tok ) );
 
@@ -213,7 +214,9 @@
 			UNICC_PARSER, this->sym, this->symbols[ this->sym ].name );
 #endif
 
-			this->alloc_stack();
+			if( !this->alloc_stack() )
+				return (@@goal-type)NULL;
+
 			this->tos++;
 			this->tos->node = NULL;
 

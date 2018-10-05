@@ -20,40 +20,6 @@
 
 #if UNICC_MAIN
 
-#if UNICC_SYNTAXTREE
-UNICC_STATIC void @@prefix_syntree_print( FILE* stream,
-		@@prefix_pcb* pcb, @@prefix_syntree* node )
-{
-	int 		i;
-	static int 	rec;
-
-	if( !node )
-		return;
-
-	if( !stream )
-		stream = stderr;
-
-	while( node )
-	{
-		for( i = 0; i < rec; i++ )
-			fprintf( stream,  "." );
-
-		fprintf( stream, "%s", node->symbol.symbol->name );
-
-		if( node->token )
-			fprintf( stream, ": '%s'", node->token );
-
-		fprintf( stream, "\n" );
-
-		rec++;
-		@@prefix_syntree_print( stream, pcb, node->child );
-		rec--;
-
-		node = node->next;
-	}
-}
-#endif
-
 int main( int argc, char** argv )
 {
 #define UNICCMAIN_SILENT		1
@@ -159,14 +125,6 @@ int main( int argc, char** argv )
 			@@prefix_ast_print( stderr, pcb.ast );
 			@@prefix_ast_free( pcb.ast );
 		}
-
-#if UNICC_SYNTAXTREE
-		/* Print syntax tree */
-		if( !pcb.error_count )
-			@@prefix_syntree_print( stderr, &pcb, pcb.syntax_tree );
-
-		pcb.syntax_tree = @@prefix_syntree_free( pcb.syntax_tree );
-#endif
 	}
 	while( flags & UNICCMAIN_ENDLESS );
 

@@ -748,8 +748,6 @@ between the rows/columns, except the last row/column.
 
 %%%include fn.unicode.c
 
-%%%include fn.syntree.c
-
 %%%include fn.ast.c
 
 %%%include fn.getact.c
@@ -797,8 +795,6 @@ between the rows/columns, except the last row/column.
 %%%include ast.h
 
 %%%include token.h
-
-%%%include syntree.h
 
 %%%include pcb.h
 

@@ -17,14 +17,12 @@ SOURCE		=	\
 				fn.lex.c \
 				fn.main.c \
 				fn.parse.c \
-				fn.syntree.c \
 				fn.stack.c \
 				fn.unicode.c \
 				ast.h \
 				pcb.h \
 				prodinfo.h \
 				syminfo.h \
-				syntree.h \
 				tables.h \
 				token.h
 

@@ -6,10 +6,14 @@ This file is used to document any relevant changes done to UniCC.
 
 Yet unreleased.
 
-- Compiled and linked against libphorward 0.23
-- New JavaScript and JSON targets
-- Updated C, C++ and Python targets
-- Started a grammar and templates test suite for better continous integration
+- Compiled and linked against libphorward 0.23.
+- C and C++ targets improved to avoid memory leaking and handle malloc/realloc
+  calls more secure.
+- Removed outdated syntax-tree feature from C target.
+- Updated C, C++ and Python targets now supporting the UNICC_SUCCESS and
+  UNICC_ERROR flag that can be set as current `act` (action) to stop parsing.
+- New JavaScript and JSON targets.
+- Started a grammar and templates test suite for better continous integration.
 
 ## v1.4
 

@@ -119,11 +119,6 @@
 #define UNICC_ERROR_DELAY		3
 #endif
 
-/* Syntax tree construction */
-#ifndef UNICC_SYNTAXTREE
-#define UNICC_SYNTAXTREE		0
-#endif
-
 /* Enable/Disable terminal selection in semantic actions */
 #ifndef UNICC_SEMANTIC_TERM_SEL
 #define UNICC_SEMANTIC_TERM_SEL	0
@@ -192,26 +187,12 @@ typedef struct
 } _tok;
 
 
-#if UNICC_SYNTAXTREE
-/* Parse tree node */
-typedef struct _SYNTREE _syntree;
-
-struct _SYNTREE
-{
-	_tok		symbol;
-	UNICC_SCHAR*		token;
-
-	_syntree*	parent;
-	_syntree*	child;
-	_syntree*	prev;
-	_syntree*	next;
-};
-#endif
-
-
 /* Parser Control Block */
 typedef struct
 {
+	/* Is this PCB allocated by parser? */
+	char				is_internal;
+
 	/* Stack */
 	_tok*		stack;
 	_tok*		tos;
@@ -251,10 +232,7 @@ typedef struct
 	unsigned int		line;
 	unsigned int		column;
 
-#if UNICC_SYNTAXTREE
-	/* Syntax tree */
-	_syntree*	syntax_tree;
-#endif
+	/* Abstract Syntax Tree */
 	_ast*		ast;
 
 	/* User-defined components */
