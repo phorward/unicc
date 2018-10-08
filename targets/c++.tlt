@@ -862,7 +862,7 @@ bool @@prefix_parser::handle_error( FILE* @@prefix_dbg )
 @@actions
 			}
 
-			// Drop right-hand side
+			// Drop right-hand side, collect AST nodes
 			node = NULL;
 
 			for( int i = 0; i &lt; this-&gt;productions[ this-&gt;idx ].length; i++ )
@@ -885,6 +885,7 @@ bool @@prefix_parser::handle_error( FILE* @@prefix_dbg )
 				this-&gt;tos--;
 			}
 
+			// Chain collected AST nodes
 			if( node )
 			{
 				if( lnode = this-&gt;tos-&gt;node )
@@ -899,13 +900,15 @@ bool @@prefix_parser::handle_error( FILE* @@prefix_dbg )
 					this-&gt;tos-&gt;node = node;
 			}
 
+			// Generate AST node?
 			if( *this-&gt;productions[ this-&gt;idx ].emit )
 			{
-				node = this-&gt;ast_create(
-							this-&gt;productions[ this-&gt;idx ].emit, NULL);
-
-				node-&gt;child = this-&gt;tos-&gt;node;
-				this-&gt;tos-&gt;node = node;
+				if( ( node = this-&gt;ast_create(
+								this-&gt;productions[ this-&gt;idx ].emit, NULL ) ) )
+				{
+					node-&gt;child = this-&gt;tos-&gt;node;
+					this-&gt;tos-&gt;node = node;
+				}
 			}
 
 			// Enforced error in semantic actions?

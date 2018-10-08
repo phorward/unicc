@@ -1663,12 +1663,13 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 
 			if( *@@prefix_productions[ pcb-&gt;idx ].emit )
 			{
-				node = @@prefix_ast_create( pcb,
-							@@prefix_productions[ pcb-&gt;idx ].emit,
-								(UNICC_SCHAR*)NULL);
-
-				node-&gt;child = pcb-&gt;tos-&gt;node;
-				pcb-&gt;tos-&gt;node = node;
+				if( ( node = @@prefix_ast_create( pcb,
+								@@prefix_productions[ pcb-&gt;idx ].emit,
+									(UNICC_SCHAR*)NULL ) ) )
+				{
+					node-&gt;child = pcb-&gt;tos-&gt;node;
+					pcb-&gt;tos-&gt;node = node;
+				}
 			}
 
 			/* Enforced error in semantic actions? */

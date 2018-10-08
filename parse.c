@@ -5188,12 +5188,13 @@ int _parse( _pcb* pcb )
 
 			if( *_productions[ pcb->idx ].emit )
 			{
-				node = _ast_create( pcb,
-							_productions[ pcb->idx ].emit,
-								(UNICC_SCHAR*)NULL);
-
-				node->child = pcb->tos->node;
-				pcb->tos->node = node;
+				if( ( node = _ast_create( pcb,
+								_productions[ pcb->idx ].emit,
+									(UNICC_SCHAR*)NULL ) ) )
+				{
+					node->child = pcb->tos->node;
+					pcb->tos->node = node;
+				}
 			}
 
 			/* Enforced error in semantic actions? */

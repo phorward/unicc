@@ -110,12 +110,13 @@
 
 			if( *@@prefix_productions[ pcb->idx ].emit )
 			{
-				node = @@prefix_ast_create( pcb,
-							@@prefix_productions[ pcb->idx ].emit,
-								(UNICC_SCHAR*)NULL);
-
-				node->child = pcb->tos->node;
-				pcb->tos->node = node;
+				if( ( node = @@prefix_ast_create( pcb,
+								@@prefix_productions[ pcb->idx ].emit,
+									(UNICC_SCHAR*)NULL ) ) )
+				{
+					node->child = pcb->tos->node;
+					pcb->tos->node = node;
+				}
 			}
 
 			/* Enforced error in semantic actions? */

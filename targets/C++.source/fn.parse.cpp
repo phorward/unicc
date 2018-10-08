@@ -46,7 +46,7 @@
 @@actions
 			}
 
-			// Drop right-hand side
+			// Drop right-hand side, collect AST nodes
 			node = NULL;
 
 			for( int i = 0; i < this->productions[ this->idx ].length; i++ )
@@ -69,6 +69,7 @@
 				this->tos--;
 			}
 
+			// Chain collected AST nodes
 			if( node )
 			{
 				if( lnode = this->tos->node )
@@ -83,13 +84,15 @@
 					this->tos->node = node;
 			}
 
+			// Generate AST node?
 			if( *this->productions[ this->idx ].emit )
 			{
-				node = this->ast_create(
-							this->productions[ this->idx ].emit, NULL);
-
-				node->child = this->tos->node;
-				this->tos->node = node;
+				if( ( node = this->ast_create(
+								this->productions[ this->idx ].emit, NULL ) ) )
+				{
+					node->child = this->tos->node;
+					this->tos->node = node;
+				}
 			}
 
 			// Enforced error in semantic actions?
