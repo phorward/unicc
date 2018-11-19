@@ -7,7 +7,7 @@ This file is used to document any relevant changes done to UniCC.
 Yet unreleased.
 
 - New targets for JavaScript and JSON.
-- Tagets C and C++ improved to avoid memory leaking and handle malloc/realloc
+- Targets C and C++ improved to avoid memory leaking and handle malloc/realloc
   calls more securely.
 - All targets now supporting the `UNICC_SUCCESS` and `UNICC_ERROR` flags that
   can be set as current `act` (action) to stop parsing.
