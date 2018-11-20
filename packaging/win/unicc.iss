@@ -2,9 +2,9 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "UniCC Parser Generator"
-#define MyAppVersion "1.3.1"
+#define MyAppVersion "1.5.0"
 #define MyAppPublisher "Phorward Software Technologies"
-#define MyAppURL "http://phorward.info"
+#define MyAppURL "https://phorward.info"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -21,7 +21,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\UniCC
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
-OutputBaseFilename=unicc-1.3.1
+OutputBaseFilename=unicc-1.5.0
 Compression=lzma
 SolidCompression=yes
 ChangesEnvironment=yes
@@ -46,7 +46,11 @@ Source: "..\..\README.md"; DestDir: "{app}"; DestName: "README.txt"; Flags: igno
 Source: "..\..\CHANGELOG.md"; DestDir: "{app}"; DestName: "CHANGELOG.txt"; Flags: ignoreversion
 Source: "..\..\LICENSE"; DestDir: "{app}"; DestName: "LICENSE.txt"; Flags: ignoreversion
 
-Source: "..\..\targets\*.tlt"; DestDir: "{app}\targets"; Flags: ignoreversion
+Source: "..\..\targets\c.tlt"; DestDir: "{app}\targets"; Flags: ignoreversion
+Source: "..\..\targets\c++.tlt"; DestDir: "{app}\targets"; Flags: ignoreversion
+Source: "..\..\targets\python.tlt"; DestDir: "{app}\targets"; Flags: ignoreversion
+Source: "..\..\targets\javascript.tlt"; DestDir: "{app}\targets"; Flags: ignoreversion
+Source: "..\..\targets\json.tlt"; DestDir: "{app}\targets"; Flags: ignoreversion
 Source: "..\..\examples\*"; DestDir: "{app}\examples"; Flags: ignoreversion recursesubdirs
 
 [Icons]
@@ -54,7 +58,7 @@ Name: "{group}\README"; Filename: "{cmd}"; Parameters: "/C more ""{app}\README.t
 Name: "{group}\CHANGELOG"; Filename: "{cmd}"; Parameters: "/C more ""{app}\CHANGELOG.txt"""
 Name: "{group}\LICENSE"; Filename: "{cmd}"; Parameters: "/C more ""{app}\LICENSE.txt"""
 Name: "{group}\examples"; Filename: "{app}\examples"
-Name: "{group}\User's Manual"; Filename: "{app}\doc\unicc.pdf"; WorkingDir: "{app}"
+Name: "{group}\User's Manual"; Filename: "{app}\unicc.pdf"; WorkingDir: "{app}"
 Name: "{group}\UniCC prompt"; Filename: "{cmd}"; Parameters: "/K ""title UniCC prompt"""; WorkingDir: "{app}"
 Name: "{group}\{cm:ProgramOnTheWeb,{#MyAppName}}"; Filename: "{#MyAppURL}"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"

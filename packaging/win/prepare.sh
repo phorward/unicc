@@ -9,7 +9,7 @@ then
 	echo "unicc.exe does not exist..."
 
 	cd ../..
-	LDFLAGS="-L /lib" CFLAGS="-I /include" CPPFLAGS="-I /include" ./configure
+	LDFLAGS="-static -L /lib" CFLAGS="-I /include" CPPFLAGS="-I /include" ./configure
 	make
 	cd -
 fi
