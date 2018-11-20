@@ -4,7 +4,7 @@ This file is used to document any relevant changes done to UniCC.
 
 ## v1.5
 
-Yet unreleased.
+Released on: Nov 20, 2018
 
 - New targets for JavaScript and JSON.
 - Targets C and C++ improved to avoid memory leaking and handle malloc/realloc
