@@ -103,7 +103,7 @@ Released on: June 29, 2012
 
 
 [develop]: https://github.com/phorward/unicc/compare/1.5.0...develop
-[v1.5]: https://github.com/phorward/unicc/compare/1.4.0...2.5.0
+[v1.5]: https://github.com/phorward/unicc/compare/1.4.0...1.5.0
 [v1.4]: https://github.com/phorward/unicc/compare/1.3.3...1.4.0
 [v1.3.3]: https://github.com/phorward/unicc/compare/1.3.2...1.3.3
 [v1.3.2]: https://github.com/phorward/unicc/compare/1.3.1...1.3.2
