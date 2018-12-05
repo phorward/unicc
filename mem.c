@@ -518,7 +518,8 @@ PARSER* create_parser( void )
 
 	/* Initialize any dynamic lists and arrays */
 	pptr->symbols = plist_create( sizeof( SYMBOL ),
-						PLIST_MOD_EXTKEYS | PLIST_MOD_UNIQUE );
+						PLIST_MOD_EXTKEYS | PLIST_MOD_UNIQUE
+							| PLIST_MOD_AUTOSORT );
 	plist_set_sortfn( pptr->symbols, sort_symbols );
 
 	pptr->productions = plist_create( sizeof( PROD ), PLIST_MOD_NONE );
