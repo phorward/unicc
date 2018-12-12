@@ -1943,16 +1943,6 @@ int main( int argc, char** argv )
 		}
 	}
 
-	/* Parser info */
-	if( !( flags &amp; UNICCMAIN_SILENT ) )
-	{
-		if( @@name_len &gt; 0 &amp;&amp; @@version_len &gt; 0 )
-			printf( "@@name v@@version\n" );
-
-		if( @@copyright_len &gt; 0 )
-			printf( "@@copyright\n\n" );
-	}
-
 	/* Parser invocation loop */
 	do
 	{

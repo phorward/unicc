@@ -5691,16 +5691,6 @@ int main( int argc, char** argv )
 		}
 	}
 
-	/* Parser info */
-	if( !( flags & UNICCMAIN_SILENT ) )
-	{
-		if( @@name_len > 0 && @@version_len > 0 )
-			printf( "@@name v@@version\n" );
-
-		if( @@copyright_len > 0 )
-			printf( "@@copyright\n\n" );
-	}
-
 	/* Parser invocation loop */
 	do
 	{
