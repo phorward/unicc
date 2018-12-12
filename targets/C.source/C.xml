@@ -785,10 +785,6 @@ between the rows/columns, except the last row/column.
 
 %%%include fn.ast.c
 
-%%%include fn.getact.c
-
-%%%include fn.getgo.c
-
 %%%include fn.stack.c
 
 %%%include fn.getchar.c

@@ -944,54 +944,6 @@ UNICC_STATIC void @@prefix_ast_print( FILE* stream, @@prefix_ast* node )
 	}
 }
 
-#if 0
-UNICC_STATIC int @@prefix_get_act( @@prefix_pcb* pcb )
-{
-	int i;
-
-	for( i = 1; i &lt; @@prefix_act[ pcb-&gt;tos-&gt;state ][0] * 3; i += 3 )
-	{
-		if( @@prefix_act[ pcb-&gt;tos-&gt;state ][i] == pcb-&gt;sym )
-		{
-			if( ( pcb-&gt;act = @@prefix_act[ pcb-&gt;tos-&gt;state ][i+1] )
-					== UNICC_ERROR )
-				return 0; /* Force parse error! */
-
-			pcb-&gt;idx = @@prefix_act[ pcb-&gt;tos-&gt;state ][i+2];
-			return 1;
-		}
-	}
-	
-	/* Default production */
-	if( ( pcb-&gt;idx = @@prefix_def_prod[ pcb-&gt;tos-&gt;state ] ) &gt; -1 )
-	{
-		pcb-&gt;act = 1; /* Reduce */
-		return 1;
-	}
-
-	return 0;
-}
-#endif
-
-#if 0
-UNICC_STATIC int @@prefix_get_go( @@prefix_pcb* pcb )
-{
-	int i;
-
-	for( i = 1; i &lt; @@prefix_go[ pcb-&gt;tos-&gt;state ][0] * 3; i += 3 )
-	{
-		if( @@prefix_go[ pcb-&gt;tos-&gt;state ][i] == pcb-&gt;lhs )
-		{
-			pcb-&gt;act = @@prefix_go[ pcb-&gt;tos-&gt;state ][ i + 1 ];
-			pcb-&gt;idx = @@prefix_go[ pcb-&gt;tos-&gt;state ][ i + 2 ];
-			return 1;
-		}
-	}
-
-	return 0;
-}
-#endif
-
 UNICC_STATIC int @@prefix_alloc_stack( @@prefix_pcb* pcb )
 {
 	unsigned int	size;

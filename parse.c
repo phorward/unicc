@@ -1294,54 +1294,6 @@ UNICC_STATIC void _ast_print( FILE* stream, _ast* node )
 	}
 }
 
-#if 0
-UNICC_STATIC int _get_act( _pcb* pcb )
-{
-	int i;
-
-	for( i = 1; i < _act[ pcb->tos->state ][0] * 3; i += 3 )
-	{
-		if( _act[ pcb->tos->state ][i] == pcb->sym )
-		{
-			if( ( pcb->act = _act[ pcb->tos->state ][i+1] )
-					== UNICC_ERROR )
-				return 0; /* Force parse error! */
-
-			pcb->idx = _act[ pcb->tos->state ][i+2];
-			return 1;
-		}
-	}
-	
-	/* Default production */
-	if( ( pcb->idx = _def_prod[ pcb->tos->state ] ) > -1 )
-	{
-		pcb->act = 1; /* Reduce */
-		return 1;
-	}
-
-	return 0;
-}
-#endif
-
-#if 0
-UNICC_STATIC int _get_go( _pcb* pcb )
-{
-	int i;
-
-	for( i = 1; i < _go[ pcb->tos->state ][0] * 3; i += 3 )
-	{
-		if( _go[ pcb->tos->state ][i] == pcb->lhs )
-		{
-			pcb->act = _go[ pcb->tos->state ][ i + 1 ];
-			pcb->idx = _go[ pcb->tos->state ][ i + 2 ];
-			return 1;
-		}
-	}
-
-	return 0;
-}
-#endif
-
 UNICC_STATIC int _alloc_stack( _pcb* pcb )
 {
 	unsigned int	size;
