@@ -1,4 +1,7 @@
-#!language					"C";
+#!language	#parser             "XPL";
+#description        "eXample Programming Language (Draft)";
+#copyright          "In the public domain, 2011";
+#version            "0.1";				"C";
 
 //Some grammar-related directives
 #whitespaces                ' \t';

@@ -9,7 +9,7 @@ Author:	Jan Max Meyer
 Usage:	Grammar definition parser
 ----------------------------------------------------------------------------- */
 
-#!mode			sensitive ;
+#!mode			scannerless ;
 #!language		"C";
 
 /*
@@ -226,14 +226,18 @@ fixed_directive		-> "mode"				mode_type
 */
 					;
 
-mode_type			->	"context-sensitive"
-						[*	parser->p_mode = MODE_SENSITIVE; *]
+mode_type			->	"context-sensitive"                        //deprecate!
+						[*	parser->p_mode = MODE_SCANNERLESS; *]
 					|	"sensitive"
-						[*	parser->p_mode = MODE_SENSITIVE; *]
+						[*	parser->p_mode = MODE_SCANNERLESS; *]  //deprecate!
+					|	"scannerless"
+						[*	parser->p_mode = MODE_SCANNERLESS; *]
 					| "context-insensitive"
-						[*	parser->p_mode = MODE_INSENSITIVE;*]
+						[*	parser->p_mode = MODE_SCANNER; *]      //deprecate!
 					| "insensitive"
-						[*	parser->p_mode = MODE_INSENSITIVE;*]
+						[*	parser->p_mode = MODE_SCANNER; *]      //deprecate!
+					| "scanner"
+						[*	parser->p_mode = MODE_SCANNER; *]
 					;
 
 segment				->	code
@@ -279,7 +283,7 @@ directive_parms		-> "whitespaces" 	symbol_list
 									in conext-free model */
 								if( s->type == SYM_NON_TERMINAL &&
 									parser->p_mode !=
-										MODE_SENSITIVE )
+										MODE_SCANNERLESS )
 								{
 									print_error( parser, ERR_NONTERM_WS_NOT_ALLOWED,
 										ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
@@ -300,7 +304,7 @@ directive_parms		-> "whitespaces" 	symbol_list
 
 							/* Ouput a warning, if this definition
 								is effectless */
-							if( parser->p_mode != MODE_SENSITIVE )
+							if( parser->p_mode != MODE_SCANNERLESS )
 							{
 								print_error( parser, ERR_NO_EFFECT_IN_MODE,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
@@ -324,7 +328,7 @@ directive_parms		-> "whitespaces" 	symbol_list
 
 							/* Ouput a warning, if this definition
 								is effectless */
-							if( parser->p_mode != MODE_SENSITIVE )
+							if( parser->p_mode != MODE_SCANNERLESS )
 							{
 								print_error( parser, ERR_NO_EFFECT_IN_MODE,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
@@ -353,22 +357,6 @@ directive_parms		-> "whitespaces" 	symbol_list
 
 					| "nonassoc"		symbol_list
 						[*	set_assoc_and_prec( @2, ASSOC_NOASSOC ); *]
-
-					| "parser"			string
-						[*	parser->p_name = pstrcatstr(
-								parser->p_name, strbuf, FALSE );	*]
-
-					| "description"		string
-						[*	parser->p_desc = pstrcatstr(
-								parser->p_desc, strbuf, FALSE );	*]
-
-					| "copyright"		string
-						[*	parser->p_copyright = pstrcatstr(
-								parser->p_copyright, strbuf, FALSE );	*]
-
-					| "version"			string
-						[*	parser->p_version = pstrcatstr(
-								parser->p_version, strbuf, FALSE );	*]
 
 					| "prefix"			string
 						[*	parser->p_prefix = pstrcatstr(
@@ -410,7 +398,7 @@ directive_parms		-> "whitespaces" 	symbol_list
 					| "lexeme separation" boolean_opt
 						[*	/* Ouput a warning, if this definition
 								is effectless */
-							if( parser->p_mode != MODE_SENSITIVE )
+							if( parser->p_mode != MODE_SCANNERLESS )
 							{
 								print_error( parser, ERR_NO_EFFECT_IN_MODE,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,

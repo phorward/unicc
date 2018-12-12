@@ -653,9 +653,8 @@ static void print_xml_symbols( PARSER* parser, XML_T par )
 					break;
 
 				default:
+					MISSINGCASE;
 					tmp = "!!!UNDEFINED!!!";
-					MISS_MSG( "Unhandled terminal type in "
-								"XML code generator" );
 					break;
 			}
 
@@ -910,8 +909,7 @@ static void print_xml_states( PARSER* parser, XML_T par )
 					break;
 
 				default:
-					MISS_MSG( "Unhandled action table action in "
-								"XML code generator" );
+					MISSINGCASE;
 					break;
 			}
 
@@ -1063,9 +1061,6 @@ void build_xml( PARSER* parser, BOOLEAN finished )
 	xml_set_attr( par, "mode", pmod[ parser->p_mode ] );
 
 	/* Set general parser attributes */
-	if( parser->p_name &&
-			!( xml_set_attr( par, "name", parser->p_name ) ) )
-		OUTOFMEM;
 	if( parser->p_prefix &&
 			!( xml_set_attr( par, "prefix", parser->p_prefix ) ) )
 		OUTOFMEM;
@@ -1078,34 +1073,6 @@ void build_xml( PARSER* parser, BOOLEAN finished )
 	if( parser->p_template &&
 			!( xml_set_attr( par, "target-language", parser->p_template ) ) )
 		OUTOFMEM;
-
-	/* Set additional parser attributes */
-	if( parser->p_version )
-	{
-		if( !( attrib = xml_add_child( par, "version", 0 ) ) )
-			OUTOFMEM;
-
-		if( !( xml_set_txt( attrib, parser->p_version ) ) )
-			OUTOFMEM;
-	}
-
-	if( parser->p_copyright )
-	{
-		if( !( attrib = xml_add_child( par, "copyright", 0 ) ) )
-			OUTOFMEM;
-
-		if( !( xml_set_txt( attrib, parser->p_copyright ) ) )
-			OUTOFMEM;
-	}
-
-	if( parser->p_desc )
-	{
-		if( !( attrib = xml_add_child( par, "description", 0 ) ) )
-			OUTOFMEM;
-
-		if( !( xml_set_txt( attrib, parser->p_desc ) ) )
-			OUTOFMEM;
-	}
 
 	if( !xml_set_int_attr( par, "char-min", PCCL_MIN ) )
 		OUTOFMEM;

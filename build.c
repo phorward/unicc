@@ -57,51 +57,6 @@ char* escape_for_target( GENERATOR* g, char* str, BOOLEAN clear )
 	return ret;
 }
 
-#if 0
-/** Expands all @@line macros to fullfill line number counting.
-
-//str// is the target string to perform replacement on.
-//g// is the generator template structure.
-*/
-static int 		line		= 0;
-static char*	genstr;
-
-static int replace_lines( pregex_range* res )
-{
-	if( res->accept == 0 )
-		line++;
-	else if( res->accept == 1 )
-	{
-
-	}
-
-	return -1;
-}
-
-void build_code_localizations( char** str, GENERATOR* g )
-{
-	char*		result	= (char*)NULL;
-	pregex*		preg;
-
-
-	if( line > 0 )
-		return;
-
-	line = 1;
-	genstr = g->code_localization;
-
-	preg = pregex_create();
-	pregex_compile( &preg, "\n", 0 );
-	pregex_compile( &preg, "@@line", 1 );
-
-	pregex_replace(
-
-
-	line = 0;
-	genstr = (char*)NULL;
-}
-#endif
-
 /** Constructs target language code for production reduction code blocks.
 
 //parser// is the parser information structure,
@@ -1039,8 +994,8 @@ void build_code( PARSER* parser )
 
 		goto_table = pstrcatstr( goto_table, goto_table_row, TRUE );
 
-		/* Only in context-sensitive model */
-		if( parser->p_mode == MODE_SENSITIVE )
+		/* Only in scannerless mode */
+		if( parser->p_mode == MODE_SCANNERLESS )
 		{
 			/* dfa machine selection */
 			dfa_select = pstrcatstr( dfa_select,
@@ -1443,14 +1398,6 @@ void build_code( PARSER* parser )
 		all = pstrrender( xml_txt( file ),
 
 			/* Lengths of names and Prologue/Epilogue codes */
-			GEN_WILD_PREFIX "name" LEN_EXT,
-				long_to_str( (long)pstrlen( parser->p_name ) ), TRUE,
-			GEN_WILD_PREFIX "copyright" LEN_EXT,
-				long_to_str( (long)pstrlen( parser->p_copyright ) ), TRUE,
-			GEN_WILD_PREFIX "version" LEN_EXT,
-				long_to_str( (long)pstrlen( parser->p_version ) ), TRUE,
-			GEN_WILD_PREFIX "description" LEN_EXT,
-				long_to_str( (long)pstrlen( parser->p_desc ) ), TRUE,
 			GEN_WILD_PREFIX "prologue" LEN_EXT,
 				long_to_str( (long)pstrlen( parser->p_header ) ), TRUE,
 			GEN_WILD_PREFIX "epilogue" LEN_EXT,
@@ -1459,10 +1406,6 @@ void build_code( PARSER* parser )
 				long_to_str( (long)pstrlen( parser->p_pcb ) ), TRUE,
 
 			/* Names and Prologue/Epilogue codes */
-			GEN_WILD_PREFIX "name", parser->p_name, FALSE,
-			GEN_WILD_PREFIX "copyright", parser->p_copyright, FALSE,
-			GEN_WILD_PREFIX "version", parser->p_version, FALSE,
-			GEN_WILD_PREFIX "description", parser->p_desc, FALSE,
 			GEN_WILD_PREFIX "prologue", parser->p_header, FALSE,
 			GEN_WILD_PREFIX "epilogue", parser->p_footer, FALSE,
 			GEN_WILD_PREFIX "pcb", parser->p_pcb, FALSE,
@@ -1512,7 +1455,6 @@ void build_code( PARSER* parser )
 			GEN_WILD_PREFIX "goal-type", parser->goal->vtype ?
 											parser->goal->vtype->real_def : "",
 												FALSE,
-			GEN_WILD_PREFIX "model", int_to_str( parser->p_mode ), TRUE,
 			GEN_WILD_PREFIX "mode", int_to_str( parser->p_mode ), TRUE,
 			GEN_WILD_PREFIX "error",
 				( parser->error ? int_to_str( parser->error->id ) :

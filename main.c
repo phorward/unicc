@@ -21,8 +21,8 @@ extern char*	progname;
 
 char* 			pmod[] =
 {
-	"sensitive",
-	"insensitive"
+	"scannerless",
+	"using scanner"
 };
 
 /* Verbose Macros (Main only) */
@@ -130,7 +130,7 @@ void print_usage( FILE* stream, char* progname )
 		"Errors and warnings are printed to stderr, "
 			"everything else to stdout.\n"
 
-		"", progname, UNICC_DEFAULT_LNG );
+		"", progname, UNICC_DEFAULT_TARGET );
 }
 
 /** Analyzes the command line parameters passed to the parser generator.
@@ -303,14 +303,14 @@ int main( int argc, char** argv )
 
 				/* Rewrite the grammar, if required */
 				PROGRESS( "Rewriting grammar" )
-				if( parser->p_mode == MODE_SENSITIVE )
+				if( parser->p_mode == MODE_SCANNERLESS )
 					rewrite_grammar( parser );
 
 				unique_charsets( parser );
 				symbol_orders( parser );
 				charsets_to_ptn( parser );
 
-				if( parser->p_mode == MODE_SENSITIVE )
+				if( parser->p_mode == MODE_SCANNERLESS )
 					inherit_fixiations( parser );
 				DONE()
 
@@ -354,7 +354,7 @@ int main( int argc, char** argv )
 
 					/* Terminal anomaly detection */
 					PROGRESS( "Terminal anomaly detection" )
-					if( parser->p_mode == MODE_SENSITIVE )
+					if( parser->p_mode == MODE_SCANNERLESS )
 					{
 						if( recursions )
 						{
@@ -378,9 +378,9 @@ int main( int argc, char** argv )
 					/* Lexical analyzer generator */
 					PROGRESS( "Constructing lexical analyzer" )
 
-					if( parser->p_mode == MODE_SENSITIVE )
+					if( parser->p_mode == MODE_SCANNERLESS )
 						merge_symbols_to_dfa( parser );
-					else if( parser->p_mode == MODE_INSENSITIVE )
+					else if( parser->p_mode == MODE_SCANNER )
 						construct_single_lexer( parser );
 
 					DONE()
@@ -401,7 +401,7 @@ int main( int argc, char** argv )
 								parser->p_template,
 									( parser->p_template == parser->target
 										&& strcmp( parser->target,
-											UNICC_DEFAULT_LNG ) == 0 ?
+											UNICC_DEFAULT_TARGET ) == 0 ?
 											" (default)" : "" ) );
 
 						PROGRESS( "Invoking code generator" )

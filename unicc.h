@@ -57,8 +57,8 @@ Usage:	Global declarations, structures and includes
 #define SYM_SYSTEM_TERMINAL		3
 
 /* Parser construction modes */
-#define MODE_SENSITIVE			0	/* Sensitive parser construction mode */
-#define MODE_INSENSITIVE		1	/* Insensitive parser construction mode */
+#define MODE_SCANNERLESS			0	/* Sensitive parser construction mode */
+#define MODE_SCANNER		1	/* Insensitive parser construction mode */
 
 /* Macro to verify terminals */
 #define IS_TERMINAL( s )		( ((s)->type) > SYM_NON_TERMINAL )
@@ -83,12 +83,12 @@ Usage:	Global declarations, structures and includes
 
 /* UniCC version number */
 #define UNICC_VER_MAJOR			1
-#define UNICC_VER_MINOR			5
+#define UNICC_VER_MINOR			6
 #define UNICC_VER_PATCH			0
-#define UNICC_VER_EXTSTR		""
+#define UNICC_VER_EXTSTR		"dev"
 
 /* Default target language */
-#define UNICC_DEFAULT_LNG		"C"
+#define UNICC_DEFAULT_TARGET	"C"
 
 /* File extensions */
 #define UNICC_TLT_EXTENSION		".tlt"
@@ -108,9 +108,6 @@ Usage:	Global declarations, structures and includes
 								print_error( (PARSER*)NULL, ERR_MEMORY_ERROR,\
 									ERRSTYLE_FATAL, __FILE__, __LINE__ ), \
 								exit( EXIT_FAILURE )
-
-#define MISS_MSG( txt )			fprintf( stderr, "%s, %d: %s\n", \
-										__FILE__, __LINE__, txt )
 
 /*
  * Type definitions
@@ -307,11 +304,7 @@ struct _parser
 	LIST*		vtypes;			/* Value stack types */
 
 	short		p_mode;			/* Parser model */
-	char*		p_name;			/* Parser name */
-	char*		p_desc;			/* Parser description */
 	char*		p_template;		/* Parser target template */
-	char*		p_copyright;	/* Parser copyright notice */
-	char*		p_version;		/* Parser version */
 	char*		p_prefix;		/* Parser symbol prefix */
 	char*		p_basename;		/* Parser file basename */
 	char*		p_def_action;	/* Default reduce action */

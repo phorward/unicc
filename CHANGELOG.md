@@ -3,9 +3,13 @@
 This file is used to document any relevant changes done to UniCC.
 
 
-## [develop]
+## [v1.6]
 
 Current development version.
+
+- Renamed top-level directive `#!mode` options to `scannerless` (default) and `scanner`.
+- Removed deprecated directives `#parser`, `#description`, `#copyright` and  `#version`. 
+- Several internal code revisions
 
 ## [v1.5]
 
@@ -67,7 +71,7 @@ Released on: November 7, 2017
   (targets/c.tlt)
 - Fixed bug in the lexical analyzer generation by linking against
   libphorward 0.20 that caused a massive overhead of deterministic finite
-  automation states in context-sensitive mode due an arbitrary character
+  automation states in scannerless mode due an arbitrary character
   set order. This bug did not produce invalid parsers, but horribly huge tables.
 - Imported the source code of min_lalr1 into the unicc repository, because it
   is the only place where it is used.

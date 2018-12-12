@@ -151,10 +151,12 @@ fixed_directive: "mode"					mode_type
 																}
 				;
 
-mode_type:		"context-sensitive"								{	parser->p_mode = MODE_SENSITIVE;	}
-				| "context-insensitive"							{	parser->p_mode = MODE_INSENSITIVE;}
-				| "sensitive"									{	parser->p_mode = MODE_SENSITIVE;	}
-				| "insensitive"									{	parser->p_mode = MODE_INSENSITIVE;}
+mode_type:		"context-sensitive"								{	parser->p_mode = MODE_SCANNERLESS;}	/* deprecate! */
+				| "context-insensitive"							{	parser->p_mode = MODE_SCANNER; }	/* deprecate! */
+				| "sensitive"									{	parser->p_mode = MODE_SCANNERLESS; }/* deprecate! */
+				| "insensitive"									{	parser->p_mode = MODE_SCANNER; }	/* deprecate! */
+				| "scannerless"									{	parser->p_mode = MODE_SCANNERLESS;	}
+				| "scanner"										{	parser->p_mode = MODE_SCANNER; }
 				;
 
 segment:		code
@@ -174,7 +176,7 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 																			in conext-free mode */
 																		if( s->type == SYM_NON_TERMINAL &&
 																			parser->p_mode !=
-																				MODE_SENSITIVE )
+																				MODE_SCANNERLESS )
 																		{
 																			print_error( parser, ERR_NONTERM_WS_NOT_ALLOWED,
 																				ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
@@ -189,7 +191,7 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 																}
 				| "lexeme separation" boolean					{	/* Ouput a warning, if this definition
 																		is effectless */
-																	if( parser->p_mode != MODE_SENSITIVE )
+																	if( parser->p_mode != MODE_SCANNERLESS )
 																	{
 																		print_error( parser, ERR_NO_EFFECT_IN_MODE,
 																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
@@ -204,7 +206,7 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 
 																	/* Ouput a warning, if this definition
 																		is effectless */
-																	if( parser->p_mode != MODE_SENSITIVE )
+																	if( parser->p_mode != MODE_SCANNERLESS )
 																	{
 																		print_error( parser, ERR_NO_EFFECT_IN_MODE,
 																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
@@ -227,7 +229,7 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 
 																	/* Ouput a warning, if this definition
 																		is effectless */
-																	if( parser->p_mode != MODE_SENSITIVE )
+																	if( parser->p_mode != MODE_SCANNERLESS )
 																	{
 																		print_error( parser, ERR_NO_EFFECT_IN_MODE,
 																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
@@ -248,15 +250,6 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 				| "left"			symbol_list					{	set_assoc_and_prec( #2.ptr, ASSOC_LEFT ); 	}
 				| "right"			symbol_list					{	set_assoc_and_prec( #2.ptr, ASSOC_RIGHT ); 	}
 				| "nonassoc"		symbol_list					{	set_assoc_and_prec( #2.ptr, ASSOC_NOASSOC ); 	}
-				| "parser"			string						{	if( !( parser->p_name ) )
-																		parser->p_name = pstrdup( strbuf );	}
-				| "description"		string						{	if( !( parser->p_desc ) )
-																		parser->p_desc = pstrdup( strbuf );	}
-				| "copyright"		string						{	if( !( parser->p_copyright ) )
-																		parser->p_copyright = pstrdup( strbuf );
-																}
-				| "version"			string						{	if( !( parser->p_version ) )
-																		parser->p_version= pstrdup( strbuf );	}
 				| "prefix"			string						{	if( !( parser->p_prefix ) )
 																		parser->p_prefix = pstrdup( strbuf );	}
 				| "default action"	code						{	if( !( parser->p_def_action ) )

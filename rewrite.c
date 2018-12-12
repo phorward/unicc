@@ -318,7 +318,7 @@ void unique_charsets( PARSER* parser )
 					}
 
 					/* Disallow intersections in context-sensitive model */
-					if( parser->p_mode == MODE_INSENSITIVE )
+					if( parser->p_mode == MODE_SCANNER )
 					{
 						print_error( parser, ERR_CHARCLASS_OVERLAP,
 									ERRSTYLE_FATAL,

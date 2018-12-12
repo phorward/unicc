@@ -44,10 +44,10 @@ char* error_txt[128] =
 	"Empty recursion",
 	"Useless production, no terminals in expansion",
 	/* semantic warnings and errors */
-	"Use of effectless directive \'%s\' in insensitive mode ignored",
-	"Nonterminal whitespace \'%s\' is not allowed in insensitive mode",
+	"Use of effectless directive \'%s\' in scanner-mode ignored",
+	"Nonterminal whitespace \'%s\' is not allowed in scanner-mode",
 	"Invalid value for character universe",
-	"Character-class overlap in insensitive mode with \'%s\'",
+	"Character-class overlap in scanner mode with \'%s\'",
 	"Action references to undefined right-hand side symbol '%.*s'",
 	"Left-hand side '%s' not known",
 	"Terminal '%s' not known",

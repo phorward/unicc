@@ -527,11 +527,11 @@ PARSER* create_parser( void )
 	pptr->states = parray_create( sizeof( STATE ), 32 );
 
 	/* Setup defaults */
-	pptr->p_mode = MODE_SENSITIVE;
+	pptr->p_mode = MODE_SCANNERLESS;
 	pptr->p_universe = PCCL_MAX;
 	pptr->optimize_states = TRUE;
 	pptr->gen_prog = TRUE;
-	pptr->target = UNICC_DEFAULT_LNG;
+	pptr->target = UNICC_DEFAULT_TARGET;
 
 	/* Initialize options table */
 	pptr->options = plist_create( sizeof( OPT ), PLIST_MOD_EXTKEYS );
@@ -571,14 +571,9 @@ void free_parser( PARSER* parser )
 	list_free( parser->vtypes );
 	list_free( parser->dfas );
 
-	pfree( parser->p_name );
-	pfree( parser->p_desc );
-
 	if( parser->p_template != parser->target )
 		pfree( parser->p_template );
 
-	pfree( parser->p_copyright );
-	pfree( parser->p_version );
 	pfree( parser->p_prefix );
 	pfree( parser->p_header );
 	pfree( parser->p_footer );

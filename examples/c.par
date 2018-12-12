@@ -8,7 +8,7 @@
 	Rewritten for UniCC by Jan Max Meyer, 2011
 */
 
-#!mode insensitive ;
+#!mode scannerless ;
 #!language	"C" ;
 
 // Parser Configuration
