@@ -67,8 +67,9 @@ struct @@prefix_rhs_item
 #endif
 
 #define UNICC_GETINPUT				getinput()
+/*
 #define UNICC_PARSE_ERROR( pcb )	parse_error( pcb )
-
+*/
 
 PARSER*	parser			= (PARSER*)NULL;
 
@@ -182,7 +183,9 @@ static OPT* set_option( plist* opts, char* key, char* val, int line )
 	return opt;
 }
 
+/*
 static void parse_error();
+*/
 
 *];
 //End of Prologue --------------------------------------------------------------
@@ -1188,7 +1191,7 @@ line_number		->	[* @@ = line; *]
 #epilogue
 
 [*
-
+/*
 static void parse_error( @@prefix_pcb* pcb )
 {
 	int		i;
@@ -1215,6 +1218,7 @@ static void parse_error( @@prefix_pcb* pcb )
 				ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
 					parser->filename, pcb->line, cur, valid );
 }
+*/
 
 int parse_grammar( PARSER* p, char* src )
 {

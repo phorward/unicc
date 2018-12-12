@@ -120,7 +120,7 @@
 			}
 
 			/* Enforced error in semantic actions? */
-			if( pcb->act == UNICC_ERROR )
+			if( !pcb->act ) /* UNICC_ERROR */
 				break;
 
 			/* Goal symbol reduced, and stack is empty? */
@@ -146,9 +146,12 @@
 						"shifting nonterminal %d (%s)\n",
 							UNICC_PARSER, pcb->lhs,
 								@@prefix_symbols[ pcb->lhs ].name );
-			#endif
+            #endif
 
-			@@prefix_get_go( pcb );
+			switch( pcb->tos->state )
+			{
+@@goto-table
+			}
 
 			pcb->tos++;
 			pcb->tos->node = (@@prefix_ast*)NULL;
@@ -209,8 +212,19 @@
 							@@prefix_symbols[ pcb->sym ].name );
 #endif
 
-		/* Get action table entry */
-		if( !@@prefix_get_act( pcb ) )
+		/* Default production */
+        if( ( pcb->idx = @@prefix_def_prod[ pcb->tos->state ] ) > -1 )
+            pcb->act = UNICC_REDUCE;
+        else
+            pcb->act = UNICC_ERROR;
+
+        /* Get action table entry */
+		switch( pcb->tos->state )
+		{
+@@action-table
+		}
+
+		if( !pcb->act ) /* UNICC_ERROR */
 		{
 			/* Error state, try to recover */
 			if( @@prefix_handle_error( pcb,

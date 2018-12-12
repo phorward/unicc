@@ -1,15 +1,3 @@
-/* Action Table */
-UNICC_STATIC int @@prefix_act[ @@number-of-states ][ @@deepest-action-row * 3 + 1 ] =
-{
-@@action-table
-};
-
-/* GoTo Table */
-UNICC_STATIC int @@prefix_go[ @@number-of-states ][ @@deepest-goto-row * 3 + 1 ] =
-{
-@@goto-table
-};
-
 /* Default productions per state */
 UNICC_STATIC int @@prefix_def_prod[ @@number-of-states ] =
 {

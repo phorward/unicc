@@ -15,6 +15,7 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 								"(null)" ) );
 
 %%%ifgen STDTPL /* TODO:UNICC4C */
+		/*
 		fprintf( @@prefix_dbg,
 				"%s: error recovery: expecting ", UNICC_PARSER );
 				
@@ -26,6 +27,7 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 				( i == @@prefix_act[ pcb->tos->state ][0] * 3 - 3 ) ?
 						"\n" : ", " );
 		}
+		*/
 %%%end
 		
 		fprintf( @@prefix_dbg, "\n%s: error recovery: error_delay is %d, %s\n",
@@ -104,7 +106,20 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 		@@prefix_dbg_stack( @@prefix_dbg, pcb->stack, pcb->tos );
 #endif
 #endif
-		if( @@prefix_get_act( pcb ) )
+
+        /* Default production */
+        if( ( pcb->idx = @@prefix_def_prod[ pcb->tos->state ] ) > -1 )
+            pcb->act = UNICC_REDUCE;
+        else
+            pcb->act = UNICC_ERROR;
+
+        /* Get action table entry */
+		switch( pcb->tos->state )
+		{
+@@action-table
+		}
+
+		if( pcb->act ) /* !UNICC_ERROR */
 		{
 			/* Shift */
 			if( pcb->act & UNICC_SHIFT )

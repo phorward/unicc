@@ -79,30 +79,6 @@ int main( int argc, char** argv )
 		}
 	}
 
-	/* Parser info */
-	if( !( flags & UNICCMAIN_SILENT ) )
-	{
-%%%ifgen STDTPL
-		if( @@name_len > 0 && @@version_len > 0 )
-			printf( "@@name v@@version\n" );
-
-		if( @@copyright_len > 0 )
-			printf( "@@copyright\n\n" );
-%%%ifgen UNICC4C
-%%%code{
-	if( pstrlen( xml_attr( parser, "name" ) ) &&
-			pstrlen( xml_attr( parser, "version" ) ) )
-		TL( &out, 2 "printf( \"%s v%s\\n\" );",
-			xml_attr( parser, "name" ),
-				xml_attr( parser, "version" ) );
-
-	if( pstrlen( xml_attr( parser, "copyright" ) ) )
-		TL( &out, 2, "printf( \"%s\\n\\n\" );",
-			xml_attr( parser, "copyright" ) );
-%%%code}
-%%%end
-	}
-
 	/* Parser invocation loop */
 	do
 	{

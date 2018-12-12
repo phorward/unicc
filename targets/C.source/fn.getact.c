@@ -1,3 +1,4 @@
+#if 0
 UNICC_STATIC int @@prefix_get_act( @@prefix_pcb* pcb )
 {
 	int i;
@@ -24,3 +25,4 @@ UNICC_STATIC int @@prefix_get_act( @@prefix_pcb* pcb )
 
 	return 0;
 }
+#endif

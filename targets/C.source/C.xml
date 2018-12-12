@@ -339,10 +339,23 @@ between the rows/columns, except the last row/column.
 												or shift&reduce action.
 	-->
 	<acttab>
-		<row_start>&#x09;{ @@number-of-columns</row_start>
-		<row_end> }</row_end>
-		<row_sep>,&#x0A;</row_sep>
-		<col>, @@symbol,@@action,@@index </col>
+		<row_start>&#x09;&#x09;&#x09;case @@state-number:
+&#x09;&#x09;&#x09;{
+&#x09;&#x09;&#x09;&#x09;switch( pcb-&gt;sym )
+&#x09;&#x09;&#x09;&#x09;{
+</row_start>
+		<row_end>&#x09;&#x09;&#x09;&#x09;}
+&#x09;&#x09;&#x09;&#x09;break;
+&#x09;&#x09;&#x09;}
+</row_end>
+		<row_sep></row_sep>
+		<col>&#x09;&#x09;&#x09;&#x09;&#x09;case @@symbol:
+&#x09;&#x09;&#x09;&#x09;&#x09;{
+&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;pcb-&gt;act = @@action;
+&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;pcb-&gt;idx = @@index;
+&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;break;
+&#x09;&#x09;&#x09;&#x09;&#x09;}
+</col>
 		<col_sep></col_sep>
 	</acttab>
 
@@ -375,13 +388,35 @@ between the rows/columns, except the last row/column.
 					@@index					-	The number of the next state.
 	-->
 	<gotab>
+		<row_start>&#x09;&#x09;&#x09;&#x09;case @@state-number:
+&#x09;&#x09;&#x09;&#x09;{
+&#x09;&#x09;&#x09;&#x09;&#x09;switch( pcb-&gt;lhs )
+&#x09;&#x09;&#x09;&#x09;&#x09;{
+</row_start>
+		<row_end>&#x09;&#x09;&#x09;&#x09;&#x09;}
+&#x09;&#x09;&#x09;&#x09;&#x09;break;
+&#x09;&#x09;&#x09;&#x09;}
+</row_end>
+		<row_sep></row_sep>
+		<col>&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;case @@symbol:
+&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;{
+&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;pcb-&gt;act = @@action;
+&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;pcb-&gt;idx = @@index;
+&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;break;
+&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;}
+</col>
+		<col_sep></col_sep>
+	</gotab>
+
+	<!--
+	<gotab>
 		<row_start>&#x09;{ @@number-of-columns</row_start>
 		<row_end> }</row_end>
 		<row_sep>,&#x0A;</row_sep>
 		<col>, @@symbol,@@action,@@index </col>
 		<col_sep></col_sep>
 	</gotab>
-
+	-->
 
 	<!--
 	****************************************************************************

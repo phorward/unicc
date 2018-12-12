@@ -339,10 +339,23 @@ between the rows/columns, except the last row/column.
 												or shift&reduce action.
 	-->
 	<acttab>
-		<row_start>&#x09;{ @@number-of-columns</row_start>
-		<row_end> }</row_end>
-		<row_sep>,&#x0A;</row_sep>
-		<col>, @@symbol,@@action,@@index </col>
+		<row_start>&#x09;&#x09;&#x09;case @@state-number:
+&#x09;&#x09;&#x09;{
+&#x09;&#x09;&#x09;&#x09;switch( pcb-&gt;sym )
+&#x09;&#x09;&#x09;&#x09;{
+</row_start>
+		<row_end>&#x09;&#x09;&#x09;&#x09;}
+&#x09;&#x09;&#x09;&#x09;break;
+&#x09;&#x09;&#x09;}
+</row_end>
+		<row_sep></row_sep>
+		<col>&#x09;&#x09;&#x09;&#x09;&#x09;case @@symbol:
+&#x09;&#x09;&#x09;&#x09;&#x09;{
+&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;pcb-&gt;act = @@action;
+&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;pcb-&gt;idx = @@index;
+&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;break;
+&#x09;&#x09;&#x09;&#x09;&#x09;}
+</col>
 		<col_sep></col_sep>
 	</acttab>
 
@@ -375,13 +388,35 @@ between the rows/columns, except the last row/column.
 					@@index					-	The number of the next state.
 	-->
 	<gotab>
+		<row_start>&#x09;&#x09;&#x09;&#x09;case @@state-number:
+&#x09;&#x09;&#x09;&#x09;{
+&#x09;&#x09;&#x09;&#x09;&#x09;switch( pcb-&gt;lhs )
+&#x09;&#x09;&#x09;&#x09;&#x09;{
+</row_start>
+		<row_end>&#x09;&#x09;&#x09;&#x09;&#x09;}
+&#x09;&#x09;&#x09;&#x09;&#x09;break;
+&#x09;&#x09;&#x09;&#x09;}
+</row_end>
+		<row_sep></row_sep>
+		<col>&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;case @@symbol:
+&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;{
+&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;pcb-&gt;act = @@action;
+&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;pcb-&gt;idx = @@index;
+&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;break;
+&#x09;&#x09;&#x09;&#x09;&#x09;&#x09;}
+</col>
+		<col_sep></col_sep>
+	</gotab>
+
+	<!--
+	<gotab>
 		<row_start>&#x09;{ @@number-of-columns</row_start>
 		<row_end> }</row_end>
 		<row_sep>,&#x0A;</row_sep>
 		<col>, @@symbol,@@action,@@index </col>
 		<col_sep></col_sep>
 	</gotab>
-
+	-->
 
 	<!--
 	****************************************************************************
@@ -744,18 +779,6 @@ between the rows/columns, except the last row/column.
 /* Include parser control block definitions */
 #include "@@basename.h"
 
-/* Action Table */
-UNICC_STATIC int @@prefix_act[ @@number-of-states ][ @@deepest-action-row * 3 + 1 ] =
-{
-@@action-table
-};
-
-/* GoTo Table */
-UNICC_STATIC int @@prefix_go[ @@number-of-states ][ @@deepest-goto-row * 3 + 1 ] =
-{
-@@goto-table
-};
-
 /* Default productions per state */
 UNICC_STATIC int @@prefix_def_prod[ @@number-of-states ] =
 {
@@ -921,6 +944,7 @@ UNICC_STATIC void @@prefix_ast_print( FILE* stream, @@prefix_ast* node )
 	}
 }
 
+#if 0
 UNICC_STATIC int @@prefix_get_act( @@prefix_pcb* pcb )
 {
 	int i;
@@ -947,7 +971,9 @@ UNICC_STATIC int @@prefix_get_act( @@prefix_pcb* pcb )
 
 	return 0;
 }
+#endif
 
+#if 0
 UNICC_STATIC int @@prefix_get_go( @@prefix_pcb* pcb )
 {
 	int i;
@@ -964,6 +990,7 @@ UNICC_STATIC int @@prefix_get_go( @@prefix_pcb* pcb )
 
 	return 0;
 }
+#endif
 
 UNICC_STATIC int @@prefix_alloc_stack( @@prefix_pcb* pcb )
 {
@@ -1423,6 +1450,7 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 							@@prefix_symbols[ pcb-&gt;sym ].name :
 								"(null)" ) );
 
+		/*
 		fprintf( @@prefix_dbg,
 				"%s: error recovery: expecting ", UNICC_PARSER );
 				
@@ -1434,6 +1462,7 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 				( i == @@prefix_act[ pcb-&gt;tos-&gt;state ][0] * 3 - 3 ) ?
 						"\n" : ", " );
 		}
+		*/
 		
 		fprintf( @@prefix_dbg, "\n%s: error recovery: error_delay is %d, %s\n",
 					UNICC_PARSER, pcb-&gt;error_delay,
@@ -1500,7 +1529,20 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 		@@prefix_dbg_stack( @@prefix_dbg, pcb-&gt;stack, pcb-&gt;tos );
 #endif
 #endif
-		if( @@prefix_get_act( pcb ) )
+
+        /* Default production */
+        if( ( pcb-&gt;idx = @@prefix_def_prod[ pcb-&gt;tos-&gt;state ] ) &gt; -1 )
+            pcb-&gt;act = UNICC_REDUCE;
+        else
+            pcb-&gt;act = UNICC_ERROR;
+
+        /* Get action table entry */
+		switch( pcb-&gt;tos-&gt;state )
+		{
+@@action-table
+		}
+
+		if( pcb-&gt;act ) /* !UNICC_ERROR */
 		{
 			/* Shift */
 			if( pcb-&gt;act &amp; UNICC_SHIFT )
@@ -1673,7 +1715,7 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 			}
 
 			/* Enforced error in semantic actions? */
-			if( pcb-&gt;act == UNICC_ERROR )
+			if( !pcb-&gt;act ) /* UNICC_ERROR */
 				break;
 
 			/* Goal symbol reduced, and stack is empty? */
@@ -1699,9 +1741,12 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 						"shifting nonterminal %d (%s)\n",
 							UNICC_PARSER, pcb-&gt;lhs,
 								@@prefix_symbols[ pcb-&gt;lhs ].name );
-			#endif
+            #endif
 
-			@@prefix_get_go( pcb );
+			switch( pcb-&gt;tos-&gt;state )
+			{
+@@goto-table
+			}
 
 			pcb-&gt;tos++;
 			pcb-&gt;tos-&gt;node = (@@prefix_ast*)NULL;
@@ -1754,8 +1799,19 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 							@@prefix_symbols[ pcb-&gt;sym ].name );
 #endif
 
-		/* Get action table entry */
-		if( !@@prefix_get_act( pcb ) )
+		/* Default production */
+        if( ( pcb-&gt;idx = @@prefix_def_prod[ pcb-&gt;tos-&gt;state ] ) &gt; -1 )
+            pcb-&gt;act = UNICC_REDUCE;
+        else
+            pcb-&gt;act = UNICC_ERROR;
+
+        /* Get action table entry */
+		switch( pcb-&gt;tos-&gt;state )
+		{
+@@action-table
+		}
+
+		if( !pcb-&gt;act ) /* UNICC_ERROR */
 		{
 			/* Error state, try to recover */
 			if( @@prefix_handle_error( pcb,
@@ -1941,16 +1997,6 @@ int main( int argc, char** argv )
 				}
 			}
 		}
-	}
-
-	/* Parser info */
-	if( !( flags &amp; UNICCMAIN_SILENT ) )
-	{
-		if( @@name_len &gt; 0 &amp;&amp; @@version_len &gt; 0 )
-			printf( "@@name v@@version\n" );
-
-		if( @@copyright_len &gt; 0 )
-			printf( "@@copyright\n\n" );
 	}
 
 	/* Parser invocation loop */
