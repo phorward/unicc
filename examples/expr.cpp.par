@@ -1,5 +1,6 @@
 //Some grammar-related directives
 #!language      "C++";
+
 #whitespaces    ' \t';
 #lexeme         integer;
 #default action	[* @@ = @1; *];
@@ -16,11 +17,11 @@
 	*];
 
 //Defining the grammar
-calculator$     -> expression                [* std::cout << "= " << 
-													@expression << std::endl *]
+calculator$     : expression                 [* std::cout << "= " <<
+											        @expression << std::endl *]
                 ;
 
-expression      -> expression '+' expression [* @@ = @1 + @3 *]
+expression      : expression '+' expression  [* @@ = @1 + @3 *]
                 | expression '-' expression  [* @@ = @1 - @3 *]
                 | expression '*' expression  [* @@ = @1 * @3 *]
                 | expression '/' expression  [* @@ = @1 / @3 *]
@@ -28,7 +29,7 @@ expression      -> expression '+' expression [* @@ = @1 + @3 *]
                 | integer
                 ;
 
-integer         -> '0-9'                     [* @@ = @1 - '0' *]
+integer         : '0-9'                      [* @@ = @1 - '0' *]
                 | integer '0-9'              [* @@ = @integer * 10 + @2 - '0' *]
                 ;
 

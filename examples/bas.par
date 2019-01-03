@@ -1,8 +1,3 @@
-#!language	#parser             "XPL";
-#description        "eXample Programming Language (Draft)";
-#copyright          "In the public domain, 2011";
-#version            "0.1";				"C";
-
 //Some grammar-related directives
 #whitespaces                ' \t';
 #lexeme                     integer;
@@ -22,10 +17,10 @@ static int variables[ 26 ];
 *];
 
 //Defining the grammar
-calculator$     -> statement*
+calculator$     : statement*
                 ;
 
-statement       -> "LET"? variable:var '=' expression:expr '\n'
+statement       : "LET"? variable:var '=' expression:expr '\n'
                         [* *@var = @expr; *]
 
                 | "PRINT" expression:expr '\n'
@@ -40,7 +35,7 @@ statement       -> "LET"? variable:var '=' expression:expr '\n'
                 | '\n'
                 ;
 
-expression      -> expression '+' expression [* @@ = @1 + @3; *]
+expression      : expression '+' expression  [* @@ = @1 + @3; *]
                 | expression '-' expression  [* @@ = @1 - @3; *]
                 | expression '*' expression  [* @@ = @1 * @3; *]
                 | expression '/' expression  [* @@ = @1 / @3; *]
@@ -49,12 +44,12 @@ expression      -> expression '+' expression [* @@ = @1 + @3; *]
                 | variable                   [* @@ = *@variable; *]
                 ;
 
-integer         -> '0-9'                     [* @@ = @1 - '0'; *]
+integer         : '0-9'                      [* @@ = @1 - '0'; *]
                 | integer '0-9'              [* @@ = @1 * 10 +
                                                      @2 - '0'; *]
                 ;
 
-variable<int*>  -> 'a-z':name                [* @@ = &variables[
+variable<int*>  : 'a-z':name                 [* @@ = &variables[
                                                   @name - 'a' ]; *]
                 ;
 

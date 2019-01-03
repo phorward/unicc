@@ -7,9 +7,13 @@ This file is used to document any relevant changes done to UniCC.
 
 Current development version.
 
-- Renamed top-level directive `#!mode` options to `scannerless` (default) and `scanner`.
-- Removed deprecated directives `#parser`, `#description`, `#copyright` and  `#version`. 
-- Several internal code revisions
+- Renamed top-level directive `#!mode` options to `scannerless` (default)
+  and `scanner`.
+- `!language`-directive allows for identifier as language parameter.
+- Removed deprecated directives `#parser`, `#description`, `#copyright`
+  and  `#version`.
+- Removed old-style `!model` top-level directive.
+- Several internal code revisions.
 
 ## [v1.5]
 

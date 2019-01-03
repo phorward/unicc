@@ -144,8 +144,11 @@ fixed_directives:	fixed_directives "#!" fixed_directive ';'
 				;
 
 fixed_directive: "mode"					mode_type
-				| "model"				mode_type
 				| "language"			string					{	if( parser->p_template )
+																		pfree( parser->p_template );
+																	parser->p_template = pstrdup( strbuf );
+																}
+				| "language"			identifier				{	if( parser->p_template )
 																		pfree( parser->p_template );
 																	parser->p_template = pstrdup( strbuf );
 																}
@@ -274,7 +277,7 @@ symbol_list:	symbol_list sym									{	##.ptr = list_push( #1.ptr, #2.ptr ); 		}
 				| sym											{	##.ptr = list_push( (LIST*)NULL, #1.ptr );	}
 				;
 
-definition:		lhs goal_mark type "->" productions				{
+definition:		lhs goal_mark type ":" productions				{
 																	LIST* l;
 																	PROD* p;
 

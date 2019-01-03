@@ -1,19 +1,19 @@
 #whitespaces   ' \t';
 #lexeme        integer title;
 
-appointment$   -> date title
+appointment$   : date title
                | title date
                ;
 
-title          -> '"' !'"'* '"'
+title          : '"' !'"'* '"'
                ;
 
-date           -> month integer ',' integer
+date           : month integer ',' integer
                | integer '.' integer '.' integer
                | integer '/' integer '/' integer
                ;
 
-month          -> "January"
+month          : "January"
                | "February"
                | "March"
                | "April"
@@ -27,6 +27,6 @@ month          -> "January"
                | "December"
                ;
 
-integer        -> '0-9'
+integer        : '0-9'
                | integer '0-9'
                ;

@@ -57,8 +57,8 @@ Usage:	Global declarations, structures and includes
 #define SYM_SYSTEM_TERMINAL		3
 
 /* Parser construction modes */
-#define MODE_SCANNERLESS			0	/* Sensitive parser construction mode */
-#define MODE_SCANNER		1	/* Insensitive parser construction mode */
+#define MODE_SCANNERLESS		0	/* Sensitive parser construction mode */
+#define MODE_SCANNER			1	/* Insensitive parser construction mode */
 
 /* Macro to verify terminals */
 #define IS_TERMINAL( s )		( ((s)->type) > SYM_NON_TERMINAL )
@@ -85,7 +85,7 @@ Usage:	Global declarations, structures and includes
 #define UNICC_VER_MAJOR			1
 #define UNICC_VER_MINOR			6
 #define UNICC_VER_PATCH			0
-#define UNICC_VER_EXTSTR		"dev"
+#define UNICC_VER_EXTSTR		""
 
 /* Default target language */
 #define UNICC_DEFAULT_TARGET	"C"

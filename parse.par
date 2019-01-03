@@ -10,7 +10,7 @@ Usage:	Grammar definition parser
 ----------------------------------------------------------------------------- */
 
 #!mode			scannerless ;
-#!language		"C";
+#!language		C;
 
 /*
  * IMPORTANT NOTIFICATION ON THIS PARSER
@@ -191,15 +191,14 @@ static void parse_error();
  * Grammar
  */
 
-grammar_spec$		->	fixed_directive_def* segment*
+grammar_spec$		:	fixed_directive_def* segment*
 					;
 
-fixed_directive_def	-> "#!" fixed_directive ';'
+fixed_directive_def	:   "#!" fixed_directive ';'
 					;
 
-fixed_directive		-> "mode"				mode_type
-					|  "model"				mode_type
-					|  "language"			string
+fixed_directive		:   "mode"				mode_type
+					|   "language"			string_or_ident
 						[*
 							if( !( parser->p_template ) )
 								parser->p_template = pstrdup( strbuf );
@@ -226,7 +225,7 @@ fixed_directive		-> "mode"				mode_type
 */
 					;
 
-mode_type			->	"context-sensitive"                        //deprecate!
+mode_type			:	"context-sensitive"                        //deprecate!
 						[*	parser->p_mode = MODE_SCANNERLESS; *]
 					|	"sensitive"
 						[*	parser->p_mode = MODE_SCANNERLESS; *]  //deprecate!
@@ -240,12 +239,12 @@ mode_type			->	"context-sensitive"                        //deprecate!
 						[*	parser->p_mode = MODE_SCANNER; *]
 					;
 
-segment				->	code
+segment				:	code
 					| definition ';'
 					| unfixed_directive ';'
 					;
 
-unfixed_directive	->	'#' directive_parms
+unfixed_directive	:	'#' directive_parms
 					/*
 					| &error
 						[*
@@ -259,7 +258,7 @@ unfixed_directive	->	'#' directive_parms
 						@@ = @>;
 					*];
 
-userparam			->	code
+userparam			:	code
 					|	string
 					|	boolean
 						[*
@@ -271,7 +270,7 @@ userparam			->	code
 					|	[*	reset_strbuf(); *]
 					;
 
-directive_parms		-> "whitespaces" 	symbol_list
+directive_parms		: "whitespaces" 	symbol_list
 						[*	LIST* l;
 							SYMBOL* s;
 
@@ -436,22 +435,22 @@ directive_parms		-> "whitespaces" 	symbol_list
 
 					;
 
-boolean_opt<BOOLEAN>->	boolean
+boolean_opt<BOOLEAN>:	boolean
 					|					[*	@@ = FALSE; *]
 					;
 
-boolean<BOOLEAN>	->	"on"			[*	@@ = FALSE; 	*]
+boolean<BOOLEAN>	:	"on"			[*	@@ = FALSE; 	*]
 					| 	"off"			[*	@@ = TRUE; 		*]
 					;
 
-symbol_list<LIST*>	->	symbol_list sym
+symbol_list<LIST*>	:	symbol_list sym
 						[*	@@ = list_push( @1, (void*)@2 ); *]
 
 					| sym
 						[*	@@ = list_push( (LIST*)NULL, (void*)@1 ); *]
 					;
 
-lhs<SYMBOL*>		->	identifier
+lhs<SYMBOL*>		:	identifier
 						[*	@@ = get_symbol( parser,
 									strbuf, SYM_NON_TERMINAL, TRUE );
 							@@->defined = TRUE;
@@ -459,7 +458,7 @@ lhs<SYMBOL*>		->	identifier
 						*]
 					;
 
-alt_lhs_list<LIST*>	-> alt_lhs_list lhs
+alt_lhs_list<LIST*>	: alt_lhs_list lhs
 
 						[*	@@ = list_push( @1, (void*)@2 ); *]
 
@@ -468,8 +467,7 @@ alt_lhs_list<LIST*>	-> alt_lhs_list lhs
 						[*	@@ = list_push( (LIST*)NULL, (void*)@1 ); *]
 					;
 
-alt_regex_sym<LIST*>
-					-> alt_regex_sym regex_sym
+alt_regex_sym<LIST*>: alt_regex_sym regex_sym
 
 						[*	@@ = list_push( @alt_regex_sym,
 									(void*)@regex_sym );
@@ -486,7 +484,7 @@ alt_regex_sym<LIST*>
 						*]
 					;
 
-regex_sym<SYMBOL*>	-> identifier
+regex_sym<SYMBOL*>	: identifier
 						[*	@@ = get_symbol( parser,
 									strbuf, SYM_REGEX_TERMINAL, TRUE );
 
@@ -504,13 +502,13 @@ regex_sym<SYMBOL*>	-> identifier
 						*]
 					;
 
-defines<BOOLEAN>	->	"->"			[* @@ = FALSE; *]
+defines<BOOLEAN>	:	"->"			[* @@ = FALSE; *]
 					| ':'				[* @@ = FALSE; *]
 					| "=>" 				[* @@ = TRUE; *]	// Defines ast node
 					| ":=" 				[* @@ = TRUE; *]	// Defines ast node
 					;
 
-definition			->	lhs:primary
+definition			:	lhs:primary
 						goal_mark:is_goal
 						alt_lhs_list?:all type
 						defines productions
@@ -652,7 +650,7 @@ definition			->	lhs:primary
 						*]
 					;
 
-sym_option			->	'#' "greedy"
+sym_option			:	'#' "greedy"
 
 						[*
 							greedy = TRUE;
@@ -675,25 +673,25 @@ sym_option			->	'#' "greedy"
 						*]
 					;
 
-goal_mark<BOOLEAN>	-> '$'
+goal_mark<BOOLEAN>	: '$'
 						[*	@@ = TRUE; *]
 
 					|	[*	@@ = FALSE; *]
 					;
 
-productions<LIST*>	->	productions '|' production
+productions<LIST*>	:	productions '|' production
 						[*	@@ = list_push( @1, @3 ); *]
 
 					| production
 						[*	@@ = list_push( (LIST*)NULL, @1 ); *]
 					;
 
-ast_node<char*>		->	'=' identifier		[* @@ = pstrdup( strbuf ); *]
+ast_node<char*>		:	'=' identifier		[* @@ = pstrdup( strbuf ); *]
 					|	'=' string			[* @@ = pstrdup( strbuf ); *]
 					|						[* @@ = (char*)NULL; *]
 					;
 
-production<PROD*>	->	line_number rhs_opt:rhs code_opt_dup:act
+production<PROD*>	:	line_number rhs_opt:rhs code_opt_dup:act
 							ast_node
 							prod_directives*
 						[*
@@ -713,15 +711,14 @@ production<PROD*>	->	line_number rhs_opt:rhs code_opt_dup:act
 						*]
 					;
 
-rhs_opt<PROD*>		->	rhs
+rhs_opt<PROD*>		:	rhs
 
 					|	[*	@@ = create_production( parser,
 								(SYMBOL*)NULL );
 						*]
 					;
 
-prod_directives<int>
-					-> 	'#' "precedence" terminal
+prod_directives<int>: 	'#' "precedence" terminal
 
 						[*	current_prod->prec = @terminal->prec; *]
 
@@ -735,7 +732,7 @@ prod_directives<int>
 
 					;
 
-rhs<PROD*>			->	rhs symbol access_name
+rhs<PROD*>			:	rhs symbol access_name
 
 						[*	append_to_production( @1, @2,
 								( *strbuf == '\0' ? (char*)NULL :
@@ -755,7 +752,7 @@ rhs<PROD*>			->	rhs symbol access_name
 						*]
 					;
 
-symbol<SYMBOL*>		->	sym modifier
+symbol<SYMBOL*>		:	sym modifier
 
 						[*
 							switch( @2 )
@@ -790,7 +787,7 @@ symbol<SYMBOL*>		->	sym modifier
 						*]
 					;
 
-sym<SYMBOL*>		-> terminal
+sym<SYMBOL*>		: terminal
 
 					| identifier
 
@@ -849,12 +846,12 @@ sym<SYMBOL*>		-> terminal
 					;
 
 stack_cur_prod<PROD*>
-					->	[* 	@@ = current_prod;
+					:	[* 	@@ = current_prod;
 							current_prod = (PROD*)NULL;
 						*]
 					;
 
-terminal<SYMBOL*>	->	ccl
+terminal<SYMBOL*>	:	ccl
 
 						[*	pccl*		ccl;
 
@@ -904,7 +901,7 @@ terminal<SYMBOL*>	->	ccl
 						*]
 					;
 
-modifier<int>		->	'*'
+modifier<int>		:	'*'
 						[*	@@ = (int)'*';	*]
 
 					| 	'+'
@@ -918,16 +915,16 @@ modifier<int>		->	'*'
 
 					;
 
-access_name			->	':' identifier
+access_name			:	':' identifier
 					|	':'	string_single
 					|	[*	reset_strbuf(); *]
 					;
 
 /* Regular Expression parser and NFA generator */
-regex<pregex_ptn*>	->	re_alt
+regex<pregex_ptn*>	:	re_alt
 					;
 
-re_alt<pregex_ptn*>	->	re_alt '|' re_expr
+re_alt<pregex_ptn*>	:	re_alt '|' re_expr
 
 						[*
 							@@ = pregex_ptn_create_alt(
@@ -938,9 +935,7 @@ re_alt<pregex_ptn*>	->	re_alt '|' re_expr
 
 					;
 
-re_expr<pregex_ptn*>
-
-					->	re_expr re_modifier
+re_expr<pregex_ptn*>:	re_expr re_modifier
 
 						[*
 							@@ = pregex_ptn_create_seq(
@@ -952,7 +947,7 @@ re_expr<pregex_ptn*>
 					;
 
 re_modifier<pregex_ptn*>
-					->	re_factor '*'
+					:	re_factor '*'
 
 						[*
 							@@ = pregex_ptn_create_kle( @1 );
@@ -974,7 +969,7 @@ re_modifier<pregex_ptn*>
 				;
 
 re_factor<pregex_ptn*>
-				->	ccl
+				:	ccl
 
 					[*
 						pccl*		ccl;
@@ -1013,13 +1008,13 @@ re_factor<pregex_ptn*>
 				;
 
 /* General parsing objects */
-string			->	string_single+
+string			:	string_single+
 				;
 
-string_single	-> ccl_string | kw
+string_single	: ccl_string | kw
 				;
 
-ccl<BOOLEAN>	->	ccl_string
+ccl<BOOLEAN>	:	ccl_string
 
 					[*	@@ = FALSE; *]
 
@@ -1030,14 +1025,14 @@ ccl<BOOLEAN>	->	ccl_string
 
 
 /* ------------------------------------- TODO: Must be re-designed... --- */
-ccl_string		->	'\'' ccl_str '\'';
+ccl_string		:	'\'' ccl_str '\'';
 
-ccl_str			->	ccl_str ccl_char
+ccl_str			:	ccl_str ccl_char
 				|
 					[*	reset_strbuf(); *]
 				;
 
-ccl_char		->	!'\\\''
+ccl_char		:	!'\\\''
 					[*	strbuf_append( @1 ); *]
 
 				| '\\' !'\0'
@@ -1045,15 +1040,15 @@ ccl_char		->	!'\\\''
 						strbuf_append( @2 ); 	  *]
 				;
 
-kw				->	'\"' kw_str '\"'
+kw				:	'\"' kw_str '\"'
 				;
 
-kw_str			->	kw_str kw_char
+kw_str			:	kw_str kw_char
 					[* 	strbuf_append( @2 ); *]
 				|	[*	reset_strbuf(); *]
 				;
 
-kw_char			->	!'\\"'
+kw_char			:	!'\\"'
 					[* 	strbuf_append( @1 ); *]
 
 				| '\\' !'\0'
@@ -1062,19 +1057,19 @@ kw_char			->	!'\\"'
 					*]
 				;
 
-type<char*>	->	'<' type_str '>'
+type<char*>	    :   '<' type_str '>'
 					[*	@@ = pstrdup( strbuf ); *]
 				|	[*	@@ = (char*)NULL; *]
 				;
 
-type_str		->	type_str !'>'
+type_str		:	type_str !'>'
 					[* 	strbuf_append( @2 ); *]
 				|	[* 	reset_strbuf(); *]
 				;
 
 /*
 identifier_cpy<char*>
-				->	identifier
+				:	identifier
 					[*
 						@@ = pstrdup( strbuf );
 						reset_strbuf();
@@ -1082,48 +1077,53 @@ identifier_cpy<char*>
 				;
 */
 
-identifier		->	identifier_start identifier_follow
+identifier		:	identifier_start identifier_follow
 				;
 
 identifier_start
-				->	'A-Za-z_'
+				:	'A-Za-z_'
 					[* 	reset_strbuf();
 						strbuf_append( @1 );
 					*]
 				;
 
 identifier_follow
-				-> identifier_follow 'A-Za-z0-9_'
+				:   identifier_follow 'A-Za-z0-9_'
 					[*	strbuf_append( @2 );  *]
 				|
 				;
 
+
+string_or_ident :   string
+                |   identifier
+                ;
+
 /* ------------------------------------- TODO: ...until here --- */
 
-integer			->	integer '0-9'
+integer			:	integer '0-9'
 					[*	strbuf_append( @2 ); *]
 
-				| '0-9'
+				|   '0-9'
 					[* 	reset_strbuf();
 						strbuf_append( @1 );
 					*]
 				;
 
 code_opt_dup<char*>
-				->	code_opt
+				:	code_opt
 
 					[* 	@@ = pstrdup( @code_opt );
 						reset_strbuf();
 					*]
 				;
 
-code_opt<char*>->	code
+code_opt<char*> :	code
 					[*	@@ = strbuf; *]
 				|	[*	reset_strbuf();
 						@@ = (char*)NULL; *]
 				;
 
-code			->	code_begin inner_code_opt "*]"
+code			:	code_begin inner_code_opt "*]"
 					[*
 						if( !parser->p_template )
 						{
@@ -1137,16 +1137,16 @@ code			->	code_begin inner_code_opt "*]"
 					*]
 				;
 
-code_begin		->	"[*"
+code_begin		:	"[*"
 
 					[* last_code_begin = line; *]
 				;
 
-inner_code_opt	->	inner_code
+inner_code_opt	:	inner_code
 				|	[*	reset_strbuf(); *]
 				;
 
-inner_code		->	inner_code anychar
+inner_code		:	inner_code anychar
 					[*	strbuf_append( @2 );		*]
 
 				|	anychar
@@ -1155,7 +1155,7 @@ inner_code		->	inner_code anychar
 					*]
 				;
 
-whitespace		-> ' '
+whitespace		: ' '
 				| '\t'
 				| "/*" comment? "*/"
 				| "//" scomment? '\n'
@@ -1167,22 +1167,22 @@ whitespace		-> ' '
 					[* line++; 	*]
 				;
 
-comment			->	comment anychar
+comment			:	comment anychar
 				|	anychar
 				;
 
-anychar			->	!'\0'
+anychar			:	!'\0'
 					[*	if( @1 == '\n' )
 							line++;
 						@@ = @1;
 					*]
 				;
 
-scomment		->	scomment !'\n'
+scomment		:	scomment !'\n'
 				| !'\n'
 				;
 
-line_number		->	[* @@ = line; *]
+line_number		:	[* @@ = line; *]
 				;
 
 #epilogue

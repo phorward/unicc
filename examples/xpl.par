@@ -31,16 +31,16 @@
 #lexeme             real
                     ;
 
-real               ->       real_integer '.' real_fraction
+real                :       real_integer '.' real_fraction
                     |       real_integer '.'?
                     |       '.' real_fraction
                     ;
 
-real_integer        ->      real_integer '0-9'
+real_integer        :       real_integer '0-9'
                     |       '0-9'
                     ;
                     
-real_fraction       ->      real_fraction '0-9'
+real_fraction       :       real_fraction '0-9'
                     |       '0-9'
                     ;
                     
@@ -48,15 +48,15 @@ real_fraction       ->      real_fraction '0-9'
 #whitespaces        whitespace
                     ;
 
-whitespace          ->      ' \r\n\t'+
+whitespace          :       ' \r\n\t'+
                     |       "//" !'\n'* '\n'
                     ;
 
 //Goal symbol
-program$            ->      statement*
+program$            :       statement*
                     ;
 
-statement           ->      "if" '(' expression ')' statement
+statement           :       "if" '(' expression ')' statement
                     |       "if" '(' expression ')' statement
                                 "else" statement
                     |       "while" '(' expression ')' statement
@@ -65,7 +65,7 @@ statement           ->      "if" '(' expression ')' statement
                     |       ';'
                     ;
 
-expression          ->      variable "=" expression
+expression          :       variable "=" expression
                     |       expression "==" expression
                     |       expression "!=" expression
                     |       expression '>' expression
@@ -84,10 +84,10 @@ expression          ->      variable "=" expression
                     |       function '(' parameter_list? ')'
                     ;
 
-parameter_list      ->      parameter_list ',' expression
+parameter_list      :       parameter_list ',' expression
                     |       expression
                     ;
 
 variable
-function            ->      @identifier
+function            :       @identifier
                     ;
