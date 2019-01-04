@@ -1,7 +1,7 @@
 /* -MODULE----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2018 by Phorward Software Technologies, Jan Max Meyer
-http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
+Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
+https://phorward.info ++ unicc<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
 File:	main.c
@@ -72,8 +72,7 @@ char* print_version( BOOLEAN long_version )
 				UNICC_VER_MAJOR, UNICC_VER_MINOR, UNICC_VER_PATCH,
 					UNICC_VER_EXTSTR );
 	else
-		sprintf( version, "%d.%d%s",
-				UNICC_VER_MAJOR, UNICC_VER_MINOR, UNICC_VER_EXTSTR );
+		sprintf( version, "%d.%d", UNICC_VER_MAJOR, UNICC_VER_MINOR );
 
 	return version;
 }
@@ -87,12 +86,11 @@ void print_copyright( FILE* stream )
 	if( !stream )
 		stream = stdout;
 
-	fprintf( stream, "UniCC LALR(1) Parser Generator v%s [build %s %s]\n",
-			print_version( TRUE ), __DATE__, __TIME__ );
-	fprintf( stream, "Copyright (C) 2006-2018 by "
+	fprintf( stream, "UniCC %s\n", print_version( TRUE ) );
+    fprintf( stream, "Universal LALR(1) parser generator.\n\n" );
+
+    fprintf( stream, "Copyright (C) 2006-2019 by "
 						"Phorward Software Technologies, Jan Max Meyer\n" );
-	fprintf( stream, "http://www.phorward-software.com ++ "
-						"contact<at>phorward<dash>software<dot>com\n" );
 	fprintf( stream, "All rights reserved. "
 						"See LICENSE for more information.\n" );
 
@@ -108,24 +106,24 @@ void print_usage( FILE* stream, char* progname )
 		stream = stdout;
 
 	fprintf( stream, "Usage: %s [OPTION]... FILE\n\n"
-		"  -a   --all             Print all warnings\n"
-		"  -b   --basename NAME   Use basename NAME for output files\n"
-		"  -G   --grammar         Dump final (rewritten) grammar\n"
-		"  -h   --help            Print this help and exit\n"
-		"  -l   --language TARGET Specify target language (default: %s)\n"
-		"  -n   --no-opt          Disables state optimization\n"
+		"  -a    --all             Print all warnings\n"
+		"  -b/-o --basename NAME   Use basename NAME for output files\n"
+		"  -G    --grammar         Dump final (rewritten) grammar\n"
+		"  -h    --help            Print this help and exit\n"
+		"  -l    --language TARGET Specify target language (default: %s)\n"
+		"  -n    --no-opt          Disables state optimization\n"
 		"                         (this will cause more states)\n"
-		"  -P   --productions     Dump final productions\n"
-		"  -s   --stats           Print statistics message\n"
-		"  -S   --states          Dump LALR(1) states\n"
-		"  -t   --stdout          Print output to stdout instead of files\n"
-		"  -T   --symbols         Dump symbols\n"
-		"  -v   --verbose         Print progress messages\n"
-		"  -V   --version         Print version and copyright and exit\n"
-		"  -w   --warnings        Print warnings\n"
-		"  -x   --xml             Build parser description file additionally\n"
-		"  -X   --XML             Build parser description file only, without\n"
-		"                         generating a program-module\n"
+		"  -P    --productions     Dump final productions\n"
+		"  -s    --stats           Print statistics message\n"
+		"  -S    --states          Dump LALR(1) states\n"
+		"  -t    --stdout          Print output to stdout instead of files\n"
+		"  -T    --symbols         Dump symbols\n"
+		"  -v    --verbose         Print progress messages\n"
+		"  -V    --version         Print version and copyright and exit\n"
+		"  -w    --warnings        Print warnings\n"
+		"  -x    --xml             Build parser description file additionally\n"
+		"  -X    --XML             Build parser description file only without\n"
+		"                          generating a program-module\n"
 		"\n"
 		"Errors and warnings are printed to stderr, "
 			"everything else to stdout.\n"
@@ -277,7 +275,7 @@ int main( int argc, char** argv )
 			parser->p_basename = base_name;
 
 		if( parser->verbose )
-			fprintf( status, "UniCC version: %s\n", print_version( FALSE ) );
+			fprintf( status, "UniCC v%s\n", print_version( FALSE ) );
 
 		PROGRESS( "Parsing grammar" )
 

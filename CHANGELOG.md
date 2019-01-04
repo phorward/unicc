@@ -14,6 +14,7 @@ Current development version.
   and  `#version`.
 - Removed old-style `!model` top-level directive.
 - Several internal code revisions.
+- Compiled and linked against libphorward 0.24.
 
 ## [v1.5]
 
