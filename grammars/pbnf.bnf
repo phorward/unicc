@@ -1,0 +1,64 @@
+// Whitespace ------------------------------------------------------------------
+
+%skip			/[ \t\r\n]+/
+%skip			/\/\/[^\n]*\n/
+%skip			/\/\*([^*]|\*[^\/])*\*\/|\/\/[^\n]*\n|#[^\n]*\n/
+
+// Terminals -------------------------------------------------------------------
+
+@Terminal		:= /[A-Z][A-Za-z0-9_]*/
+@Nonterminal	:= /[a-z_][A-Za-z0-9_]*/
+
+@CCL 			:= /\[(\\.|[^\\\]])*\]/
+@String 		:= /'[^']*'/
+@Token			:= /"[^"]*"/
+@Regex 			:= /\/(\\.|[^\\\/])*\//
+
+@Int			:= /[0-9]+/
+@Function		:= /[A-Za-z_][A-Za-z0-9_]*\(\)/
+
+@Flag_goal		:= '$'
+@Flag_ignore	:= /%(ignore|skip)/
+
+// Nonterminals ----------------------------------------------------------------
+
+@colon          : ':=' = emitsdef
+                | ':'
+
+@emits          := '=' Terminal
+                | '=' Nonterminal
+
+@terminal		: CCL | String | Token | Regex | Function
+
+@inline			:= '(' alternation ')'
+
+@symbol 		:= Terminal
+				| Nonterminal
+				| terminal
+				| inline
+
+@modifier		: symbol '*' = kle
+				| symbol '+' = pos
+				| symbol '?' = opt
+				| symbol
+
+@sequence		: sequence modifier | modifier
+
+@production	 	:= sequence? emits?
+
+@alternation	: alternation '|' production | production
+
+@nontermdef		:= '@' Nonterminal Flag_goal? colon alternation
+
+@termdef		:= '@' Terminal colon terminal emits?
+                | Flag_ignore terminal emits?
+
+@assocdef		: '<' terminal+	= assoc_left
+				| '>' terminal+	= assoc_right
+				| '^' terminal+	= assoc_none
+
+@definition		: nontermdef
+				| termdef
+				| assocdef
+
+@grammar	$	: definition+

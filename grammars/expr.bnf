@@ -1,0 +1,16 @@
+%skip	/[\s]+/ ;
+Int		: /[0-9]+/ = int;
+
+factor	: Int
+		| '(' expr ')'
+		;
+
+term	: term '*' factor = mul
+		| term '/' factor = div
+		| factor
+		;
+
+expr$	: expr '+' term = add
+		| expr '-' term = sub
+		| term
+		;

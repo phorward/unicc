@@ -1,0 +1,26 @@
+// JSON grammar created by AGS
+%skip /[\s]+/
+
+@NUMBER : /((\+|\-)?[\d]+)((\.[\d]+([Ee](\+|\-)?[0-9]+)?)|([Ee](\+|\-)[\d]+))?/ = nnumber
+@NULL : /null/=nil
+@TRUE : /true/=true
+@FALSE : /false/=false
+@SCONST : /\"((\x5c(\x5c|a|\"|b|f|n|r|t|u[a-fA-F0-9][a-fA-F0-9][a-fA-F0-9][a-fA-F0-9]|v))|[^\x5c\"])*\"/=sconst
+@CCONST : /'((\x5c(\x5c|a|'|b|f|n|r|t|v))|[^\x5c'])*'/=cconst
+@ID    : /[a-zA-Z_][A-Za-z0-9_]*/ =id
+@COLON : ":"
+@COMMA : ","
+@LC    : "{"
+@RC    : "}"
+@LB    : "["
+@RB    : "]"
+
+@json$ : value
+@value : object =nobject| array =narray| ID | NUMBER | NULL | TRUE | FALSE | CCONST | SCONST
+@object : LC RC | LC pair_list RC
+@pair_list : pair | pair_list COMMA pair
+@key : SCONST | CCONST | ID
+@pair : key COLON value = pair
+@array : LB RB | LB value_list RB
+@value_list : value | value_list COMMA value
+

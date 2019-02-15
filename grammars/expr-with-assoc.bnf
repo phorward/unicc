@@ -1,0 +1,13 @@
+%skip   /[\s]+/ ;
+Int     : /[0-9]+/ = int;
+
+<<      '+' '-';
+<<      '*' '/';
+
+expr$   : expr '*' expr = mul
+        | expr '/' expr = div
+        | expr '+' expr = add
+        | expr '-' expr = sub
+        | '(' expr ')'
+        | Int
+        ;
