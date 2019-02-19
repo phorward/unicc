@@ -10,9 +10,6 @@ Usage:	Parsing full parser definitions from Phorward BNF (PBNF).
 
 #include "unicc.h"
 
-#define NAMELEN			72
-#define DERIVCHAR		'\''
-
 static pboolean traverse_production( Grammar* gram, Symbol* lhs, AST_node* node );
 
 /* Derive name from basename */
@@ -42,6 +39,7 @@ static Symbol* traverse_terminal( Grammar* gram, AST_node* node )
 	pregex_ptn*		ptn			= (pregex_ptn*)NULL;
 	char			name		[ NAMELEN * 2 + 1 ];
 	char			ch;
+	unsigned int	priority	= 2;
 
 	PROC( "traverse_terminal" );
 	VARS( "node->emit", "%s", node->emit );
@@ -61,7 +59,10 @@ static Symbol* traverse_terminal( Grammar* gram, AST_node* node )
 			if( NODE_IS( node, "Token") || NODE_IS( node, "String" ) )
 				ptn = pregex_ptn_create( name + 1, PREGEX_COMP_STATIC );
 			else if( NODE_IS( node, "Regex" ) )
+			{
 				ptn = pregex_ptn_create( name + 1, PREGEX_COMP_NOERRORS );
+				priority = 3;
+			}
 			else
 			{
 				MISSINGCASE;
@@ -69,10 +70,13 @@ static Symbol* traverse_terminal( Grammar* gram, AST_node* node )
 
 			name[ pstrlen( name ) ] = ch;
 		}
+		else
+			priority = 0;
 
 		sym = sym_create( gram, name,
 				FLAG_FREENAME | FLAG_DEFINED );
 		sym->ptn = ptn;
+		sym->priority = priority;
 
 		if( NODE_IS( node, "Token") )
 		{
@@ -317,6 +321,7 @@ static pboolean ast_to_gram( Grammar* gram, AST_node* ast )
 			sym = sym_create( gram, *name ? name : (char*)NULL,
 								FLAG_FREENAME | FLAG_DEFINED );
 			sym->ptn = ptn;
+			sym->priority = 1;
 
 			/* Set emitting & flags */
 			if( emit == name )
@@ -735,8 +740,8 @@ pboolean gram_from_pbnf( Grammar* g, char* src )
 										"|//[^\n]*\n"
 										"|#[^\n]*\n", 0 );
 
-	terminal->ptn = pregex_ptn_create( "[A-Z_][A-Za-z0-9_]*", 0 );
-	nonterminal->ptn = pregex_ptn_create( "[a-z_][A-Za-z0-9_]*", 0 );
+	terminal->ptn = pregex_ptn_create( "[A-Z&]\\w*", 0 );
+	nonterminal->ptn = pregex_ptn_create( "[a-z_]\\w*", 0 );
 	code->ptn = pregex_ptn_create( "{{.*}}", 0 );
 
 	t_ccl->ptn = pregex_ptn_create( "\\[(\\.|[^\\\\\\]])*\\]", 0 );

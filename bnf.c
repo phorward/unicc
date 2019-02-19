@@ -10,9 +10,6 @@ Usage:	Parsing grammars from BNF/EBNF definitions
 
 #include "unicc.h"
 
-#define NAMELEN			72
-#define DERIVCHAR		'\''
-
 static pboolean traverse_production( Grammar* g, Symbol* lhs, AST_node* node );
 
 /* Derive name from basename */

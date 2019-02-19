@@ -10,8 +10,6 @@ Usage:	Abstraction of grammars into particular objects.
 
 #include "unicc.h"
 
-#define NAMELEN				256
-
 /* -----------------------------------------------------------------------------
 	Symbols
 ----------------------------------------------------------------------------- */
@@ -69,6 +67,8 @@ Symbol* sym_create( Grammar* g, char* name, unsigned int flags )
 	}
 
 	sym->grm = g;
+	sym->idx = plist_count( g->symbols ) - 1;
+	sym->priority = 100;
 
 	if( !( sym->name = name ) )
 		flags |= FLAG_NAMELESS;
@@ -593,6 +593,19 @@ char* prod_to_str( Production* p )
 	Grammar
 ----------------------------------------------------------------------------- */
 
+static int sort_symbols( plist* lst, plistel* el, plistel* er )
+{
+	Symbol*		l	= (Symbol*)plist_access( el );
+	Symbol*		r	= (Symbol*)plist_access( er );
+
+	if( l->priority > r->priority )
+		return 1;
+	else if( l->priority < r->priority )
+		return -1;
+
+	return r->idx - l->idx;
+}
+
 /** Creates a new Grammar-object. */
 Grammar* gram_create( void )
 {
@@ -600,9 +613,11 @@ Grammar* gram_create( void )
 
 	g = (Grammar*)pmalloc( sizeof( Grammar ) );
 
-	g->symbols = plist_create( sizeof( Symbol ), PLIST_MOD_RECYCLE
-													| PLIST_MOD_EXTKEYS
-														| PLIST_MOD_UNIQUE );
+	g->symbols = plist_create( sizeof( Symbol ),
+					PLIST_MOD_RECYCLE | PLIST_MOD_EXTKEYS
+						| PLIST_MOD_UNIQUE );
+	plist_set_sortfn( g->symbols, sort_symbols );
+
 	g->prods = plist_create( sizeof( Production ), PLIST_MOD_RECYCLE );
 
 	g->eof = sym_create( g, SYM_T_EOF, FLAG_SPECIAL );
@@ -638,20 +653,24 @@ pboolean gram_prepare( Grammar* g )
 	int				pcnt;
 	unsigned int	idx;
 
+	PROC( "gram_prepare" );
+
 	if( !g )
 	{
 		WRONGPARAM;
-		return FALSE;
+		RETURN( FALSE );
 	}
 
 	if( !g->goal )
 	{
 		/* No such goal! */
 		fprintf( stderr, "Grammar has no goal!\n" );
-		return FALSE;
+		RETURN( FALSE );
 	}
 
 	/* Reset symbols */
+	plist_sort( g->symbols );
+
 	for( idx = 0, e = plist_first( g->symbols ); e; e = plist_next( e ), idx++ )
 	{
 		sym = (Symbol*)plist_access( e );
@@ -806,7 +825,7 @@ pboolean gram_prepare( Grammar* g )
 	g->flags |= FLAG_FINALIZED;
 	g->strval = pfree( g->strval );
 
-	return TRUE;
+	RETURN( TRUE );
 }
 
 /** Dump grammar to trace.

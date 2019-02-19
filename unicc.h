@@ -12,6 +12,9 @@ Usage:	Phorward parsing library
 
 #define UNICC_VERSION		"2.0.0-dev"
 
+#define NAMELEN		        256                        /* fixme: make dynamic */
+#define DERIVCHAR		    '\''
+
 typedef struct _Symbol		Symbol;
 typedef struct _Production	Production;
 typedef struct _Grammar		Grammar;
@@ -62,12 +65,12 @@ struct _Production
 	plist*					rhs;		/* Left-hand side items */
 	unsigned int			flags;		/* Configuration flags */
 
-	Assoc					assoc;		/* LR associativity */
+	Assoc					assoc;		/* LR associativity flag */
 	unsigned int			prec;		/* LR precedence level */
 
 	char*					emit;		/* AST emitting node */
 
-	char*					strval;		/* String represenation */
+	char*					strval;		/* String representation */
 };
 
 /* Symbol (both terminal and nonterminal for easier access in productions) */
@@ -83,7 +86,8 @@ struct _Symbol
 
 	unsigned int			flags;		/* Configuration flags */
 
-	Assoc					assoc;		/* LR associativity */
+	unsigned int			priority;	/* Symbol leveling priority */
+	Assoc					assoc;		/* LR associativity flag */
 	unsigned int			prec;		/* LR precedence level */
 
 	plist*					first;		/* Set of FIRST() symbols */
@@ -102,7 +106,7 @@ struct _Symbol
 /* Grammar */
 struct _Grammar
 {
-	plist*					symbols;	/* Symbols (both nonterminals
+	plist*					symbols;	/* Symbols (both non-terminals
 														and terminals) */
 	plist*					prods;		/* Productions */
 

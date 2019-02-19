@@ -5,7 +5,7 @@ http://www.phorward-software.com ++ contact<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
 File:	parse.c
-Usage:	Parser maintainance object.
+Usage:	Parser maintenance object.
 ----------------------------------------------------------------------------- */
 
 #include "unicc.h"
@@ -576,29 +576,29 @@ pboolean par_dump_json( FILE* stream, Parser* par )
 	if( !stream )
 		stream = stdout;
 
-	fprintf( stream, "{ \"grammar\": " );
+	fprintf( stream, "{\n\t\"grammar\":\n" );
 	gram_dump_json( stream, par->gram );
 
-	/* LALR parser */
-	fprintf( stream, ", \"states\": [" );
+	/* LR parser */
+	fprintf( stream, ",\n\t\"states\": [\n" );
 
 	for( i = 0; i < par->states; i++ )
 	{
-		fprintf( stream, "{" );
+		fprintf( stream, "\t\t{\n" );
 
 		if( par->dfa[ 1 ] )
-			fprintf( stream, "\"reduce-default\": %d,",
+			fprintf( stream, "\t\t\t\"reduce-default\": %d,\n",
 				( par->dfa[ i ][ 1 ] - 1 ) );
 
 		else
-			fprintf( stream, "\"reduce-default\": null," );
+			fprintf( stream, "\t\t\t\"reduce-default\": null,\n" );
 
-		fprintf( stream, "\"actions\": [" );
+		fprintf( stream, "\t\t\t\"actions\": [\n" );
 
 		/* Actions */
 		for( j = 2; j < par->dfa[ i ][ 0 ]; j += 3 )
 		{
-			fprintf( stream, "{ \"symbol\": %d, ", par->dfa[ i ][ j ] - 1 );
+			fprintf( stream, "\t\t\t\t{ \"symbol\": %d, ", par->dfa[ i ][ j ] - 1 );
 
 			if( par->dfa[ i ][ j + 1 ] & LR_REDUCE )
 				fprintf( stream, "\"action\": \"%s\", \"production\": %d",
@@ -609,13 +609,13 @@ pboolean par_dump_json( FILE* stream, Parser* par )
 				fprintf( stream, "\"action\": \"shift\", \"state\": %d",
 					(int)( par->dfa[ i ][ j + 2 ] - 1 ) );
 
-			fprintf( stream, "}%s", j + 3 < par->dfa[ i ][ 0 ] ? "," : "" );
+			fprintf( stream, "}%s\n", j + 3 < par->dfa[ i ][ 0 ] ? "," : "" );
 		}
 
-		fprintf( stream, "]}%s", i + 1 < par->states ? "," : "" );
+		fprintf( stream, "\t\t\t]\n\t\t}%s\n", i + 1 < par->states ? "," : "" );
 	}
 
-	fprintf( stream, "]}" );
+	fprintf( stream, "\t]\n}\n" );
 
 	RETURN( TRUE );
 }
