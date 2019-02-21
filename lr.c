@@ -5,7 +5,7 @@ http://www.phorward-software.com ++ contact<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
 File:	lr.c
-Usage:	LR/LALR/SLR parse table construction and execution.
+Usage:	LR/LALR/GLR parse table construction and execution.
 ----------------------------------------------------------------------------- */
 
 #include "unicc.h"
@@ -48,7 +48,7 @@ typedef struct
 	Production*		reduce;			/* Reduce by production */
 } LRcolumn;
 
-/* LR/LALR parser */
+/* LR/LALR/GLR parser generator */
 
 /* Debug for one lritem */
 static void lritem_print( LRitem* it )

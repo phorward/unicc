@@ -28,8 +28,6 @@ static void help( char** argv )
 	"   grammar                   Grammar to create a parser from.\n"
 	"   input                     Input to be processed by the parser.\n\n"
 
-	"   -f  --format  TYPE        Which input grammar parser to use, either\n"
-	"                             pbnf (default), ebnf, bnf\n"
 	"   -G                        Dump constructed grammar\n"
 	"   -h  --help                Show this help, and exit.\n"
 	"   -r  --render  RENDERER    Use AST renderer RENDERER:\n"
@@ -47,7 +45,6 @@ int main( int argc, char** argv )
 	pboolean	lm		= FALSE;
 	pboolean	dg		= FALSE;
 	pboolean	dj		= FALSE;
-	char*		bnftype	= "pbnf";
 	int			r		= 0;
 	AST_node*	a		= (AST_node*)NULL;
 	Grammar*	g;
@@ -67,24 +64,11 @@ int main( int argc, char** argv )
 	PROC( "unicc" );
 
 	for( i = 0; ( rc = pgetopt( opt, &param, &next, argc, argv,
-						"f:Ghjr:vV",
-						"format: renderer: help json verbose version", i ) )
+						"Ghjr:vV",
+						"renderer: help json verbose version", i ) )
 							== 0; i++ )
 	{
-		if( !strcmp( opt, "format" ) || !strcmp( opt, "f" ) )
-		{
-			if( !pstrcasecmp( param, "pbnf" )
-				|| !pstrcasecmp( param, "ebnf" )
-					|| !pstrcasecmp( param, "bnf" ) )
-				bnftype = pstrlwr( param );
-			else
-			{
-				fprintf( stderr, "Unknown format specified, either "
-									"'pbnf', 'ebnf' or 'bnf' allowed\n" );
-				RETURN( 1 );
-			}
-		}
-		else if( !strcmp(opt, "G" ) )
+		if( !strcmp(opt, "G" ) )
 			dg = TRUE;
 		else if( !strcmp( opt, "json" ) || !strcmp( opt, "j" ) )
 			dj = TRUE;
@@ -136,10 +120,7 @@ int main( int argc, char** argv )
 
 	g = gram_create();
 
-	if( ( !strcmp( bnftype, "pbnf" ) && !gram_from_pbnf( g, gstr ) )
-			|| ( !strcmp( bnftype, "ebnf" ) && !gram_from_ebnf( g, gstr ) )
-				|| ( !strcmp( bnftype, "bnf" ) && !gram_from_bnf( g, gstr ) )
-			)
+	if( !gram_from_pbnf( g, gstr ) )
 	{
 		fprintf( stderr, "%s: Parse error in >%s<\n", gfile, gstr );
 		RETURN( 1 );

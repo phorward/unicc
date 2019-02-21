@@ -6,7 +6,6 @@ HEADERS		= \
 			proto.h
 
 SOURCES   	=	\
-			bnf.c \
 			grammar.c \
 			lr.c \
 			parse.c \

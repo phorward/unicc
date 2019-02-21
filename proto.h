@@ -1,7 +1,3 @@
-/* bnf.c */
-pboolean gram_from_bnf( Grammar* g, char* src );
-pboolean gram_from_ebnf( Grammar* g, char* src );
-
 /* grammar.c */
 Symbol* sym_create( Grammar* g, char* name, unsigned int flags );
 Symbol* sym_free( Symbol* sym );
