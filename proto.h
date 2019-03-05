@@ -1,3 +1,6 @@
+/* bnf.c */
+pboolean gram_from_pbnf( Grammar* g, char* src );
+
 /* grammar.c */
 Symbol* sym_create( Grammar* g, char* name, unsigned int flags );
 Symbol* sym_free( Symbol* sym );
@@ -20,7 +23,7 @@ char* prod_to_str( Production* p );
 Grammar* gram_create( void );
 pboolean gram_prepare( Grammar* g );
 void __dbg_gram_dump( char* file, int line, char* function, char* name, Grammar* g );
-char* gram_to_str( Grammar* grm );
+char* gram_to_bnf( Grammar* grm );
 pboolean gram_dump_json( FILE* stream, Grammar* grm );
 Grammar* gram_free( Grammar* g );
 
@@ -54,7 +57,4 @@ Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym, pany* val );
 Parser_stat parctx_next_by_name( Parser_ctx* ctx, char* name, pany* val );
 Parser_stat parctx_next_by_idx( Parser_ctx* ctx, unsigned int idx, pany* val );
 pboolean par_parse( AST_node** root, Parser* par, char* start );
-
-/* pbnf.c */
-pboolean gram_from_pbnf( Grammar* g, char* src );
 

@@ -1,16 +1,13 @@
-%skip	/[\s]+/ ;
-Int		: /[0-9]+/ = int;
+%skip	/[\s]+/
+@Int	: /[0-9]+/ = int
 
-factor	: Int
+@factor	: Int
 		| '(' expr ')'
-		;
 
-term	: term '*' factor = mul
+@term	: term '*' factor = mul
 		| term '/' factor = div
 		| factor
-		;
 
-expr$	: expr '+' term = add
+@expr$	: expr '+' term = add
 		| expr '-' term = sub
 		| term
-		;

@@ -36,55 +36,54 @@ static char* derive_name( Grammar* gram, char* base )
 static Symbol* traverse_terminal( Grammar* gram, AST_node* node )
 {
 	Symbol*			sym;
-	pregex_ptn*		ptn			= (pregex_ptn*)NULL;
-	char			name		[ NAMELEN * 2 + 1 ];
+	char*			name;
 	char			ch;
-	unsigned int	priority	= 2;
 
 	PROC( "traverse_terminal" );
 	VARS( "node->emit", "%s", node->emit );
 
-	sprintf( name, "%.*s", (int)node->len, node->start );
+	name = pstrndup( node->start, node->len );
 	VARS( "name", "%s", name );
 
 	if( !( sym = sym_get_by_name( gram, name ) ) )
 	{
-		if( NODE_IS( node, "CCL" ) )
-			ptn = pregex_ptn_create( name, PREGEX_COMP_NOERRORS );
-		else if( !NODE_IS( node, "Terminal" ) )
-		{
-			ch = name[ pstrlen( name ) - 1 ];
-			name[ pstrlen( name ) - 1 ] = '\0';
+		sym = sym_create( gram, name, FLAG_FREENAME );
 
-			if( NODE_IS( node, "Token") || NODE_IS( node, "String" ) )
-				ptn = pregex_ptn_create( name + 1, PREGEX_COMP_STATIC );
-			else if( NODE_IS( node, "Regex" ) )
+		if( !NODE_IS( node, "Terminal" ) )
+		{
+			sym->flags |= FLAG_NAMELESS;
+
+			if( NODE_IS( node, "CCL" ) )
 			{
-				ptn = pregex_ptn_create( name + 1, PREGEX_COMP_NOERRORS );
-				priority = 3;
+				sym->ptn = pregex_ptn_create( name, PREGEX_COMP_NOERRORS );
+				sym->ccl = sym->ptn->ccl;
 			}
 			else
 			{
-				MISSINGCASE;
+				ch = name[ strlen( name ) - 1 ];
+				name[ strlen( name ) - 1 ] = 0;
+
+				if( NODE_IS( node, "Token") || NODE_IS( node, "String" ) )
+				{
+					sym->ptn = pregex_ptn_create( name + 1,
+									PREGEX_COMP_STATIC );
+					sym->str = name;
+
+					if( NODE_IS( node, "Token") )
+						sym->emit = name;
+				}
+				else if( NODE_IS( node, "Regex" ) )
+					sym->ptn = pregex_ptn_create( name + 1,
+									PREGEX_COMP_NOERRORS );
+				else
+					MISSINGCASE;
+
+				name[ strlen( name ) ] = ch;
 			}
-
-			name[ pstrlen( name ) ] = ch;
-		}
-		else
-			priority = 0;
-
-		sym = sym_create( gram, name,
-				FLAG_FREENAME | FLAG_DEFINED );
-		sym->ptn = ptn;
-		sym->priority = priority;
-
-		if( NODE_IS( node, "Token") )
-		{
-			sym->emit = pstrndup( sym->name + 1,
-							strlen( sym->name ) - 2 );
-			sym->flags |= FLAG_FREEEMIT;
 		}
 	}
+	else
+		pfree( name );
 
 	RETURN( sym );
 }
@@ -101,8 +100,8 @@ static Symbol* traverse_symbol( Grammar* gram, Symbol* lhs, AST_node* node )
 	if( NODE_IS( node, "inline" ) )
 	{
 		sym = sym_create( gram, derive_name( gram, lhs->name ),
-						  FLAG_FREENAME | FLAG_DEFINED
-						  | FLAG_GENERATED );
+							FLAG_FREENAME | FLAG_NAMELESS | FLAG_DEFINED
+								| FLAG_GENERATED );
 
 		for( child = node->child; child; child = child->next )
 			if( !traverse_production( gram, sym, child->child ) )
@@ -217,7 +216,6 @@ static pboolean ast_to_gram( Grammar* gram, AST_node* ast )
 	char			name		[ NAMELEN * 2 + 1 ];
 	char			def			[ NAMELEN * 2 + 1 ];
 	char*			emit;
-	pregex_ptn*		ptn;
 	pboolean		flag_ignore;
 	Assoc			assoc;
 	unsigned int	prec		= 0;
@@ -286,22 +284,27 @@ static pboolean ast_to_gram( Grammar* gram, AST_node* ast )
 				child = child->next;
 			}
 
+			sym = sym_create( gram, *name ? name : (char*)NULL,
+								FLAG_FREENAME | FLAG_DEFINED );
+
 			if( NODE_IS( child, "CCL" ) )
 			{
 				sprintf( def, "%.*s", (int)child->len, child->start );
-				ptn = pregex_ptn_create( def, PREGEX_COMP_NOERRORS );
+
+				sym->ptn = pregex_ptn_create( def, PREGEX_COMP_NOERRORS );
+				sym->ccl = sym->ptn->ccl;
 			}
 			else
 			{
 				sprintf( def, "%.*s", (int)child->len - 2, child->start + 1 );
 
-				/* if( ! *name )
-					sprintf( name, "%.*s", (int)child->len, child->start ); */
-
 				if( NODE_IS( child, "Token") || NODE_IS( child, "String" ) )
-					ptn = pregex_ptn_create( def, PREGEX_COMP_STATIC );
+				{
+					sym->str = pstrdup( def );
+					sym->ptn = pregex_ptn_create( def, PREGEX_COMP_STATIC );
+				}
 				else if( NODE_IS( child, "Regex" ) )
-					ptn = pregex_ptn_create( def, PREGEX_COMP_NOERRORS );
+					sym->ptn = pregex_ptn_create( def, PREGEX_COMP_NOERRORS );
 				else
 					MISSINGCASE;
 			}
@@ -316,12 +319,6 @@ static pboolean ast_to_gram( Grammar* gram, AST_node* ast )
 				else
 					emit = pstrndup( child->child->start, child->child->len );
 			}
-
-			/* Create the terminal symbol */
-			sym = sym_create( gram, *name ? name : (char*)NULL,
-								FLAG_FREENAME | FLAG_DEFINED );
-			sym->ptn = ptn;
-			sym->priority = 1;
 
 			/* Set emitting & flags */
 			if( emit == name )

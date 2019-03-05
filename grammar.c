@@ -68,7 +68,6 @@ Symbol* sym_create( Grammar* g, char* name, unsigned int flags )
 
 	sym->grm = g;
 	sym->idx = plist_count( g->symbols ) - 1;
-	sym->priority = 100;
 
 	if( !( sym->name = name ) )
 		flags |= FLAG_NAMELESS;
@@ -239,14 +238,21 @@ char* sym_to_str( Symbol* sym )
 
 	if( !sym->strval )
 	{
-		if( sym->name && !( sym->flags & FLAG_NAMELESS ) )
-			sym->strval = pstrdup( sym->name );
-		else
-		{
-			sym->strval = (char*)pmalloc( 4 + 1 * sizeof( char ) );
-			sprintf( sym->strval, "%c%03d",
-					 SYM_IS_TERMINAL( sym ) ? 'T' : 'n', sym->idx );
-		}
+		if( sym->name && !( sym->flags & FLAG_NAMELESS )
+						&& !( sym->flags & FLAG_GENERATED ) )
+			sym->strval = sym->name;
+		else if( SYM_IS_TERMINAL( sym ) && sym->ccl )
+			sym->strval = pasprintf( "[%s]", pccl_to_str( sym->ccl, TRUE ) );
+		else if( SYM_IS_TERMINAL( sym ) && sym->str )
+			sym->strval = pasprintf( "%s", sym->str );
+		else if( SYM_IS_TERMINAL( sym ) && sym->ptn )
+			sym->strval = pasprintf( "/%s/", pregex_ptn_to_regex( sym->ptn ) );
+		else if( strncmp( sym->name, "pos_", 4 ) == 0 )
+			sym->strval = pasprintf( "%s+", sym->name + 4 );
+		else if( strncmp( sym->name, "opt_", 4 ) == 0 )
+			sym->strval = pasprintf( "%s?", sym->name + 4 );
+		else if( strncmp( sym->name, "kle_", 4 ) == 0 )
+			sym->strval = pasprintf( "%s*", sym->name + 4 );
 	}
 
 	return sym->strval;
@@ -256,7 +262,7 @@ char* sym_to_str( Symbol* sym )
 
 This helper function constructs the productions and symbol
 ```
-pos_sym: sym pos_sym | sym ;
+@pos_sym: sym pos_sym | sym
 ```
 from //sym//, and returns the symbol //pos_sym//. If //pos_sym// already exists,
 the symbol will be returned without any creation.
@@ -293,10 +299,6 @@ Symbol* sym_mod_positive( Symbol* sym )
 						  FLAG_DEFINED | FLAG_CALLED | FLAG_GENERATED
 						  | ( name == buf ? FLAG_FREENAME : FLAG_NONE ) );
 
-		/* Flag config must be done here do avoid pstrdup() previously */
-		if( name != buf )
-			ret->flags |= FLAG_FREENAME;
-
 		if( sym->grm->flags & FLAG_PREVENTLREC )
 			prod_create( sym->grm, ret, sym, ret, (Symbol*)NULL );
 		else
@@ -314,7 +316,7 @@ Symbol* sym_mod_positive( Symbol* sym )
 
 This helper function constructs the productions and symbol
 ```
-opt_sym: sym | ;
+@opt_sym: sym |
 ```
 from //sym//, and returns the symbol //pos_sym//. If //opt_sym// already exists,
 the symbol will be returned without any creation.
@@ -350,10 +352,6 @@ Symbol* sym_mod_optional( Symbol* sym )
 						  FLAG_DEFINED | FLAG_CALLED | FLAG_GENERATED
 						  | ( name == buf ? FLAG_FREENAME : FLAG_NONE ) );
 
-		/* Flag config must be done here do avoid pstrdup() previously */
-		if( name != buf )
-			ret->flags |= FLAG_FREENAME;
-
 		prod_create( sym->grm, ret, sym, (Symbol*)NULL );
 		prod_create( sym->grm, ret, (Symbol*)NULL );
 	}
@@ -367,8 +365,8 @@ Symbol* sym_mod_optional( Symbol* sym )
 
 This helper function constructs the productions and symbol
 ```
-pos_sym: sym pos_sym | sym ;
-opt_sym: pos_sym | ;
+@pos_sym: sym pos_sym | sym
+@kle_sym: pos_sym |
 ```
 from //sym//, and returns the symbol //opt_sym//. If any of the given symbols
 already exists, they are directly used. The function is a shortcut for a call
@@ -378,6 +376,11 @@ sym_mod_optional( sym_mod_positive( sym ) )
 */
 Symbol* sym_mod_kleene( Symbol* sym )
 {
+	Symbol*		ret;
+	char		buf		[ BUFSIZ + 1 ];
+	char*		name	= buf;
+	size_t		len;
+
 	PROC( "sym_mod_kleene" );
 	PARMS( "sym", "%p", sym );
 
@@ -387,8 +390,24 @@ Symbol* sym_mod_kleene( Symbol* sym )
 		RETURN( (Symbol*)NULL );
 	}
 
-	sym = sym_mod_positive( sym );
-	sym = sym_mod_optional( sym );
+	len = pstrlen( sym->name ) + 4;
+	if( len > BUFSIZ )
+		name = (char*)pmalloc( ( len + 1 ) * sizeof( char ) );
+
+	sprintf( name, "kle_%s", pstrget( sym->name ) );
+
+	VARS( "name", "%s", name );
+
+	if( !( ret = sym_get_by_name( sym->grm, name ) ) )
+	{
+		MSG( "Symbol does not exist yet, creating" );
+		ret = sym_create( sym->grm, name,
+						  FLAG_DEFINED | FLAG_CALLED | FLAG_GENERATED
+						  | ( name == buf ? FLAG_FREENAME : FLAG_NONE ) );
+
+		prod_create( sym->grm, ret, sym_mod_positive( sym ), (Symbol*)NULL );
+		prod_create( sym->grm, ret, (Symbol*)NULL );
+	}
 
 	RETURN( sym );
 }
@@ -598,12 +617,23 @@ static int sort_symbols( plist* lst, plistel* el, plistel* er )
 	Symbol*		l	= (Symbol*)plist_access( el );
 	Symbol*		r	= (Symbol*)plist_access( er );
 
-	if( l->priority > r->priority )
+	if( l->ccl && !r->ccl )
 		return 1;
-	else if( l->priority < r->priority )
+	else if( !l->ccl && r->ccl )
+		return -1;
+	else if( l->str && !r->str )
+		return 1;
+	else if( !l->str && r->str )
+		return -1;
+	else if( l->ptn && !r->ptn )
+		return 1;
+	else if( !l->ptn && r->ptn )
 		return -1;
 
-	return r->idx - l->idx;
+	if( l->idx < r->idx )
+		return 1;
+
+	return 0;
 }
 
 /** Creates a new Grammar-object. */
@@ -926,8 +956,8 @@ void __dbg_gram_dump( char* file, int line, char* function,
 	_dbg_trace( file, line, "GRAMMAR", function, "}" );
 }
 
-/** Get grammar string representation */
-char* gram_to_str( Grammar* grm )
+/** Get grammar representation as BNF */
+char* gram_to_bnf( Grammar* grm )
 {
 	Symbol*		sym;
 	Symbol*		psym;
@@ -968,18 +998,19 @@ char* gram_to_str( Grammar* grm )
 	/* Generate terminals */
 	plist_for( grm->symbols, e )
 	{
-		if( !SYM_IS_TERMINAL( ( sym = (Symbol*)plist_access( e ) ) ) )
+		if( !SYM_IS_TERMINAL( ( sym = (Symbol*)plist_access( e ) ) )
+			|| ( sym->flags & FLAG_NAMELESS )
+			|| ( sym->flags & FLAG_SPECIAL ) )
 			continue;
 
 		if( sym->ptn )
-		    sprintf( name, "%-*s : /%s/;\n",
+		    sprintf( name, "@%-*s : /%s/\n",
 		            maxsymlen, sym_to_str( sym ),
 		                pregex_ptn_to_regex( sym->ptn ) );
 		else
-            sprintf( name, "%-*s : '%s';\n",
+            sprintf( name, "@%-*s : '%s'\n",
                      maxsymlen, sym_to_str( sym ),
                          pstrget( sym->name ) );
-
 
 		grm->strval = pstrcatstr( grm->strval, name, FALSE );
 	}
@@ -987,11 +1018,12 @@ char* gram_to_str( Grammar* grm )
 	/* Generate nonterminals! */
 	plist_for( grm->symbols, e )
 	{
-		if( SYM_IS_TERMINAL( ( sym = (Symbol*)plist_access( e ) ) ) )
+		if( SYM_IS_TERMINAL( ( sym = (Symbol*)plist_access( e ) ) )
+				|| sym->flags & FLAG_GENERATED )
 			continue;
 
 		first = TRUE;
-		sprintf( name, "%-*s : ", maxsymlen, sym_to_str( sym ) );
+		sprintf( name, "@%-*s : ", maxsymlen, sym->name );
 
 		grm->strval = pstrcatstr( grm->strval, name, FALSE );
 
@@ -1004,7 +1036,7 @@ char* gram_to_str( Grammar* grm )
 
 			if( !first )
 			{
-				sprintf( name, "%-*s | ", maxsymlen, "" );
+				sprintf( name, "%-*s  | ", maxsymlen, "" );
 				grm->strval = pstrcatstr( grm->strval, name, FALSE );
 			}
 			else
@@ -1023,8 +1055,7 @@ char* gram_to_str( Grammar* grm )
 			}
 		}
 
-		sprintf( name, "%-*s ;\n\n", maxsymlen, "" );
-		grm->strval = pstrcatstr( grm->strval, name, FALSE );
+		grm->strval = pstrcatstr( grm->strval, "\n", FALSE );
 	}
 
 	return grm->strval;

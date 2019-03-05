@@ -6,10 +6,10 @@ HEADERS		= \
 			proto.h
 
 SOURCES   	=	\
+			bnf.c \
 			grammar.c \
 			lr.c \
-			parse.c \
-			pbnf.c \
+			parse.c
 
 OBJECTS		= $(patsubst %.c,%.o,$(SOURCES))
 

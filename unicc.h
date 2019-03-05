@@ -8,7 +8,7 @@ File:	parse.h
 Usage:	Phorward parsing library
 ----------------------------------------------------------------------------- */
 
-#include "phorward.h"
+#include <phorward.h>
 
 #define UNICC_VERSION		"2.0.0-dev"
 
@@ -86,14 +86,16 @@ struct _Symbol
 
 	unsigned int			flags;		/* Configuration flags */
 
-	unsigned int			priority;	/* Symbol leveling priority */
 	Assoc					assoc;		/* LR associativity flag */
 	unsigned int			prec;		/* LR precedence level */
 
 	plist*					first;		/* Set of FIRST() symbols */
 
 	char*					emit;		/* AST emitting node */
-	pregex_ptn*				ptn;		/* Pattern definition (terminals!) */
+
+	pccl*					ccl;		/* Terminal: Character-class */
+	char*					str;		/* Terminal: Static string */
+	pregex_ptn*				ptn;		/* Terminal: Pattern definition */
 
 	char*					strval;		/* String representation */
 };

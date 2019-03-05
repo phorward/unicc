@@ -4,8 +4,8 @@ Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
 http://www.phorward-software.com ++ contact<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
-File:	pparse.c
-Usage:	A pparse/AST_node object demonstration suite.
+File:	main.c
+Usage:	Program entry.
 ----------------------------------------------------------------------------- */
 
 #include "unicc.h"
@@ -135,7 +135,7 @@ int main( int argc, char** argv )
 	if( dg )
 	{
 		GRAMMAR_DUMP( g );
-		printf( "%s\n", gram_to_str( g ) );
+		printf( "%s\n", gram_to_bnf( g ) );
 	}
 
 	p = par_create( g );
