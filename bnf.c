@@ -23,7 +23,7 @@ static char* derive_name( Grammar* gram, char* base )
 	for( i = 0; strlen( deriv ) < ( NAMELEN * 2 ); i++ )
 	{
 		if( !sym_get_by_name( gram, deriv ) )
-			return deriv;
+			return pstrdup( deriv );
 
 		sprintf( deriv + strlen( deriv ), "%c", DERIVCHAR );
 	}
@@ -47,11 +47,12 @@ static Symbol* traverse_terminal( Grammar* gram, AST_node* node )
 
 	if( !( sym = sym_get_by_name( gram, name ) ) )
 	{
-		sym = sym_create( gram, name, FLAG_FREENAME );
+		sym = sym_create( gram, name );
+		sym->flags.freename = TRUE;
 
 		if( !NODE_IS( node, "Terminal" ) )
 		{
-			sym->flags |= FLAG_NAMELESS;
+			sym->flags.nameless = TRUE;
 
 			if( NODE_IS( node, "CCL" ) )
 			{
@@ -99,9 +100,11 @@ static Symbol* traverse_symbol( Grammar* gram, Symbol* lhs, AST_node* node )
 
 	if( NODE_IS( node, "inline" ) )
 	{
-		sym = sym_create( gram, derive_name( gram, lhs->name ),
-							FLAG_FREENAME | FLAG_NAMELESS | FLAG_DEFINED
-								| FLAG_GENERATED );
+		sym = sym_create( gram, derive_name( gram, lhs->name ) );
+		sym->flags.freename = TRUE;
+		sym->flags.nameless = TRUE;
+		sym->flags.defined = TRUE;
+		sym->flags.generated = TRUE;
 
 		for( child = node->child; child; child = child->next )
 			if( !traverse_production( gram, sym, child->child ) )
@@ -112,13 +115,16 @@ static Symbol* traverse_symbol( Grammar* gram, Symbol* lhs, AST_node* node )
 		sprintf( name, "%.*s", (int)node->len, node->start );
 
 		if( !( sym = sym_get_by_name( gram, name ) ) )
-			sym = sym_create( gram, name, FLAG_FREENAME );
+		{
+			sym = sym_create( gram, pstrdup( name ) );
+			sym->flags.freename = TRUE;
+		}
 	}
 	else
 		sym = traverse_terminal( gram, node );
 
 	if( sym )
-		sym->flags |= FLAG_CALLED;
+		sym->flags.called = TRUE;
 
 	RETURN( sym );
 }
@@ -155,7 +161,7 @@ static pboolean traverse_production( Grammar* gram, Symbol* lhs, AST_node* node 
 			else
 				prod->emit = pstrndup( node->child->start, node->child->len );
 
-			prod->flags |= FLAG_FREEEMIT;
+			prod->flags.freeemit = TRUE;
 		}
 		else
 		{
@@ -182,13 +188,13 @@ static pboolean traverse_production( Grammar* gram, Symbol* lhs, AST_node* node 
 			&& !prod_getfromrhs( prod, 1 ) )
 	{
 		if( !SYM_IS_TERMINAL( sym )
-				&& sym->flags & FLAG_GENERATED
+				&& sym->flags.generated
 					&& sym->emit && !sym_getprod( sym, 1 ) )
 		{
-			if( sym->flags & FLAG_FREEEMIT )
+			if( sym->flags.freeemit )
 			{
 				prod->emit = pstrdup( sym->emit );
-				prod->flags |= FLAG_FREEEMIT;
+				prod->flags.freeemit = TRUE;
 			}
 			else
 				prod->emit = sym->emit;
@@ -237,9 +243,12 @@ static pboolean ast_to_gram( Grammar* gram, AST_node* ast )
 
 			/* Create the terminal symbol */
 			if( !( nonterm = sym = sym_get_by_name( gram, name ) ) )
-				nonterm = sym = sym_create( gram, name, FLAG_FREENAME );
+			{
+				nonterm = sym = sym_create( gram, pstrdup( name ) );
+				sym->flags.freename = TRUE;
+			}
 
-			sym->flags |= FLAG_DEFINED;
+			sym->flags.defined = TRUE;
 
 			for( child = node->child->next; child; child = child->next )
 			{
@@ -248,11 +257,11 @@ static pboolean ast_to_gram( Grammar* gram, AST_node* ast )
 					if( !gram->goal ) /* fixme */
 					{
 						gram->goal = sym;
-						sym->flags |= FLAG_CALLED;
+						sym->flags.called = TRUE;
 					}
 				}
 				else if( NODE_IS( child, "flag_lexem" ) )
-					sym->flags |= FLAG_LEXEM;
+					sym->flags.lexem = TRUE;
 				else if( NODE_IS( child, "emitsdef" ) )
 					sym->emit = sym->name;
 				else if( NODE_IS( child, "production" ) )
@@ -284,8 +293,9 @@ static pboolean ast_to_gram( Grammar* gram, AST_node* ast )
 				child = child->next;
 			}
 
-			sym = sym_create( gram, *name ? name : (char*)NULL,
-								FLAG_FREENAME | FLAG_DEFINED );
+			sym = sym_create( gram, *name ? pstrdup( name ) : (char*)NULL );
+			sym->flags.freename = TRUE;
+			sym->flags.defined = TRUE;
 
 			if( NODE_IS( child, "CCL" ) )
 			{
@@ -324,10 +334,10 @@ static pboolean ast_to_gram( Grammar* gram, AST_node* ast )
 			if( emit == name )
 				sym->emit = sym->name;
 			else if( ( sym->emit = emit ) )
-				sym->flags |= FLAG_FREEEMIT;
+				sym->flags.freeemit = TRUE;
 
 			if( flag_ignore )
-				sym->flags |= FLAG_WHITESPACE;
+				sym->flags.whitespace = TRUE;
 		}
 		else if( NODE_IS( node, "assoc_left" )
 					|| NODE_IS( node, "assoc_right" )
@@ -361,9 +371,8 @@ static pboolean ast_to_gram( Grammar* gram, AST_node* ast )
 	/* Look for unique goal sequence */
 	if( sym_getprod( gram->goal, 1 ) )
 	{
-		nonterm = sym_create( gram,
-					derive_name( gram, gram->goal->name ),
-						FLAG_FREENAME );
+		nonterm = sym_create( gram, derive_name( gram, gram->goal->name ) );
+		nonterm->flags.freename = TRUE;
 
 		prod_create( gram, nonterm, gram->goal, (Symbol*)NULL );
 		gram->goal = nonterm;
@@ -529,96 +538,99 @@ pboolean gram_from_pbnf( Grammar* g, char* src )
 
 	MSG( "Defining terminals" );
 
-	whitespace = sym_create( pbnf, (char*)NULL, FLAG_WHITESPACE );
-	comment = sym_create( pbnf, (char*)NULL, FLAG_WHITESPACE );
+	whitespace = sym_create( pbnf, (char*)NULL );
+	whitespace->flags.whitespace = TRUE;
 
-	terminal = sym_create( pbnf, "Terminal", FLAG_NONE );
+	comment = sym_create( pbnf, (char*)NULL );
+	comment->flags.whitespace = TRUE;
+
+	terminal = sym_create( pbnf, "Terminal" );
 	terminal->emit = "Terminal";
 
-	nonterminal = sym_create( pbnf, "Nonterminal", FLAG_NONE );
+	nonterminal = sym_create( pbnf, "Nonterminal" );
 	nonterminal->emit = "Nonterminal";
 
-	code = sym_create( pbnf, "Code", FLAG_NONE );
+	code = sym_create( pbnf, "Code" );
 	code->emit = "Code";
 
-	colonequal = sym_create( pbnf, ":=", FLAG_NONE );
+	colonequal = sym_create( pbnf, ":=" );
 	colonequal->emit = "emitsdef";
 
-	def = sym_create( pbnf, "@", FLAG_NONE );
-	colon = sym_create( pbnf, ":", FLAG_NONE );
-	pipe = sym_create( pbnf, "|", FLAG_NONE );
-	brop = sym_create( pbnf, "(", FLAG_NONE );
-	brcl = sym_create( pbnf, ")", FLAG_NONE );
-	star = sym_create( pbnf, "*", FLAG_NONE );
-	quest = sym_create( pbnf, "?", FLAG_NONE );
-	plus = sym_create( pbnf, "+", FLAG_NONE );
+	def = sym_create( pbnf, "@" );
+	colon = sym_create( pbnf, ":" );
+	pipe = sym_create( pbnf, "|" );
+	brop = sym_create( pbnf, "(" );
+	brcl = sym_create( pbnf, ")" );
+	star = sym_create( pbnf, "*" );
+	quest = sym_create( pbnf, "?" );
+	plus = sym_create( pbnf, "+" );
 
-	equal = sym_create( pbnf, "=", FLAG_NONE );
+	equal = sym_create( pbnf, "=" );
 
-	flag_goal = sym_create( pbnf, "$", FLAG_NONE );
+	flag_goal = sym_create( pbnf, "$" );
 	flag_goal->emit = "flag_goal";
 
-	flag_lexem = sym_create( pbnf, "!", FLAG_NONE );
+	flag_lexem = sym_create( pbnf, "!" );
 	flag_lexem->emit = "flag_lexem";
 
-	flag_ignore = sym_create( pbnf, "%ignore", FLAG_NONE );
+	flag_ignore = sym_create( pbnf, "%ignore" );
 	flag_ignore->emit = "flag_ignore";
 
-	t_ccl = sym_create( pbnf, "CCL", FLAG_NONE );
+	t_ccl = sym_create( pbnf, "CCL" );
 	t_ccl->emit = "CCL";
-	t_string = sym_create( pbnf, "String", FLAG_NONE );
+	t_string = sym_create( pbnf, "String" );
 	t_string->emit = "String";
-	t_token = sym_create( pbnf, "Token", FLAG_NONE );
+	t_token = sym_create( pbnf, "Token" );
 	t_token->emit = "Token";
-	t_regex = sym_create( pbnf, "Regex", FLAG_NONE );
+	t_regex = sym_create( pbnf, "Regex" );
 	t_regex->emit = "Regex";
 
-	assoc_left = sym_create( pbnf, "<", FLAG_NONE );
-	assoc_right = sym_create( pbnf, ">", FLAG_NONE );
-	assoc_not = sym_create( pbnf, "^", FLAG_NONE );
+	assoc_left = sym_create( pbnf, "<" );
+	assoc_right = sym_create( pbnf, ">" );
+	assoc_not = sym_create( pbnf, "^" );
 
 	/* Nonterminals */
 	MSG( "Nonterminals" );
 
-	n_emit = sym_create( pbnf, "emit", FLAG_NONE );
+	n_emit = sym_create( pbnf, "emit" );
 	n_emit->emit = "emits";
 
 	n_opt_emit = sym_mod_optional( n_emit );
 
-	n_terminal = sym_create( pbnf, "terminal", FLAG_NONE );
-	n_pos_terminal = sym_create( pbnf, "pos_terminal", FLAG_NONE );
+	n_terminal = sym_create( pbnf, "terminal" );
+	n_pos_terminal = sym_create( pbnf, "pos_terminal" );
 
-	n_inline = sym_create( pbnf, "inline", FLAG_NONE );
+	n_inline = sym_create( pbnf, "inline" );
 	n_inline->emit = "inline";
 
-	n_symbol = sym_create( pbnf, "symbol", FLAG_NONE );
+	n_symbol = sym_create( pbnf, "symbol" );
 	n_symbol->emit = "symbol";
 
-	n_mod = sym_create( pbnf, "modifier", FLAG_NONE );
-	n_seq = sym_create( pbnf, "sequence", FLAG_NONE );
-	n_opt_seq = sym_create( pbnf, "opt_sequence", FLAG_NONE );
+	n_mod = sym_create( pbnf, "modifier" );
+	n_seq = sym_create( pbnf, "sequence" );
+	n_opt_seq = sym_create( pbnf, "opt_sequence" );
 
-	n_prod = sym_create( pbnf, "production", FLAG_NONE );
+	n_prod = sym_create( pbnf, "production" );
 	n_prod->emit = "production";
 
-	n_alt = sym_create( pbnf, "alternation", FLAG_NONE );
+	n_alt = sym_create( pbnf, "alternation" );
 
-	n_nonterm_flags = sym_create( pbnf, "nontermdef_flags", FLAG_NONE );
+	n_nonterm_flags = sym_create( pbnf, "nontermdef_flags" );
 
-	n_nonterm = sym_create( pbnf, "nontermdef", FLAG_NONE );
+	n_nonterm = sym_create( pbnf, "nontermdef" );
 	n_nonterm->emit = "nontermdef";
 
-	n_term = sym_create( pbnf, "termdef", FLAG_NONE );
+	n_term = sym_create( pbnf, "termdef" );
 	n_term->emit = "termdef";
 
-	n_assoc = sym_create( pbnf, "assocdef", FLAG_NONE );
+	n_assoc = sym_create( pbnf, "assocdef" );
 	n_assoc->emit = "assocdef";
 
-	n_def = sym_create( pbnf, "def", FLAG_NONE );
+	n_def = sym_create( pbnf, "def" );
 
-	n_defs = sym_create( pbnf, "defs", FLAG_NONE );
+	n_defs = sym_create( pbnf, "defs" );
 
-	n_grammar = sym_create( pbnf, "grammar", FLAG_NONE );
+	n_grammar = sym_create( pbnf, "grammar" );
 	pbnf->goal = n_grammar;
 
 	/* Productions */

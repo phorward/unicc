@@ -25,11 +25,8 @@ Returns TRUE in case //sym// is a terminal symbol, and FALSE otherwise.
 
 	//name// is the unique name for the symbol. It can be left empty,
 	configuring the symbol as an unnamed symbol.
-
-	//flags// can be a combination of FLAG_-flags related to the symbol's
-	configuration.
 */
-Symbol* sym_create( Grammar* g, char* name, unsigned int flags )
+Symbol* sym_create( Grammar* g, char* name )
 {
 	Symbol*	sym;
 
@@ -39,7 +36,7 @@ Symbol* sym_create( Grammar* g, char* name, unsigned int flags )
 		return (Symbol*)NULL;
 	}
 
-	if( g->flags & FLAG_FROZEN )
+	if( g->flags.frozen )
 	{
 		fprintf( stderr, "Grammar is frozen, can't create symbols\n" );
 		return (Symbol*)NULL;
@@ -51,33 +48,22 @@ Symbol* sym_create( Grammar* g, char* name, unsigned int flags )
 		return (Symbol*)NULL;
 	}
 
-	if( flags & FLAG_FREENAME )
-		name = pstrdup( name );
-
 	/* Insert into symbol table */
 	if( !( sym = (Symbol*)plist_access(
 			plist_insert(
 					g->symbols, (plistel*)NULL,
 					name, (void*)NULL ) ) ) )
-	{
-		if( flags & FLAG_FREENAME )
-			pfree( name );
-
 		return (Symbol*)NULL;
-	}
 
 	sym->grm = g;
 	sym->idx = plist_count( g->symbols ) - 1;
 
 	if( !( sym->name = name ) )
-		flags |= FLAG_NAMELESS;
-
-	sym->flags = flags;
+		sym->flags.nameless = TRUE;
 
 	sym->first = plist_create( 0, PLIST_MOD_PTR );
 
-	g->flags &= ~FLAG_FINALIZED;
-
+	g->flags.finalized = FALSE;
 	return sym;
 }
 
@@ -87,16 +73,16 @@ Symbol* sym_free( Symbol* sym )
 	if( !sym )
 		return (Symbol*)NULL;
 
-	sym->grm->flags &= ~FLAG_FINALIZED;
+	sym->grm->flags.finalized = FALSE;
 
-	if( sym->flags & FLAG_FREEEMIT )
+	if( sym->flags.freeemit )
 		pfree( sym->emit );
 
 	/* Remove symbol from pool */
 	plist_remove( sym->grm->symbols,
 				  plist_get_by_ptr( sym->grm->symbols, sym ) );
 
-	if( sym->flags & FLAG_FREENAME )
+	if( sym->flags.freename )
 		pfree( sym->name );
 
 	if( sym->ptn )
@@ -110,13 +96,13 @@ Symbol* sym_free( Symbol* sym )
 /** Removes a symbol from its grammar. */
 Symbol* sym_drop( Symbol* sym )
 {
-	plistel* 	e;
+	plistel* 		e;
 	Production*		p;
 
 	if( !sym )
 		return (Symbol*)NULL;
 
-	if( sym->grm->flags & FLAG_FROZEN )
+	if( sym->grm->flags.frozen )
 	{
 		fprintf( stderr, "Grammar is frozen, can't delete symbol\n" );
 		return sym;
@@ -180,7 +166,7 @@ Symbol* sym_get_nameless_term_by_def( Grammar* g, char* name )
 
 	for( i = 0; ( sym = sym_get( g, i ) ); i++ )
 	{
-		if( !SYM_IS_TERMINAL( sym ) || !( sym->flags & FLAG_NAMELESS ) )
+		if( !SYM_IS_TERMINAL( sym ) || !sym->flags.nameless )
 			continue;
 
 		if( sym->name && strcmp( sym->name, name ) == 0 )
@@ -238,8 +224,7 @@ char* sym_to_str( Symbol* sym )
 
 	if( !sym->strval )
 	{
-		if( sym->name && !( sym->flags & FLAG_NAMELESS )
-						&& !( sym->flags & FLAG_GENERATED ) )
+		if( sym->name && !sym->flags.nameless && !sym->flags.generated )
 			sym->strval = sym->name;
 		else if( SYM_IS_TERMINAL( sym ) && sym->ccl )
 			sym->strval = pasprintf( "[%s]", pccl_to_str( sym->ccl, TRUE ) );
@@ -295,11 +280,13 @@ Symbol* sym_mod_positive( Symbol* sym )
 	{
 		MSG( "Symbol does not exist yet, creating" );
 
-		ret = sym_create( sym->grm, name,
-						  FLAG_DEFINED | FLAG_CALLED | FLAG_GENERATED
-						  | ( name == buf ? FLAG_FREENAME : FLAG_NONE ) );
+		ret = sym_create( sym->grm, name == buf ? pstrdup( name ) : name );
+		ret->flags.defined = TRUE;
+		ret->flags.called = TRUE;
+		ret->flags.generated = TRUE;
+		ret->flags.freename = name == buf;
 
-		if( sym->grm->flags & FLAG_PREVENTLREC )
+		if( sym->grm->flags.preventlrec )
 			prod_create( sym->grm, ret, sym, ret, (Symbol*)NULL );
 		else
 			prod_create( sym->grm, ret, ret, sym, (Symbol*)NULL );
@@ -348,9 +335,12 @@ Symbol* sym_mod_optional( Symbol* sym )
 	if( !( ret = sym_get_by_name( sym->grm, name ) ) )
 	{
 		MSG( "Symbol does not exist yet, creating" );
-		ret = sym_create( sym->grm, name,
-						  FLAG_DEFINED | FLAG_CALLED | FLAG_GENERATED
-						  | ( name == buf ? FLAG_FREENAME : FLAG_NONE ) );
+
+		ret = sym_create( sym->grm, name == buf ? pstrdup( name ) : name );
+		ret->flags.defined = TRUE;
+		ret->flags.called = TRUE;
+		ret->flags.generated = TRUE;
+		ret->flags.freename = name == buf;
 
 		prod_create( sym->grm, ret, sym, (Symbol*)NULL );
 		prod_create( sym->grm, ret, (Symbol*)NULL );
@@ -401,9 +391,12 @@ Symbol* sym_mod_kleene( Symbol* sym )
 	if( !( ret = sym_get_by_name( sym->grm, name ) ) )
 	{
 		MSG( "Symbol does not exist yet, creating" );
-		ret = sym_create( sym->grm, name,
-						  FLAG_DEFINED | FLAG_CALLED | FLAG_GENERATED
-						  | ( name == buf ? FLAG_FREENAME : FLAG_NONE ) );
+
+		ret = sym_create( sym->grm, name == buf ? pstrdup( name ) : name );
+		ret->flags.defined = TRUE;
+		ret->flags.called = TRUE;
+		ret->flags.generated = TRUE;
+		ret->flags.freename = name == buf;
 
 		prod_create( sym->grm, ret, sym_mod_positive( sym ), (Symbol*)NULL );
 		prod_create( sym->grm, ret, (Symbol*)NULL );
@@ -431,7 +424,7 @@ Production* prod_create( Grammar* g, Symbol* lhs, ... )
 		return (Production*)NULL;
 	}
 
-	if( g->flags & FLAG_FROZEN )
+	if( g->flags.frozen )
 	{
 		fprintf( stderr, "Grammar is frozen, can't create productions\n" );
 		return (Production*)NULL;
@@ -459,7 +452,7 @@ Production* prod_create( Grammar* g, Symbol* lhs, ... )
 
 	va_end( varg );
 
-	g->flags &= ~FLAG_FINALIZED;
+	g->flags.finalized = FALSE;
 
 	return prod;
 }
@@ -471,15 +464,15 @@ Production* prod_free( Production* p )
 		return (Production*)NULL;
 
 
-	if( p->grm->flags & FLAG_FROZEN )
+	if( p->grm->flags.frozen )
 	{
 		fprintf( stderr, "Grammar is frozen, can't delete production\n" );
 		return p;
 	}
 
-	p->grm->flags &= ~FLAG_FINALIZED;
+	p->grm->flags.finalized = FALSE;
 
-	if( p->flags & FLAG_FREEEMIT )
+	if( p->flags.freeemit )
 		pfree( p->emit );
 
 	pfree( p->strval );
@@ -513,8 +506,7 @@ pboolean prod_append( Production* p, Symbol* sym )
 		return FALSE;
 	}
 
-
-	if( p->grm->flags & FLAG_FROZEN )
+	if( p->grm->flags.frozen )
 	{
 		fprintf( stderr, "Grammar is frozen, can't add items to production\n" );
 		return FALSE;
@@ -522,7 +514,7 @@ pboolean prod_append( Production* p, Symbol* sym )
 
 	plist_push( p->rhs, sym );
 
-	p->grm->flags &= ~FLAG_FINALIZED;
+	p->grm->flags.finalized = FALSE;
 	pfree( p->strval );
 
 	return TRUE;
@@ -541,13 +533,13 @@ int prod_remove( Production* p, Symbol* sym )
 		return FALSE;
 	}
 
-	if( p->grm->flags & FLAG_FROZEN )
+	if( p->grm->flags.frozen )
 	{
 		fprintf( stderr, "Grammar is frozen, can't delete symbol\n" );
 		return -1;
 	}
 
-	p->grm->flags &= ~FLAG_FINALIZED;
+	p->grm->flags.finalized = FALSE;
 
 	while( ( e = plist_get_by_ptr( p->rhs, sym ) ) )
 	{
@@ -617,7 +609,11 @@ static int sort_symbols( plist* lst, plistel* el, plistel* er )
 	Symbol*		l	= (Symbol*)plist_access( el );
 	Symbol*		r	= (Symbol*)plist_access( er );
 
-	if( l->ccl && !r->ccl )
+	if( l->flags.special && !r->flags.special )
+		return 1;
+	else if( !l->flags.special && r->flags.special )
+		return -1;
+	else if( l->ccl && !r->ccl )
 		return 1;
 	else if( !l->ccl && r->ccl )
 		return -1;
@@ -650,7 +646,8 @@ Grammar* gram_create( void )
 
 	g->prods = plist_create( sizeof( Production ), PLIST_MOD_RECYCLE );
 
-	g->eof = sym_create( g, SYM_T_EOF, FLAG_SPECIAL );
+	g->eof = sym_create( g, SYM_T_EOF );
+	g->eof->flags.special = TRUE;
 
 	return g;
 }
@@ -762,10 +759,8 @@ pboolean gram_prepare( Grammar* g )
 							}
 
 							if( prod == cprod )
-							{
-								prod->lhs->flags |= FLAG_LEFTREC;
-								prod->flags |= FLAG_LEFTREC;
-							}
+								prod->flags.leftrec =
+									prod->lhs->flags.leftrec = TRUE;
 							else if( !plist_get_by_ptr( done, prod ) )
 								plist_push( call, prod );
 						}
@@ -780,10 +775,7 @@ pboolean gram_prepare( Grammar* g )
 
 				/* Flag nullable */
 				if( !f )
-				{
-					cprod->flags |= FLAG_NULLABLE;
-					cprod->lhs->flags |= FLAG_NULLABLE;
-				}
+					cprod->flags.nullable = cprod->lhs->flags.nullable = TRUE;
 
 				cnt += plist_count( cprod->lhs->first );
 			}
@@ -801,7 +793,7 @@ pboolean gram_prepare( Grammar* g )
 	{
 		sym = (Symbol*)plist_access( e );
 
-		if( SYM_IS_TERMINAL( sym ) || !( sym->flags & FLAG_LEXEM ) )
+		if( SYM_IS_TERMINAL( sym ) || !sym->flags.lexem )
 			continue;
 
 		plist_push( call, sym );
@@ -816,7 +808,7 @@ pboolean gram_prepare( Grammar* g )
 			plist_for( prod->rhs, f )
 			{
 				sym = (Symbol*)plist_access( f );
-				sym->flags |= FLAG_LEXEM;
+				sym->flags.lexem = TRUE;
 
 				if( !SYM_IS_TERMINAL( sym ) )
 				{
@@ -852,7 +844,7 @@ pboolean gram_prepare( Grammar* g )
 	}
 
 	/* Set finalized */
-	g->flags |= FLAG_FINALIZED;
+	g->flags.finalized = TRUE;
 	g->strval = pfree( g->strval );
 
 	RETURN( TRUE );
@@ -903,10 +895,10 @@ void __dbg_gram_dump( char* file, int line, char* function,
 		fprintf( stderr,
 			"%s%s%s%s%s%s%-*s %-*s : ",
 			g->goal == p->lhs ? "$" : " ",
-			p->flags & FLAG_LEFTREC ? "L" : " ",
-			p->flags & FLAG_NULLABLE ? "N" : " ",
-			p->lhs->flags & FLAG_LEXEM ? "X" : " ",
-			p->lhs->flags & FLAG_WHITESPACE ? "W" : " ",
+			p->flags.leftrec ? "L" : " ",
+			p->flags.nullable ? "N" : " ",
+			p->lhs->flags.lexem ? "X" : " ",
+			p->lhs->flags.whitespace ? "W" : " ",
 			p->emit ? "@" : " ",
 			maxemitlen, p->emit ? p->emit : "",
 			maxlhslen, p->lhs->name );
@@ -975,7 +967,7 @@ char* gram_to_bnf( Grammar* grm )
 		return "";
 	}
 
-	if( !( grm->flags & FLAG_FINALIZED ) )
+	if( !grm->flags.finalized )
 		gram_prepare( grm );
 
 	if( grm->strval )
@@ -999,8 +991,7 @@ char* gram_to_bnf( Grammar* grm )
 	plist_for( grm->symbols, e )
 	{
 		if( !SYM_IS_TERMINAL( ( sym = (Symbol*)plist_access( e ) ) )
-			|| ( sym->flags & FLAG_NAMELESS )
-			|| ( sym->flags & FLAG_SPECIAL ) )
+			|| sym->flags.nameless || sym->flags.special )
 			continue;
 
 		if( sym->ptn )
@@ -1019,7 +1010,7 @@ char* gram_to_bnf( Grammar* grm )
 	plist_for( grm->symbols, e )
 	{
 		if( SYM_IS_TERMINAL( ( sym = (Symbol*)plist_access( e ) ) )
-				|| sym->flags & FLAG_GENERATED )
+				|| sym->flags.generated )
 			continue;
 
 		first = TRUE;
@@ -1083,7 +1074,7 @@ pboolean gram_dump_json( FILE* stream, Grammar* grm )
 	if( !stream )
 		stream = stdout;
 
-	if( !( grm->flags & FLAG_FINALIZED ) )
+	if( !grm->flags.finalized )
 	{
 		fprintf( stderr, "Grammar is not finalized, "
 			"please run gram_prepare() first!\n" );
@@ -1182,7 +1173,7 @@ Grammar* gram_free( Grammar* g )
 	if( !g )
 		return (Grammar*)NULL;
 
-	g->flags &= ~FLAG_FROZEN;
+	g->flags.frozen = FALSE;
 
 	/* Erase symbols */
 	while( plist_count( g->symbols ) )

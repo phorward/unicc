@@ -201,7 +201,7 @@ void ast_dump_short( FILE* stream, AST_node* ast )
 
 		fprintf( stream, "%s", ast->emit );
 
-		if( SYM_IS_TERMINAL( ast->sym ) || ast->sym->flags & FLAG_LEXEM )
+		if( SYM_IS_TERMINAL( ast->sym ) || ast->sym->flags.lexem )
 		{
 			if( ast->val )
 				fprintf( stream, " (%s)", pany_get_str( ast->val ) );
@@ -273,7 +273,7 @@ void ast_dump_json( FILE* stream, AST_node* ast )
 		fputc( '"', stream );
 
 		/* Match */
-		if( SYM_IS_TERMINAL( ast->sym ) || node->sym->flags & FLAG_LEXEM )
+		if( SYM_IS_TERMINAL( ast->sym ) || node->sym->flags.lexem )
 		{
 			fprintf( stream, ",\"match\":" );
 
@@ -479,7 +479,7 @@ Parser* par_create( Grammar* g )
 
 	/* Grammar */
 	p->gram = g;
-	g->flags |= FLAG_FROZEN;
+	g->flags.frozen = TRUE;
 
 	if( !lr_build( &p->states, &p->dfa, p->gram ) )
 	{
@@ -528,8 +528,7 @@ plex* par_autolex( Parser* p )
 	{
 		sym = (Symbol*)plist_access( e );
 
-		if( !SYM_IS_TERMINAL( sym )
-			|| sym->flags & FLAG_SPECIAL )
+		if( !SYM_IS_TERMINAL( sym ) || sym->flags.special )
 			continue;
 
 		VARS( "sym->name", "%s", sym->name ? sym->name : "(null)" );
@@ -1033,7 +1032,7 @@ static Symbol* par_scan( Parser* par, plex* lex,
 			VARS( "tok", "%d", tok );
 
 			if( !( sym = sym_get( par->gram, tok ) )
-				|| sym->flags & FLAG_WHITESPACE )
+				|| sym->flags.whitespace )
 			{
 				*start = *end;
 				continue;
@@ -1086,7 +1085,7 @@ pboolean par_parse( AST_node** root, Parser* par, char* start )
 
 	for( i = 0; ( sym = sym_get( par->gram, i ) ); i++ )
 	{
-		if( SYM_IS_TERMINAL( sym ) && sym->flags & FLAG_WHITESPACE )
+		if( SYM_IS_TERMINAL( sym ) && sym->flags.whitespace )
 		{
 			lazy = FALSE;
 			break;

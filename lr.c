@@ -488,7 +488,7 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 					{
 						plist_union( cit->lookahead, sym->first );
 
-						if( !( sym->flags & FLAG_NULLABLE ) )
+						if( !( sym->flags.nullable ) )
 							break;
 					}
 
@@ -886,7 +886,7 @@ pboolean lr_build( unsigned int* cnt, unsigned int*** dfa, Grammar* grm )
 		RETURN( FALSE );
 	}
 
-	if( !( grm->flags & FLAG_FINALIZED ) )
+	if( !grm->flags.finalized )
 	{
 		fprintf( stderr, "Grammar is not finalized, "
 			"please run gram_prepare() first!\n" );

@@ -2,7 +2,7 @@
 pboolean gram_from_pbnf( Grammar* g, char* src );
 
 /* grammar.c */
-Symbol* sym_create( Grammar* g, char* name, unsigned int flags );
+Symbol* sym_create( Grammar* g, char* name );
 Symbol* sym_free( Symbol* sym );
 Symbol* sym_drop( Symbol* sym );
 Symbol* sym_get( Grammar* g, unsigned int n );

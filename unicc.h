@@ -22,23 +22,6 @@ typedef struct _AST_node	AST_node;
 
 typedef struct _Parser_ctx	Parser_ctx;
 
-/* Flags for grammars and their objects */
-#define FLAG_NONE			0x00
-#define FLAG_CALLED			0x01
-#define FLAG_DEFINED		0x02
-#define FLAG_NULLABLE		0x04
-#define FLAG_LEFTREC		0x08
-#define FLAG_LEXEM			0x10
-#define FLAG_WHITESPACE		0x20
-#define FLAG_PREVENTLREC	0x40
-#define FLAG_NAMELESS		0x80
-#define FLAG_GENERATED		0x100
-#define FLAG_FREENAME		0x200
-#define FLAG_FREEEMIT		0x400
-#define FLAG_SPECIAL		0x800
-#define FLAG_FINALIZED		0x1000
-#define FLAG_FROZEN			0x2000
-
 #define MOD_OPTIONAL		'?'
 #define MOD_POSITIVE		'+'
 #define MOD_KLEENE			'*'
@@ -63,7 +46,14 @@ struct _Production
 	unsigned int			idx;		/* Production index */
 	Symbol*					lhs;		/* Left-hand side */
 	plist*					rhs;		/* Left-hand side items */
-	unsigned int			flags;		/* Configuration flags */
+
+	struct
+	{
+		pboolean			leftrec		:1;	/* Left-recursive */
+		pboolean			nullable	:1;
+
+		pboolean			freeemit	:1;
+	}						flags;
 
 	Assoc					assoc;		/* LR associativity flag */
 	unsigned int			prec;		/* LR precedence level */
@@ -84,7 +74,23 @@ struct _Symbol
 #define SYM_T_EOF			"&eof"
 #endif
 
-	unsigned int			flags;		/* Configuration flags */
+	struct
+	{
+		pboolean			terminal	:1;
+		pboolean			nameless	:1;
+		pboolean			called		:1;
+		pboolean			defined		:1;
+		pboolean			nullable	:1;
+		pboolean			lexem		:1;
+		pboolean			whitespace	:1;
+		pboolean			generated	:1;
+		pboolean			special		:1;
+		pboolean			leftrec		:1;	/* Left-recursive */
+
+		pboolean			freename	:1;
+		pboolean			freeemit	:1;
+
+	}						flags;
 
 	Assoc					assoc;		/* LR associativity flag */
 	unsigned int			prec;		/* LR precedence level */
@@ -115,7 +121,13 @@ struct _Grammar
 	Symbol*					goal;		/* The start/goal symbol */
 	Symbol*					eof;		/* End-of-input symbol */
 
-	unsigned int			flags;		/* Configuration flags */
+	struct
+	{
+		pboolean			preventlrec	:1;	/* Prevent left-recursions */
+		pboolean			finalized	:1;
+		pboolean			frozen		:1;
+	}						flags;
+
 
 	char*					strval;		/* String representation */
 };

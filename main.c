@@ -132,6 +132,19 @@ int main( int argc, char** argv )
 		RETURN( 1 );
 	}
 
+	/*
+	{
+		plistel*	e;
+		Symbol*		s;
+
+		plist_for(g->symbols, e)
+		{
+			s = plist_access(e);
+			printf(">%s<\n", s->name);
+		}
+	}
+	*/
+
 	if( dg )
 	{
 		GRAMMAR_DUMP( g );
