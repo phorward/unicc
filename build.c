@@ -522,7 +522,7 @@ char* mkproduction_str( PROD* p )
 	plistel*	e;
 	SYMBOL*		sym;
 
-	sprintf( wtf, "%.*s -> ", (int)sizeof( wtf ) - 5, p->lhs->name );
+	sprintf( wtf, "%.*s : ", (int)sizeof( wtf ) - 5, p->lhs->name );
 	ret = pstrdup( wtf );
 
 	plist_for( p->rhs, e )
