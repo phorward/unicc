@@ -120,7 +120,7 @@ int main( int argc, char** argv )
 
 	g = gram_create();
 
-	if( !gram_from_pbnf( g, gstr ) )
+	if( !gram_from_bnf( g, gstr ) )
 	{
 		fprintf( stderr, "%s: Parse error in >%s<\n", gfile, gstr );
 		RETURN( 1 );

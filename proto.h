@@ -1,5 +1,5 @@
 /* bnf.c */
-pboolean gram_from_pbnf( Grammar* g, char* src );
+pboolean gram_from_bnf( Grammar* g, char* src );
 
 /* grammar.c */
 Symbol* sym_create( Grammar* g, char* name );
@@ -53,8 +53,8 @@ Parser_ctx* parctx_init( Parser_ctx* ctx, Parser* par );
 Parser_ctx* parctx_create( Parser* par );
 Parser_ctx* parctx_reset( Parser_ctx* ctx );
 Parser_ctx* parctx_free( Parser_ctx* ctx );
-Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym, pany* val );
-Parser_stat parctx_next_by_name( Parser_ctx* ctx, char* name, pany* val );
-Parser_stat parctx_next_by_idx( Parser_ctx* ctx, unsigned int idx, pany* val );
+Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym );
+Parser_stat parctx_next_by_name( Parser_ctx* ctx, char* name );
+Parser_stat parctx_next_by_idx( Parser_ctx* ctx, unsigned int idx );
 pboolean par_parse( AST_node** root, Parser* par, char* start );
 

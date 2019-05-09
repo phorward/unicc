@@ -193,11 +193,7 @@ Production* sym_getprod( Symbol* sym, unsigned int n )
 	}
 
 	if( SYM_IS_TERMINAL( sym ) )
-	{
-		fprintf( stderr, "%s, %d: Symbol '%s' is not a non-terminal symbol\n",
-				 __FILE__, __LINE__, sym_to_str( sym ) );
 		return (Production*)NULL;
-	}
 
 	plist_for( sym->grm->prods, e )
 	{
@@ -400,6 +396,8 @@ Symbol* sym_mod_kleene( Symbol* sym )
 
 		prod_create( sym->grm, ret, sym_mod_positive( sym ), (Symbol*)NULL );
 		prod_create( sym->grm, ret, (Symbol*)NULL );
+
+		sym = ret;
 	}
 
 	RETURN( sym );

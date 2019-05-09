@@ -13,7 +13,7 @@ SOURCES   	=	\
 
 OBJECTS		= $(patsubst %.c,%.o,$(SOURCES))
 
-all: unicc #ppgram2c
+all: unicc gram2c bnftest
 
 proto.h: $(SOURCES)
 	pproto $(SOURCES) >$@
@@ -21,13 +21,23 @@ proto.h: $(SOURCES)
 unicc: $(HEADERS) $(OBJECTS) main.o $(LIBPHORWARD)
 	$(CC) -g -o $@ $(OBJECTS) main.o $(LIBPHORWARD)
 
-ppgram2c: $(HEADERS) $(OBJECTS) ppgram2c.o $(LIBPHORWARD)
-	$(CC) -g -o $@ $(OBJECTS) ppgram2c.o $(LIBPHORWARD)
+gram2c: $(HEADERS) $(OBJECTS) gram2c.o $(LIBPHORWARD)
+	$(CC) -g -o $@ $(OBJECTS) gram2c.o $(LIBPHORWARD)
+
+bnftest.c: bnftestgen.c
+
+bnftestgen.c: grammars/pbnf.bnf
+	./gram2c $+ >$@
+
+bnftest: gram2c $(HEADERS) $(OBJECTS) bnftest.o $(LIBPHORWARD)
+	$(CC) -g -o $@ $(OBJECTS) bnftest.o $(LIBPHORWARD)
 
 test: unicc
 	./unicc grammars/json.bnf grammars/test.json
 
 clean:
+	-rm bnftestgen.c
 	-rm $(OBJECTS)
-	-rm unicc
+	-rm *.o
+	-rm unicc gram2c bnftest
 

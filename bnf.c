@@ -37,7 +37,6 @@ static Symbol* traverse_terminal( Grammar* gram, AST_node* node )
 {
 	Symbol*			sym;
 	char*			name;
-	char			ch;
 
 	PROC( "traverse_terminal" );
 	VARS( "node->emit", "%s", node->emit );
@@ -47,11 +46,12 @@ static Symbol* traverse_terminal( Grammar* gram, AST_node* node )
 
 	if( !( sym = sym_get_by_name( gram, name ) ) )
 	{
-		sym = sym_create( gram, name );
-		sym->flags.freename = TRUE;
-
 		if( !NODE_IS( node, "Terminal" ) )
 		{
+			memmove( name, name + 1, strlen( name ) - 1 );
+			name[ strlen( name ) - 2 ] = '\0';
+
+			sym = sym_create( gram, name );
 			sym->flags.nameless = TRUE;
 
 			if( NODE_IS( node, "CCL" ) )
@@ -61,27 +61,24 @@ static Symbol* traverse_terminal( Grammar* gram, AST_node* node )
 			}
 			else
 			{
-				ch = name[ strlen( name ) - 1 ];
-				name[ strlen( name ) - 1 ] = 0;
-
 				if( NODE_IS( node, "Token") || NODE_IS( node, "String" ) )
 				{
-					sym->ptn = pregex_ptn_create( name + 1,
-									PREGEX_COMP_STATIC );
+					sym->ptn = pregex_ptn_create( name, PREGEX_COMP_STATIC );
 					sym->str = name;
 
 					if( NODE_IS( node, "Token") )
 						sym->emit = name;
 				}
 				else if( NODE_IS( node, "Regex" ) )
-					sym->ptn = pregex_ptn_create( name + 1,
-									PREGEX_COMP_NOERRORS );
+					sym->ptn = pregex_ptn_create( name, PREGEX_COMP_NOERRORS );
 				else
 					MISSINGCASE;
-
-				name[ strlen( name ) ] = ch;
 			}
 		}
+		else
+			sym = sym_create( gram, name );
+
+		sym->flags.freename = TRUE;
 	}
 	else
 		pfree( name );
@@ -462,7 +459,7 @@ lexical analyzer-specific definitions, grammar and AST construction features.
 @grammar	$	: definition+
 ```
 */
-pboolean gram_from_pbnf( Grammar* g, char* src )
+pboolean gram_from_bnf( Grammar* g, char* src )
 {
 	Parser*			ppar;
 	Grammar*		pbnf;
@@ -517,7 +514,7 @@ pboolean gram_from_pbnf( Grammar* g, char* src )
 	Symbol*			n_defs;
 	Symbol*			n_grammar;
 
-	Production*			p;
+	Production*		p;
 
 	PROC( "gram_from_pbnf" );
 

@@ -64,8 +64,6 @@ AST_node* ast_free( AST_node* node )
 		ast_free( child );
 	}
 
-	pany_free( node->val );
-
 	return (AST_node*)pfree( node );
 }
 
@@ -157,7 +155,7 @@ void ast_dump( FILE* stream, AST_node* ast )
 		fprintf( stream, "{ %s ", ast->emit );
 
 		if( ast->val )
-			fprintf( stream, ">%s<", pany_get_str( ast->val ) );
+			fprintf( stream, " (%p)", ast->val );
 		else if( ast->start && ast->len )
 			fprintf( stream, ">%.*s<", (int)ast->len, ast->start );
 
@@ -176,7 +174,7 @@ void ast_dump( FILE* stream, AST_node* ast )
 		fprintf( stream, "{ %s ", ast->emit );
 
 		if( ast->val )
-			fprintf( stream, ">%s<", pany_get_str( ast->val ) );
+			fprintf( stream, " (%p)", ast->val );
 		else if( ast->start && ast->len )
 			fprintf( stream, ">%.*s<", (int)ast->len, ast->start );
 
@@ -204,9 +202,9 @@ void ast_dump_short( FILE* stream, AST_node* ast )
 		if( SYM_IS_TERMINAL( ast->sym ) || ast->sym->flags.lexem )
 		{
 			if( ast->val )
-				fprintf( stream, " (%s)", pany_get_str( ast->val ) );
+				fprintf( stream, " (%p)", ast->val );
 			else if( ast->start && ast->len )
-				fprintf( stream, " (%.*s)", (int)ast->len, ast->start );
+				fprintf( stream, " >%.*s<", (int)ast->len, ast->start );
 		}
 
 		fprintf( stream, "\n" );
@@ -282,8 +280,10 @@ void ast_dump_json( FILE* stream, AST_node* ast )
 
 			if( node->val )
 			{
+				/* fixme
 				ptr = pany_get_str( node->val );
 				eptr = ptr + strlen( ptr );
+				*/
 			}
 			else if( node->start && node->end )
 			{
@@ -339,8 +339,8 @@ void ast_dump_tree2svg( FILE* stream, AST_node* ast )
 		}
 		else if( ast->start )
 			fprintf( stream, "'%.*s' ", (int)ast->len, ast->start );
-		else if( ast->val )
-			fprintf( stream, "'%s' ", pany_get_str( ast->val ) );
+		/* else if( ast->val ) fixme
+			fprintf( stream, "'%s' ", pany_get_str( ast->val ) ); */
 		else
 			fprintf( stream, "'%s' ", ast->emit );
 
@@ -731,14 +731,13 @@ The function returns one of the following values:
 - STAT_ERROR when an error was encountered.
 -
 */
-Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym, pany* val )
+Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym )
 {
 	int			i;
 	pplrse*		tos;
 	int			shift;
 	int			reduce;
 	Parser*		par;
-	AST_node*		node;
 
 	PROC( "parctx_next" );
 
@@ -750,9 +749,6 @@ Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym, pany* val )
 
 	PARMS( "ctx", "%p", ctx );
 	PARMS( "sym", "%p", sym );
-
-	if( val )
-		PANY_DUMP( val );
 
 	par = ctx->par;
 
@@ -786,7 +782,7 @@ Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym, pany* val )
 						plist_count( ctx->reduce->rhs ),
 							ctx->reduce->lhs->name );
 
-			node = (AST_node*)NULL;
+			ctx->last = (AST_node*)NULL;
 
 			for( i = 0; i < plist_count( ctx->reduce->rhs ); i++ )
 			{
@@ -795,19 +791,19 @@ Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym, pany* val )
 				/* Connecting nodes, remember last node. */
 				if( tos->node )
 				{
-					if( node )
+					if( ctx->last )
 					{
 						while( tos->node->next )
 							tos->node = tos->node->next;
 
-						tos->node->next = node;
-						node->prev = tos->node;
+						tos->node->next = ctx->last;
+						ctx->last->prev = tos->node;
 					}
 
-					node = tos->node;
+					ctx->last = tos->node;
 
-					while( node->prev )
-						node = node->prev;
+					while( ctx->last->prev )
+						ctx->last = ctx->last->prev;
 				}
 			}
 
@@ -815,10 +811,9 @@ Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym, pany* val )
 
 			/* Construction of AST node */
 			if( ctx->reduce->emit || ctx->reduce->lhs->emit )
-				node = ast_create(
-						ctx->reduce->emit ? ctx->reduce->emit
+				ctx->last = ast_create( ctx->reduce->emit ? ctx->reduce->emit
 												: ctx->reduce->lhs->emit,
-							ctx->reduce->lhs, ctx->reduce, node );
+								ctx->reduce->lhs, ctx->reduce, ctx->last );
 
 			/* Goal symbol reduced? */
 			if( ctx->reduce->lhs == par->gram->goal
@@ -826,7 +821,7 @@ Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym, pany* val )
 			{
 				MSG( "Parsing succeeded!" );
 
-				ctx->ast = node;
+				ctx->ast = ctx->last;
 
 				RETURN( ( ctx->state = STAT_DONE ) );
 			}
@@ -851,7 +846,7 @@ Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym, pany* val )
 
 			tos->sym = ctx->reduce->lhs;
 			tos->state = shift - 1;
-			tos->node = node;
+			tos->node = ctx->last;
 
 			ctx->reduce = reduce ? prod_get( par->gram, reduce - 1 )
 									: (Production*)NULL;
@@ -914,19 +909,9 @@ Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym, pany* val )
 
 	/* Shifted symbol becomes AST node? */
 	if( sym->emit )
-	{
-		tos->node = ast_create( sym->emit ? sym->emit : sym->name, sym,
-									(Production*)NULL, (AST_node*)NULL );
-
-		if( val && val->type == PANYTYPE_STR )
-		{
-			tos->node->val = val;
-
-			tos->node->start = pany_get_str( val );
-			tos->node->len = strlen( tos->node->start );
-			tos->node->end = tos->node->start + tos->node->len;
-		}
-	}
+		ctx->last = tos->node = ast_create(
+			sym->emit ? sym->emit : sym->name, sym,
+				(Production*)NULL, (AST_node*)NULL );
 
 	MSG( "Next token required" );
 	RETURN( ( ctx->state = STAT_NEXT ) );
@@ -936,16 +921,13 @@ Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym, pany* val )
 
 The function is a wrapper for parctx_next() with same behavior.
 */
-Parser_stat parctx_next_by_name( Parser_ctx* ctx, char* name, pany* val )
+Parser_stat parctx_next_by_name( Parser_ctx* ctx, char* name )
 {
 	Symbol*		sym;
 
 	PROC( "parctx_next_by_name" );
 	PARMS( "ctx", "%p", ctx );
 	PARMS( "name", "%s", name );
-
-	if( val )
-		PANY_DUMP( val );
 
 	if( !( ctx && name && *name ) )
 	{
@@ -969,7 +951,7 @@ Parser_stat parctx_next_by_name( Parser_ctx* ctx, char* name, pany* val )
 		RETURN( STAT_ERROR );
 	}
 
-	RETURN( parctx_next( ctx, sym, val ) );
+	RETURN( parctx_next( ctx, sym ) );
 }
 
 
@@ -977,16 +959,13 @@ Parser_stat parctx_next_by_name( Parser_ctx* ctx, char* name, pany* val )
 
 The function is a wrapper for parctx_next() with same behavior.
 */
-Parser_stat parctx_next_by_idx( Parser_ctx* ctx, unsigned int idx, pany* val )
+Parser_stat parctx_next_by_idx( Parser_ctx* ctx, unsigned int idx )
 {
 	Symbol*		sym;
 
 	PROC( "parctx_next_by_idx" );
 	PARMS( "ctx", "%p", ctx );
 	PARMS( "idx", "%d", idx );
-
-	if( val )
-		PANY_DUMP( val );
 
 	if( !( ctx ) )
 	{
@@ -1012,7 +991,7 @@ Parser_stat parctx_next_by_idx( Parser_ctx* ctx, unsigned int idx, pany* val )
 		RETURN( STAT_ERROR );
 	}
 
-	RETURN( parctx_next( ctx, sym, val ) );
+	RETURN( parctx_next( ctx, sym ) );
 }
 
 /* Helper for par_parse() */
@@ -1058,12 +1037,12 @@ pboolean par_parse( AST_node** root, Parser* par, char* start )
 {
 	plex*			lex;
 	char*			end;
-	pany*			val;
 	pboolean		lazy	= TRUE;
 	pboolean		ret		= FALSE;
 	unsigned int	i;
 	Symbol*			sym;
 	Parser_ctx		ctx;
+	Parser_stat		stat;
 
 	PROC( "par_parse" );
 	PARMS( "root", "%p", root );
@@ -1102,17 +1081,16 @@ pboolean par_parse( AST_node** root, Parser* par, char* start )
 
 		LOG( "symbol %d, %s", sym->idx, sym->name );
 
-		if( end > start )
+		stat = parctx_next( &ctx, sym );
+
+		if( end > start && ctx.last && stat != STAT_ERROR )
 		{
-			val = pany_create( (char*)NULL );
-			pany_set_strndup( val, start, end - start );
-
-			LOG( "val = >%s<", pany_get_str( val ) );
+			ctx.last->start = start;
+			ctx.last->len = end - start;
+			ctx.last->end = end;
 		}
-		else
-			val = (pany*)NULL;
 
-		switch( parctx_next( &ctx, sym, val ) )
+		switch( stat )
 		{
 			case STAT_NEXT:
 				MSG( "Next symbol requested" );

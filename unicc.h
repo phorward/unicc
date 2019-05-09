@@ -141,7 +141,7 @@ struct _AST_node
 	Production*				prod;		/* Emitting production */
 
 	/* Semantics */
-	pany*					val;		/* Value */
+	void*					val;		/* User-defined pointer */
 
 	/* Match */
 	char*					start;		/* Begin of fragment */
@@ -199,10 +199,11 @@ struct _Parser_ctx
 	Parser_stat				state;		/* State */
 	Production*				reduce;		/* Reduce */
 	parray					stack;		/* Stack */
-	AST_node*				ast;		/* AST */
+	AST_node*				ast;		/* AST root node */
+	AST_node*				last;		/* AST last node */
 
 	Parser_reducefn			reducefn;	/* Reduce function */
-} ;
+};
 
 /* Macro: GRAMMAR_DUMP */
 #ifdef DEBUG
