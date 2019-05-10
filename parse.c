@@ -547,8 +547,11 @@ plex* par_autolex( Parser* p )
 		}
 		else
 		{
+			VARS( "sym->str", "%s", sym->str ? sym->str : "(null)" );
 			VARS( "sym->name", "%s", sym->name ? sym->name : "(null)" );
-			plex_define( lex, sym->name, (int)sym->idx, PREGEX_COMP_STATIC );
+
+			plex_define( lex, sym->str ? sym->str : sym->name,
+				(int)sym->idx, PREGEX_COMP_STATIC );
 		}
 	}
 
@@ -910,8 +913,7 @@ Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym )
 	/* Shifted symbol becomes AST node? */
 	if( sym->emit )
 		ctx->last = tos->node = ast_create(
-			sym->emit ? sym->emit : sym->name, sym,
-				(Production*)NULL, (AST_node*)NULL );
+			sym->emit, sym, (Production*)NULL, (AST_node*)NULL );
 
 	MSG( "Next token required" );
 	RETURN( ( ctx->state = STAT_NEXT ) );
@@ -1083,7 +1085,7 @@ pboolean par_parse( AST_node** root, Parser* par, char* start )
 
 		stat = parctx_next( &ctx, sym );
 
-		if( end > start && ctx.last && stat != STAT_ERROR )
+		if( end > start && ctx.last && stat != STAT_ERROR && !ctx.last->len )
 		{
 			ctx.last->start = start;
 			ctx.last->len = end - start;
