@@ -5,7 +5,6 @@ Symbol*	n_assocdef;
 Symbol*	t_Regex;
 Symbol*	n_alternation[ 2 ];
 Symbol*	n_definition;
-Symbol*	t_Function;
 Symbol*	t_Flag_goal;
 Symbol*	t_Identifier;
 Symbol*	t_Flag_ignore;
@@ -108,10 +107,6 @@ t_Int = sym_create( g, "Int" );
 t_Int->ptn = pregex_ptn_create( "[0-9]+", 0 );
 t_Int->emit = t_Int->name;
 
-t_Function = sym_create( g, "Function" );
-t_Function->ptn = pregex_ptn_create( "[A-Z_a-z][0-9A-Z_a-z]*\\(\\)", 0 );
-t_Function->emit = t_Function->name;
-
 t_Flag_ignore = sym_create( g, "Flag_ignore" );
 t_Flag_ignore->ptn = pregex_ptn_create( "%(ignore|skip)", 0 );
 t_Flag_ignore->emit = t_Flag_ignore->name;
@@ -193,10 +188,6 @@ prod_create( g, n_terminal /* terminal */,
 );
 prod_create( g, n_terminal /* terminal */,
 	t_Regex, /* /\/(\\\\.|[^\/\\\\])*\// */
-	(Symbol*)NULL
-);
-prod_create( g, n_terminal /* terminal */,
-	t_Function, /* /[A-Z_a-z][0-9A-Z_a-z]*\\(\\)/ */
 	(Symbol*)NULL
 );
 
@@ -381,3 +372,89 @@ prod_create( g, n_pos_grammar /* pos_grammar' */,
 	(Symbol*)NULL
 );
 
+void traverse( Ast_eval type, AST_node* node )
+{
+	if( type != AST_EVAL_TOPDOWN )
+		return;
+
+	if( !strcmp( node->emit, "Flag_goal" ) )
+	{
+		printf( "Flag_goal >%.*s<\n", (int)node->len, node->start );
+	}
+	else if( !strcmp( node->emit, "Identifier" ) )
+	{
+		printf( "Identifier >%.*s<\n", (int)node->len, node->start );
+	}
+	else if( !strcmp( node->emit, "CCL" ) )
+	{
+		printf( "CCL >%.*s<\n", (int)node->len, node->start );
+	}
+	else if( !strcmp( node->emit, "String" ) )
+	{
+		printf( "String >%.*s<\n", (int)node->len, node->start );
+	}
+	else if( !strcmp( node->emit, "Token" ) )
+	{
+		printf( "Token >%.*s<\n", (int)node->len, node->start );
+	}
+	else if( !strcmp( node->emit, "Regex" ) )
+	{
+		printf( "Regex >%.*s<\n", (int)node->len, node->start );
+	}
+	else if( !strcmp( node->emit, "Int" ) )
+	{
+		printf( "Int >%.*s<\n", (int)node->len, node->start );
+	}
+	else if( !strcmp( node->emit, "Flag_ignore" ) )
+	{
+		printf( "Flag_ignore >%.*s<\n", (int)node->len, node->start );
+	}
+	else if( !strcmp( node->emit, "emits" ) )
+	{
+		printf( "emits\n" );
+	}
+	else if( !strcmp( node->emit, "inline" ) )
+	{
+		printf( "inline\n" );
+	}
+	else if( !strcmp( node->emit, "rule" ) )
+	{
+		printf( "rule\n" );
+	}
+	else if( !strcmp( node->emit, "definition" ) )
+	{
+		printf( "definition\n" );
+	}
+	else if( !strcmp( node->emit, "emitsdef" ) )
+	{
+		printf( "emitsdef\n" );
+	}
+	else if( !strcmp( node->emit, "kle" ) )
+	{
+		printf( "kle\n" );
+	}
+	else if( !strcmp( node->emit, "pos" ) )
+	{
+		printf( "pos\n" );
+	}
+	else if( !strcmp( node->emit, "opt" ) )
+	{
+		printf( "opt\n" );
+	}
+	else if( !strcmp( node->emit, "alternation" ) )
+	{
+		printf( "alternation\n" );
+	}
+	else if( !strcmp( node->emit, "assoc_left" ) )
+	{
+		printf( "assoc_left\n" );
+	}
+	else if( !strcmp( node->emit, "assoc_right" ) )
+	{
+		printf( "assoc_right\n" );
+	}
+	else if( !strcmp( node->emit, "assoc_none" ) )
+	{
+		printf( "assoc_none\n" );
+	}
+}

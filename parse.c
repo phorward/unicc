@@ -130,15 +130,20 @@ void ast_eval( AST_node* ast, Ast_evalfn func )
 {
 	AST_node* 	node;
 
-	func( AST_EVAL_TOPDOWN, ast );
-
-	for( node = ast->child; node; node = node->next )
+	while( ast )
 	{
-		ast_eval( node, func );
-		func( AST_EVAL_PASSOVER, node );
+		func( AST_EVAL_TOPDOWN, ast );
+
+		ast_eval( ast->child, func );
+
+		for( node = ast->child; node; node = node->next )
+			func( AST_EVAL_PASSOVER, node );
+
+		func( AST_EVAL_BOTTOMUP, ast );
+
+		ast = ast->next;
 	}
 
-	func( AST_EVAL_BOTTOMUP, ast );
 }
 
 /** Dump detailed //ast// to //stream//. */

@@ -13,8 +13,10 @@
 @Token			:= /"[^"]*"/
 @Regex 			:= /\/(\\.|[^\\\/])*\//
 
+#@Code			:= /{{([^}]|}[^}])*}}/
+
 @Int			:= /[0-9]+/
-@Function		:= /[A-Za-z_][A-Za-z0-9_]*\(\)/
+#@Function		:= /[A-Za-z_][A-Za-z0-9_]*\(\)/
 
 @Flag_goal		:= '$'
 @Flag_ignore	:= /%(ignore|skip)/
@@ -26,7 +28,7 @@
 
 @emits          := '=' Identifier
 
-@terminal		: CCL | String | Token | Regex | Function
+@terminal		: CCL | String | Token | Regex
 
 @inline			:= '(' alternation ')'
 

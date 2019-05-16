@@ -748,7 +748,7 @@ pboolean gram_from_bnf( Grammar* g, char* src )
 
 	terminal->ptn = pregex_ptn_create( "[A-Z&]\\w*", 0 );
 	nonterminal->ptn = pregex_ptn_create( "[a-z_]\\w*", 0 );
-	code->ptn = pregex_ptn_create( "{{.*}}", 0 );
+	code->ptn = pregex_ptn_create( "{{([^}]|}[^}])*}}", 0 );
 
 	t_ccl->ptn = pregex_ptn_create( "\\[(\\.|[^\\\\\\]])*\\]", 0 );
 	t_string->ptn = pregex_ptn_create( "'[^']*'", 0 );

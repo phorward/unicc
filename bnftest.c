@@ -20,7 +20,10 @@ int main( int argc, char** argv )
 	p = par_create( g );
 
 	if( argc > 1 && par_parse( &a, p, argv[1] ) )
+	{
 		ast_dump_short( stdout, a );
+		ast_eval( a, traverse );
+	}
 
 	RETURN( 0 );
 }

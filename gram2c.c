@@ -28,13 +28,13 @@ void help( char** argv )
 
 	"   -a  --all                 Generate all parts.\n"
 	"   -d  --debug               Print parsed grammar.\n"
-	"	-D                        Generate symbol variable declarations\n"
+	"   -D                        Generate symbol variable declarations\n"
 	"   -h  --help                Show this help, and exit.\n"
 	"   -i  --indent NUM          Indent generated code by NUM tabs\n"
 	"   -o  --output FILE         Output to FILE; Default is stdout.\n"
-	"	-P                        Generate productions\n"
-	"	-S                        Generate symbols\n"
-	"	-T                        Generate AST traversal function stubs\n"
+	"   -P                        Generate productions\n"
+	"   -S                        Generate symbols\n"
+	"   -T                        Generate an AST traversal function stub\n"
 	"   -V  --version             Show version info and exit.\n",
 
 	*argv );
@@ -321,6 +321,71 @@ void gen_prods( FILE* f, Grammar* g )
 	fprintf( f, "\n" );
 }
 
+void gen_traversal( FILE* f, Grammar* g )
+{
+	plist		emits;
+	int			i;
+	pboolean	first	= TRUE;
+	Symbol*		sym;
+	Production*	prod;
+
+	plist_init( &emits, 0, PLIST_DFT_HASHSIZE, PLIST_MOD_UNIQUE );
+
+	fprintf( f, "%svoid traverse( Ast_eval type, AST_node* node )\n", indent );
+	fprintf( f, "%s{\n", indent );
+
+	fprintf( f, "%s\tif( type != AST_EVAL_TOPDOWN )\n"
+					"%s\t\treturn;\n\n", indent, indent );
+
+	for( i = 0; ( sym = sym_get( g, i ) ); i++ )
+	{
+		if( !sym->emit || !plist_insert( &emits, NULL, sym->emit, NULL ) )
+			continue;
+
+		fprintf( f, "%s\t%sif( !strcmp( node->emit, \"%s\" ) )\n",
+			indent, !first ? "else " : "", sym->emit );
+
+		fprintf( f, "%s\t{\n", indent );
+
+		if( SYM_IS_TERMINAL( sym ) )
+			fprintf( f,
+				"%s\t\tprintf( \"%s >%%.*s<\\n\", "
+					"(int)node->len, node->start );\n",
+					indent, sym->emit );
+		else
+			fprintf( f,
+				"%s\t\tprintf( \"%s\\n\" );\n",
+					indent, sym->emit );
+
+		fprintf( f, "%s\t}\n", indent );
+
+		first = FALSE;
+	}
+
+	for( i = 0; ( prod = prod_get( g, i ) ); i++ )
+	{
+		if( !prod->emit || !plist_insert( &emits, NULL, prod->emit, NULL ) )
+			continue;
+
+		fprintf( f, "%s\t%sif( !strcmp( node->emit, \"%s\" ) )\n",
+			indent, !first ? "else " : "", prod->emit );
+
+		fprintf( f, "%s\t{\n", indent );
+
+		fprintf( f,
+			"%s\t\tprintf( \"%s\\n\" );\n",
+				indent, prod->emit );
+
+		fprintf( f, "%s\t}\n", indent );
+
+		first = FALSE;
+	}
+
+	fprintf( f, "%s}\n", indent );
+
+	plist_erase( &emits );
+}
+
 
 int main( int argc, char** argv )
 {
@@ -445,6 +510,9 @@ int main( int argc, char** argv )
 
 	if( gprod )
 		gen_prods( f, g );
+
+	if( gast )
+		gen_traversal( f, g );
 
 	/* Clear mem */
 	gram_free( g );
