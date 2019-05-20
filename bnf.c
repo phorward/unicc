@@ -53,6 +53,7 @@ static Symbol* traverse_terminal( Grammar* gram, AST_node* node )
 
 			sym = sym_create( gram, name );
 			sym->flags.nameless = TRUE;
+			sym->flags.terminal = TRUE;
 
 			if( NODE_IS( node, "CCL" ) )
 			{
@@ -293,6 +294,7 @@ static pboolean ast_to_gram( Grammar* gram, AST_node* ast )
 			sym = sym_create( gram, *name ? pstrdup( name ) : (char*)NULL );
 			sym->flags.freename = TRUE;
 			sym->flags.defined = TRUE;
+			sym->flags.terminal = TRUE;
 
 			if( NODE_IS( child, "CCL" ) )
 			{
@@ -735,6 +737,16 @@ pboolean gram_from_bnf( Grammar* g, char* src )
 	prod_create( pbnf, n_defs, n_def, (Symbol*)NULL );
 
 	prod_create( pbnf, n_grammar, n_defs, (Symbol*)NULL );
+
+	/* Terminal hack */
+	{
+		int i;
+		Symbol* sym;
+
+		for( i = 0; ( sym = sym_get( pbnf, i ) ); i++ )
+			if( !sym->name || ( sym->name && !islower( *sym->name ) ) )
+				sym->flags.terminal = TRUE;
+	}
 
 	/* Setup a parser */
 	ppar = par_create( pbnf );

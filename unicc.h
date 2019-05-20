@@ -92,6 +92,8 @@ struct _Symbol
 
 	}						flags;
 
+	Symbol*					origin;		/* Origin of generated symbol */
+
 	Assoc					assoc;		/* LR associativity flag */
 	unsigned int			prec;		/* LR precedence level */
 
@@ -107,8 +109,8 @@ struct _Symbol
 };
 
 #ifndef SYM_IS_TERMINAL
-#define SYM_IS_TERMINAL( sym )	( !sym->name || !( *sym->name ) \
-										|| !islower( *( sym )->name ) )
+#define SYM_IS_TERMINAL( sym )	\
+	( sym->flags.terminal || sym->ccl || sym->str || sym->ptn ) /* fixme! */
 #endif
 
 /* Grammar */
@@ -126,6 +128,8 @@ struct _Grammar
 		pboolean			preventlrec	:1;	/* Prevent left-recursions */
 		pboolean			finalized	:1;
 		pboolean			frozen		:1;
+		pboolean			debug		:1;
+
 	}						flags;
 
 
@@ -153,9 +157,13 @@ struct _AST_node
 	unsigned long			col;		/* Appearance in column */
 
 	/* AST */
+	AST_node*				parent;		/* Parent element */
 	AST_node*				child;		/* First child element */
 	AST_node*				prev;		/* Previous element in current scope */
 	AST_node*				next;		/* Next element in current scope */
+
+	/* Traversal */
+	void*					ptr;		/* User pointer to smth. useful */
 };
 
 /* AST traversal */

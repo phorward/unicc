@@ -4,12 +4,12 @@ Symbol*	n_sequence;
 Symbol*	n_assocdef;
 Symbol*	t_Regex;
 Symbol*	n_alternation[ 2 ];
-Symbol*	n_definition;
+Symbol*	n_variable;
+Symbol*	n_definition[ 2 ];
 Symbol*	t_Flag_goal;
 Symbol*	t_Identifier;
 Symbol*	t_Flag_ignore;
 Symbol*	n_rule;
-Symbol*	t_Int;
 Symbol*	n_modifier;
 Symbol*	n_pos_terminal;
 Symbol*	n_grammar[ 2 ];
@@ -24,6 +24,7 @@ Symbol*	n_symbol;
 Symbol*	t_Token;
 Symbol*	n_emits;
 Symbol*	n_pos_alternation;
+Symbol*	n_pos_definition;
 Symbol*	t_String;
 
 /* Symbols */
@@ -103,10 +104,6 @@ t_Regex = sym_create( g, "Regex" );
 t_Regex->ptn = pregex_ptn_create( "/(\\\\.|[^/\\\\])*/", 0 );
 t_Regex->emit = t_Regex->name;
 
-t_Int = sym_create( g, "Int" );
-t_Int->ptn = pregex_ptn_create( "[0-9]+", 0 );
-t_Int->emit = t_Int->name;
-
 t_Flag_ignore = sym_create( g, "Flag_ignore" );
 t_Flag_ignore->ptn = pregex_ptn_create( "%(ignore|skip)", 0 );
 t_Flag_ignore->emit = t_Flag_ignore->name;
@@ -122,6 +119,9 @@ n_inline = sym_create( g, "inline" );
 n_inline->emit = n_inline->name;
 
 n_alternation[ 0 ] = sym_create( g, "alternation" );
+
+n_variable = sym_create( g, "variable" );
+n_variable->emit = n_variable->name;
 
 n_symbol = sym_create( g, "symbol" );
 
@@ -140,10 +140,13 @@ n_alternation[ 1 ] = sym_create( g, "alternation'" );
 
 n_pos_alternation = sym_create( g, "pos_alternation'" );
 
-n_definition = sym_create( g, "definition" );
-n_definition->emit = n_definition->name;
+n_definition[ 0 ] = sym_create( g, "definition" );
 
 n_opt_Flag_goal = sym_create( g, "opt_Flag_goal" );
+
+n_definition[ 1 ] = sym_create( g, "definition'" );
+
+n_pos_definition = sym_create( g, "pos_definition'" );
 
 n_assocdef = sym_create( g, "assocdef" );
 
@@ -198,8 +201,13 @@ prod_create( g, n_inline /* inline */,
 	(Symbol*)NULL
 );
 
-prod_create( g, n_symbol /* symbol */,
+prod_create( g, n_variable /* variable */,
 	t_Identifier, /* /[A-Z_a-z][0-9A-Z_a-z]*\/ */
+	(Symbol*)NULL
+);
+
+prod_create( g, n_symbol /* symbol */,
+	n_variable, /* variable */
 	(Symbol*)NULL
 );
 prod_create( g, n_symbol /* symbol */,
@@ -270,8 +278,7 @@ prod_create( g, n_alternation[ 0 ] /* alternation */,
 	n_rule, /* rule */
 	n_pos_alternation, /* pos_alternation' */
 	(Symbol*)NULL
-)->emit = "alternation";
-
+);
 
 prod_create( g, n_alternation[ 1 ] /* alternation' */,
 	_t_noname[ 8 ], /* "|" */
@@ -294,14 +301,15 @@ prod_create( g, n_alternation[ 0 ] /* alternation */,
 	(Symbol*)NULL
 );
 
-prod_create( g, n_definition /* definition */,
+prod_create( g, n_definition[ 0 ] /* definition */,
 	_t_noname[ 9 ], /* "@" */
-	t_Identifier, /* /[A-Z_a-z][0-9A-Z_a-z]*\/ */
+	n_variable, /* variable */
 	n_opt_Flag_goal, /* opt_Flag_goal */
 	n_colon, /* colon */
 	n_alternation[ 0 ], /* alternation */
 	(Symbol*)NULL
-);
+)->emit = "definition";
+
 
 prod_create( g, n_opt_Flag_goal /* opt_Flag_goal */,
 	t_Flag_goal, /* "$" */
@@ -311,10 +319,28 @@ prod_create( g, n_opt_Flag_goal /* opt_Flag_goal */,
 	(Symbol*)NULL
 );
 
-prod_create( g, n_definition /* definition */,
+prod_create( g, n_definition[ 0 ] /* definition */,
 	t_Flag_ignore, /* /%(ignore|skip)/ */
+	n_pos_definition, /* pos_definition' */
+	(Symbol*)NULL
+);
+
+prod_create( g, n_definition[ 1 ] /* definition' */,
 	n_terminal, /* terminal */
-	n_opt_emits, /* opt_emits */
+	(Symbol*)NULL
+);
+prod_create( g, n_definition[ 1 ] /* definition' */,
+	n_variable, /* variable */
+	(Symbol*)NULL
+);
+
+prod_create( g, n_pos_definition /* pos_definition' */,
+	n_pos_definition, /* pos_definition' */
+	n_definition[ 1 ], /* definition' */
+	(Symbol*)NULL
+);
+prod_create( g, n_pos_definition /* pos_definition' */,
+	n_definition[ 1 ], /* definition' */
 	(Symbol*)NULL
 );
 
@@ -354,7 +380,7 @@ prod_create( g, n_grammar[ 0 ] /* grammar */,
 );
 
 prod_create( g, n_grammar[ 1 ] /* grammar' */,
-	n_definition, /* definition */
+	n_definition[ 0 ], /* definition */
 	(Symbol*)NULL
 );
 prod_create( g, n_grammar[ 1 ] /* grammar' */,
@@ -372,89 +398,3 @@ prod_create( g, n_pos_grammar /* pos_grammar' */,
 	(Symbol*)NULL
 );
 
-void traverse( Ast_eval type, AST_node* node )
-{
-	if( type != AST_EVAL_TOPDOWN )
-		return;
-
-	if( !strcmp( node->emit, "Flag_goal" ) )
-	{
-		printf( "Flag_goal >%.*s<\n", (int)node->len, node->start );
-	}
-	else if( !strcmp( node->emit, "Identifier" ) )
-	{
-		printf( "Identifier >%.*s<\n", (int)node->len, node->start );
-	}
-	else if( !strcmp( node->emit, "CCL" ) )
-	{
-		printf( "CCL >%.*s<\n", (int)node->len, node->start );
-	}
-	else if( !strcmp( node->emit, "String" ) )
-	{
-		printf( "String >%.*s<\n", (int)node->len, node->start );
-	}
-	else if( !strcmp( node->emit, "Token" ) )
-	{
-		printf( "Token >%.*s<\n", (int)node->len, node->start );
-	}
-	else if( !strcmp( node->emit, "Regex" ) )
-	{
-		printf( "Regex >%.*s<\n", (int)node->len, node->start );
-	}
-	else if( !strcmp( node->emit, "Int" ) )
-	{
-		printf( "Int >%.*s<\n", (int)node->len, node->start );
-	}
-	else if( !strcmp( node->emit, "Flag_ignore" ) )
-	{
-		printf( "Flag_ignore >%.*s<\n", (int)node->len, node->start );
-	}
-	else if( !strcmp( node->emit, "emits" ) )
-	{
-		printf( "emits\n" );
-	}
-	else if( !strcmp( node->emit, "inline" ) )
-	{
-		printf( "inline\n" );
-	}
-	else if( !strcmp( node->emit, "rule" ) )
-	{
-		printf( "rule\n" );
-	}
-	else if( !strcmp( node->emit, "definition" ) )
-	{
-		printf( "definition\n" );
-	}
-	else if( !strcmp( node->emit, "emitsdef" ) )
-	{
-		printf( "emitsdef\n" );
-	}
-	else if( !strcmp( node->emit, "kle" ) )
-	{
-		printf( "kle\n" );
-	}
-	else if( !strcmp( node->emit, "pos" ) )
-	{
-		printf( "pos\n" );
-	}
-	else if( !strcmp( node->emit, "opt" ) )
-	{
-		printf( "opt\n" );
-	}
-	else if( !strcmp( node->emit, "alternation" ) )
-	{
-		printf( "alternation\n" );
-	}
-	else if( !strcmp( node->emit, "assoc_left" ) )
-	{
-		printf( "assoc_left\n" );
-	}
-	else if( !strcmp( node->emit, "assoc_right" ) )
-	{
-		printf( "assoc_right\n" );
-	}
-	else if( !strcmp( node->emit, "assoc_none" ) )
-	{
-		printf( "assoc_none\n" );
-	}
-}

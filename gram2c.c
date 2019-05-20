@@ -40,11 +40,6 @@ void help( char** argv )
 	*argv );
 }
 
-char* cident( char* ident )
-{
-	return ident;
-}
-
 void gen_decl( FILE* f, Grammar* g )
 {
 	int			i;

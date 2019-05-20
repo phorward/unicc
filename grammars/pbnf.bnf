@@ -15,7 +15,7 @@
 
 #@Code			:= /{{([^}]|}[^}])*}}/
 
-@Int			:= /[0-9]+/
+#@Int			:= /[0-9]+/
 #@Function		:= /[A-Za-z_][A-Za-z0-9_]*\(\)/
 
 @Flag_goal		:= '$'
@@ -32,7 +32,9 @@
 
 @inline			:= '(' alternation ')'
 
-@symbol 		: Identifier
+@variable		:= Identifier
+
+@symbol 		: variable
 				| terminal
 				| inline
 
@@ -46,11 +48,11 @@
 
 @rule		 	:= sequence? emits?
 
-@alternation	: rule ('|' rule)+	= alternation
+@alternation	: rule ('|' rule)+
 				| rule
 
-@definition		:= '@' Identifier Flag_goal? colon alternation
-				| Flag_ignore terminal emits?
+@definition		: '@' variable Flag_goal? colon alternation	= definition
+				| Flag_ignore ( terminal | variable )+
 
 @assocdef		: '<' terminal+	= assoc_left
 				| '>' terminal+	= assoc_right

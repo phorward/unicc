@@ -27,7 +27,7 @@ gram2c: $(HEADERS) $(OBJECTS) gram2c.o $(LIBPHORWARD)
 bnftest.c: bnftestgen.c
 
 bnftestgen.c: grammars/pbnf.bnf
-	./gram2c $+ >$@
+	./gram2c -DPS $+ >$@
 
 bnftest: gram2c $(HEADERS) $(OBJECTS) bnftest.o $(LIBPHORWARD)
 	$(CC) -g -o $@ $(OBJECTS) bnftest.o $(LIBPHORWARD)

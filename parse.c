@@ -40,6 +40,12 @@ AST_node* ast_create( char* emit, Symbol* sym, Production* prod, AST_node* child
 
 	node->child = child;
 
+	while( child )
+	{
+		child->parent = node;
+		child = child->next;
+	}
+
 	RETURN( node );
 }
 

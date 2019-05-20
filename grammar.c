@@ -212,6 +212,8 @@ Production* sym_getprod( Symbol* sym, unsigned int n )
 	times. It may not be freed by the caller. */
 char* sym_to_str( Symbol* sym )
 {
+	char*	name;
+
 	if( !sym )
 	{
 		WRONGPARAM;
@@ -220,20 +222,59 @@ char* sym_to_str( Symbol* sym )
 
 	if( !sym->strval )
 	{
-		if( sym->name && !sym->flags.nameless && !sym->flags.generated )
-			sym->strval = sym->name;
-		else if( SYM_IS_TERMINAL( sym ) && sym->ccl )
+		if( SYM_IS_TERMINAL( sym ) && sym->ccl )
 			sym->strval = pasprintf( "[%s]", pccl_to_str( sym->ccl, TRUE ) );
 		else if( SYM_IS_TERMINAL( sym ) && sym->str )
-			sym->strval = pasprintf( "%s", sym->str );
+			sym->strval = pasprintf( "%s%s%s",
+							sym->emit == sym->str ? "\"" : "'",
+								sym->str, sym->emit == sym->str ? "\"" : "'" );
 		else if( SYM_IS_TERMINAL( sym ) && sym->ptn )
 			sym->strval = pasprintf( "/%s/", pregex_ptn_to_regex( sym->ptn ) );
-		else if( strncmp( sym->name, "pos_", 4 ) == 0 )
-			sym->strval = pasprintf( "%s+", sym->name + 4 );
-		else if( strncmp( sym->name, "opt_", 4 ) == 0 )
-			sym->strval = pasprintf( "%s?", sym->name + 4 );
-		else if( strncmp( sym->name, "kle_", 4 ) == 0 )
-			sym->strval = pasprintf( "%s*", sym->name + 4 );
+		else if( ( name = sym->strval = sym->name ) && !sym->grm->flags.debug )
+		{
+			if( sym->flags.generated
+					&& name[ strlen( name ) - 1 ] == DERIVCHAR )
+			{
+				int			i;
+				plistel*	e;
+				Production*	prod;
+				Symbol*		item;
+
+				name = pstrdup( "(" );
+
+				for( i = 0; ( prod = sym_getprod(
+								( sym->origin ? sym->origin : sym ), i ) ); i++ )
+				{
+					if( i > 0 )
+						name = pstrcatstr( name, " | ", FALSE );
+
+					plist_for( prod->rhs, e )
+					{
+						item = (Symbol*)plist_access( e );
+
+						if( e != plist_first( prod->rhs ) )
+							name = pstrcatstr( name, " ", FALSE );
+
+
+						name = pstrcatstr( name, sym_to_str( item->origin ? item->origin : item ), FALSE );
+					}
+				}
+
+				name = pstrcatstr( name, ")", FALSE );
+			}
+
+			if( strncmp( sym->name, "pos_", 4 ) == 0 )
+				sym->strval = pasprintf( "%s+", name == sym->name ? name + 4 : name );
+			else if( strncmp( sym->name, "opt_", 4 ) == 0 )
+				sym->strval = pasprintf( "%s?", name == sym->name ? name + 4 : name  );
+			else if( strncmp( sym->name, "kle_", 4 ) == 0 )
+				sym->strval = pasprintf( "%s*", name == sym->name ? name + 4 : name  );
+			else
+				sym->strval = name;
+
+			if( sym->strval != name && name != sym->name )
+				pfree( name );
+		}
 	}
 
 	return sym->strval;
@@ -279,7 +320,9 @@ Symbol* sym_mod_positive( Symbol* sym )
 		ret = sym_create( sym->grm, name == buf ? pstrdup( name ) : name );
 		ret->flags.defined = TRUE;
 		ret->flags.called = TRUE;
+		ret->flags.nameless = TRUE;
 		ret->flags.generated = TRUE;
+		ret->origin = sym->origin ? sym->origin : sym;
 		ret->flags.freename = name == buf;
 
 		if( sym->grm->flags.preventlrec )
@@ -335,7 +378,9 @@ Symbol* sym_mod_optional( Symbol* sym )
 		ret = sym_create( sym->grm, name == buf ? pstrdup( name ) : name );
 		ret->flags.defined = TRUE;
 		ret->flags.called = TRUE;
+		ret->flags.nameless = TRUE;
 		ret->flags.generated = TRUE;
+		ret->origin = sym->origin ? sym->origin : sym;
 		ret->flags.freename = name == buf;
 
 		prod_create( sym->grm, ret, sym, (Symbol*)NULL );
@@ -391,7 +436,9 @@ Symbol* sym_mod_kleene( Symbol* sym )
 		ret = sym_create( sym->grm, name == buf ? pstrdup( name ) : name );
 		ret->flags.defined = TRUE;
 		ret->flags.called = TRUE;
+		ret->flags.nameless = TRUE;
 		ret->flags.generated = TRUE;
+		ret->origin = sym->origin ? sym->origin : sym;
 		ret->flags.freename = name == buf;
 
 		prod_create( sym->grm, ret, sym_mod_positive( sym ), (Symbol*)NULL );
@@ -645,7 +692,9 @@ Grammar* gram_create( void )
 	g->prods = plist_create( sizeof( Production ), PLIST_MOD_RECYCLE );
 
 	g->eof = sym_create( g, SYM_T_EOF );
+	g->eof->flags.terminal = TRUE;
 	g->eof->flags.special = TRUE;
+	g->eof->flags.nameless = TRUE;
 
 	return g;
 }
@@ -920,7 +969,8 @@ void __dbg_gram_dump( char* file, int line, char* function,
 	{
 		s = (Symbol*)plist_access( e );
 
-		fprintf( stderr, "%03d  %-*s  %-*s",
+		fprintf( stderr, "%c%03d  %-*s  %-*s",
+			SYM_IS_TERMINAL( s ) ? 'T' : 'N',
 			s->idx, maxemitlen, s->emit ? s->emit : "",
 				maxsymlen, s->name );
 
@@ -975,9 +1025,11 @@ char* gram_to_bnf( Grammar* grm )
 	plist_for( grm->symbols, e )
 	{
 		sym = (Symbol*)plist_access( e );
+		if( ( !grm->flags.debug && sym->flags.nameless ) )
+			continue;
 
-		if( pstrlen( sym->name ) > maxsymlen )
-			maxsymlen = pstrlen( sym->name );
+		if( pstrlen( sym_to_str( sym ) ) > maxsymlen )
+			maxsymlen = pstrlen( sym_to_str( sym ) );
 		else if( !sym->name && maxsymlen < 4 )
 			maxsymlen = 4;
 	}
@@ -989,15 +1041,15 @@ char* gram_to_bnf( Grammar* grm )
 	plist_for( grm->symbols, e )
 	{
 		if( !SYM_IS_TERMINAL( ( sym = (Symbol*)plist_access( e ) ) )
-			|| sym->flags.nameless || sym->flags.special )
+				|| sym->flags.nameless )
 			continue;
 
 		if( sym->ptn )
-		    sprintf( name, "@%-*s : /%s/\n",
+		    sprintf( name, "@ %-*s  : /%s/\n",
 		            maxsymlen, sym_to_str( sym ),
 		                pregex_ptn_to_regex( sym->ptn ) );
 		else
-            sprintf( name, "@%-*s : '%s'\n",
+            sprintf( name, "@ %-*s  : '%s'\n",
                      maxsymlen, sym_to_str( sym ),
                          pstrget( sym->name ) );
 
@@ -1008,11 +1060,13 @@ char* gram_to_bnf( Grammar* grm )
 	plist_for( grm->symbols, e )
 	{
 		if( SYM_IS_TERMINAL( ( sym = (Symbol*)plist_access( e ) ) )
-				|| sym->flags.generated )
+				|| ( !grm->flags.debug && sym->flags.nameless ) )
 			continue;
 
 		first = TRUE;
-		sprintf( name, "@%-*s : ", maxsymlen, sym->name );
+		sprintf( name, "@ %-*s%s : ", maxsymlen,
+										sym->name,
+											sym == grm->goal ? "$" : " " );
 
 		grm->strval = pstrcatstr( grm->strval, name, FALSE );
 
@@ -1025,7 +1079,7 @@ char* gram_to_bnf( Grammar* grm )
 
 			if( !first )
 			{
-				sprintf( name, "%-*s  | ", maxsymlen, "" );
+				sprintf( name, "  %-*s  | ", maxsymlen, "" );
 				grm->strval = pstrcatstr( grm->strval, name, FALSE );
 			}
 			else
@@ -1038,7 +1092,7 @@ char* gram_to_bnf( Grammar* grm )
 			{
 				psym = (Symbol*)plist_access( g );
 
-				sprintf( name, "%.*s%s", maxsymlen, sym_to_str( psym ),
+				sprintf( name, "%s%s", sym_to_str( psym ),
 					g == plist_last( prod->rhs ) ? "\n" : " ");
 				grm->strval = pstrcatstr( grm->strval, name, FALSE );
 			}
