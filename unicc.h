@@ -126,10 +126,11 @@ struct _Grammar
 	struct
 	{
 		pboolean			preventlrec	:1;	/* Prevent left-recursions */
-		pboolean			finalized	:1;
-		pboolean			frozen		:1;
-		pboolean			debug		:1;
-
+		pboolean			finalized	:1; /* Grammar is finalized */
+		pboolean			frozen		:1;	/* Grammar is in use, e.g. by
+												a parser - no changes to its
+												structure are allowed! */
+		pboolean			debug		:1;	/* Debug behavor */
 	}						flags;
 
 

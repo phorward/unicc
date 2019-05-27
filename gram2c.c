@@ -326,33 +326,35 @@ void gen_traversal( FILE* f, Grammar* g )
 
 	plist_init( &emits, 0, PLIST_DFT_HASHSIZE, PLIST_MOD_UNIQUE );
 
-	fprintf( f, "%svoid traverse( Ast_eval type, AST_node* node )\n", indent );
+	fprintf( f, "%sstatic void traverse( AST_node* node )\n", indent );
 	fprintf( f, "%s{\n", indent );
 
-	fprintf( f, "%s\tif( type != AST_EVAL_TOPDOWN )\n"
-					"%s\t\treturn;\n\n", indent, indent );
+	fprintf( f, "%s\twhile( node )\n", indent );
+	fprintf( f, "%s\t{\n", indent );
+	fprintf( f, "%s\t\tif( node->child )\n", indent );
+	fprintf( f, "%s\t\t\ttraverse( node->child );\n\n", indent );
 
 	for( i = 0; ( sym = sym_get( g, i ) ); i++ )
 	{
 		if( !sym->emit || !plist_insert( &emits, NULL, sym->emit, NULL ) )
 			continue;
 
-		fprintf( f, "%s\t%sif( !strcmp( node->emit, \"%s\" ) )\n",
+		fprintf( f, "%s\t\t%sif( !strcmp( node->emit, \"%s\" ) )\n",
 			indent, !first ? "else " : "", sym->emit );
 
-		fprintf( f, "%s\t{\n", indent );
+		fprintf( f, "%s\t\t{\n", indent );
 
 		if( SYM_IS_TERMINAL( sym ) )
 			fprintf( f,
-				"%s\t\tprintf( \"%s >%%.*s<\\n\", "
+				"%s\t\t\tprintf( \"%s >%%.*s<\\n\", "
 					"(int)node->len, node->start );\n",
 					indent, sym->emit );
 		else
 			fprintf( f,
-				"%s\t\tprintf( \"%s\\n\" );\n",
+				"%s\t\t\tprintf( \"%s\\n\" );\n",
 					indent, sym->emit );
 
-		fprintf( f, "%s\t}\n", indent );
+		fprintf( f, "%s\t\t}\n", indent );
 
 		first = FALSE;
 	}
@@ -362,20 +364,22 @@ void gen_traversal( FILE* f, Grammar* g )
 		if( !prod->emit || !plist_insert( &emits, NULL, prod->emit, NULL ) )
 			continue;
 
-		fprintf( f, "%s\t%sif( !strcmp( node->emit, \"%s\" ) )\n",
+		fprintf( f, "%s\t\t%sif( !strcmp( node->emit, \"%s\" ) )\n",
 			indent, !first ? "else " : "", prod->emit );
 
-		fprintf( f, "%s\t{\n", indent );
+		fprintf( f, "%s\t\t{\n", indent );
 
 		fprintf( f,
-			"%s\t\tprintf( \"%s\\n\" );\n",
+			"%s\t\t\tprintf( \"%s\\n\" );\n",
 				indent, prod->emit );
 
-		fprintf( f, "%s\t}\n", indent );
+		fprintf( f, "%s\t\t}\n", indent );
 
 		first = FALSE;
 	}
 
+	fprintf( f, "\n%s\t\tnode = node->next;\n", indent );
+	fprintf( f, "%s\t}\n", indent );
 	fprintf( f, "%s}\n", indent );
 
 	plist_erase( &emits );

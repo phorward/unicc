@@ -18,8 +18,7 @@
 #@Int			:= /[0-9]+/
 #@Function		:= /[A-Za-z_][A-Za-z0-9_]*\(\)/
 
-@Flag_goal		:= '$'
-@Flag_ignore	:= /%(ignore|skip)/
+@goal			:= '$'
 
 // Nonterminals ----------------------------------------------------------------
 
@@ -51,8 +50,8 @@
 @alternation	: rule ('|' rule)+
 				| rule
 
-@definition		: '@' variable Flag_goal? colon alternation	= definition
-				| Flag_ignore ( terminal | variable )+
+@definition		: '@' variable goal? colon alternation	= definition
+				| /%(ignore|skip)/ ( terminal | variable )+	= ignore
 
 @assocdef		: '<' terminal+	= assoc_left
 				| '>' terminal+	= assoc_right

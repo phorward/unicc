@@ -15,7 +15,8 @@ Usage:	Parser maintenance object.
 ----------------------------------------------------------------------------- */
 
 /** Creates a new abstract syntax tree node //emit// associated with //sym//. */
-AST_node* ast_create( char* emit, Symbol* sym, Production* prod, AST_node* child )
+AST_node* ast_create( char* emit, Symbol* sym,
+						Production* prod, AST_node* child )
 {
 	AST_node*	node;
 
@@ -149,7 +150,6 @@ void ast_eval( AST_node* ast, Ast_evalfn func )
 
 		ast = ast->next;
 	}
-
 }
 
 /** Dump detailed //ast// to //stream//. */

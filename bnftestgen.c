@@ -3,12 +3,11 @@ Symbol*	n_inline;
 Symbol*	n_sequence;
 Symbol*	n_assocdef;
 Symbol*	t_Regex;
+Symbol*	n_goal;
 Symbol*	n_alternation[ 2 ];
 Symbol*	n_variable;
 Symbol*	n_definition[ 2 ];
-Symbol*	t_Flag_goal;
 Symbol*	t_Identifier;
-Symbol*	t_Flag_ignore;
 Symbol*	n_rule;
 Symbol*	n_modifier;
 Symbol*	n_pos_terminal;
@@ -16,73 +15,73 @@ Symbol*	n_grammar[ 2 ];
 Symbol*	n_pos_grammar;
 Symbol*	n_colon;
 Symbol*	t_CCL;
-Symbol*	n_opt_Flag_goal;
+Symbol*	t_ignoreskip;
 Symbol*	n_opt_emits;
-Symbol*	_t_noname[ 16 ];
+Symbol*	_t_noname[ 17 ];
 Symbol*	n_terminal;
 Symbol*	n_symbol;
 Symbol*	t_Token;
 Symbol*	n_emits;
 Symbol*	n_pos_alternation;
 Symbol*	n_pos_definition;
+Symbol*	n_opt_goal;
 Symbol*	t_String;
 
 /* Symbols */
 
-t_Flag_goal = sym_create( g, "Flag_goal" );
-t_Flag_goal->str = "$";
-t_Flag_goal->emit = t_Flag_goal->name;
+_t_noname[ 0 ] = sym_create( g, "$" );
+_t_noname[ 0 ]->str = "$";
 
-_t_noname[ 0 ] = sym_create( g, ":=" );
-_t_noname[ 0 ]->str = ":=";
+_t_noname[ 1 ] = sym_create( g, ":=" );
+_t_noname[ 1 ]->str = ":=";
 
-_t_noname[ 1 ] = sym_create( g, ":" );
-_t_noname[ 1 ]->str = ":";
+_t_noname[ 2 ] = sym_create( g, ":" );
+_t_noname[ 2 ]->str = ":";
 
-_t_noname[ 2 ] = sym_create( g, "=" );
-_t_noname[ 2 ]->str = "=";
+_t_noname[ 3 ] = sym_create( g, "=" );
+_t_noname[ 3 ]->str = "=";
 
-_t_noname[ 3 ] = sym_create( g, "(" );
-_t_noname[ 3 ]->str = "(";
+_t_noname[ 4 ] = sym_create( g, "(" );
+_t_noname[ 4 ]->str = "(";
 
-_t_noname[ 4 ] = sym_create( g, ")" );
-_t_noname[ 4 ]->str = ")";
+_t_noname[ 5 ] = sym_create( g, ")" );
+_t_noname[ 5 ]->str = ")";
 
-_t_noname[ 5 ] = sym_create( g, "*" );
-_t_noname[ 5 ]->str = "*";
+_t_noname[ 6 ] = sym_create( g, "*" );
+_t_noname[ 6 ]->str = "*";
 
-_t_noname[ 6 ] = sym_create( g, "+" );
-_t_noname[ 6 ]->str = "+";
+_t_noname[ 7 ] = sym_create( g, "+" );
+_t_noname[ 7 ]->str = "+";
 
-_t_noname[ 7 ] = sym_create( g, "?" );
-_t_noname[ 7 ]->str = "?";
+_t_noname[ 8 ] = sym_create( g, "?" );
+_t_noname[ 8 ]->str = "?";
 
-_t_noname[ 8 ] = sym_create( g, "|" );
-_t_noname[ 8 ]->str = "|";
+_t_noname[ 9 ] = sym_create( g, "|" );
+_t_noname[ 9 ]->str = "|";
 
-_t_noname[ 9 ] = sym_create( g, "@" );
-_t_noname[ 9 ]->str = "@";
+_t_noname[ 10 ] = sym_create( g, "@" );
+_t_noname[ 10 ]->str = "@";
 
-_t_noname[ 10 ] = sym_create( g, "<" );
-_t_noname[ 10 ]->str = "<";
+_t_noname[ 11 ] = sym_create( g, "<" );
+_t_noname[ 11 ]->str = "<";
 
-_t_noname[ 11 ] = sym_create( g, ">" );
-_t_noname[ 11 ]->str = ">";
+_t_noname[ 12 ] = sym_create( g, ">" );
+_t_noname[ 12 ]->str = ">";
 
-_t_noname[ 12 ] = sym_create( g, "^" );
-_t_noname[ 12 ]->str = "^";
-
-_t_noname[ 13 ] = sym_create( g, (char*)NULL );
-_t_noname[ 13 ]->ptn = pregex_ptn_create( "[\\t\\n\\r ]+", 0 );
-_t_noname[ 13 ]->flags.whitespace = TRUE;
+_t_noname[ 13 ] = sym_create( g, "^" );
+_t_noname[ 13 ]->str = "^";
 
 _t_noname[ 14 ] = sym_create( g, (char*)NULL );
-_t_noname[ 14 ]->ptn = pregex_ptn_create( "//[^\\n]*\\n", 0 );
+_t_noname[ 14 ]->ptn = pregex_ptn_create( "[\\t\\n\\r ]+", 0 );
 _t_noname[ 14 ]->flags.whitespace = TRUE;
 
 _t_noname[ 15 ] = sym_create( g, (char*)NULL );
-_t_noname[ 15 ]->ptn = pregex_ptn_create( "/\\*([^*]|\\*[^/])*\\*/|//[^\\n]*\\n|#[^\\n]*\\n", 0 );
+_t_noname[ 15 ]->ptn = pregex_ptn_create( "//[^\\n]*\\n", 0 );
 _t_noname[ 15 ]->flags.whitespace = TRUE;
+
+_t_noname[ 16 ] = sym_create( g, (char*)NULL );
+_t_noname[ 16 ]->ptn = pregex_ptn_create( "/\\*([^*]|\\*[^/])*\\*/|//[^\\n]*\\n|#[^\\n]*\\n", 0 );
+_t_noname[ 16 ]->flags.whitespace = TRUE;
 
 t_Identifier = sym_create( g, "Identifier" );
 t_Identifier->ptn = pregex_ptn_create( "[A-Z_a-z][0-9A-Z_a-z]*", 0 );
@@ -104,9 +103,11 @@ t_Regex = sym_create( g, "Regex" );
 t_Regex->ptn = pregex_ptn_create( "/(\\\\.|[^/\\\\])*/", 0 );
 t_Regex->emit = t_Regex->name;
 
-t_Flag_ignore = sym_create( g, "Flag_ignore" );
-t_Flag_ignore->ptn = pregex_ptn_create( "%(ignore|skip)", 0 );
-t_Flag_ignore->emit = t_Flag_ignore->name;
+t_ignoreskip = sym_create( g, "%(ignore|skip)" );
+t_ignoreskip->ptn = pregex_ptn_create( "%(ignore|skip)", 0 );
+
+n_goal = sym_create( g, "goal" );
+n_goal->emit = n_goal->name;
 
 n_colon = sym_create( g, "colon" );
 
@@ -142,7 +143,7 @@ n_pos_alternation = sym_create( g, "pos_alternation'" );
 
 n_definition[ 0 ] = sym_create( g, "definition" );
 
-n_opt_Flag_goal = sym_create( g, "opt_Flag_goal" );
+n_opt_goal = sym_create( g, "opt_goal" );
 
 n_definition[ 1 ] = sym_create( g, "definition'" );
 
@@ -161,18 +162,23 @@ n_pos_grammar = sym_create( g, "pos_grammar'" );
 
 /* Productions */
 
+prod_create( g, n_goal /* goal */,
+	_t_noname[ 0 ], /* "$" */
+	(Symbol*)NULL
+);
+
 prod_create( g, n_colon /* colon */,
-	_t_noname[ 0 ], /* ":=" */
+	_t_noname[ 1 ], /* ":=" */
 	(Symbol*)NULL
 )->emit = "emitsdef";
 
 prod_create( g, n_colon /* colon */,
-	_t_noname[ 1 ], /* ":" */
+	_t_noname[ 2 ], /* ":" */
 	(Symbol*)NULL
 );
 
 prod_create( g, n_emits /* emits */,
-	_t_noname[ 2 ], /* "=" */
+	_t_noname[ 3 ], /* "=" */
 	t_Identifier, /* /[A-Z_a-z][0-9A-Z_a-z]*\/ */
 	(Symbol*)NULL
 );
@@ -195,9 +201,9 @@ prod_create( g, n_terminal /* terminal */,
 );
 
 prod_create( g, n_inline /* inline */,
-	_t_noname[ 3 ], /* "(" */
+	_t_noname[ 4 ], /* "(" */
 	n_alternation[ 0 ], /* alternation */
-	_t_noname[ 4 ], /* ")" */
+	_t_noname[ 5 ], /* ")" */
 	(Symbol*)NULL
 );
 
@@ -221,19 +227,19 @@ prod_create( g, n_symbol /* symbol */,
 
 prod_create( g, n_modifier /* modifier */,
 	n_symbol, /* symbol */
-	_t_noname[ 5 ], /* "*" */
+	_t_noname[ 6 ], /* "*" */
 	(Symbol*)NULL
 )->emit = "kle";
 
 prod_create( g, n_modifier /* modifier */,
 	n_symbol, /* symbol */
-	_t_noname[ 6 ], /* "+" */
+	_t_noname[ 7 ], /* "+" */
 	(Symbol*)NULL
 )->emit = "pos";
 
 prod_create( g, n_modifier /* modifier */,
 	n_symbol, /* symbol */
-	_t_noname[ 7 ], /* "?" */
+	_t_noname[ 8 ], /* "?" */
 	(Symbol*)NULL
 )->emit = "opt";
 
@@ -281,7 +287,7 @@ prod_create( g, n_alternation[ 0 ] /* alternation */,
 );
 
 prod_create( g, n_alternation[ 1 ] /* alternation' */,
-	_t_noname[ 8 ], /* "|" */
+	_t_noname[ 9 ], /* "|" */
 	n_rule, /* rule */
 	(Symbol*)NULL
 );
@@ -302,28 +308,29 @@ prod_create( g, n_alternation[ 0 ] /* alternation */,
 );
 
 prod_create( g, n_definition[ 0 ] /* definition */,
-	_t_noname[ 9 ], /* "@" */
+	_t_noname[ 10 ], /* "@" */
 	n_variable, /* variable */
-	n_opt_Flag_goal, /* opt_Flag_goal */
+	n_opt_goal, /* opt_goal */
 	n_colon, /* colon */
 	n_alternation[ 0 ], /* alternation */
 	(Symbol*)NULL
 )->emit = "definition";
 
 
-prod_create( g, n_opt_Flag_goal /* opt_Flag_goal */,
-	t_Flag_goal, /* "$" */
+prod_create( g, n_opt_goal /* opt_goal */,
+	n_goal, /* goal */
 	(Symbol*)NULL
 );
-prod_create( g, n_opt_Flag_goal /* opt_Flag_goal */,
+prod_create( g, n_opt_goal /* opt_goal */,
 	(Symbol*)NULL
 );
 
 prod_create( g, n_definition[ 0 ] /* definition */,
-	t_Flag_ignore, /* /%(ignore|skip)/ */
+	t_ignoreskip, /* /%(ignore|skip)/ */
 	n_pos_definition, /* pos_definition' */
 	(Symbol*)NULL
-);
+)->emit = "ignore";
+
 
 prod_create( g, n_definition[ 1 ] /* definition' */,
 	n_terminal, /* terminal */
@@ -345,7 +352,7 @@ prod_create( g, n_pos_definition /* pos_definition' */,
 );
 
 prod_create( g, n_assocdef /* assocdef */,
-	_t_noname[ 10 ], /* "<" */
+	_t_noname[ 11 ], /* "<" */
 	n_pos_terminal, /* pos_terminal */
 	(Symbol*)NULL
 )->emit = "assoc_left";
@@ -362,13 +369,13 @@ prod_create( g, n_pos_terminal /* pos_terminal */,
 );
 
 prod_create( g, n_assocdef /* assocdef */,
-	_t_noname[ 11 ], /* ">" */
+	_t_noname[ 12 ], /* ">" */
 	n_pos_terminal, /* pos_terminal */
 	(Symbol*)NULL
 )->emit = "assoc_right";
 
 prod_create( g, n_assocdef /* assocdef */,
-	_t_noname[ 12 ], /* "^" */
+	_t_noname[ 13 ], /* "^" */
 	n_pos_terminal, /* pos_terminal */
 	(Symbol*)NULL
 )->emit = "assoc_none";

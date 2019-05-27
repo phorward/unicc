@@ -1,8 +1,5 @@
 #include "unicc.h"
 
-Grammar*	res;
-int			prec	= 0;
-
 /* Derive name from basename */
 static char* derive_name( Grammar* gram, char* base )
 {
@@ -22,17 +19,20 @@ static char* derive_name( Grammar* gram, char* base )
 	return (char*)NULL;
 }
 
-void traverse( Ast_eval type, AST_node* node )
+/* Traverse a grammar from a parsed AST */
+static void traverse( Grammar* g, AST_node* ast )
 {
-	if( type != AST_EVAL_BOTTOMUP )
-		return;
+	AST_node*	node;
+	char		buf		[ BUFSIZ + 1 ];
+	static int	prec	= 0;
 
+	PROC( "traverse" );
+	VARS( "emit", "%s", ast->emit );
+
+	while( ( node = ast ) )
 	{
-		char	buf		[ BUFSIZ + 1 ];
-
-		PROC( "traverse" );
-
-		VARS( "emit", "%s", node->emit );
+		if( ast->child )
+			traverse( g, ast->child );
 
 		if( node->len )
 		{
@@ -44,14 +44,16 @@ void traverse( Ast_eval type, AST_node* node )
 
 		if( !strcmp( node->emit, "Identifier" ) )
 			node->ptr = strdup( buf );
+		else if( !strcmp( node->emit, "emits" ) )
+			node->ptr = node->child->ptr;
 		else if( !strcmp( node->emit, "variable" ) )
 		{
 			if( !( node->ptr = (void*)sym_get_by_name(
-						res, node->child->ptr ) ) )
+						g, node->child->ptr ) ) )
 			{
 				Symbol* sym;
 
-				sym = sym_create( res, node->child->ptr );
+				sym = sym_create( g, node->child->ptr );
 				sym->flags.freename = TRUE;
 
 				node->ptr = (void*)sym;
@@ -64,11 +66,11 @@ void traverse( Ast_eval type, AST_node* node )
 						|| !strcmp( node->emit, "Token" )
 							|| !strcmp( node->emit, "Regex" ) )
 		{
-			if( !( node->ptr = (void*)sym_get_by_name( res, buf ) ) )
+			if( !( node->ptr = (void*)sym_get_by_name( g, buf ) ) )
 			{
 				Symbol* sym;
 
-				sym = sym_create( res, pstrdup( buf ) );
+				sym = sym_create( g, pstrdup( buf ) );
 				sym->flags.freeemit = TRUE;
 				sym->flags.nameless = TRUE;
 
@@ -125,8 +127,8 @@ void traverse( Ast_eval type, AST_node* node )
 
 				VARS( "sym->name", "%s", sym->name );
 
-				node->ptr = sym = sym_create( res,
-									derive_name( res, sym->name ) );
+				node->ptr = sym = sym_create( g,
+									derive_name( g, sym->name ) );
 
 				VARS( "sym->name", "%s", sym->name );
 
@@ -144,9 +146,9 @@ void traverse( Ast_eval type, AST_node* node )
 
 				node = node->child->next;
 
-				if( node && !strcmp( node->emit, "Flag_goal" ) )
+				if( node && !strcmp( node->emit, "goal" ) )
 				{
-					res->goal = sym;
+					g->goal = sym;
 					node = node->next;
 				}
 
@@ -159,7 +161,7 @@ void traverse( Ast_eval type, AST_node* node )
 
 			while( node )
 			{
-				prod = prod_create( res, sym, NULL );
+				prod = prod_create( g, sym, NULL );
 				prod->emit = emits;
 
 				for( pnode = node->child; pnode; pnode = pnode->next )
@@ -177,7 +179,7 @@ void traverse( Ast_eval type, AST_node* node )
 				node = node->next;
 			}
 		}
-		else if( !strcmp( node->emit, "Flag_ignore" )
+		else if( !strcmp( node->emit, "ignore" )
 					|| !strcmp( node->emit, "assoc_left" )
 						|| !strcmp( node->emit, "assoc_right" )
 							|| !strcmp( node->emit, "assoc_none" ) )
@@ -207,32 +209,35 @@ void traverse( Ast_eval type, AST_node* node )
 					sym->assoc = ASSOC_NONE;
 					sym->prec = prec;
 				}
-				else if( !strcmp( node->emit, "Flag_ignore" ) )
+				else if( !strcmp( node->emit, "ignore" ) )
+				{
 					sym->flags.whitespace = TRUE;
+				}
 			}
 		}
 
-		VOIDRET;
+		ast = ast->next;
 	}
+
+	VOIDRET;
 }
 
-
+/* bnftest main */
 int main( int argc, char** argv )
 {
 	Grammar*	g;
 	Parser*		p;
 	AST_node*	a;
 
+	Grammar*	ng;
+	Parser*		np;
+	AST_node*	na;
+
 	PROC( "main" );
 
 	g = gram_create();
 
 	#include "bnftestgen.c"
-
-	/*
-	GRAMMAR_DUMP( g );
-	printf( "%s\n", gram_to_bnf( g ) );
-	*/
 
 	gram_prepare( g );
 
@@ -242,13 +247,19 @@ int main( int argc, char** argv )
 	{
 		ast_dump_short( stdout, a );
 
-		res = gram_create();
-		/* res->flags.debug = TRUE; */
+		ng = gram_create();
+		ng->flags.debug = FALSE; /* Set TRUE for pure grammar dump */
 
-		ast_eval( a, traverse );
+		traverse( ng, a );
 
-		printf( "%s\n", gram_to_bnf( res ) );
-		GRAMMAR_DUMP( res );
+		printf( "%s\n", gram_to_bnf( ng ) );
+
+		np = par_create( ng );
+		if( par_parse( &na, np, argv[1] ) )
+		{
+			ast_dump_short( stdout, na );
+			printf( "IT'S SELF-HOSTED!\n" );
+		}
 	}
 
 	RETURN( 0 );
