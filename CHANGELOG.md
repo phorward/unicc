@@ -2,10 +2,13 @@
 
 This file is used to document any relevant changes done to UniCC.
 
+## [develop]
+
+This is the current development version.
 
 ## [v1.6]
 
-Current development version.
+Released on: May 27, 2019
 
 - Renamed top-level directive `#!mode` options to `scannerless` (default)
   and `scanner`.
@@ -111,7 +114,8 @@ Released on: June 29, 2012
   revision of the regular pattern construction mechanism.
 
 
-[develop]: https://github.com/phorward/unicc/compare/1.5.0...develop
+[develop]: https://github.com/phorward/unicc/compare/1.6.0...develop
+[v1.6]: https://github.com/phorward/unicc/compare/1.5.0...1.6.0
 [v1.5]: https://github.com/phorward/unicc/compare/1.4.0...1.5.0
 [v1.4]: https://github.com/phorward/unicc/compare/1.3.3...1.4.0
 [v1.3.3]: https://github.com/phorward/unicc/compare/1.3.2...1.3.3
