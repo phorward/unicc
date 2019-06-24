@@ -35,6 +35,10 @@ bnftest: gram2c $(HEADERS) $(OBJECTS) bnftest.o $(LIBPHORWARD)
 test: unicc
 	./unicc grammars/json.bnf grammars/test.json
 
+etareneg: gram2c
+	awk -f etareneg.awk bnf.c >bnf.gen
+	mv bnf.gen bnf.c
+
 clean:
 	-rm bnftestgen.c
 	-rm $(OBJECTS)
