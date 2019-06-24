@@ -5,14 +5,14 @@ http://www.phorward-software.com ++ contact<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
 File:	gram2c.c
-Usage:	Grammar to C-code generator
+Usage:	UniCC grammar to C-code generator
 ----------------------------------------------------------------------------- */
 
 /*
 	This program reads a UniCC grammar definition using the UniCC grammar
 	abstraction layer into a Grammar object and generates the C code that
 	is necessary to generate exactly the same, parsed grammar as it was
-	written by hand using the grammar abstraction layer functions.
+	written by hand using the grammar abstraction layer API functions.
 */
 
 #include "unicc.h"
@@ -29,6 +29,7 @@ void help( char** argv )
 	"   -a  --all                 Generate all parts.\n"
 	"   -d  --debug               Print parsed grammar.\n"
 	"   -D                        Generate symbol variable declarations\n"
+	"   -g                        Name of grammar variable (default: %s)\n"
 	"   -h  --help                Show this help, and exit.\n"
 	"   -i  --indent NUM          Indent generated code by NUM tabs\n"
 	"   -o  --output FILE         Output to FILE; Default is stdout.\n"
@@ -37,7 +38,7 @@ void help( char** argv )
 	"   -T                        Generate an AST traversal function stub\n"
 	"   -V  --version             Show version info and exit.\n",
 
-	*argv );
+	*argv, gname );
 }
 
 void gen_decl( FILE* f, Grammar* g )
@@ -408,7 +409,7 @@ int main( int argc, char** argv )
 	PROC( "gram2c" );
 
 	for( i = 0; ( rc = pgetopt( opt, &param, &next, argc, argv,
-						"aDdhi:o:PSTV",
+						"aDdg:hi:o:PSTV",
 						"all debug help indent: output: version:", i ) )
 							== 0; i++ )
 	{
@@ -418,6 +419,8 @@ int main( int argc, char** argv )
 			debug = TRUE;
 		else if( !strcmp( opt, "D" ) )
 			gdecl = TRUE;
+		else if( !strcmp( opt, "g" ) )
+			gname = param;
 		else if( !strcmp( opt, "help" ) || !strcmp( opt, "h" ) )
 		{
 			help( argv );

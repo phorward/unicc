@@ -10,8 +10,6 @@ Usage:	Parsing full parser definitions from Phorward BNF (PBNF).
 
 #include "unicc.h"
 
-static pboolean traverse_production( Grammar* gram, Symbol* lhs, AST_node* node );
-
 /* Derive name from basename */
 static char* derive_name( Grammar* gram, char* base )
 {
@@ -31,367 +29,211 @@ static char* derive_name( Grammar* gram, char* base )
 	return (char*)NULL;
 }
 
-#define NODE_IS( n, s ) 	( !strcmp( (n)->emit, s ) )
-
-static Symbol* traverse_terminal( Grammar* gram, AST_node* node )
+/* Traverse a grammar from a parsed AST */
+static void traverse( Grammar* g, AST_node* ast )
 {
-	Symbol*			sym;
-	char*			name;
+	AST_node*	node;
+	char		buf		[ BUFSIZ + 1 ];
+	static int	prec	= 0;
 
-	PROC( "traverse_terminal" );
-	VARS( "node->emit", "%s", node->emit );
+	PROC( "traverse" );
+	VARS( "emit", "%s", ast->emit );
 
-	name = pstrndup( node->start, node->len );
-	VARS( "name", "%s", name );
-
-	if( !( sym = sym_get_by_name( gram, name ) ) )
+	while( ( node = ast ) )
 	{
-		if( !NODE_IS( node, "Terminal" ) )
+		if( ast->child )
+			traverse( g, ast->child );
+
+		if( node->len )
 		{
-			memmove( name, name + 1, strlen( name ) - 1 );
-			name[ strlen( name ) - 2 ] = '\0';
-
-			sym = sym_create( gram, name );
-			sym->flags.nameless = TRUE;
-			sym->flags.terminal = TRUE;
-
-			if( NODE_IS( node, "CCL" ) )
-			{
-				sym->ptn = pregex_ptn_create( name, PREGEX_COMP_NOERRORS );
-				sym->ccl = sym->ptn->ccl;
-			}
-			else
-			{
-				if( NODE_IS( node, "Token") || NODE_IS( node, "String" ) )
-				{
-					sym->ptn = pregex_ptn_create( name, PREGEX_COMP_STATIC );
-					sym->str = name;
-
-					if( NODE_IS( node, "Token") )
-						sym->emit = name;
-				}
-				else if( NODE_IS( node, "Regex" ) )
-					sym->ptn = pregex_ptn_create( name, PREGEX_COMP_NOERRORS );
-				else
-					MISSINGCASE;
-			}
+			sprintf( buf, "%.*s", (int)node->len, node->start );
+			VARS( "buf", "%s", buf );
 		}
 		else
-			sym = sym_create( gram, name );
+			*buf = '\0';
 
-		sym->flags.freename = TRUE;
-	}
-	else
-		pfree( name );
-
-	RETURN( sym );
-}
-
-static Symbol* traverse_symbol( Grammar* gram, Symbol* lhs, AST_node* node )
-{
-	Symbol*			sym;
-	char			name		[ NAMELEN * 2 + 1 ];
-	AST_node*		child;
-
-	PROC( "traverse_symbol" );
-	PARMS( "node->emit", "%s", node->emit );
-
-	if( NODE_IS( node, "inline" ) )
-	{
-		sym = sym_create( gram, derive_name( gram, lhs->name ) );
-		sym->flags.freename = TRUE;
-		sym->flags.nameless = TRUE;
-		sym->flags.defined = TRUE;
-		sym->flags.generated = TRUE;
-
-		for( child = node->child; child; child = child->next )
-			if( !traverse_production( gram, sym, child->child ) )
-				RETURN( (Symbol*)NULL );
-	}
-	else if( NODE_IS( node, "Nonterminal" ) )
-	{
-		sprintf( name, "%.*s", (int)node->len, node->start );
-
-		if( !( sym = sym_get_by_name( gram, name ) ) )
+		if( !strcmp( node->emit, "Identifier" ) )
+			node->ptr = strdup( buf );
+		else if( !strcmp( node->emit, "emits" ) )
+			node->ptr = node->child->ptr;
+		else if( !strcmp( node->emit, "variable" ) )
 		{
-			sym = sym_create( gram, pstrdup( name ) );
-			sym->flags.freename = TRUE;
-		}
-	}
-	else
-		sym = traverse_terminal( gram, node );
-
-	if( sym )
-		sym->flags.called = TRUE;
-
-	RETURN( sym );
-}
-
-
-static pboolean traverse_production( Grammar* gram, Symbol* lhs, AST_node* node )
-{
-	Symbol*			sym;
-	Symbol*			csym;
-	Production*		prod;
-	Production*		popt;
-	int				i;
-
-	PROC( "traverse_production" );
-
-	prod = prod_create( gram, lhs, (Symbol*)NULL );
-
-	for( ; node; node = node->next )
-	{
-		VARS( "node->emit", "%s", node->emit );
-
-		if( NODE_IS( node, "symbol" ) )
-		{
-			if( !( sym = traverse_symbol( gram, lhs, node->child ) ) )
-				RETURN( FALSE );
-
-			prod_append( prod, sym );
-		}
-		else if( NODE_IS( node, "emits" ) )
-		{
-			if( NODE_IS( node->child, "Code" ) )
-				prod->emit = pstrndup( node->child->start + 2,
-										node->child->len - 4 );
-			else
-				prod->emit = pstrndup( node->child->start, node->child->len );
-
-			prod->flags.freeemit = TRUE;
-		}
-		else
-		{
-			sym = traverse_symbol( gram, lhs, node->child->child );
-
-			if( NODE_IS( node, "pos" ) )
-				sym = sym_mod_positive( sym );
-
-			else if( NODE_IS( node, "opt" ) )
-				sym = sym_mod_optional( sym );
-
-			else if( NODE_IS( node, "kle" ) )
-				sym = sym_mod_kleene( sym );
-
-			prod_append( prod, sym );
-		}
-	}
-
-	/*
-		Optimize productions with one generated symbol
-		that was introduced via 'inline'.
-	*/
-	if( ( sym = prod_getfromrhs( prod, 0 ) )
-			&& !prod_getfromrhs( prod, 1 ) )
-	{
-		if( !SYM_IS_TERMINAL( sym )
-				&& sym->flags.generated
-					&& sym->emit && !sym_getprod( sym, 1 ) )
-		{
-			if( sym->flags.freeemit )
+			if( !( node->ptr = (void*)sym_get_by_name(
+						g, node->child->ptr ) ) )
 			{
-				prod->emit = pstrdup( sym->emit );
-				prod->flags.freeemit = TRUE;
-			}
-			else
-				prod->emit = sym->emit;
+				Symbol* sym;
 
-			prod_remove( prod, sym );
-
-			popt = sym_getprod( sym, 0 );
-
-			for( i = 0; ( csym = prod_getfromrhs( popt, i ) ); i++ )
-				prod_append( prod, csym );
-
-			sym_drop( sym );
-		}
-	}
-
-	RETURN( TRUE );
-}
-
-static pboolean ast_to_gram( Grammar* gram, AST_node* ast )
-{
-	Symbol*			sym;
-	Symbol*			nonterm		= (Symbol*)NULL;
-	AST_node* 		node;
-	AST_node*		child;
-	char			name		[ NAMELEN * 2 + 1 ];
-	char			def			[ NAMELEN * 2 + 1 ];
-	char*			emit;
-	pboolean		flag_ignore;
-	Assoc			assoc;
-	unsigned int	prec		= 0;
-
-	/* ast_dump_short( stderr, ast ); */
-
-	for( node = ast; node; node = node->next )
-	{
-		emit = (char*)NULL;
-		flag_ignore = FALSE;
-
-		/* fprintf( stderr, "gram >%s<\n", node->emit ); */
-
-		if( NODE_IS( node, "nontermdef" ) )
-		{
-			child = node->child;
-
-			sprintf( name, "%.*s", (int)child->len, child->start );
-
-			/* Create the terminal symbol */
-			if( !( nonterm = sym = sym_get_by_name( gram, name ) ) )
-			{
-				nonterm = sym = sym_create( gram, pstrdup( name ) );
+				sym = sym_create( g, node->child->ptr );
 				sym->flags.freename = TRUE;
+
+				node->ptr = (void*)sym;
 			}
-
-			sym->flags.defined = TRUE;
-
-			for( child = node->child->next; child; child = child->next )
+			else
+				pfree( node->child->ptr );
+		}
+		else if( !strcmp( node->emit, "CCL" )
+					|| !strcmp( node->emit, "String" )
+						|| !strcmp( node->emit, "Token" )
+							|| !strcmp( node->emit, "Regex" ) )
+		{
+			if( !( node->ptr = (void*)sym_get_by_name( g, buf ) ) )
 			{
-				if( NODE_IS( child, "flag_goal" ) )
+				Symbol* sym;
+
+				sym = sym_create( g, pstrdup( buf ) );
+				sym->flags.freeemit = TRUE;
+				sym->flags.nameless = TRUE;
+
+				if( !strcmp( node->emit, "CCL" )
+					|| !strcmp( node->emit, "String" )
+						|| !strcmp( node->emit, "Token" )
+							|| !strcmp( node->emit, "Regex" ) )
 				{
-					if( !gram->goal ) /* fixme */
+					memmove( buf, buf + 1, node->len - 1 );
+					buf[ node->len - 2 ] = '\0';
+
+					if( !strcmp( node->emit, "CCL" ) )
+						sym->ccl = pccl_create( -1, -1, buf );
+					else if( !strcmp( node->emit, "String" )
+								|| !strcmp( node->emit, "Token" ) )
+						sym->str = strdup( buf );
+					else if( !strcmp( node->emit, "Regex" ) )
+						sym->ptn = pregex_ptn_create(
+										buf, PREGEX_COMP_NOERRORS );
+
+					if( !strcmp( node->emit, "Token" ) )
+						sym->emit = sym->str;
+				}
+
+				node->ptr = (void*)sym;
+			}
+		}
+		else if( !strcmp( node->emit, "kle" ) )
+			node->ptr = (void*)sym_mod_kleene( node->child->ptr );
+		else if( !strcmp( node->emit, "pos" ) )
+			node->ptr = (void*)sym_mod_positive( node->child->ptr );
+		else if( !strcmp( node->emit, "opt" ) )
+			node->ptr = (void*)sym_mod_optional( node->child->ptr );
+		else if( !strcmp( node->emit, "definition" )
+					|| !strcmp( node->emit, "inline" ) )
+		{
+			Symbol*		sym;
+			Production*	prod;
+			AST_node*	pnode;
+
+			if( !strcmp( node->emit, "inline" ) )
+			{
+				for( pnode = node; pnode; pnode = pnode->parent )
+				{
+					VARS( "pnode->emit", "%s", pnode->emit );
+
+					if( !strcmp( pnode->emit, "definition" ) )
 					{
-						gram->goal = sym;
-						sym->flags.called = TRUE;
+						sym = (Symbol*)pnode->child->ptr;
+						break;
 					}
 				}
-				else if( NODE_IS( child, "flag_lexem" ) )
-					sym->flags.lexem = TRUE;
-				else if( NODE_IS( child, "emitsdef" ) )
+
+				VARS( "sym->name", "%s", sym->name );
+
+				node->ptr = sym = sym_create( g,
+									derive_name( g, sym->name ) );
+
+				VARS( "sym->name", "%s", sym->name );
+
+				sym->flags.freename = TRUE;
+				sym->flags.nameless = TRUE;
+				sym->flags.defined = TRUE;
+				sym->flags.generated = TRUE;
+
+				node = node->child;
+			}
+			else
+			{
+				sym = (Symbol*)node->child->ptr;
+				VARS( "sym->name", "%s", sym->name );
+
+				node = node->child->next;
+
+				if( node && !strcmp( node->emit, "goal" ) )
+				{
+					g->goal = sym;
+					node = node->next;
+				}
+
+				if( node && !strcmp( node->emit, "emitsdef" ) )
+				{
 					sym->emit = sym->name;
-				else if( NODE_IS( child, "production" ) )
-				{
-					if( !traverse_production( gram, sym, child->child ) )
-						return FALSE;
+					node = node->next;
 				}
 			}
-		}
-		else if( NODE_IS( node, "termdef" ) )
-		{
-			child = node->child;
-			*name = '\0';
 
-			if( NODE_IS( child, "flag_ignore" ) )
+			while( node )
 			{
-				flag_ignore = TRUE;
-				child = child->next;
-			}
-			else if( NODE_IS( child, "Terminal" ) )
-			{
-				sprintf( name, "%.*s", (int)child->len, child->start );
-				child = child->next;
-			}
+				prod = prod_create( g, sym, NULL );
 
-			if( NODE_IS( child, "emitsdef" ) )
-			{
-				emit = name;
-				child = child->next;
-			}
-
-			sym = sym_create( gram, *name ? pstrdup( name ) : (char*)NULL );
-			sym->flags.freename = TRUE;
-			sym->flags.defined = TRUE;
-			sym->flags.terminal = TRUE;
-
-			if( NODE_IS( child, "CCL" ) )
-			{
-				sprintf( def, "%.*s", (int)child->len, child->start );
-
-				sym->ptn = pregex_ptn_create( def, PREGEX_COMP_NOERRORS );
-				sym->ccl = sym->ptn->ccl;
-			}
-			else
-			{
-				sprintf( def, "%.*s", (int)child->len - 2, child->start + 1 );
-
-				if( NODE_IS( child, "Token") || NODE_IS( child, "String" ) )
+				for( pnode = node->child; pnode; pnode = pnode->next )
 				{
-					sym->str = pstrdup( def );
-					sym->ptn = pregex_ptn_create( def, PREGEX_COMP_STATIC );
+					if( !strcmp( pnode->emit, "emits" ) )
+					{
+						prod->emit = pnode->ptr;
+						prod->flags.freeemit = TRUE;
+						break;
+					}
+
+					prod_append( prod, pnode->ptr );
 				}
-				else if( NODE_IS( child, "Regex" ) )
-					sym->ptn = pregex_ptn_create( def, PREGEX_COMP_NOERRORS );
-				else
-					MISSINGCASE;
+
+				node = node->next;
 			}
-
-			child = child->next;
-
-			if( child && NODE_IS( child, "emits" ) )
-			{
-				if( NODE_IS( child->child, "Code" ) )
-					emit = pstrndup( child->child->start + 2,
-											child->child->len - 4 );
-				else
-					emit = pstrndup( child->child->start, child->child->len );
-			}
-
-			/* Set emitting & flags */
-			if( emit == name )
-				sym->emit = sym->name;
-			else if( ( sym->emit = emit ) )
-				sym->flags.freeemit = TRUE;
-
-			if( flag_ignore )
-				sym->flags.whitespace = TRUE;
 		}
-		else if( NODE_IS( node, "assoc_left" )
-					|| NODE_IS( node, "assoc_right" )
-						|| NODE_IS( node, "assoc_not" ) )
+		else if( !strcmp( node->emit, "ignore" )
+					|| !strcmp( node->emit, "assoc_left" )
+						|| !strcmp( node->emit, "assoc_right" )
+							|| !strcmp( node->emit, "assoc_none" ) )
 		{
-			if( NODE_IS( node, "assoc_left" ) )
-				assoc = ASSOC_LEFT;
-			else if( NODE_IS( node, "assoc_right" ) )
-				assoc = ASSOC_RIGHT;
-			else
-				assoc = ASSOC_NOT;
+			Symbol*		sym;
+			AST_node*	snode;
 
-			prec++;
+			if( !strncmp( node->emit, "assoc_", 6 ) )
+				prec++;
 
-			for( child = node->child; child; child = child->next )
+			for( snode = node->child; snode; snode = snode->next )
 			{
-				sym = traverse_terminal( gram, child );
-				sym->assoc = assoc;
-				sym->prec = prec;
+				sym = (Symbol*)snode->ptr;
+
+				if( !strcmp( node->emit, "assoc_left" ) )
+				{
+					sym->assoc = ASSOC_LEFT;
+					sym->prec = prec;
+				}
+				else if( !strcmp( node->emit, "assoc_right" ) )
+				{
+					sym->assoc = ASSOC_RIGHT;
+					sym->prec = prec;
+				}
+				else if( !strcmp( node->emit, "assoc_none" ) )
+				{
+					sym->assoc = ASSOC_NONE;
+					sym->prec = prec;
+				}
+				else if( !strcmp( node->emit, "ignore" ) )
+					sym->flags.whitespace = TRUE;
 			}
 		}
+
+		ast = ast->next;
 	}
 
-	/* If there is no goal, then the last defined nonterm becomes goal symbol */
-	if( !gram->goal && !( gram->goal = nonterm ) )
-	{
-		fprintf( stderr, "There is not any nonterminal symbol defined!\n" );
-		return FALSE;
-	}
-
-	/* Look for unique goal sequence */
-	if( sym_getprod( gram->goal, 1 ) )
-	{
-		nonterm = sym_create( gram, derive_name( gram, gram->goal->name ) );
-		nonterm->flags.freename = TRUE;
-
-		prod_create( gram, nonterm, gram->goal, (Symbol*)NULL );
-		gram->goal = nonterm;
-	}
-
-	/* gram_dump( stderr, gram ); */
-
-	return TRUE;
+	VOIDRET;
 }
 
 
-/** Compiles a Phorward Backus-Naur form definition into a parser.
+/** Compiles a UniCC Backus-Naur form definition into a parser.
 
-//g// is the grammar that receives the result of the parse.
-This grammar is extended to new definitions when it already contains symbols.
-
-In difference to gram_from_bnf() and gram_from_ebnf(),
-par_from_pbnf() allows for a full-fledged parser definition with
-lexical analyzer-specific definitions, grammar and AST construction features.
-
+//g// is the grammar that receives the resulting grammar parsed from the
+definition. This grammar may already contain symbols and productions, so it
+will be extended during the parse.
 
 **Grammar:**
 ```
@@ -403,421 +245,569 @@ lexical analyzer-specific definitions, grammar and AST construction features.
 
 // Terminals -------------------------------------------------------------------
 
-@Terminal		:= /[A-Z][A-Za-z0-9_]*\
-@Nonterminal	:= /[a-z_][A-Za-z0-9_]*\
+@Identifier		:= /[A-Za-z_][A-Za-z0-9_]*\
 
 @CCL 			:= /\[(\\.|[^\\\]])*\]/
 @String 		:= /'[^']*'/
 @Token			:= /"[^"]*"/
 @Regex 			:= /\/(\\.|[^\\\/])*\//
 
-@Int			:= /[0-9]+/
-@Function		:= /[A-Za-z_][A-Za-z0-9_]*\(\)/
+#@Code			:= /{{([^}]|}[^}])*}}/
 
-@Flag_goal		:= '$'
-@Flag_ignore	:= /%(ignore|skip)/
+#@Int			:= /[0-9]+/
+#@Function		:= /[A-Za-z_][A-Za-z0-9_]*\(\)/
+
+@goal			:= '$'
 
 // Nonterminals ----------------------------------------------------------------
 
 @colon          : ':=' = emitsdef
                 | ':'
 
-@emits          := '=' Terminal
-                | '=' Nonterminal
+@emits          := '=' Identifier
 
-@terminal		: CCL | String | Token | Regex | Function
+@terminal		: CCL | String | Token | Regex
 
 @inline			:= '(' alternation ')'
 
-@symbol 		:= Terminal
-                | Nonterminal
-                | terminal
-                | inline
+@variable		:= Identifier
+
+@symbol 		: variable
+				| terminal
+				| inline
 
 @modifier		: symbol '*' = kle
-                | symbol '+' = pos
-                | symbol '?' = opt
-                | symbol
+				| symbol '+' = pos
+				| symbol '?' = opt
+				| symbol
 
-@sequence		: sequence modifier | modifier
+@sequence		: sequence modifier
+				| modifier
 
-@production	 	:= sequence? emits?
+@rule		 	:= sequence? emits?
 
-@alternation	: alternation '|' production | production
+@alternation	: rule ('|' rule)+
+				| rule
 
-@nontermdef		:= '@' Nonterminal Flag_goal? colon alternation
-
-@termdef		:= '@' Terminal colon terminal emits?
-                | Flag_ignore terminal emits?
+@definition		: '@' variable goal? colon alternation	= definition
+				| /%(ignore|skip)/ ( terminal | variable )+	= ignore
 
 @assocdef		: '<' terminal+	= assoc_left
-                | '>' terminal+	= assoc_right
-                | '^' terminal+	= assoc_none
+				| '>' terminal+	= assoc_right
+				| '^' terminal+	= assoc_none
 
-@definition		: nontermdef
-                | termdef
-                | assocdef
-
-@grammar	$	: definition+
+@grammar	$	: (definition | assocdef)+
 ```
 */
 pboolean gram_from_bnf( Grammar* g, char* src )
 {
-	Parser*			ppar;
-	Grammar*		pbnf;
-	AST_node*		ast;
+	Grammar*	pbnf;
+	AST_node*	root;
+	Parser*		p;
 
-	Symbol*			whitespace;
-	Symbol*			comment;
+/*GRAM2C -Di 1 grammars/pbnf.bnf*/
+	Symbol*	n_opt_sequence;
+	Symbol*	n_inline;
+	Symbol*	n_sequence;
+	Symbol*	n_assocdef;
+	Symbol*	t_Regex;
+	Symbol*	n_goal;
+	Symbol*	n_alternation[ 2 ];
+	Symbol*	n_variable;
+	Symbol*	n_definition[ 2 ];
+	Symbol*	t_Identifier;
+	Symbol*	n_rule;
+	Symbol*	n_modifier;
+	Symbol*	n_pos_terminal;
+	Symbol*	n_grammar[ 2 ];
+	Symbol*	n_pos_grammar;
+	Symbol*	n_colon;
+	Symbol*	t_CCL;
+	Symbol*	t_ignoreskip;
+	Symbol*	n_opt_emits;
+	Symbol*	_t_noname[ 17 ];
+	Symbol*	n_terminal;
+	Symbol*	n_symbol;
+	Symbol*	t_Token;
+	Symbol*	n_emits;
+	Symbol*	n_pos_alternation;
+	Symbol*	n_pos_definition;
+	Symbol*	n_opt_goal;
+	Symbol*	t_String;
+/*END*/
 
-	Symbol*			def;
-	Symbol*			terminal;
-	Symbol*			nonterminal;
-	Symbol*			colon;
-	Symbol*			colonequal;
-	Symbol*			pipe;
-	Symbol*			brop;
-	Symbol*			brcl;
-	Symbol*			star;
-	Symbol*			quest;
-	Symbol*			plus;
-	Symbol*			equal;
-
-	Symbol*			code;
-	Symbol*			t_ccl;
-	Symbol*			t_string;
-	Symbol*			t_token;
-	Symbol*			t_regex;
-	Symbol*			flag_goal;
-	Symbol*			flag_lexem;
-	Symbol*			flag_ignore;
-	Symbol*			assoc_left;
-	Symbol*			assoc_right;
-	Symbol*			assoc_not;
-
-	Symbol*			n_emit;
-	Symbol*			n_opt_emit;
-	Symbol*			n_terminal;
-	Symbol*			n_pos_terminal;
-	Symbol*			n_symbol;
-	Symbol*			n_inline;
-	Symbol*			n_mod;
-	Symbol*			n_seq;
-	Symbol*			n_opt_seq;
-	Symbol*			n_prod;
-	Symbol*			n_alt;
-
-	Symbol*			n_nonterm_flags;
-	Symbol*			n_nonterm;
-	Symbol*			n_term;
-	Symbol*			n_assoc;
-
-	Symbol*			n_def;
-	Symbol*			n_defs;
-	Symbol*			n_grammar;
-
-	Production*		p;
-
-	PROC( "gram_from_pbnf" );
-
-	if( !( g && src ) )
-	{
-		WRONGPARAM;
-		RETURN( FALSE );
-	}
-
+	PROC( "gram_from_bnf" );
 	PARMS( "g", "%p", g );
 	PARMS( "src", "%s", src );
 
-	/* Define a grammar for pbnf */
-
 	pbnf = gram_create();
 
-	/* Terminals */
+/*GRAM2C -g pbnf -SPi 1 grammars/pbnf.bnf*/
+	/* Symbols */
 
-	MSG( "Defining terminals" );
+	_t_noname[ 0 ] = sym_create( pbnf, "$" );
+	_t_noname[ 0 ]->str = "$";
 
-	whitespace = sym_create( pbnf, (char*)NULL );
-	whitespace->flags.whitespace = TRUE;
+	_t_noname[ 1 ] = sym_create( pbnf, ":=" );
+	_t_noname[ 1 ]->str = ":=";
 
-	comment = sym_create( pbnf, (char*)NULL );
-	comment->flags.whitespace = TRUE;
+	_t_noname[ 2 ] = sym_create( pbnf, ":" );
+	_t_noname[ 2 ]->str = ":";
 
-	terminal = sym_create( pbnf, "Terminal" );
-	terminal->emit = "Terminal";
+	_t_noname[ 3 ] = sym_create( pbnf, "=" );
+	_t_noname[ 3 ]->str = "=";
 
-	nonterminal = sym_create( pbnf, "Nonterminal" );
-	nonterminal->emit = "Nonterminal";
+	_t_noname[ 4 ] = sym_create( pbnf, "(" );
+	_t_noname[ 4 ]->str = "(";
 
-	code = sym_create( pbnf, "Code" );
-	code->emit = "Code";
+	_t_noname[ 5 ] = sym_create( pbnf, ")" );
+	_t_noname[ 5 ]->str = ")";
 
-	colonequal = sym_create( pbnf, ":=" );
-	colonequal->emit = "emitsdef";
+	_t_noname[ 6 ] = sym_create( pbnf, "*" );
+	_t_noname[ 6 ]->str = "*";
 
-	def = sym_create( pbnf, "@" );
-	colon = sym_create( pbnf, ":" );
-	pipe = sym_create( pbnf, "|" );
-	brop = sym_create( pbnf, "(" );
-	brcl = sym_create( pbnf, ")" );
-	star = sym_create( pbnf, "*" );
-	quest = sym_create( pbnf, "?" );
-	plus = sym_create( pbnf, "+" );
+	_t_noname[ 7 ] = sym_create( pbnf, "+" );
+	_t_noname[ 7 ]->str = "+";
 
-	equal = sym_create( pbnf, "=" );
+	_t_noname[ 8 ] = sym_create( pbnf, "?" );
+	_t_noname[ 8 ]->str = "?";
 
-	flag_goal = sym_create( pbnf, "$" );
-	flag_goal->emit = "flag_goal";
+	_t_noname[ 9 ] = sym_create( pbnf, "|" );
+	_t_noname[ 9 ]->str = "|";
 
-	flag_lexem = sym_create( pbnf, "!" );
-	flag_lexem->emit = "flag_lexem";
+	_t_noname[ 10 ] = sym_create( pbnf, "@" );
+	_t_noname[ 10 ]->str = "@";
 
-	flag_ignore = sym_create( pbnf, "%ignore" );
-	flag_ignore->emit = "flag_ignore";
+	_t_noname[ 11 ] = sym_create( pbnf, "<" );
+	_t_noname[ 11 ]->str = "<";
 
-	t_ccl = sym_create( pbnf, "CCL" );
-	t_ccl->emit = "CCL";
-	t_string = sym_create( pbnf, "String" );
-	t_string->emit = "String";
-	t_token = sym_create( pbnf, "Token" );
-	t_token->emit = "Token";
-	t_regex = sym_create( pbnf, "Regex" );
-	t_regex->emit = "Regex";
+	_t_noname[ 12 ] = sym_create( pbnf, ">" );
+	_t_noname[ 12 ]->str = ">";
 
-	assoc_left = sym_create( pbnf, "<" );
-	assoc_right = sym_create( pbnf, ">" );
-	assoc_not = sym_create( pbnf, "^" );
+	_t_noname[ 13 ] = sym_create( pbnf, "^" );
+	_t_noname[ 13 ]->str = "^";
 
-	/* Nonterminals */
-	MSG( "Nonterminals" );
+	_t_noname[ 14 ] = sym_create( pbnf, (char*)NULL );
+	_t_noname[ 14 ]->ptn = pregex_ptn_create( "[\\t\\n\\r ]+", 0 );
+	_t_noname[ 14 ]->flags.whitespace = TRUE;
 
-	n_emit = sym_create( pbnf, "emit" );
-	n_emit->emit = "emits";
+	_t_noname[ 15 ] = sym_create( pbnf, (char*)NULL );
+	_t_noname[ 15 ]->ptn = pregex_ptn_create( "//[^\\n]*\\n", 0 );
+	_t_noname[ 15 ]->flags.whitespace = TRUE;
 
-	n_opt_emit = sym_mod_optional( n_emit );
+	_t_noname[ 16 ] = sym_create( pbnf, (char*)NULL );
+	_t_noname[ 16 ]->ptn = pregex_ptn_create( "/\\*([^*]|\\*[^/])*\\*/|//[^\\n]*\\n|#[^\\n]*\\n", 0 );
+	_t_noname[ 16 ]->flags.whitespace = TRUE;
+
+	t_Identifier = sym_create( pbnf, "Identifier" );
+	t_Identifier->ptn = pregex_ptn_create( "[A-Z_a-z][0-9A-Z_a-z]*", 0 );
+	t_Identifier->emit = t_Identifier->name;
+
+	t_CCL = sym_create( pbnf, "CCL" );
+	t_CCL->ptn = pregex_ptn_create( "\\[(\\\\.|[^\\\\\\]])*\\]", 0 );
+	t_CCL->emit = t_CCL->name;
+
+	t_String = sym_create( pbnf, "String" );
+	t_String->ptn = pregex_ptn_create( "'[^']*'", 0 );
+	t_String->emit = t_String->name;
+
+	t_Token = sym_create( pbnf, "Token" );
+	t_Token->ptn = pregex_ptn_create( "\"[^\"]*\"", 0 );
+	t_Token->emit = t_Token->name;
+
+	t_Regex = sym_create( pbnf, "Regex" );
+	t_Regex->ptn = pregex_ptn_create( "/(\\\\.|[^/\\\\])*/", 0 );
+	t_Regex->emit = t_Regex->name;
+
+	t_ignoreskip = sym_create( pbnf, "%(ignore|skip)" );
+	t_ignoreskip->ptn = pregex_ptn_create( "%(ignore|skip)", 0 );
+
+	n_goal = sym_create( pbnf, "goal" );
+	n_goal->emit = n_goal->name;
+
+	n_colon = sym_create( pbnf, "colon" );
+
+	n_emits = sym_create( pbnf, "emits" );
+	n_emits->emit = n_emits->name;
 
 	n_terminal = sym_create( pbnf, "terminal" );
-	n_pos_terminal = sym_create( pbnf, "pos_terminal" );
 
 	n_inline = sym_create( pbnf, "inline" );
-	n_inline->emit = "inline";
+	n_inline->emit = n_inline->name;
+
+	n_alternation[ 0 ] = sym_create( pbnf, "alternation" );
+
+	n_variable = sym_create( pbnf, "variable" );
+	n_variable->emit = n_variable->name;
 
 	n_symbol = sym_create( pbnf, "symbol" );
-	n_symbol->emit = "symbol";
 
-	n_mod = sym_create( pbnf, "modifier" );
-	n_seq = sym_create( pbnf, "sequence" );
-	n_opt_seq = sym_create( pbnf, "opt_sequence" );
+	n_modifier = sym_create( pbnf, "modifier" );
 
-	n_prod = sym_create( pbnf, "production" );
-	n_prod->emit = "production";
+	n_sequence = sym_create( pbnf, "sequence" );
 
-	n_alt = sym_create( pbnf, "alternation" );
+	n_rule = sym_create( pbnf, "rule" );
+	n_rule->emit = n_rule->name;
 
-	n_nonterm_flags = sym_create( pbnf, "nontermdef_flags" );
+	n_opt_sequence = sym_create( pbnf, "opt_sequence" );
 
-	n_nonterm = sym_create( pbnf, "nontermdef" );
-	n_nonterm->emit = "nontermdef";
+	n_opt_emits = sym_create( pbnf, "opt_emits" );
 
-	n_term = sym_create( pbnf, "termdef" );
-	n_term->emit = "termdef";
+	n_alternation[ 1 ] = sym_create( pbnf, "alternation'" );
 
-	n_assoc = sym_create( pbnf, "assocdef" );
-	n_assoc->emit = "assocdef";
+	n_pos_alternation = sym_create( pbnf, "pos_alternation'" );
 
-	n_def = sym_create( pbnf, "def" );
+	n_definition[ 0 ] = sym_create( pbnf, "definition" );
 
-	n_defs = sym_create( pbnf, "defs" );
+	n_opt_goal = sym_create( pbnf, "opt_goal" );
 
-	n_grammar = sym_create( pbnf, "grammar" );
-	pbnf->goal = n_grammar;
+	n_definition[ 1 ] = sym_create( pbnf, "definition'" );
+
+	n_pos_definition = sym_create( pbnf, "pos_definition'" );
+
+	n_assocdef = sym_create( pbnf, "assocdef" );
+
+	n_pos_terminal = sym_create( pbnf, "pos_terminal" );
+
+	n_grammar[ 0 ] = sym_create( pbnf, "grammar" );
+	pbnf->goal = n_grammar[ 0 ];
+
+	n_grammar[ 1 ] = sym_create( pbnf, "grammar'" );
+
+	n_pos_grammar = sym_create( pbnf, "pos_grammar'" );
 
 	/* Productions */
-	MSG( "Productions" );
 
-		/* emit */
-	prod_create( pbnf, n_emit, equal, nonterminal, (Symbol*)NULL );
-	prod_create( pbnf, n_emit, equal, terminal, (Symbol*)NULL );
-	prod_create( pbnf, n_emit, equal, code, (Symbol*)NULL );
+	prod_create( pbnf, n_goal /* goal */,
+		_t_noname[ 0 ], /* "$" */
+		(Symbol*)NULL
+	);
 
-		/* terminal */
+	prod_create( pbnf, n_colon /* colon */,
+		_t_noname[ 1 ], /* ":=" */
+		(Symbol*)NULL
+	)->emit = "emitsdef";
 
-	prod_create( pbnf, n_terminal, t_ccl, (Symbol*)NULL );
-	prod_create( pbnf, n_terminal, t_string, (Symbol*)NULL );
-	prod_create( pbnf, n_terminal, t_token, (Symbol*)NULL );
-	prod_create( pbnf, n_terminal, t_regex, (Symbol*)NULL );
+	prod_create( pbnf, n_colon /* colon */,
+		_t_noname[ 2 ], /* ":" */
+		(Symbol*)NULL
+	);
 
-		/* pos_terminal */
+	prod_create( pbnf, n_emits /* emits */,
+		_t_noname[ 3 ], /* "=" */
+		t_Identifier, /* /[A-Z_a-z][0-9A-Z_a-z]*\/ */
+		(Symbol*)NULL
+	);
 
-	prod_create( pbnf, n_pos_terminal, n_pos_terminal, n_terminal,
-						(Symbol*)NULL );
-	prod_create( pbnf, n_pos_terminal, n_terminal, (Symbol*)NULL );
+	prod_create( pbnf, n_terminal /* terminal */,
+		t_CCL, /* /\\[(\\\\.|[^\\\\\\]])*\\]/ */
+		(Symbol*)NULL
+	);
+	prod_create( pbnf, n_terminal /* terminal */,
+		t_String, /* /'[^']*'/ */
+		(Symbol*)NULL
+	);
+	prod_create( pbnf, n_terminal /* terminal */,
+		t_Token, /* /"[^"]*"/ */
+		(Symbol*)NULL
+	);
+	prod_create( pbnf, n_terminal /* terminal */,
+		t_Regex, /* /\/(\\\\.|[^\/\\\\])*\// */
+		(Symbol*)NULL
+	);
 
-		/* inline */
+	prod_create( pbnf, n_inline /* inline */,
+		_t_noname[ 4 ], /* "(" */
+		n_alternation[ 0 ], /* alternation */
+		_t_noname[ 5 ], /* ")" */
+		(Symbol*)NULL
+	);
 
-	prod_create( pbnf, n_inline, brop, n_alt, brcl, (Symbol*)NULL );
+	prod_create( pbnf, n_variable /* variable */,
+		t_Identifier, /* /[A-Z_a-z][0-9A-Z_a-z]*\/ */
+		(Symbol*)NULL
+	);
 
-		/* symbol */
+	prod_create( pbnf, n_symbol /* symbol */,
+		n_variable, /* variable */
+		(Symbol*)NULL
+	);
+	prod_create( pbnf, n_symbol /* symbol */,
+		n_terminal, /* terminal */
+		(Symbol*)NULL
+	);
+	prod_create( pbnf, n_symbol /* symbol */,
+		n_inline, /* inline */
+		(Symbol*)NULL
+	);
 
-	prod_create( pbnf, n_symbol, terminal, (Symbol*)NULL );
-	prod_create( pbnf, n_symbol, nonterminal, (Symbol*)NULL );
-	prod_create( pbnf, n_symbol, n_terminal, (Symbol*)NULL );
-	prod_create( pbnf, n_symbol, n_inline, (Symbol*)NULL );
+	prod_create( pbnf, n_modifier /* modifier */,
+		n_symbol, /* symbol */
+		_t_noname[ 6 ], /* "*" */
+		(Symbol*)NULL
+	)->emit = "kle";
 
-		/* mod */
-	prod_create( pbnf, n_mod, n_symbol, (Symbol*)NULL );
+	prod_create( pbnf, n_modifier /* modifier */,
+		n_symbol, /* symbol */
+		_t_noname[ 7 ], /* "+" */
+		(Symbol*)NULL
+	)->emit = "pos";
 
-	p = prod_create( pbnf, n_mod, n_symbol, star, (Symbol*)NULL );
-	p->emit = "kle";
+	prod_create( pbnf, n_modifier /* modifier */,
+		n_symbol, /* symbol */
+		_t_noname[ 8 ], /* "?" */
+		(Symbol*)NULL
+	)->emit = "opt";
 
-	p = prod_create( pbnf, n_mod, n_symbol, plus, (Symbol*)NULL );
-	p->emit = "pos";
+	prod_create( pbnf, n_modifier /* modifier */,
+		n_symbol, /* symbol */
+		(Symbol*)NULL
+	);
 
-	p = prod_create( pbnf, n_mod, n_symbol, quest, (Symbol*)NULL );
-	p->emit = "opt";
+	prod_create( pbnf, n_sequence /* sequence */,
+		n_sequence, /* sequence */
+		n_modifier, /* modifier */
+		(Symbol*)NULL
+	);
+	prod_create( pbnf, n_sequence /* sequence */,
+		n_modifier, /* modifier */
+		(Symbol*)NULL
+	);
 
-		/* seq */
-	prod_create( pbnf, n_seq, n_seq, n_mod, (Symbol*)NULL );
-	prod_create( pbnf, n_seq, n_mod, (Symbol*)NULL );
+	prod_create( pbnf, n_rule /* rule */,
+		n_opt_sequence, /* opt_sequence */
+		n_opt_emits, /* opt_emits */
+		(Symbol*)NULL
+	);
 
-		/* n_opt_seq */
-	prod_create( pbnf, n_opt_seq, n_seq, (Symbol*)NULL );
-	prod_create( pbnf, n_opt_seq, (Symbol*)NULL );
+	prod_create( pbnf, n_opt_sequence /* opt_sequence */,
+		n_sequence, /* sequence */
+		(Symbol*)NULL
+	);
+	prod_create( pbnf, n_opt_sequence /* opt_sequence */,
+		(Symbol*)NULL
+	);
 
-		/* prod */
-	prod_create( pbnf, n_prod, n_opt_seq, n_opt_emit, (Symbol*)NULL );
+	prod_create( pbnf, n_opt_emits /* opt_emits */,
+		n_emits, /* emits */
+		(Symbol*)NULL
+	);
+	prod_create( pbnf, n_opt_emits /* opt_emits */,
+		(Symbol*)NULL
+	);
 
-		/* alt */
-	prod_create( pbnf, n_alt, n_alt, pipe, n_prod, (Symbol*)NULL );
-	prod_create( pbnf, n_alt, n_prod, (Symbol*)NULL );
+	prod_create( pbnf, n_alternation[ 0 ] /* alternation */,
+		n_rule, /* rule */
+		n_pos_alternation, /* pos_alternation' */
+		(Symbol*)NULL
+	);
 
-		/* nonterm def */
+	prod_create( pbnf, n_alternation[ 1 ] /* alternation' */,
+		_t_noname[ 9 ], /* "|" */
+		n_rule, /* rule */
+		(Symbol*)NULL
+	);
 
-	prod_create( pbnf, n_nonterm_flags,
-						n_nonterm_flags, flag_goal, (Symbol*)NULL );
-	prod_create( pbnf, n_nonterm_flags,
-						n_nonterm_flags, flag_lexem, (Symbol*)NULL );
-	prod_create( pbnf, n_nonterm_flags, (Symbol*)NULL );
+	prod_create( pbnf, n_pos_alternation /* pos_alternation' */,
+		n_pos_alternation, /* pos_alternation' */
+		n_alternation[ 1 ], /* alternation' */
+		(Symbol*)NULL
+	);
+	prod_create( pbnf, n_pos_alternation /* pos_alternation' */,
+		n_alternation[ 1 ], /* alternation' */
+		(Symbol*)NULL
+	);
 
-	prod_create( pbnf, n_nonterm, def, nonterminal,
-						n_nonterm_flags, colon, n_alt, (Symbol*)NULL );
-	prod_create( pbnf, n_nonterm, def, nonterminal,
-						n_nonterm_flags, colonequal, n_alt, (Symbol*)NULL );
+	prod_create( pbnf, n_alternation[ 0 ] /* alternation */,
+		n_rule, /* rule */
+		(Symbol*)NULL
+	);
 
-		/* term def */
+	prod_create( pbnf, n_definition[ 0 ] /* definition */,
+		_t_noname[ 10 ], /* "@" */
+		n_variable, /* variable */
+		n_opt_goal, /* opt_goal */
+		n_colon, /* colon */
+		n_alternation[ 0 ], /* alternation */
+		(Symbol*)NULL
+	)->emit = "definition";
 
-	prod_create( pbnf, n_term, def, terminal, colon, n_terminal,
-						n_opt_emit, (Symbol*)NULL );
-	prod_create( pbnf, n_term, def, terminal, colonequal, n_terminal,
-						(Symbol*)NULL );
-	prod_create( pbnf, n_term, flag_ignore, n_terminal,
-						(Symbol*)NULL );
 
-		/* assoc */
+	prod_create( pbnf, n_opt_goal /* opt_goal */,
+		n_goal, /* goal */
+		(Symbol*)NULL
+	);
+	prod_create( pbnf, n_opt_goal /* opt_goal */,
+		(Symbol*)NULL
+	);
 
-	p = prod_create( pbnf, n_assoc, assoc_left, n_pos_terminal,
-							(Symbol*)NULL );
-	p->emit = "assoc_left";
+	prod_create( pbnf, n_definition[ 0 ] /* definition */,
+		t_ignoreskip, /* /%(ignore|skip)/ */
+		n_pos_definition, /* pos_definition' */
+		(Symbol*)NULL
+	)->emit = "ignore";
 
-	p = prod_create( pbnf, n_assoc, assoc_right, n_pos_terminal,
-							(Symbol*)NULL );
-	p->emit = "assoc_right";
 
-	p = prod_create( pbnf, n_assoc, assoc_not, n_pos_terminal,
-							(Symbol*)NULL );
-	p->emit = "assoc_not";
+	prod_create( pbnf, n_definition[ 1 ] /* definition' */,
+		n_terminal, /* terminal */
+		(Symbol*)NULL
+	);
+	prod_create( pbnf, n_definition[ 1 ] /* definition' */,
+		n_variable, /* variable */
+		(Symbol*)NULL
+	);
 
-		/* def */
+	prod_create( pbnf, n_pos_definition /* pos_definition' */,
+		n_pos_definition, /* pos_definition' */
+		n_definition[ 1 ], /* definition' */
+		(Symbol*)NULL
+	);
+	prod_create( pbnf, n_pos_definition /* pos_definition' */,
+		n_definition[ 1 ], /* definition' */
+		(Symbol*)NULL
+	);
 
-	prod_create( pbnf, n_def, n_term, (Symbol*)NULL );
-	prod_create( pbnf, n_def, n_nonterm, (Symbol*)NULL );
-	prod_create( pbnf, n_def, n_assoc, (Symbol*)NULL );
+	prod_create( pbnf, n_assocdef /* assocdef */,
+		_t_noname[ 11 ], /* "<" */
+		n_pos_terminal, /* pos_terminal */
+		(Symbol*)NULL
+	)->emit = "assoc_left";
 
-	prod_create( pbnf, n_defs, n_defs, n_def, (Symbol*)NULL );
-	prod_create( pbnf, n_defs, n_def, (Symbol*)NULL );
 
-	prod_create( pbnf, n_grammar, n_defs, (Symbol*)NULL );
+	prod_create( pbnf, n_pos_terminal /* pos_terminal */,
+		n_pos_terminal, /* pos_terminal */
+		n_terminal, /* terminal */
+		(Symbol*)NULL
+	);
+	prod_create( pbnf, n_pos_terminal /* pos_terminal */,
+		n_terminal, /* terminal */
+		(Symbol*)NULL
+	);
 
-	/* Terminal hack */
+	prod_create( pbnf, n_assocdef /* assocdef */,
+		_t_noname[ 12 ], /* ">" */
+		n_pos_terminal, /* pos_terminal */
+		(Symbol*)NULL
+	)->emit = "assoc_right";
+
+	prod_create( pbnf, n_assocdef /* assocdef */,
+		_t_noname[ 13 ], /* "^" */
+		n_pos_terminal, /* pos_terminal */
+		(Symbol*)NULL
+	)->emit = "assoc_none";
+
+
+	prod_create( pbnf, n_grammar[ 0 ] /* grammar */,
+		n_pos_grammar, /* pos_grammar' */
+		(Symbol*)NULL
+	);
+
+	prod_create( pbnf, n_grammar[ 1 ] /* grammar' */,
+		n_definition[ 0 ], /* definition */
+		(Symbol*)NULL
+	);
+	prod_create( pbnf, n_grammar[ 1 ] /* grammar' */,
+		n_assocdef, /* assocdef */
+		(Symbol*)NULL
+	);
+
+	prod_create( pbnf, n_pos_grammar /* pos_grammar' */,
+		n_pos_grammar, /* pos_grammar' */
+		n_grammar[ 1 ], /* grammar' */
+		(Symbol*)NULL
+	);
+	prod_create( pbnf, n_pos_grammar /* pos_grammar' */,
+		n_grammar[ 1 ], /* grammar' */
+		(Symbol*)NULL
+	);
+/*END*/
+
+	gram_prepare( pbnf );
+	p = par_create( pbnf );
+
+	if( !par_parse( &root, p, src ) )
+		RETURN( FALSE );
+
+	/* ast_dump_short( stdout, root ); */
+
+	/* Traverse AST, retrieve parsed grammar */
+	traverse( g, root );
+
+	/* Set symbols as terminals */
 	{
-		int i;
-		Symbol* sym;
+		int			i;
+		Symbol*		sym;
+		Symbol*		term;
 
-		for( i = 0; ( sym = sym_get( pbnf, i ) ); i++ )
-			if( !sym->name || ( sym->name && !islower( *sym->name ) ) )
-				sym->flags.terminal = TRUE;
+		do
+		{
+			for( i = 0; ( sym = sym_get( g, i ) ); i++ )
+			{
+				if( !SYM_IS_TERMINAL( sym )
+					&& !sym_getprod( sym, 1 )
+					&& SYM_IS_TERMINAL( ( term = prod_getfromrhs(
+											sym_getprod( sym, 0 ), 0 ) ) )
+					&& !prod_getfromrhs( sym_getprod( sym, 0 ), 1 )
+					&& term->usages == 1 )
+				{
+					/*
+					fprintf( stderr, "%s = >%s<\n", sym->name, term->name );
+					*/
+
+					prod_free( sym_getprod( sym, 0 ) );
+
+					sym->ptn = term->ptn;
+					sym->ccl = term->ccl;
+
+					if( ( sym->str = term->str ) )
+						term->name = NULL;
+
+					term->ptn = NULL;
+					term->ccl = NULL;
+					term->str = NULL;
+
+					sym_free( term );
+					break;
+				}
+			}
+		}
+		while( sym );
 	}
-
-	/* Setup a parser */
-	ppar = par_create( pbnf );
-	GRAMMAR_DUMP( pbnf );
-
-	/* Lexer */
-	whitespace->ptn = pregex_ptn_create( "[ \t\r\n]+", 0 );
-	comment->ptn = pregex_ptn_create( "/\\*([^*]|\\*[^/])*\\*/"
-										"|//[^\n]*\n"
-										"|#[^\n]*\n", 0 );
-
-	terminal->ptn = pregex_ptn_create( "[A-Z&]\\w*", 0 );
-	nonterminal->ptn = pregex_ptn_create( "[a-z_]\\w*", 0 );
-	code->ptn = pregex_ptn_create( "{{([^}]|}[^}])*}}", 0 );
-
-	t_ccl->ptn = pregex_ptn_create( "\\[(\\.|[^\\\\\\]])*\\]", 0 );
-	t_string->ptn = pregex_ptn_create( "'[^']*'", 0 );
-	t_token->ptn = pregex_ptn_create( "\"[^\"]*\"", 0 );
-	t_regex->ptn = pregex_ptn_create( "/(\\\\.|[^\\\\/])*/", 0 );
-
-	flag_ignore->ptn = pregex_ptn_create( "%(ignore|skip)", 0 );
-
-	/* Parse */
-	if( !par_parse( &ast, ppar, src ) )
-	{
-		par_free( ppar );
-		gram_free( pbnf );
-		return FALSE;
-	}
-
-	AST_DUMP( ast );
-
-	if( !ast_to_gram( g, ast ) )
-		return FALSE;
 
 	GRAMMAR_DUMP( g );
 
-	par_free( ppar );
-	gram_free( pbnf );
-	ast_free( ast );
 
-	return TRUE;
-}
-
-
-/* cc -o pbnf -I .. pbnf.c ../libphorward.a */
-#if 0
-int main( int argc, char** argv )
-{
-	Grammar*	g;
-	char*	s;
-
-	if( argc < 2 )
+	/* If there is no goal, then the last defined nonterminal
+		becomes the goal symbol */
+	if( !g->goal )
 	{
-		printf( "%s FILE-OR-GRAMMAR\n", *argv );
-		return 0;
+		plistel*	e	= plist_last( g->symbols );
+
+		while( e )
+		{
+			if( !SYM_IS_TERMINAL( ( g->goal = (Symbol*)plist_access( e ) ) ) )
+				break;
+
+			e = plist_prev( e );
+		}
+
+		if( !e )
+			g->goal = NULL;
 	}
 
-	g = gram_create();
+	/* Look for unique goal sequence */
+	if( sym_getprod( g->goal, 1 ) )
+	{
+		Symbol*		s;
 
-	s = argv[1];
-	pfiletostr( &s, s );
+		s = sym_create( g, derive_name( g, g->goal->name ) );
+		s->flags.freename = TRUE;
 
-	gram_from_pbnf( g, s );
+		prod_create( g, s, g->goal, (Symbol*)NULL );
+		g->goal = s;
+	}
 
-	gram_prepare( g );
-	gram_dump( stderr, g );
+	/* gram_dump( stderr, gram ); */
 
-	if( s != argv[1] )
-		pfree( s );
-
-	return 0;
+	RETURN( TRUE );
 }
-#endif

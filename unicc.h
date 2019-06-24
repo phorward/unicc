@@ -78,7 +78,6 @@ struct _Symbol
 	{
 		pboolean			terminal	:1;
 		pboolean			nameless	:1;
-		pboolean			called		:1;
 		pboolean			defined		:1;
 		pboolean			nullable	:1;
 		pboolean			lexem		:1;
@@ -91,6 +90,8 @@ struct _Symbol
 		pboolean			freeemit	:1;
 
 	}						flags;
+
+	int						usages;		/* Number of usages of this symbol */
 
 	Symbol*					origin;		/* Origin of generated symbol */
 

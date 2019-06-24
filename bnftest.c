@@ -110,7 +110,6 @@ static void traverse( Grammar* g, AST_node* ast )
 			Symbol*		sym;
 			Production*	prod;
 			AST_node*	pnode;
-			char*		emits		= (char*)NULL;
 
 			if( !strcmp( node->emit, "inline" ) )
 			{
@@ -154,7 +153,7 @@ static void traverse( Grammar* g, AST_node* ast )
 
 				if( node && !strcmp( node->emit, "emitsdef" ) )
 				{
-					emits = sym->name;
+					sym->emit = sym->name;
 					node = node->next;
 				}
 			}
@@ -162,7 +161,6 @@ static void traverse( Grammar* g, AST_node* ast )
 			while( node )
 			{
 				prod = prod_create( g, sym, NULL );
-				prod->emit = emits;
 
 				for( pnode = node->child; pnode; pnode = pnode->next )
 				{
@@ -210,9 +208,7 @@ static void traverse( Grammar* g, AST_node* ast )
 					sym->prec = prec;
 				}
 				else if( !strcmp( node->emit, "ignore" ) )
-				{
 					sym->flags.whitespace = TRUE;
-				}
 			}
 		}
 
@@ -251,6 +247,47 @@ int main( int argc, char** argv )
 		ng->flags.debug = FALSE; /* Set TRUE for pure grammar dump */
 
 		traverse( ng, a );
+
+		/* Set symbols as terminals */
+		{
+			int			i;
+			Symbol*		sym;
+			Symbol*		term;
+
+			do
+			{
+				for( i = 0; ( sym = sym_get( ng, i ) ); i++ )
+				{
+					if( !SYM_IS_TERMINAL( sym )
+						&& !sym_getprod( sym, 1 )
+						&& SYM_IS_TERMINAL( ( term = prod_getfromrhs(
+												sym_getprod( sym, 0 ), 0 ) ) )
+						&& !prod_getfromrhs( sym_getprod( sym, 0 ), 1 )
+						&& term->usages == 1 )
+					{
+						/*
+						fprintf( stderr, "%s = >%s<\n", sym->name, term->name );
+						*/
+
+						prod_free( sym_getprod( sym, 0 ) );
+
+						sym->ptn = term->ptn;
+						sym->ccl = term->ccl;
+
+						if( ( sym->str = term->str ) )
+							term->name = NULL;
+
+						term->ptn = NULL;
+						term->ccl = NULL;
+						term->str = NULL;
+
+						sym_free( term );
+						break;
+					}
+				}
+			}
+			while( sym );
+		}
 
 		printf( "%s\n", gram_to_bnf( ng ) );
 

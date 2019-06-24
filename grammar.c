@@ -319,7 +319,6 @@ Symbol* sym_mod_positive( Symbol* sym )
 
 		ret = sym_create( sym->grm, name == buf ? pstrdup( name ) : name );
 		ret->flags.defined = TRUE;
-		ret->flags.called = TRUE;
 		ret->flags.nameless = TRUE;
 		ret->flags.generated = TRUE;
 		ret->origin = sym->origin ? sym->origin : sym;
@@ -377,7 +376,6 @@ Symbol* sym_mod_optional( Symbol* sym )
 
 		ret = sym_create( sym->grm, name == buf ? pstrdup( name ) : name );
 		ret->flags.defined = TRUE;
-		ret->flags.called = TRUE;
 		ret->flags.nameless = TRUE;
 		ret->flags.generated = TRUE;
 		ret->origin = sym->origin ? sym->origin : sym;
@@ -435,7 +433,6 @@ Symbol* sym_mod_kleene( Symbol* sym )
 
 		ret = sym_create( sym->grm, name == buf ? pstrdup( name ) : name );
 		ret->flags.defined = TRUE;
-		ret->flags.called = TRUE;
 		ret->flags.nameless = TRUE;
 		ret->flags.generated = TRUE;
 		ret->origin = sym->origin ? sym->origin : sym;
@@ -521,7 +518,6 @@ Production* prod_free( Production* p )
 		pfree( p->emit );
 
 	pfree( p->strval );
-
 	plist_free( p->rhs );
 
 	plist_remove( p->grm->prods, plist_get_by_ptr( p->grm->prods, p ) );
@@ -558,6 +554,7 @@ pboolean prod_append( Production* p, Symbol* sym )
 	}
 
 	plist_push( p->rhs, sym );
+	sym->usages++;
 
 	p->grm->flags.finalized = FALSE;
 	pfree( p->strval );
@@ -590,6 +587,9 @@ int prod_remove( Production* p, Symbol* sym )
 	{
 		plist_remove( p->rhs, e );
 		cnt++;
+
+		if( sym->usages )
+			sym->usages--;
 	}
 
 	return cnt;
