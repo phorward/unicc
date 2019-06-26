@@ -444,7 +444,7 @@ Symbol* sym_mod_kleene( Symbol* sym )
 		sym = ret;
 	}
 
-	RETURN( sym );
+	RETURN( ret );
 }
 
 

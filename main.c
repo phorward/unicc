@@ -115,10 +115,13 @@ int main( int argc, char** argv )
 		RETURN( 1 );
 	}
 
+	MSG( "Command-line parameters read" );
+
 	if( verbose )
 		printf( "Parsing grammar from '%s'\n", gfile );
 
 	g = gram_create();
+	/* g->flags.debug = TRUE; */
 
 	if( !gram_from_bnf( g, gstr ) )
 	{
@@ -126,11 +129,15 @@ int main( int argc, char** argv )
 		RETURN( 1 );
 	}
 
+	MSG( "Grammar parsed" );
+
 	if( !gram_prepare( g ) )
 	{
 		fprintf( stderr, "%s: Unable to prepare grammar\n", gfile );
 		RETURN( 1 );
 	}
+
+	MSG( "Grammar prepared" );
 
 	/*
 	{
@@ -152,6 +159,8 @@ int main( int argc, char** argv )
 	}
 
 	p = par_create( g );
+
+	MSG( "Parser created" );
 
 	if( dj )
 		par_dump_json( stdout, p );
@@ -195,6 +204,7 @@ int main( int argc, char** argv )
 
 		if( s )
 		{
+			MSG( "Parsing" );
 			if( par_parse( &a, p, s ) )
 			{
 				switch( r )

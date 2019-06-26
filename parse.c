@@ -486,6 +486,8 @@ Parser* par_create( Grammar* g )
 		RETURN( (Parser*)NULL );
 	}
 
+	MSG( "Grammar prepared" );
+
 	p = (Parser*)pmalloc( sizeof( Parser ) );
 
 	/* Grammar */
@@ -499,6 +501,8 @@ Parser* par_create( Grammar* g )
 		par_free( p );
 		RETURN( (Parser*)NULL );
 	}
+
+	MSG( "LR constructed" );
 
 	GRAMMAR_DUMP( g );
 	RETURN( p );
@@ -903,6 +907,15 @@ Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym )
 			/* Parse Error */
 			/* TODO: Error Recovery */
 			fprintf( stderr, "Parse Error @ %s\n", sym->name );
+
+			for( i = 2; i < par->dfa[tos->state][0]; i += 3 )
+			{
+				Symbol*	sym;
+
+				sym = sym_get( par->gram, par->dfa[tos->state][i] - 1 );
+				fprintf( stderr, "state %d, expecting '%s'\n",
+					tos->state, sym->name );
+			}
 
 			MSG( "Parsing failed" );
 			RETURN( ( ctx->state = STAT_ERROR ) );

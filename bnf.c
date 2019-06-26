@@ -37,12 +37,13 @@ static void traverse( Grammar* g, AST_node* ast )
 	static int	prec	= 0;
 
 	PROC( "traverse" );
-	VARS( "emit", "%s", ast->emit );
 
 	while( ( node = ast ) )
 	{
 		if( ast->child )
 			traverse( g, ast->child );
+
+		VARS( "emit", "%s", ast->emit );
 
 		if( node->len )
 		{
