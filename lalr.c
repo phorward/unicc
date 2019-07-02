@@ -139,7 +139,7 @@ static void close_item( plist* productions, ITEM* it, LIST** closure_set )
 						if( !( e = plist_get( it->prod->rhs,
 												it->dot_offset + 1 ) ) )
 						{
-							plist_union( cit->lookahead, it->lookahead );
+							plist_union( &cit->lookahead, &it->lookahead );
 #if ON_ALGORITHM_DEBUG
 							fprintf( stderr, "\n===> Closure: Dot at the end, "
 												"taking lookahead \n");
@@ -156,9 +156,9 @@ static void close_item( plist* productions, ITEM* it, LIST** closure_set )
 								plist_erase( first );
 
 							if( seek_rhs_first( first, e ) )
-								plist_union( first, it->lookahead );
+								plist_union( first, &it->lookahead );
 
-							plist_union( cit->lookahead, first );
+							plist_union( &cit->lookahead, first );
 
 #if ON_ALGORITHM_DEBUG
 							fprintf( stderr, "\n===> Closure: "
@@ -295,8 +295,11 @@ static void lalr1_closure( PARSER* parser, int state_id )
 			*/
 			cit = create_item( it->prod );
 
-			memcpy( cit, it, sizeof( ITEM ) );
-			cit->lookahead = plist_dup( it->lookahead );
+			cit->prod = it->prod;
+			cit->dot_offset = it->dot_offset;
+			cit->next_symbol = it->next_symbol;
+
+			plist_concat( &cit->lookahead, &it->lookahead );
 
 			closure_set = list_push( closure_set, cit );
 		}
@@ -326,9 +329,8 @@ static void lalr1_closure( PARSER* parser, int state_id )
 			}
 			else
 			{
-				plist_union( cit->lookahead, it->lookahead );
-				plist_free( it->lookahead );
-				free( it );
+				plist_union( &cit->lookahead, &it->lookahead );
+				free_item( it );
 			}
 
 			i = i->next;
@@ -536,14 +538,13 @@ static void lalr1_closure( PARSER* parser, int state_id )
 						j = j->next, k = k->next )
 				{
 					it = j->pptr;
-					prev_cnt += plist_count( it->lookahead );
+					prev_cnt += plist_count( &it->lookahead );
 
-					plist_union( it->lookahead, ((ITEM*)(k->pptr))->lookahead );
+					plist_union( &it->lookahead, &((ITEM*)(k->pptr))->lookahead );
 
-					cnt += plist_count( it->lookahead );
+					cnt += plist_count( &it->lookahead );
 
-					plist_free( ((ITEM*)(k->pptr))->lookahead );
-					free( k->pptr );
+					free_item( k->pptr );
 				}
 
 				/* Had new lookaheads been added? */
@@ -621,7 +622,7 @@ static void reduce_item( PARSER* parser, STATE* st, ITEM* it )
 
 	if( it->next_symbol == (SYMBOL*)NULL )
 	{
-		plist_for( it->lookahead, e )
+		plist_for( &it->lookahead, e )
 		{
 			sym = (SYMBOL*)plist_access( e );
 
@@ -750,7 +751,7 @@ void generate_tables( PARSER* parser )
 	st->kernel = list_push( st->kernel, it );
 
 	/* The goal item's lookahead is the end_of_input symbol */
-	plist_push( it->lookahead, parser->end_of_input );
+	plist_push( &it->lookahead, parser->end_of_input );
 
 	/* Perform closure algorithm until no more undone states are found */
 	do
