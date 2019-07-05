@@ -1,82 +1,13 @@
-/* -HEADER----------------------------------------------------------------------
-UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
-https://phorward.info ++ unicc<at>phorward<dash>software<dot>com
-All rights reserved. See LICENSE for more information.
+/* build.c */
+char* escape_for_target( GENERATOR* g, char* str, BOOLEAN clear );
+char* build_action( PARSER* parser, GENERATOR* g, PROD* p, char* base, BOOLEAN def_code );
+char* build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s, char* base );
+char* mkproduction_str( PROD* p );
+BOOLEAN load_generator( PARSER* parser, GENERATOR* g, char* genfile );
+void build_code( PARSER* parser );
 
-File:	proto.h (created on 30.01.2007)
-Author:	Jan Max Meyer
-Usage:	Prototype declarations
------------------------------------------------------------------------------ */
-
-#ifndef P_PROTO_H
-#define P_PROTO_H
-
-/* first.c */
-void compute_first( PARSER* parser );
-int seek_rhs_first( plist* first, plistel* rhs );
-
-/* lalr.c */
-void generate_tables( PARSER* parser );
-void detect_default_productions( PARSER* parser );
-
-/* error.c */
-void print_error( PARSER* parser, ERRORCODE err_id, int err_style, ... );
-
-/* mem.c */
-SYMBOL* get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create );
-void free_symbol( SYMBOL* sym );
-PROD* create_production( PARSER* p, SYMBOL* lhs );
-void append_to_production( PROD* p, SYMBOL* sym, char* name );
-void free_production( PROD* prod );
-ITEM* create_item( PROD* p );
-void free_item( ITEM* it );
-STATE* create_state( PARSER* p );
-void free_state( STATE* st );
-TABCOL* create_tabcol( SYMBOL* sym, short action, int index, ITEM* item );
-void free_tabcol( TABCOL* act );
-TABCOL* find_tabcol( LIST* row, SYMBOL* sym );
-OPT* create_opt( plist* options, char* opt, char* def );
-plist* free_opts( plist* options );
-PARSER* create_parser( void );
-void free_parser( PARSER* parser );
-VTYPE* find_vtype( PARSER* p, char* name );
-VTYPE* create_vtype( PARSER* p, char* name );
-void free_vtype( VTYPE* vt );
-
-/* integrity.c */
-BOOLEAN find_undef_or_unused( PARSER* parser );
-BOOLEAN check_regex_anomalies( PARSER* parser );
-BOOLEAN check_stupid_productions( PARSER* parser );
-
-/* string.c */
-char* int_to_str( int val );
-char* long_to_str( long val );
-char* str_no_whitespace( char* str );
-
-/* utils.c */
-char* derive_name( char* name, char append_char );
-int unescape_char( char* str, char** strfix );
-SYMBOL* find_base_symbol( SYMBOL* sym );
-char* c_identifier( char* str, BOOLEAN to_upper );
-
-/* rewrite.c */
-void rewrite_grammar( PARSER* parser );
-void unique_charsets( PARSER* parser );
-void fix_precedences( PARSER* parser );
-void inherit_fixiations( PARSER* parser );
-void inherit_vtypes( PARSER* parser );
-void setup_single_goal( PARSER* parser );
-void charsets_to_ptn( PARSER* parser );
-void symbol_orders( PARSER* parser );
-
-/* virtual.c */
-SYMBOL* positive_closure( PARSER* parser, SYMBOL* base );
-SYMBOL* kleene_closure( PARSER* parser, SYMBOL* base );
-SYMBOL* optional_closure( PARSER* parser, SYMBOL* base );
-
-/* main.c */
-char* print_version( BOOLEAN long_version );
+/* buildxml.c */
+void build_xml( PARSER* parser, BOOLEAN finished );
 
 /* debug.c */
 void print_symbol( FILE* stream, SYMBOL* sym );
@@ -85,11 +16,23 @@ void dump_symbols( FILE* stream, PARSER* parser );
 void dump_item_set( FILE* stream, char* title, LIST* list );
 void dump_lalr_states( FILE* stream, PARSER* parser );
 void dump_productions( FILE* stream, PARSER* parser );
-void dump_production( FILE* stream, PROD* prod,
-		BOOLEAN with_lhs, BOOLEAN semantics );
+void dump_production( FILE* stream, PROD* p, BOOLEAN with_lhs, BOOLEAN semantics );
 
-/* parse.c / parse.par / parse.syn */
-int parse_grammar( PARSER* p, char* src );
+/* error.c */
+void print_error( PARSER* parser, ERRORCODE err_id, int err_style, ... );
+
+/* first.c */
+void compute_first( PARSER* parser );
+int seek_rhs_first( plist* first, plistel* rhs );
+
+/* integrity.c */
+BOOLEAN find_undef_or_unused( PARSER* parser );
+BOOLEAN check_regex_anomalies( PARSER* parser );
+BOOLEAN check_stupid_productions( PARSER* parser );
+
+/* lalr.c */
+void generate_tables( PARSER* parser );
+void detect_default_productions( PARSER* parser );
 
 /* lex.c */
 void merge_symbols_to_dfa( PARSER* parser );
@@ -103,23 +46,66 @@ LIST* list_pop( LIST* list, void** ptr );
 LIST* list_remove( LIST* list, void* ptr );
 LIST* list_free( LIST* list );
 LIST* list_dup( LIST* src );
+int list_count( LIST* list );
 int list_find( LIST* list, void* ptr );
 void* list_getptr( LIST* list, int cnt );
 LIST* list_union( LIST* first, LIST* second );
-int list_count( LIST* list );
 
-/* build.c */
-void build_code( PARSER* parser );
-char* build_action( PARSER* parser, GENERATOR* g,
-			PROD* p, char* base, BOOLEAN def_code );
-char* build_scan_action( PARSER* parser, GENERATOR* g, SYMBOL* s,
-			char* base );
-char* escape_for_target( GENERATOR* g, char* str, BOOLEAN clear );
-char* mkproduction_str( PROD* p );
-BOOLEAN load_generator( PARSER* parser, GENERATOR* g, char* genfile );
+/* main.c */
+char* print_version( BOOLEAN long_version );
+void print_copyright( FILE* stream );
+void print_usage( FILE* stream, char* progname );
+BOOLEAN get_command_line( int argc, char** argv, char** filename, char** output, PARSER* parser );
 
-/* buildxml.c */
-void build_xml( PARSER* parser, BOOLEAN finished );
+/* mem.c */
+SYMBOL* get_symbol( PARSER* p, void* dfn, int type, BOOLEAN create );
+void free_symbol( SYMBOL* sym );
+PROD* create_production( PARSER* p, SYMBOL* lhs );
+void append_to_production( PROD* p, SYMBOL* sym, char* name );
+void free_production( PROD* prod );
+ITEM* create_item( PROD* p );
+void free_item( ITEM* it );
+STATE* create_state( PARSER* p );
+void free_state( STATE* st );
+TABCOL* create_tabcol( SYMBOL* sym, short action, int idx, ITEM* item );
+void free_tabcol( TABCOL* act );
+TABCOL* find_tabcol( LIST* row, SYMBOL* sym );
+OPT* create_opt( plist* options, char* opt, char* def );
+plist* free_opts( plist* options );
+PARSER* create_parser( void );
+void free_parser( PARSER* parser );
+VTYPE* find_vtype( PARSER* p, char* name );
+VTYPE* create_vtype( PARSER* p, char* name );
+void free_vtype( VTYPE* vt );
+
+/* parse.c */
+int parse_grammar( PARSER* p, char* src );
+
+/* rewrite.c */
+void rewrite_grammar( PARSER* parser );
+void unique_charsets( PARSER* parser );
+void fix_precedences( PARSER* parser );
+void inherit_fixiations( PARSER* parser );
+void inherit_vtypes( PARSER* parser );
+void setup_single_goal( PARSER* parser );
+void charsets_to_ptn( PARSER* parser );
+void symbol_orders( PARSER* parser );
+
+/* string.c */
+char* int_to_str( int val );
+char* long_to_str( long val );
+char* str_no_whitespace( char* str );
+
+/* utils.c */
+char* derive_name( char* name, char append_char );
+int unescape_char( char* str, char** strfix );
+SYMBOL* find_base_symbol( SYMBOL* sym );
+char* c_identifier( char* str, BOOLEAN to_upper );
+
+/* virtual.c */
+SYMBOL* positive_closure( PARSER* parser, SYMBOL* base );
+SYMBOL* kleene_closure( PARSER* parser, SYMBOL* base );
+SYMBOL* optional_closure( PARSER* parser, SYMBOL* base );
 
 /* xml.c */
 XML_T xml_child( XML_T xml, char* name );
@@ -152,4 +138,3 @@ int xml_count( XML_T xml );
 int xml_count_all( XML_T xml );
 XML_T xml_cut( XML_T xml );
 
-#endif

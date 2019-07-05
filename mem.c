@@ -292,7 +292,7 @@ ITEM* create_item( PROD* p )
 	i->prod = p;
 	i->next_symbol = (SYMBOL*)plist_access( plist_first( p->rhs ) );
 
-	plist_init( &i->lookahead, 0, PLIST_DFT_HASHSIZE, PLIST_MOD_PTR );
+	plist_init( &i->lookahead, 0, PLIST_MOD_PTR );
 
 	return i;
 }
@@ -549,6 +549,7 @@ PARSER* create_parser( void )
 void free_parser( PARSER* parser )
 {
 	LIST*		it			= (LIST*)NULL;
+	STATE*		st;
 	pregex_dfa*	dfa;
 
 	for( it = parser->vtypes; it; it = it->next )
@@ -563,10 +564,11 @@ void free_parser( PARSER* parser )
 	plist_iter_access( parser->symbols, (plistfn)free_symbol );
 	plist_free( parser->symbols );
 
-	/* plist_iterate( parser->productions, free_production ); */
 	plist_free( parser->productions );
 
-	parray_iter( parser->states, (parrayfn)&free_state );
+	parray_for( parser->states, st )
+		free_state( st );
+
 	parray_free( parser->states );
 
 	list_free( parser->vtypes );

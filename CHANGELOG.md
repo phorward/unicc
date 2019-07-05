@@ -6,6 +6,9 @@ This file is used to document any relevant changes done to UniCC.
 
 This is the current development version.
 
+- Minor function API changes regarding libphorward 0.25 compatibility
+- Auto-generated prototypes using pproto: `make -f Makefile.gnu proto.h`
+
 ## [v1.6]
 
 Released on: May 27, 2019
