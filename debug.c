@@ -243,7 +243,7 @@ void dump_item_set( FILE* stream, char* title, LIST* list )
 			{
 				fprintf( stream, "." );
 				fprintf( stream, "      { " );
-				plist_for( it->lookahead, e )
+				plist_for( &it->lookahead, e )
 				{
 					sym = (SYMBOL*)plist_access( e );
 

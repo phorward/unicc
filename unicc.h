@@ -84,7 +84,7 @@ Usage:	Global declarations, structures and includes
 /* UniCC version number */
 #define UNICC_VER_MAJOR			1
 #define UNICC_VER_MINOR			6
-#define UNICC_VER_PATCH			0
+#define UNICC_VER_PATCH			1
 #define UNICC_VER_EXTSTR		""
 
 /* Default target language */
@@ -236,7 +236,7 @@ struct _item
 	int			dot_offset;		/* The dot's offset from the left
 									of the right hand side */
 	SYMBOL*		next_symbol;	/* Symbol following the dot */
-	plist*		lookahead;		/* Set of lookahead-symbols */
+	plist		lookahead;		/* Set of lookahead-symbols */
 };
 
 /* LALR(1) State */

@@ -291,7 +291,8 @@ ITEM* create_item( PROD* p )
 	i = (ITEM*)pmalloc( sizeof( ITEM ) );
 	i->prod = p;
 	i->next_symbol = (SYMBOL*)plist_access( plist_first( p->rhs ) );
-	i->lookahead = plist_create( 0, PLIST_MOD_PTR );
+
+	plist_init( &i->lookahead, 0, PLIST_DFT_HASHSIZE, PLIST_MOD_PTR );
 
 	return i;
 }
@@ -301,7 +302,7 @@ ITEM* create_item( PROD* p )
 //it// is the pointer to item structure to be freed. */
 void free_item( ITEM* it )
 {
-	plist_free( it->lookahead );
+	plist_erase( &it->lookahead );
 	pfree( it );
 }
 

@@ -10,6 +10,7 @@ This is the current development version.
 
 Released on: May 27, 2019
 
+- v1.6.1: Removed memory leaking bug
 - Renamed top-level directive `#!mode` options to `scannerless` (default)
   and `scanner`.
 - `!language`-directive allows for identifier as language parameter.
