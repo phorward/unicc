@@ -59,7 +59,8 @@ UniCC provides the following features and tools:
 
 - Grammars are expressed in a powerful Backus-Naur-style meta language
 - Generates parsers in C, C++, Python, JavaScript, JSON and XML
-- Build-in scanner generator with full Unicode support
+- Allows for scannerless parsing and scanner-enabled parsing modes
+- Generated parsers are fully Unicode-enabled
 - Grammar prototyping features, virtual productions and anonymous nonterminals
 - Abstract syntax tree notation features
 - Semantically determined symbols
