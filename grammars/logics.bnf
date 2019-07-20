@@ -1,0 +1,75 @@
+// UniCC grammar for ViUR logics
+
+%skip           /[ \r\n\t]+/
+%skip           /#[^\n]*\n/
+
+@IDENT          := /[\w_][\w\d_]*/
+@STRING         := /'[^']*'|"[^"]*"/
+@NUMBER         := /\d+\.\d*|\d*\.\d+|\d+/
+
+@logic$         : expression
+
+@expression     : test
+
+@test           : if_else
+                | or_test
+
+@if_else        := or_test 'if' or_test 'else' test
+
+@or_test        : and_test ( 'or' and_test )+                       = or_test
+                | and_test
+
+@and_test       : not_test ( 'and' not_test )+                      = and_test
+                | not_test
+
+@not_test       : 'not' not_test                                    = not_test
+                | comparison
+
+@in             := 'in'
+@not_in         := 'not' 'in'
+
+@comparison     : expr (( "==" | ">=" | "<=" | "<" | ">" | "<>" | "!="
+                                | in | not_in) expr )+              = comparison
+                | expr
+
+@expr           : expr '+' term                                     = add
+                | expr '-' term                                     = sub
+                | term
+
+@term           : term '*' factor                                   = mul
+                | term '/' factor                                   = div
+                | term '%' factor                                   = mod
+                | factor
+
+@factor         : '+' factor                                        = plus
+                | '-' factor                                        = minus
+                | '~' factor                                        = complement
+                | power
+
+@power          : entity "**" factor                                = power
+                | entity
+
+@entity         : atom trailer+                                     = entity
+                | atom
+
+@opt_expression : expression
+                |                                                   = null
+
+@trailer        : '(' list ')'
+                | '[' expression ']'
+                | '[' opt_expression ':' opt_expression ']'         = slice
+                | '.' IDENT
+
+@atom           : ( "True" | "False" )
+                | NUMBER
+                | IDENT
+                | STRING+                                           = strings
+                | comprehension
+                | '[' list ']'
+                | '(' expression ')'                                = atom
+
+@comprehension  := '[' expression 'for' IDENT 'in' or_test
+                        ( 'if' expression )? ']'
+
+@list           := expression (',' expression )*
+                |
