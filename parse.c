@@ -15,18 +15,16 @@ Usage:	Parser maintenance object.
 ----------------------------------------------------------------------------- */
 
 /** Creates a new abstract syntax tree node //emit// associated with //sym//. */
-AST_node* ast_create( char* emit, Symbol* sym,
-						Production* prod, AST_node* child )
+AST_node* ast_create( char* emit, Symbol* sym, Production* prod, Token* tok,
+						AST_node* child )
 {
 	AST_node*	node;
 
 	PROC( "ast_create" );
 	PARMS( "emit", "%s", emit );
-	PARMS( "sym", "%p", sym );
-	PARMS( "prod", "%p", prod );
 	PARMS( "child", "%p", child );
 
-	if( !( emit && sym ) )
+	if( !( emit ) )
 	{
 		WRONGPARAM;
 		RETURN( (AST_node*)NULL );
@@ -35,11 +33,12 @@ AST_node* ast_create( char* emit, Symbol* sym,
 	node = (AST_node*)pmalloc( sizeof( AST_node ) );
 
 	node->emit = emit;
-
+	node->child = child;
 	node->sym = sym;
 	node->prod = prod;
 
-	node->child = child;
+	if( tok )
+		node->token = *tok;
 
 	while( child )
 	{
@@ -163,12 +162,18 @@ void ast_dump( FILE* stream, AST_node* ast )
 		for( i = 0; i < lev; i++ )
 			fprintf( stream, " " );
 
-		fprintf( stream, "{ %s ", ast->emit );
+		if( ast->child )
+			fprintf( stream, "%s {", ast->emit );
+		else
+		{
+			fprintf( stream, "%s ", ast->emit );
 
-		if( ast->val )
-			fprintf( stream, " (%p)", ast->val );
-		else if( ast->start && ast->len )
-			fprintf( stream, ">%.*s<", (int)ast->len, ast->start );
+			if( ast->val )
+				fprintf( stream, " (%p)", ast->val );
+			else if( ast->token.start && ast->token.len )
+				fprintf( stream, ">%.*s<", (int)ast->token.len,
+						ast->token.start );
+		}
 
 		fprintf( stream, "\n" );
 
@@ -179,17 +184,14 @@ void ast_dump( FILE* stream, AST_node* ast )
 			lev--;
 		}
 
-		for( i = 0; i < lev; i++ )
-			fprintf( stream, " " );
+		if( ast->child )
+		{
 
-		fprintf( stream, "{ %s ", ast->emit );
+			for( i = 0; i < lev; i++ )
+				fprintf( stream, " " );
 
-		if( ast->val )
-			fprintf( stream, " (%p)", ast->val );
-		else if( ast->start && ast->len )
-			fprintf( stream, ">%.*s<", (int)ast->len, ast->start );
-
-		fprintf( stream, "\n" );
+			fprintf( stream, "} %s\n", ast->emit );
+		}
 
 		ast = ast->next;
 	}
@@ -214,8 +216,9 @@ void ast_dump_short( FILE* stream, AST_node* ast )
 		{
 			if( ast->val )
 				fprintf( stream, " (%p)", ast->val );
-			else if( ast->start && ast->len )
-				fprintf( stream, " >%.*s<", (int)ast->len, ast->start );
+			else if( ast->token.start && ast->token.len )
+				fprintf( stream, " >%.*s<",
+							(int)ast->token.len, ast->token.start );
 		}
 
 		fprintf( stream, "\n" );
@@ -296,10 +299,10 @@ void ast_dump_json( FILE* stream, AST_node* ast )
 				eptr = ptr + strlen( ptr );
 				*/
 			}
-			else if( node->start && node->end )
+			else if( node->token.start && node->token.end )
 			{
-				ptr = node->start;
-				eptr = node->end;
+				ptr = node->token.start;
+				eptr = node->token.end;
 			}
 			else
 				ptr = eptr = (char*)NULL;
@@ -317,7 +320,8 @@ void ast_dump_json( FILE* stream, AST_node* ast )
 		}
 
 		/* Position */
-		fprintf( stream, ",\"row\":%ld,\"column\":%ld", node->row, node->col );
+		fprintf( stream, ",\"row\":%ld,\"column\":%ld",
+				node->token.row, node->token.col );
 
 		/* Children */
 		if( node->child )
@@ -348,8 +352,8 @@ void ast_dump_tree2svg( FILE* stream, AST_node* ast )
 			ast_dump_tree2svg( stream, ast->child );
 			fprintf( stream, "] " );
 		}
-		else if( ast->start )
-			fprintf( stream, "'%.*s' ", (int)ast->len, ast->start );
+		else if( ast->token.start )
+			fprintf( stream, "'%.*s' ", (int)ast->token.len, ast->token.start );
 		/* else if( ast->val ) fixme
 			fprintf( stream, "'%s' ", pany_get_str( ast->val ) ); */
 		else
@@ -371,10 +375,10 @@ static void eval_emit( pvmprog* prog, char* emit, AST_node* ast )
 	PARMS( "emit", "%s", emit );
 
 	ptr = buf;
-	if( ast->len < BUFSIZ )
-		sprintf( buf, "%.*s", (int)ast->len, ast->start );
+	if( ast->token.len < BUFSIZ )
+		sprintf( buf, "%.*s", (int)ast->token.len, ast->token.start );
 	else
-		ptr = pstrndup( ast->start, ast->len );
+		ptr = pstrndup( ast->token.start, ast->token.len );
 
 	if( strstr( emit, "$0" ) )
 		code = pstrreplace( emit, "$0", ptr );
@@ -452,7 +456,7 @@ typedef struct
 
 	int				row;			/* Positioning in source */
 	int				col;			/* Positioning in source */
-} pplrse;
+} LRstackitem;
 
 
 /** Creates a new parser object using the underlying grammar //g//.
@@ -659,7 +663,7 @@ Parser_ctx* parctx_init( Parser_ctx* ctx, Parser* par )
 	ctx->par = par;
 	ctx->state = STAT_INITIAL;
 
-	parray_init( &ctx->stack, sizeof( pplrse ), 0 );
+	parray_init( &ctx->stack, sizeof( LRstackitem ), 0 );
 
 	RETURN( ctx );
 }
@@ -717,14 +721,14 @@ Parser_ctx* parctx_free( Parser_ctx* ctx )
 /* Function to dump the parse stack content */
 static void print_stack( char* title, parray* stack )
 {
-	pplrse*	e;
+	LRstackitem*	e;
 	int		i;
 
 	fprintf( stderr, "STACK DUMP %s\n", title );
 
 	for( i = 0; i < parray_count( stack ); i++ )
 	{
-		e = (pplrse*)parray_get( stack, i );
+		e = (LRstackitem*)parray_get( stack, i );
 		fprintf( stderr, "%02d: %s %d >%.*s<\n",
 			i, e->sym->name, e->state
 				e->end - e->start, e->start );
@@ -733,7 +737,7 @@ static void print_stack( char* title, parray* stack )
 #endif
 
 
-/** Let parser and context //ctx// run on next token //sym//.
+/** Let parser and context //ctx// run on next token //tok//.
 
 //val// is an optional parameter that holds a semantic value. It will be
 assigned to an AST tree node when provided. Set it NULL if the value is not
@@ -749,24 +753,24 @@ The function returns one of the following values:
 - STAT_ERROR when an error was encountered.
 -
 */
-Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym )
+Parser_stat parctx_next( Parser_ctx* ctx, Token* tok )
 {
-	int			i;
-	pplrse*		tos;
-	int			shift;
-	int			reduce;
-	Parser*		par;
+	int				i;
+	LRstackitem*	tos;
+	int				shift;
+	int				reduce;
+	Parser*			par;
 
 	PROC( "parctx_next" );
 
-	if( !( ctx && sym ) )
+	if( !( ctx && tok ) )
 	{
 		WRONGPARAM;
 		RETURN( STAT_ERROR );
 	}
 
 	PARMS( "ctx", "%p", ctx );
-	PARMS( "sym", "%p", sym );
+	PARMS( "sym", "%p", tok );
 
 	par = ctx->par;
 
@@ -776,11 +780,11 @@ Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym )
 		MSG( "Initial call" );
 		parctx_reset( ctx );
 
-		tos = (pplrse*)parray_malloc( &ctx->stack );
+		tos = (LRstackitem*)parray_malloc( &ctx->stack );
 		tos->sym = par->gram->goal;
 	}
 	else
-		tos = (pplrse*)parray_last( &ctx->stack );
+		tos = (LRstackitem*)parray_last( &ctx->stack );
 
 	/* Until all reductions are performed... */
 	do
@@ -804,7 +808,7 @@ Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym )
 
 			for( i = 0; i < plist_count( ctx->reduce->rhs ); i++ )
 			{
-				tos = (pplrse*)parray_pop( &ctx->stack );
+				tos = (LRstackitem*)parray_pop( &ctx->stack );
 
 				/* Connecting nodes, remember last node. */
 				if( tos->node )
@@ -825,13 +829,16 @@ Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym )
 				}
 			}
 
-			tos = (pplrse*)parray_last( &ctx->stack );
+			tos = (LRstackitem*)parray_last( &ctx->stack );
 
 			/* Construction of AST node */
 			if( ctx->reduce->emit || ctx->reduce->lhs->emit )
-				ctx->last = ast_create( ctx->reduce->emit ? ctx->reduce->emit
-												: ctx->reduce->lhs->emit,
-								ctx->reduce->lhs, ctx->reduce, ctx->last );
+			{
+				ctx->last = ast_create(
+						ctx->reduce->emit ? ctx->reduce->emit
+							: ctx->reduce->lhs->emit, ctx->reduce->lhs,
+								ctx->reduce, NULL, ctx->last );
+			}
 
 			/* Goal symbol reduced? */
 			if( ctx->reduce->lhs == par->gram->goal
@@ -860,7 +867,7 @@ Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym )
 				}
 			}
 
-			tos = (pplrse*)parray_malloc( &ctx->stack );
+			tos = (LRstackitem*)parray_malloc( &ctx->stack );
 
 			tos->sym = ctx->reduce->lhs;
 			tos->state = shift - 1;
@@ -880,7 +887,7 @@ Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym )
 			for( i = 2, shift = 0, reduce = 0;
 					i < par->dfa[tos->state][0]; i += 3 )
 			{
-				if( par->dfa[tos->state][i] == sym->idx + 1 )
+				if( par->dfa[tos->state][i] == tok->symbol->idx + 1 )
 				{
 					if( par->dfa[ tos->state ][ i + 1 ] & LR_SHIFT )
 						shift = par->dfa[tos->state][ i + 2 ];
@@ -899,22 +906,21 @@ Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym )
 									: (Production*)NULL;
 		}
 
-		VARS( "shift", "%d", shift );
-		VARS( "ctx->reduce", "%d", ctx->reduce );
+		LOG( "shift = %d, reduce = %d", shift, ctx->reduce );
 
 		if( !shift && !ctx->reduce )
 		{
 			/* Parse Error */
 			/* TODO: Error Recovery */
-			fprintf( stderr, "Parse Error @ %s\n", sym->name );
+			fprintf( stderr, "Parse Error @ %s\n", tok->symbol->name );
 
 			for( i = 2; i < par->dfa[tos->state][0]; i += 3 )
 			{
-				Symbol*	sym;
+				Symbol*	la;
 
-				sym = sym_get( par->gram, par->dfa[tos->state][i] - 1 );
+				la = sym_get( par->gram, par->dfa[tos->state][i] - 1 );
 				fprintf( stderr, "state %d, expecting '%s'\n",
-					tos->state, sym->name );
+					tos->state, la->name );
 			}
 
 			MSG( "Parsing failed" );
@@ -925,100 +931,26 @@ Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym )
 
 	if( ctx->reduce )
 		LOG( "shift on %s and reduce by production %d\n",
-					sym->name, ctx->reduce->idx );
+					tok->symbol->name, ctx->reduce->idx );
 	else
-		LOG( "shift on %s to state %d\n", sym->name, shift - 1 );
+		LOG( "shift on %s to state %d\n", tok->symbol->name, shift - 1 );
 
-	tos = (pplrse*)parray_malloc( &ctx->stack );
+	tos = (LRstackitem*)parray_malloc( &ctx->stack );
 
-	tos->sym = sym;
+	tos->sym = tok->symbol;
 	tos->state = ctx->reduce ? 0 : shift - 1;
 
 	/* Shifted symbol becomes AST node? */
-	if( sym->emit )
+	if( tok->symbol->emit )
+	{
 		ctx->last = tos->node = ast_create(
-			sym->emit, sym, (Production*)NULL, (AST_node*)NULL );
+				tok->symbol->emit, tok->symbol, NULL, tok, (AST_node*)NULL );
+	}
 
 	MSG( "Next token required" );
 	RETURN( ( ctx->state = STAT_NEXT ) );
 }
 
-/** Let parser //ctx// run on next token identified by //name//.
-
-The function is a wrapper for parctx_next() with same behavior.
-*/
-Parser_stat parctx_next_by_name( Parser_ctx* ctx, char* name )
-{
-	Symbol*		sym;
-
-	PROC( "parctx_next_by_name" );
-	PARMS( "ctx", "%p", ctx );
-	PARMS( "name", "%s", name );
-
-	if( !( ctx && name && *name ) )
-	{
-		WRONGPARAM;
-		RETURN( STAT_ERROR );
-	}
-
-	if( !( sym = sym_get_by_name( ctx->par->gram, name ) ) )
-	{
-		WRONGPARAM;
-
-		LOG( "Token named '%s' does not exist in the grammar", name );
-		RETURN( STAT_ERROR );
-	}
-
-	if( !SYM_IS_TERMINAL( sym ) )
-	{
-		WRONGPARAM;
-
-		LOG( "Symbol named '%s' is not a terminal symbol", name );
-		RETURN( STAT_ERROR );
-	}
-
-	RETURN( parctx_next( ctx, sym ) );
-}
-
-
-/** Let parser //ctx// run on next token identified by //idx//.
-
-The function is a wrapper for parctx_next() with same behavior.
-*/
-Parser_stat parctx_next_by_idx( Parser_ctx* ctx, unsigned int idx )
-{
-	Symbol*		sym;
-
-	PROC( "parctx_next_by_idx" );
-	PARMS( "ctx", "%p", ctx );
-	PARMS( "idx", "%d", idx );
-
-	if( !( ctx ) )
-	{
-		WRONGPARAM;
-		RETURN( STAT_ERROR );
-	}
-
-	if( !( sym = sym_get( ctx->par->gram, idx ) ) )
-	{
-		WRONGPARAM;
-
-		LOG( "Token with index %d does not exist in the grammar", idx );
-		RETURN( STAT_ERROR );
-	}
-
-	LOG( "Token = %s", sym->name );
-
-	if( !SYM_IS_TERMINAL( sym ) )
-	{
-		WRONGPARAM;
-
-		LOG( "Symbol with index %d is not a terminal symbol", idx );
-		RETURN( STAT_ERROR );
-	}
-
-	RETURN( parctx_next( ctx, sym ) );
-}
 
 /* Helper for par_parse() */
 static Symbol* par_scan( Parser* par, plex* lex,
@@ -1071,8 +1003,10 @@ pboolean par_parse( AST_node** root, Parser* par, char* start )
 	Parser_stat		stat;
 #if TIMEMEASURE
 	clock_t			cstart;
-#endif
 	int				toks	= 0;
+#endif
+
+	Token			tok;
 
 	PROC( "par_parse" );
 	PARMS( "root", "%p", root );
@@ -1112,17 +1046,25 @@ pboolean par_parse( AST_node** root, Parser* par, char* start )
 	do
 	{
 		sym = par_scan( par, lex, &start, &end, lazy );
+#if TIMEMEASURE
 		toks++;
+#endif
 
 		LOG( "symbol %d, %s", sym->idx, sym->name );
 
-		stat = parctx_next( &ctx, sym );
+		tok.symbol = sym;
+		tok.start = start;
+		tok.end = end;
+		tok.len = end - start;
 
-		if( end > start && ctx.last && stat != STAT_ERROR && !ctx.last->len )
+		stat = parctx_next( &ctx, &tok );
+
+		if( end > start && ctx.last
+				&& stat != STAT_ERROR && !ctx.last->token.len )
 		{
-			ctx.last->start = start;
-			ctx.last->len = end - start;
-			ctx.last->end = end;
+			ctx.last->token.start = start;
+			ctx.last->token.len = end - start;
+			ctx.last->token.end = end;
 		}
 
 		switch( stat )

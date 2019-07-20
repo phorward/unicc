@@ -18,8 +18,9 @@ Usage:	Phorward parsing library
 typedef struct _Symbol		Symbol;
 typedef struct _Production	Production;
 typedef struct _Grammar		Grammar;
-typedef struct _AST_node	AST_node;
 
+typedef struct _Token		Token;
+typedef struct _AST_node	AST_node;
 typedef struct _Parser_ctx	Parser_ctx;
 
 #define MOD_OPTIONAL		'?'
@@ -139,6 +140,20 @@ struct _Grammar
 	char*					strval;		/* String representation */
 };
 
+/* Token */
+struct _Token
+{
+	Symbol*					symbol;
+
+	char*					start;		/* Begin of fragment */
+	char*					end;		/* End of fragment */
+	size_t					len;		/* Fragment length */
+
+	/* Source */
+	unsigned long			row;		/* Appearance in row */
+	unsigned long			col;		/* Appearance in column */
+};
+
 /* AST */
 struct _AST_node
 {
@@ -151,13 +166,7 @@ struct _AST_node
 	void*					val;		/* User-defined pointer */
 
 	/* Match */
-	char*					start;		/* Begin of fragment */
-	char*					end;		/* End of fragment */
-	size_t					len;		/* Fragment length */
-
-	/* Source */
-	unsigned long			row;		/* Appearance in row */
-	unsigned long			col;		/* Appearance in column */
+	Token					token;		/* Token information */
 
 	/* AST */
 	AST_node*				parent;		/* Parent element */

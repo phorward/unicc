@@ -31,7 +31,7 @@ Grammar* gram_free( Grammar* g );
 pboolean lr_build( unsigned int* cnt, unsigned int*** dfa, Grammar* grm );
 
 /* parse.c */
-AST_node* ast_create( char* emit, Symbol* sym, Production* prod, AST_node* child );
+AST_node* ast_create( char* emit, Symbol* sym, Production* prod, Token* tok, AST_node* child );
 AST_node* ast_free( AST_node* node );
 int ast_len( AST_node* node );
 AST_node* ast_get( AST_node* node, int n );
@@ -53,8 +53,6 @@ Parser_ctx* parctx_init( Parser_ctx* ctx, Parser* par );
 Parser_ctx* parctx_create( Parser* par );
 Parser_ctx* parctx_reset( Parser_ctx* ctx );
 Parser_ctx* parctx_free( Parser_ctx* ctx );
-Parser_stat parctx_next( Parser_ctx* ctx, Symbol* sym );
-Parser_stat parctx_next_by_name( Parser_ctx* ctx, char* name );
-Parser_stat parctx_next_by_idx( Parser_ctx* ctx, unsigned int idx );
+Parser_stat parctx_next( Parser_ctx* ctx, Token* tok );
 pboolean par_parse( AST_node** root, Parser* par, char* start );
 

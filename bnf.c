@@ -45,9 +45,9 @@ static void traverse( Grammar* g, AST_node* ast )
 
 		VARS( "emit", "%s", ast->emit );
 
-		if( node->len )
+		if( node->token.len )
 		{
-			sprintf( buf, "%.*s", (int)node->len, node->start );
+			sprintf( buf, "%.*s", (int)node->token.len, node->token.start );
 			VARS( "buf", "%s", buf );
 		}
 		else
@@ -90,8 +90,8 @@ static void traverse( Grammar* g, AST_node* ast )
 						|| !strcmp( node->emit, "Token" )
 							|| !strcmp( node->emit, "Regex" ) )
 				{
-					memmove( buf, buf + 1, node->len - 1 );
-					buf[ node->len - 2 ] = '\0';
+					memmove( buf, buf + 1, node->token.len - 1 );
+					buf[ node->token.len - 2 ] = '\0';
 
 					if( !strcmp( node->emit, "CCL" ) )
 						sym->ccl = pccl_create( -1, -1, buf );
@@ -734,13 +734,14 @@ pboolean gram_from_bnf( Grammar* g, char* src )
 		int			i;
 		Symbol*		sym;
 		Symbol*		term;
+		Production*	prod;
 
 		do
 		{
 			for( i = 0; ( sym = sym_get( g, i ) ); i++ )
 			{
 				if( !SYM_IS_TERMINAL( sym )
-					&& sym_getprod( sym, 0 )
+					&& ( prod = sym_getprod( sym, 0 ) )
 					&& !sym_getprod( sym, 1 )
 					&& SYM_IS_TERMINAL( ( term = prod_getfromrhs(
 											sym_getprod( sym, 0 ), 0 ) ) )
@@ -748,13 +749,21 @@ pboolean gram_from_bnf( Grammar* g, char* src )
 					&& term->usages == 1 )
 				{
 					/*
-					fprintf( stderr, "%s = >%s<\n", sym->name, term->name );
+					fprintf( stderr, "%s = >%s< %s\n",
+					 	sym->name, term->name, prod->emit );
 					*/
 
-					prod_free( sym_getprod( sym, 0 ) );
+					if( !sym->emit && ( sym->emit = prod->emit ) )
+						prod->emit = NULL;
+
+					prod_free( prod );
 
 					sym->ptn = term->ptn;
 					sym->ccl = term->ccl;
+
+					if( ( !sym->emit && ( sym->emit = term->emit ) )
+						|| term->emit == sym->str )
+						term->emit = NULL;
 
 					if( ( sym->str = term->str ) )
 						term->name = NULL;

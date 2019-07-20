@@ -205,6 +205,7 @@ int main( int argc, char** argv )
 		if( s )
 		{
 			MSG( "Parsing" );
+
 			if( par_parse( &a, p, s ) )
 			{
 				switch( r )
