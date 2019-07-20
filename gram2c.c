@@ -51,7 +51,7 @@ void gen_decl( FILE* f, Grammar* g )
 	plistel*	e;
 	plistel*	x;
 
-	plist_init( &ident2sym, 0, PLIST_DFT_HASHSIZE, PLIST_MOD_KEEPKEYS );
+	plist_init( &ident2sym, 0, PLIST_MOD_KEEPKEYS );
 
 	for( i = 0; ( sym = sym_get( g, i ) ); i++ )
 	{
@@ -325,7 +325,7 @@ void gen_traversal( FILE* f, Grammar* g )
 	Symbol*		sym;
 	Production*	prod;
 
-	plist_init( &emits, 0, PLIST_DFT_HASHSIZE, PLIST_MOD_UNIQUE );
+	plist_init( &emits, 0, PLIST_MOD_UNIQUE );
 
 	fprintf( f, "%sstatic void traverse( AST_node* node )\n", indent );
 	fprintf( f, "%s{\n", indent );

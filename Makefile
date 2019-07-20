@@ -1,4 +1,4 @@
-CFLAGS    	= -g -I../phorward/src -DUTF8 -DUNICODE -DDEBUG -Wall $(CLOCAL)
+CFLAGS    	= -g -I../phorward/src -DDEBUG -DUTF8 -DUNICODE -Wall $(CLOCAL)
 LIBPHORWARD	= ../phorward/src/libphorward.a
 
 HEADERS		= \

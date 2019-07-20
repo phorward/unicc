@@ -740,6 +740,7 @@ pboolean gram_from_bnf( Grammar* g, char* src )
 			for( i = 0; ( sym = sym_get( g, i ) ); i++ )
 			{
 				if( !SYM_IS_TERMINAL( sym )
+					&& sym_getprod( sym, 0 )
 					&& !sym_getprod( sym, 1 )
 					&& SYM_IS_TERMINAL( ( term = prod_getfromrhs(
 											sym_getprod( sym, 0 ), 0 ) ) )

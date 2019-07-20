@@ -98,7 +98,8 @@ struct _Symbol
 	Assoc					assoc;		/* LR associativity flag */
 	unsigned int			prec;		/* LR precedence level */
 
-	plist*					first;		/* Set of FIRST() symbols */
+	parray					first;		/* Set of FIRST() symbols */
+	parray					prods;		/* Productions */
 
 	char*					emit;		/* AST emitting node */
 

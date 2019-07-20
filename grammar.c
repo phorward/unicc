@@ -61,7 +61,8 @@ Symbol* sym_create( Grammar* g, char* name )
 	if( !( sym->name = name ) )
 		sym->flags.nameless = TRUE;
 
-	sym->first = plist_create( 0, PLIST_MOD_PTR );
+	parray_init( &sym->first, sizeof( Symbol* ), 64 );
+	parray_init( &sym->prods, sizeof( Production* ), 32 );
 
 	g->flags.finalized = FALSE;
 	return sym;
@@ -88,7 +89,8 @@ Symbol* sym_free( Symbol* sym )
 	if( sym->ptn )
 		pregex_ptn_free( sym->ptn );
 
-	plist_free( sym->first );
+	parray_erase( &sym->first );
+	parray_erase( &sym->prods );
 
 	return (Symbol*)NULL;
 }
@@ -181,28 +183,18 @@ Symbol* sym_get_nameless_term_by_def( Grammar* g, char* name )
 
 Returns (Production*)NULL if the production is not found or the symbol is
 configured differently. */
-Production* sym_getprod( Symbol* sym, unsigned int n )
+Production* sym_getprod( Symbol* sym, size_t n )
 {
-	plistel*	e;
-	Production*		p;
-
 	if( !( sym ) )
 	{
 		WRONGPARAM;
 		return (Production*)NULL;
 	}
 
-	if( SYM_IS_TERMINAL( sym ) )
+	if( SYM_IS_TERMINAL( sym ) || n >= parray_count( &sym->prods ) )
 		return (Production*)NULL;
 
-	plist_for( sym->grm->prods, e )
-	{
-		p = (Production*)plist_access( e );
-		if( p->lhs == sym && !n-- )
-			return p;
-	}
-
-	return (Production*)NULL;
+	return *(Production**)parray_get( &sym->prods, n );
 }
 
 /** Returns the string representation of symbol //sym//.
@@ -485,6 +477,8 @@ Production* prod_create( Grammar* g, Symbol* lhs, ... )
 	prod->grm = g;
 
 	prod->lhs = lhs;
+	parray_push( &lhs->prods, &prod );
+
 	prod->rhs = plist_create( 0, PLIST_MOD_PTR );
 
 	va_start( varg, lhs );
@@ -505,7 +499,6 @@ Production* prod_free( Production* p )
 	if( !p )
 		return (Production*)NULL;
 
-
 	if( p->grm->flags.frozen )
 	{
 		fprintf( stderr, "Grammar is frozen, can't delete production\n" );
@@ -520,6 +513,7 @@ Production* prod_free( Production* p )
 	pfree( p->strval );
 	plist_free( p->rhs );
 
+	parray_remove( &p->lhs->prods, parray_offset( &p->lhs->prods, p ), NULL );
 	plist_remove( p->grm->prods, plist_get_by_ptr( p->grm->prods, p ) );
 
 	return (Production*)NULL;
@@ -527,9 +521,9 @@ Production* prod_free( Production* p )
 
 /** Get the //n//th production from grammar //g//.
 Returns (Production*)NULL if no symbol was found. */
-Production* prod_get( Grammar* g, int n )
+Production* prod_get( Grammar* g, size_t n )
 {
-	if( !( g && n >= 0 ) )
+	if( !( g ) )
 	{
 		WRONGPARAM;
 		return (Production*)NULL;
@@ -720,12 +714,16 @@ pboolean gram_prepare( Grammar* g )
 	Production*		cprod;
 	Symbol*			sym;
 	pboolean		nullable;
-	plist*			call;
-	plist*			done;
+	plist			call;
+	plist			done;
 	int				i;
 	int				cnt;
 	int				pcnt;
 	unsigned int	idx;
+#if TIMEMEASURE
+	clock_t			start;
+#endif
+	size_t			count	= 0;
 
 	PROC( "gram_prepare" );
 
@@ -752,11 +750,11 @@ pboolean gram_prepare( Grammar* g )
 
 		if( SYM_IS_TERMINAL( sym ) )
 		{
-			if( !plist_first( sym->first ) )
-				plist_push( sym->first, sym );
+			if( !parray_count( &sym->first ) )
+				parray_push( &sym->first, &sym );
 		}
 		else
-			plist_erase( sym->first );
+			parray_erase( &sym->first );
 	}
 
 	/* Reset productions */
@@ -768,8 +766,13 @@ pboolean gram_prepare( Grammar* g )
 
 	/* Compute FIRST sets and mark left-recursions */
 	cnt = 0;
-	call = plist_create( 0, PLIST_MOD_PTR | PLIST_MOD_RECYCLE );
-	done = plist_create( 0, PLIST_MOD_PTR | PLIST_MOD_RECYCLE );
+
+	plist_init( &call, 0, PLIST_MOD_RECYCLE );
+	plist_init( &done, 0, PLIST_MOD_RECYCLE );
+
+#if TIMEMEASURE
+	start = clock();
+#endif
 
 	do
 	{
@@ -779,11 +782,11 @@ pboolean gram_prepare( Grammar* g )
 		plist_for( g->prods, e )
 		{
 			cprod = (Production*)plist_access( e );
-			plist_push( call, cprod );
+			plist_push( &call, cprod );
 
-			while( plist_pop( call, &prod ) )
+			while( plist_pop( &call, &prod ) )
 			{
-				plist_push( done, prod );
+				plist_push( &done, prod );
 
 				plist_for( prod->rhs, f )
 				{
@@ -791,11 +794,12 @@ pboolean gram_prepare( Grammar* g )
 
 					nullable = FALSE;
 
+					/* Union first set */
+					parray_union( &cprod->lhs->first, &sym->first );
+					count++;
+
 					if( !SYM_IS_TERMINAL( sym ) )
 					{
-						/* Union first set */
-						plist_union( cprod->lhs->first, sym->first );
-
 						/* Put prods on stack */
 						for( i = 0; ( prod = sym_getprod( sym, i ) ); i++ )
 						{
@@ -808,13 +812,12 @@ pboolean gram_prepare( Grammar* g )
 							if( prod == cprod )
 								prod->flags.leftrec =
 									prod->lhs->flags.leftrec = TRUE;
-							else if( !plist_get_by_ptr( done, prod ) )
-								plist_push( call, prod );
+							else if( !plist_get_by_ptr( &done, prod ) )
+								plist_push( &call, prod );
 						}
 					}
-					/* Extend first set if required */
-					else if( !plist_get_by_ptr( cprod->lhs->first, sym ) )
-						plist_push( cprod->lhs->first, sym );
+
+					/* printf( "%ld\n", parray_count( &cprod->lhs->first ) ); */
 
 					if( !nullable )
 						break;
@@ -824,16 +827,20 @@ pboolean gram_prepare( Grammar* g )
 				if( !f )
 					cprod->flags.nullable = cprod->lhs->flags.nullable = TRUE;
 
-				cnt += plist_count( cprod->lhs->first );
+				cnt += parray_count( &cprod->lhs->first );
 			}
 
-			plist_erase( done );
+			plist_erase( &done );
 		}
 	}
 	while( pcnt < cnt );
 
-	plist_clear( call );
-	plist_clear( done );
+#if TIMEMEASURE
+	fprintf( stderr, "FIRST %ld %f\n", count, (double)(clock() - start) / CLOCKS_PER_SEC );
+#endif
+
+	plist_clear( &call );
+	plist_clear( &done );
 
 	/* Pull-through all lexem symbols */
 	plist_for( g->symbols, e )
@@ -843,12 +850,12 @@ pboolean gram_prepare( Grammar* g )
 		if( SYM_IS_TERMINAL( sym ) || !sym->flags.lexem )
 			continue;
 
-		plist_push( call, sym );
+		plist_push( &call, sym );
 	}
 
-	while( plist_pop( call, &sym ) )
+	while( plist_pop( &call, &sym ) )
 	{
-		plist_push( done, sym );
+		plist_push( &done, sym );
 
 		for( i = 0; ( prod = sym_getprod( sym, i ) ); i++ )
 		{
@@ -859,17 +866,17 @@ pboolean gram_prepare( Grammar* g )
 
 				if( !SYM_IS_TERMINAL( sym ) )
 				{
-					if( !plist_get_by_ptr( done, sym )
-						&& !plist_get_by_ptr( call, sym ) )
-						plist_push( call, sym );
+					if( !plist_get_by_ptr( &done, sym )
+						&& !plist_get_by_ptr( &call, sym ) )
+						plist_push( &call, sym );
 				}
 			}
 		}
 	}
 
 	/* Clear all lists */
-	plist_free( call );
-	plist_free( done );
+	plist_erase( &call );
+	plist_erase( &done );
 
 	/* Inherit precedences */
 	plist_for( g->prods, e )
@@ -913,11 +920,12 @@ void __dbg_gram_dump( char* file, int line, char* function,
 	plistel*	f;
 	Production*	p;
 	Symbol*		s;
+	Symbol**	l;
 	int			maxlhslen	= 0;
 	int			maxemitlen	= 0;
 	int			maxsymlen	= 0;
 
-	if( !_dbg_trace_enabled( file, function ) )
+	if( !_dbg_trace_enabled( file, function, "GRAMMAR" ) )
 		return;
 
 	_dbg_trace( file, line, "GRAMMAR", function, "%s = {", name );
@@ -974,15 +982,14 @@ void __dbg_gram_dump( char* file, int line, char* function,
 			s->idx, maxemitlen, s->emit ? s->emit : "",
 				maxsymlen, s->name );
 
-		if( !SYM_IS_TERMINAL( s ) && plist_count( s->first ) )
+		if( !SYM_IS_TERMINAL( s ) && parray_count( &s->first ) )
 		{
 			fprintf( stderr, " {" );
 
-			plist_for( s->first, f )
+			parray_for( &s->first, l )
 			{
-				s = (Symbol*)plist_access( f );
 				fprintf( stderr, " " );
-				fprintf( stderr, "%s", sym_to_str( s ) );
+				fprintf( stderr, "%s", sym_to_str( *l ) );
 			}
 
 			fprintf( stderr, " }" );

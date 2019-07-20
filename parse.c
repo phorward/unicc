@@ -243,7 +243,7 @@ before.
 void __dbg_ast_dump( char* file, int line, char* function,
 					 char* name, AST_node* ast )
 {
-	if( !_dbg_trace_enabled( file, function ) )
+	if( !_dbg_trace_enabled( file, function, "AST" ) )
 		return;
 
 	_dbg_trace( file, line, "AST", function, "%s = {", name );
@@ -480,7 +480,7 @@ Parser* par_create( Grammar* g )
 		RETURN( (Parser*)NULL );
 	}
 
-	if( !gram_prepare( g ) )
+	if( !g->flags.finalized && !gram_prepare( g ) )
 	{
 		MSG( "The provided grammar object is invalid" );
 		RETURN( (Parser*)NULL );
@@ -1069,6 +1069,10 @@ pboolean par_parse( AST_node** root, Parser* par, char* start )
 	Symbol*			sym;
 	Parser_ctx		ctx;
 	Parser_stat		stat;
+#if TIMEMEASURE
+	clock_t			cstart;
+#endif
+	int				toks	= 0;
 
 	PROC( "par_parse" );
 	PARMS( "root", "%p", root );
@@ -1079,6 +1083,10 @@ pboolean par_parse( AST_node** root, Parser* par, char* start )
 		WRONGPARAM;
 		RETURN( FALSE );
 	}
+
+#if TIMEMEASURE
+	cstart = clock();
+#endif
 
 	if( !( lex = par_autolex( par ) ) )
 	{
@@ -1104,6 +1112,7 @@ pboolean par_parse( AST_node** root, Parser* par, char* start )
 	do
 	{
 		sym = par_scan( par, lex, &start, &end, lazy );
+		toks++;
 
 		LOG( "symbol %d, %s", sym->idx, sym->name );
 
@@ -1146,6 +1155,11 @@ pboolean par_parse( AST_node** root, Parser* par, char* start )
 
 	parctx_reset( &ctx );
 	plex_free( lex );
+
+#if TIMEMEASURE
+	fprintf( stderr, "%d tokens, %lf secs\n", toks,
+		(double)(clock() - cstart) / CLOCKS_PER_SEC );
+#endif
 
 	RETURN( ret );
 }

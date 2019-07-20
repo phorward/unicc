@@ -19,7 +19,7 @@ typedef struct
 {
 	Production*		prod;			/* Production */
 	int				dot;			/* Dot offset */
-	plist*			lookahead;		/* Lookahead symbols */
+	parray			lookahead;		/* Lookahead symbols */
 } LRitem;
 
 /* LR-State */
@@ -27,11 +27,11 @@ typedef struct
 {
 	int				idx;			/* State index */
 
-	plist*			kernel;			/* Kernel items */
-	plist*			epsilon;		/* Empty items */
+	plist			kernel;			/* Kernel items */
+	plist			epsilon;		/* Empty items */
 
-	plist*			actions;		/* Action row entries */
-	plist*			gotos;			/* Goto row entries */
+	parray			actions;		/* Action row entries */
+	parray			gotos;			/* Goto row entries */
 
 	Production*		def_prod;		/* Default production */
 
@@ -55,7 +55,7 @@ static void lritem_print( LRitem* it )
 {
 	int			i;
 	Symbol*		sym;
-	plistel*	e;
+	Symbol**	la;
 
 	if( ( !it ) )
 	{
@@ -82,17 +82,16 @@ static void lritem_print( LRitem* it )
 	{
 		fprintf( stderr, " ." );
 
-		if( plist_count( it->lookahead ) )
+		if( parray_count( &it->lookahead ) )
 		{
 			fprintf( stderr, "   { " );
 
-			plist_for( it->lookahead, e )
+			parray_for( &it->lookahead, la )
 			{
-				if( e != plist_first( it->lookahead ) )
+				if( la != parray_first( &it->lookahead ) )
 					fprintf( stderr, " " );
 
-				fprintf( stderr, ">%s<",
-					sym_to_str( ( (Symbol*)plist_access( e ) ) ) );
+				fprintf( stderr, ">%s<", sym_to_str( *la ) );
 			}
 
 			fprintf( stderr, " }" );
@@ -126,13 +125,13 @@ static void lritems_print( plist* items, char* what )
 }
 
 /* Priority sort function for the lookahead-sets */
-static int lritem_lookahead_sort( plist* list, plistel* el, plistel* er )
+static int lritem_lookahead_sort( parray* a, void* p, void* q )
 {
-	Symbol*		l	= (Symbol*)plist_access( el );
-	Symbol*		r	= (Symbol*)plist_access( er );
+	Symbol**	l	= (Symbol**)p;
+	Symbol**	r	= (Symbol**)q;
 
 	/* By idx order */
-	if( l->idx < r->idx )
+	if( (*l)->idx < (*r)->idx )
 		return 1;
 
 	return 0;
@@ -157,8 +156,8 @@ static LRitem* lritem_create( plist* list, Production* prod, int dot )
 	item->prod = prod;
 	item->dot = dot;
 
-	item->lookahead = plist_create( 0, PLIST_MOD_PTR | PLIST_MOD_AUTOSORT );
-	plist_set_sortfn( item->lookahead, lritem_lookahead_sort );
+	parray_init( &item->lookahead, sizeof( Symbol* ), 64 );
+	parray_set_sortfn( &item->lookahead, lritem_lookahead_sort );
 
 	return item;
 }
@@ -168,7 +167,7 @@ static LRitem* lritem_free( LRitem* it )
 	if( !( it ) )
 		return (LRitem*)NULL;
 
-	plist_free( it->lookahead );
+	parray_erase( &it->lookahead );
 
 	return (LRitem*)NULL;
 }
@@ -179,9 +178,9 @@ static LRcolumn* lrcolumn_create(
 	LRcolumn*	col;
 
 	if( SYM_IS_TERMINAL( sym ) )
-		col = (LRcolumn*)plist_malloc( st->actions );
+		col = (LRcolumn*)parray_malloc( &st->actions );
 	else
-		col = (LRcolumn*)plist_malloc( st->gotos );
+		col = (LRcolumn*)parray_malloc( &st->gotos );
 
 	col->symbol = sym;
 	col->shift = shift;
@@ -192,7 +191,6 @@ static LRcolumn* lrcolumn_create(
 
 static LRstate* lrstate_create( plist* states, plist* kernel )
 {
-	plistel*	e;
 	LRstate*	state;
 
 	if( !( states ) )
@@ -204,14 +202,16 @@ static LRstate* lrstate_create( plist* states, plist* kernel )
 	state = plist_malloc( states );
 
 	state->idx = plist_count( states ) - 1;
-	state->kernel = plist_create( sizeof( LRitem ), PLIST_MOD_NONE );
-	state->epsilon = plist_create( sizeof( LRitem ), PLIST_MOD_NONE );
 
-	state->actions = plist_create( sizeof( LRcolumn ), PLIST_MOD_NONE );
-	state->gotos = plist_create( sizeof( LRcolumn ), PLIST_MOD_NONE );
+	if( kernel )
+		state->kernel = *kernel;
+	else
+		plist_init( &state->kernel, sizeof( LRitem ), 0 );
 
-	plist_for( kernel, e )
-		plist_push( state->kernel, plist_access( e ) );
+	plist_init( &state->epsilon, sizeof( LRitem ), 0 );
+
+	parray_init( &state->actions, sizeof( LRcolumn ), 0 );
+	parray_init( &state->gotos, sizeof( LRcolumn ), 0 );
 
 	return state;
 }
@@ -227,15 +227,15 @@ static plist* lr_free( plist* states )
 		st = (LRstate*)plist_access( e );
 
 		/* Parse tables */
-		plist_free( st->actions );
-		plist_free( st->gotos );
+		parray_erase( &st->actions );
+		parray_erase( &st->gotos );
 
 		/* Kernel */
-		plist_for( st->kernel, f )
+		plist_for( &st->kernel, f )
 			lritem_free( (LRitem*)plist_access( f ) );
 
 		/* Epsilons */
-		plist_for( st->epsilon, f )
+		plist_for( &st->epsilon, f )
 			lritem_free( (LRitem*)plist_access( f ) );
 	}
 
@@ -244,20 +244,17 @@ static plist* lr_free( plist* states )
 
 static void lrstate_print( LRstate* st )
 {
-	plistel*	e;
 	LRcolumn*	col;
 
 	fprintf( stderr, "\n-- State %d --\n", st->idx );
 
-	lritems_print( st->kernel, "Kernel" );
-	lritems_print( st->epsilon, "Epsilon" );
+	lritems_print( &st->kernel, "Kernel" );
+	lritems_print( &st->epsilon, "Epsilon" );
 
 	fprintf( stderr, "\n" );
 
-	plist_for( st->actions, e )
+	parray_for( &st->actions, col )
 	{
-		col = (LRcolumn*)plist_access( e );
-
 		if( col->shift && col->reduce )
 			fprintf( stderr, " <- Shift/Reduce on '%s' by "
 								"production '%s'\n",
@@ -278,10 +275,8 @@ static void lrstate_print( LRstate* st )
 		fprintf( stderr, " <- Reduce (default) on '%s'\n",
 			prod_to_str( st->def_prod ) );
 
-	plist_for( st->gotos, e )
+	parray_for( &st->gotos, col )
 	{
-		col = (LRcolumn*)plist_access( e );
-
 		if( col->shift && col->reduce )
 			fprintf( stderr, " <- Goto/Reduce by production "
 									"'%s' in '%s'\n",
@@ -316,32 +311,22 @@ static pboolean lr_compare( plist* set1, plist* set2 )
 	plistel*	f;
 	LRitem*		it1;
 	LRitem*		it2;
-	int			same	= 0;
 
-	if( plist_count( set1 ) == plist_count( set2 ) )
+	if( plist_count( set1 ) != plist_count( set2 ) )
+		return FALSE;
+
+	for( e = plist_first( set1 ), f = plist_first( set2 );
+			e && f; e = plist_next( e ), f = plist_next( f ) )
 	{
-		plist_for( set1, e )
-		{
-			it1 = (LRitem*)plist_access( e );
+		it1 = (LRitem*)plist_access( e );
+		it2 = (LRitem*)plist_access( f );
 
-			plist_for( set2, f )
-			{
-				it2 = (LRitem*)plist_access( f );
-
-				if( it1->prod == it2->prod && it1->dot == it2->dot )
-				{
-					/* To become LR(1), uncomment this: */
-					/* if( !plist_diff( it1->lookahead, it2->lookahead ) ) */
-					same++;
-				}
-			}
-		}
-
-		if( plist_count( set1 ) == same )
-			return TRUE;
+		if( !( it1->prod == it2->prod && it1->dot == it2->dot
+				/* && !parray_diff( &it1->lookahead, &it2->lookahead ) */ ) )
+			return FALSE;
 	}
 
-	return FALSE;
+	return TRUE;
 }
 
 static LRstate* lr_get_undone( plist* states )
@@ -370,20 +355,23 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 	LRitem*			cit;
 	Symbol*			sym;
 	Symbol*			lhs;
+	Symbol**		la;
 	Production*		prod;
 	LRcolumn*		col;
 	LRcolumn*		ccol;
 	plist*			closure;
-	plist*			part;
+	plist*			part		= (plist*)NULL;
 	plistel*		e;
 	plistel*		f;
-	plistel*		g;
 	int				i;
 	int				j;
 	int				cnt;
 	int				prev_cnt;
 	int*			prodcnt;
 	pboolean		printed;
+#if TIMEMEASURE
+	clock_t			start;
+#endif
 
 	PROC( "lr_closure" );
 	PARMS( "gram", "%p", gram );
@@ -396,17 +384,20 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 		RETURN( (plist*)NULL );
 	}
 
+#if TIMEMEASURE
+	start = clock();
+#endif
+
 	MSG( "Initializing states list" );
 	states = plist_create( sizeof( LRstate ), PLIST_MOD_RECYCLE );
 
 	MSG( "Creating closure seed" );
 	nst = lrstate_create( states, (plist*)NULL );
-	it = lritem_create( nst->kernel, sym_getprod( gram->goal, 0 ), 0 );
+	it = lritem_create( &nst->kernel, sym_getprod( gram->goal, 0 ), 0 );
 
-	plist_push( it->lookahead, gram->eof );
+	parray_push( &it->lookahead, &gram->eof );
 
 	MSG( "Initializing part and closure lists" );
-	part = plist_create( sizeof( LRitem ), PLIST_MOD_RECYCLE );
 	closure = plist_create( sizeof( LRitem ), PLIST_MOD_RECYCLE );
 
 	MSG( "Run the closure loop" );
@@ -417,41 +408,22 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 		LOG( "--- Closing state %d",
 				plist_offset( plist_get_by_ptr( states, st ) ) );
 
-		MSG( "Closing state" );
-		VARS( "State", "%d", plist_offset(
-								plist_get_by_ptr( states, st ) ) );
-
 		/* Close all items of the current state */
 		cnt = 0;
 		plist_clear( closure );
 
 #if DEBUGLEVEL > 1
-		lritems_print( st->kernel, "Kernel" );
+		lritems_print( &st->kernel, "Kernel" );
 #endif
-
-		/* Duplicate state kernel to closure */
-		MSG( "Duplicate current kernel to closure" );
-		plist_for( st->kernel, e )
-		{
-			kit = (LRitem*)plist_access( e );
-
-			/* Add only items that have a symbol on the right of the dot */
-			if( prod_getfromrhs( kit->prod, kit->dot ) )
-			{
-				it = lritem_create( closure, kit->prod, kit->dot );
-				it->lookahead = plist_dup( kit->lookahead );
-			}
-		}
 
 		/* Close the closure! */
 		MSG( "Performing closure" );
 		do
 		{
-			prev_cnt = cnt;
-			cnt = 0;
+			prev_cnt = plist_count( closure );
 
-			/* Loop throught all items of the current state */
-			plist_for( closure, e )
+			/* Loop through all items of the current state */
+			plist_for( !prev_cnt ? &st->kernel : closure, e )
 			{
 				it = (LRitem*)plist_access( e );
 
@@ -486,7 +458,7 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 							( sym = prod_getfromrhs( it->prod, j ) );
 								j++ )
 					{
-						plist_union( cit->lookahead, sym->first );
+						parray_union( &cit->lookahead, &sym->first );
 
 						if( !( sym->flags.nullable ) )
 							break;
@@ -498,14 +470,29 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 						items lookahead to the closed items lookahead.
 					*/
 					if( !sym )
-						plist_union( cit->lookahead, it->lookahead );
+						parray_union( &cit->lookahead, &it->lookahead );
 				}
 			}
-
-			cnt = plist_count( closure );
 		}
-		while( prev_cnt != cnt );
+		while( prev_cnt != plist_count( closure ) );
 		MSG( "Closure algorithm done" );
+
+		/* Duplicate state kernel to closure */
+		MSG( "Duplicate current kernel to closure" );
+
+		plist_for( &st->kernel, e )
+		{
+			kit = (LRitem*)plist_access( e );
+
+			/* Add only items that have a symbol on the right of the dot */
+			if( ( sym = prod_getfromrhs( kit->prod, kit->dot ) ) )
+			{
+				it = lritem_create( closure, kit->prod, kit->dot );
+				parray_union( &it->lookahead, &kit->lookahead );
+
+				//lac += it->lookahead.count;
+			}
+		}
 
 		/* Move all epsilon closures into state's epsilon list */
 		for( e = plist_first( closure ); e; )
@@ -516,7 +503,9 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 				e = plist_next( e );
 			else
 			{
-				plist_for( st->epsilon, f )
+				MSG( "Empty production detected" );
+
+				plist_for( &st->epsilon, f )
 				{
 					kit = (LRitem*)plist_access( f );
 					if( kit->prod == it->prod )
@@ -524,9 +513,15 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 				}
 
 				if( !f )
-					plist_push( st->epsilon, it );
+				{
+					MSG( "Item not available yet, pushing" );
+					plist_push( &st->epsilon, it );
+				}
 				else
-					plist_union( kit->lookahead, it->lookahead );
+				{
+					MSG( "Item already available, merging lookahead" );
+					parray_union( &kit->lookahead, &it->lookahead );
+				}
 
 				f = e;
 				e = plist_next( e );
@@ -544,7 +539,17 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 		do
 		{
 			sym = (Symbol*)NULL;
-			plist_clear( part );
+
+			if( !part )
+			{
+				MSG( "Creating new partition" );
+				part = plist_create( sizeof( LRitem ), PLIST_MOD_RECYCLE );
+			}
+			else
+			{
+				MSG( "Cleaning old partition" );
+				plist_clear( part );
+			}
 
 			for( e = plist_first( closure ); e; )
 			{
@@ -561,6 +566,7 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 				if( sym == prod_getfromrhs( it->prod, it->dot ) )
 				{
 					it->dot++;
+
 					plist_push( part, it );
 
 					f = plist_prev( e );
@@ -576,6 +582,8 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 			/* Stop if no more partitions found (there is no first item) */
 			if( !( it = (LRitem*)plist_access( plist_first( part ) ) ) )
 				break;
+
+			LOG( "Partition with %d items created", plist_count( part ) );
 
 			/*
 				Can we do a shift and reduce in one transition?
@@ -609,7 +617,7 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 			{
 				nst = (LRstate*)plist_access( e );
 
-				if( lr_compare( part, nst->kernel ) )
+				if( lr_compare( part, &nst->kernel ) )
 					break;
 			}
 
@@ -622,6 +630,7 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 				lritems_print( part, "NEW Kernel" );
 #endif
 				nst = lrstate_create( states, part );
+				part = (plist*)NULL;
 			}
 			else
 			/* State already exists?
@@ -633,23 +642,23 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 				cnt = 0;
 				prev_cnt = 0;
 
-				for( e = plist_first( nst->kernel ),
+				for( e = plist_first( &nst->kernel ),
 						f = plist_first( part ); e;
 							e = plist_next( e ), f = plist_next( f ) )
 				{
 					it = (LRitem*)plist_access( e );
 					cit = (LRitem*)plist_access( f );
 
-					prev_cnt += plist_count( it->lookahead );
-					plist_union( it->lookahead, cit->lookahead );
-					cnt += plist_count( it->lookahead );
+					prev_cnt += parray_count( &it->lookahead );
+					parray_union( &it->lookahead, &cit->lookahead );
+					cnt += parray_count( &it->lookahead );
 				}
 
 				if( cnt != prev_cnt )
 					nst->done = FALSE;
 
 #if DEBUGLEVEL > 2
-				lritems_print( st->kernel, "EXT Kernel" );
+				lritems_print( &st->kernel, "EXT Kernel" );
 #endif
 			}
 
@@ -677,8 +686,8 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 		LOG( "State %d", plist_offset( plist_get_by_ptr( states, st ) ) );
 
 		/* Reductions */
-		for( part = st->kernel; part;
-				part = ( part == st->kernel ? st->epsilon : (plist*)NULL ) )
+		for( part = &st->kernel; part;
+				part = ( part == &st->kernel ? &st->epsilon : (plist*)NULL ) )
 		{
 			plist_for( part, f )
 			{
@@ -689,24 +698,20 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 					continue;
 
 				/* Put entries for each lookahead */
-				plist_for( it->lookahead, g )
-				{
-					sym = (Symbol*)plist_access( g );
-					lrcolumn_create( st, sym, (LRstate*)NULL, it->prod );
-				}
+				parray_sort( &it->lookahead );
+				parray_for( &it->lookahead, la )
+					lrcolumn_create( st, *la, (LRstate*)NULL, it->prod );
 			}
 		}
 
 		MSG( "Detect and report, or resolve conflicts" );
 
-		for( f = plist_first( st->actions ); f; )
+		for( col = parray_first( &st->actions ); col; )
 		{
-			col = (LRcolumn*)plist_access( f );
+			ccol = parray_next( &st->actions, col );
 
-			for( g = plist_next( f ); g; g = plist_next( g ) )
+			for( ; ccol; ccol = parray_next( &st->actions, ccol ) )
 			{
-				ccol = (LRcolumn*)plist_access( g );
-
 				if( ccol->symbol == col->symbol
 						&& ccol->reduce ) /* Assertion: Shift-shift entries
 														are never possible! */
@@ -732,7 +737,9 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 										ccol->reduce );
 							}
 
-							plist_remove( st->actions, g );
+							parray_remove( &st->actions,
+								parray_offset( &st->actions, ccol ),
+									NULL );
 
 							/* Clear non-associative entry! */
 							if( col->symbol->assoc == ASSOC_NOT )
@@ -741,8 +748,11 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 										"removing entry",
 										sym_to_str( col->symbol ) );
 
-								plist_remove( st->actions, f );
-								f = g = (plistel*)NULL;
+								parray_remove( &st->actions,
+									parray_offset( &st->actions, col ),
+										NULL );
+
+								col = ccol = NULL;
 							}
 
 							break; /* Restart search! */
@@ -773,8 +783,11 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 											"removing entry",
 											sym_to_str( col->symbol ) );
 
-									plist_remove( st->actions, f );
-									f = g = (plistel*)NULL;
+									parray_remove( &st->actions,
+										parray_offset( &st->actions, col ),
+											NULL );
+
+									col = ccol = NULL;
 									break;
 								}
 								else
@@ -783,7 +796,10 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 											"of shift" );
 								}
 
-								plist_remove( st->actions, g );
+								parray_remove( &st->actions,
+									parray_offset( &st->actions, ccol ),
+										NULL );
+
 								break;
 							}
 						}
@@ -808,25 +824,22 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 				}
 			}
 
-			if( g )
+			if( ccol )
 				continue;
 
-			if( f )
-				f = plist_next( f );
+			if( col )
+				col = parray_next( &st->actions, col );
 			else
-				f = plist_first( st->actions );
+				col = parray_first( &st->actions );
 		}
 
-		#if 0
 		MSG( "Detect default productions" );
 
 		memset( prodcnt, 0, plist_count( gram->prods ) * sizeof( int ) );
 		cnt = 0;
 
-		plist_for( st->actions, f )
+		parray_for( &st->actions, col )
 		{
-			col = (LRcolumn*)plist_access( f );
-
 			if( col->reduce && prodcnt[ col->reduce->idx ]++ > cnt )
 			{
 				cnt = prodcnt[ col->reduce->idx ];
@@ -837,27 +850,31 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 		/* Remove all parser actions that match the default production */
 		if( st->def_prod )
 		{
-			for( f = plist_first( st->actions ); f; )
+			for( col = parray_first( &st->actions ); col; )
 			{
-				col = (LRcolumn*)plist_access( f );
-
 				if( col->reduce == st->def_prod )
 				{
-					g = plist_next( f );
-					plist_remove( st->actions, f );
-					f = g;
+					parray_remove( &st->actions,
+						parray_offset( &st->actions, col ),
+							NULL );
+
+					col = parray_first( &st->actions );
 				}
 				else
-					f = plist_next( f );
+					col = parray_next( &st->actions, col );
 			}
 		}
-		#endif
 	}
 
 	pfree( prodcnt );
 
 	MSG( "Finished" );
 	VARS( "States generated", "%d", plist_count( states ) );
+
+#if TIMEMEASURE
+	fprintf( stderr, "%d states, %lf secs\n", plist_count( states ),
+		(double)(clock() - start) / CLOCKS_PER_SEC );
+#endif
 
 	RETURN( states );
 }
@@ -873,7 +890,6 @@ pboolean lr_build( unsigned int* cnt, unsigned int*** dfa, Grammar* grm )
 	int				i;
 	int				j;
 	plistel*		e;
-	plistel*		f;
 
 	PROC( "lr_build" );
 	PARMS( "cnt", "%p", cnt );
@@ -911,8 +927,8 @@ pboolean lr_build( unsigned int* cnt, unsigned int*** dfa, Grammar* grm )
 		st = (LRstate*)plist_access( e );
 		VARS( "State", "%d", i );
 
-		total = plist_count( st->actions ) * 3
-					+ plist_count( st->gotos ) * 3
+		total = parray_count( &st->actions ) * 3
+					+ parray_count( &st->gotos ) * 3
 						+ 2;
 
 		tab[ i ] = (unsigned int*)pmalloc( total * sizeof( int ) );
@@ -920,11 +936,9 @@ pboolean lr_build( unsigned int* cnt, unsigned int*** dfa, Grammar* grm )
 		tab[ i ][ 1 ] = st->def_prod ? st->def_prod->idx + 1 : 0;
 
 		/* Actions */
-		for( j = 2, f = plist_first( st->actions );
-				f; f = plist_next( f ), j += 3 )
+		for( j = 2, col = parray_first( &st->actions );
+				col; col = parray_next( &st->actions, col ), j += 3 )
 		{
-			col = (LRcolumn*)plist_access( f );
-
 			tab[ i ][ j ] = col->symbol->idx + 1;
 
 			if( col->shift )
@@ -940,11 +954,9 @@ pboolean lr_build( unsigned int* cnt, unsigned int*** dfa, Grammar* grm )
 		}
 
 		/* Gotos */
-		for( f = plist_first( st->gotos );
-				f; f = plist_next( f ), j += 3 )
+		for( col = parray_first( &st->gotos );
+				col; col = parray_next( &st->gotos, col ), j += 3 )
 		{
-			col = (LRcolumn*)plist_access( f );
-
 			tab[ i ][ j ] = col->symbol->idx + 1;
 
 			if( col->shift )
