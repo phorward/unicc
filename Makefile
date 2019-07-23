@@ -18,6 +18,10 @@ all: unicc gram2c
 proto.h: $(SOURCES)
 	pproto $(SOURCES) >$@
 
+bnf.c: grammars/pbnf.bnf
+	awk -f etareneg.awk bnf.c >bnf.gen
+	mv bnf.gen bnf.c
+
 unicc: $(HEADERS) $(OBJECTS) main.o $(LIBPHORWARD)
 	$(CC) -g -o $@ $(OBJECTS) main.o $(LIBPHORWARD)
 
@@ -35,13 +39,9 @@ gram2c: $(HEADERS) $(OBJECTS) gram2c.o $(LIBPHORWARD)
 test: unicc
 	./unicc grammars/json.bnf grammars/test.json
 
-etareneg: gram2c
-	awk -f etareneg.awk bnf.c >bnf.gen
-	mv bnf.gen bnf.c
-
 clean:
 	-rm bnftestgen.c
 	-rm $(OBJECTS)
 	-rm *.o
-	-rm unicc gram2c bnftest
+	-rm unicc gram2c
 

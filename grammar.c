@@ -712,18 +712,17 @@ pboolean gram_prepare( Grammar* g )
 	plistel*		f;
 	Production*		prod;
 	Production*		cprod;
+	Production**	pprod;
 	Symbol*			sym;
 	pboolean		nullable;
+	pboolean		changes;
 	plist			call;
 	plist			done;
-	int				i;
-	int				cnt;
-	int				pcnt;
 	unsigned int	idx;
 #if TIMEMEASURE
 	clock_t			start;
-#endif
 	size_t			count	= 0;
+#endif
 
 	PROC( "gram_prepare" );
 
@@ -740,7 +739,11 @@ pboolean gram_prepare( Grammar* g )
 		RETURN( FALSE );
 	}
 
-	/* Reset symbols */
+	/* -------------------------------------------------------------------------
+		Set consecutive index IDs for symbols and productions
+	------------------------------------------------------------------------- */
+
+	/* Set IDs for symbols */
 	plist_sort( g->symbols );
 
 	for( idx = 0, e = plist_first( g->symbols ); e; e = plist_next( e ), idx++ )
@@ -757,15 +760,16 @@ pboolean gram_prepare( Grammar* g )
 			parray_erase( &sym->first );
 	}
 
-	/* Reset productions */
+	/* Set IDs for productions */
 	for( idx = 0, e = plist_first( g->prods ); e; e = plist_next( e ), idx++ )
 	{
 		prod = (Production*)plist_access( e );
 		prod->idx = idx;
 	}
 
-	/* Compute FIRST sets and mark left-recursions */
-	cnt = 0;
+	/* -------------------------------------------------------------------------
+		Compute FIRST sets and mark left-recursions
+	------------------------------------------------------------------------- */
 
 	plist_init( &call, 0, PLIST_MOD_RECYCLE );
 	plist_init( &done, 0, PLIST_MOD_RECYCLE );
@@ -776,8 +780,7 @@ pboolean gram_prepare( Grammar* g )
 
 	do
 	{
-		pcnt = cnt;
-		cnt = 0;
+		changes = FALSE;
 
 		plist_for( g->prods, e )
 		{
@@ -795,14 +798,19 @@ pboolean gram_prepare( Grammar* g )
 					nullable = FALSE;
 
 					/* Union first set */
-					parray_union( &cprod->lhs->first, &sym->first );
+					if( parray_union( &cprod->lhs->first, &sym->first ) )
+						changes = TRUE;
+#if TIMEMEASURE
 					count++;
+#endif
 
 					if( !SYM_IS_TERMINAL( sym ) )
 					{
 						/* Put prods on stack */
-						for( i = 0; ( prod = sym_getprod( sym, i ) ); i++ )
+						parray_for( &sym->prods, pprod )
 						{
+							prod = *pprod;
+
 							if( plist_count( prod->rhs ) == 0 )
 							{
 								nullable = TRUE;
@@ -817,8 +825,6 @@ pboolean gram_prepare( Grammar* g )
 						}
 					}
 
-					/* printf( "%ld\n", parray_count( &cprod->lhs->first ) ); */
-
 					if( !nullable )
 						break;
 				}
@@ -826,23 +832,26 @@ pboolean gram_prepare( Grammar* g )
 				/* Flag nullable */
 				if( !f )
 					cprod->flags.nullable = cprod->lhs->flags.nullable = TRUE;
-
-				cnt += parray_count( &cprod->lhs->first );
 			}
 
 			plist_erase( &done );
 		}
 	}
-	while( pcnt < cnt );
+	while( changes );
 
 #if TIMEMEASURE
 	fprintf( stderr, "FIRST %ld %f\n", count, (double)(clock() - start) / CLOCKS_PER_SEC );
 #endif
 
-	plist_clear( &call );
-	plist_clear( &done );
+	/* Erase lists, re-use list items */
+	plist_erase( &call );
+	plist_erase( &done );
 
-	/* Pull-through all lexem symbols */
+	/* -------------------------------------------------------------------------
+		Pull-through lexeme symbol configurations to superior non-terminals
+	------------------------------------------------------------------------- */
+
+	/* Push all non-terminals configured as lexeme onto call stack */
 	plist_for( g->symbols, e )
 	{
 		sym = (Symbol*)plist_access( e );
@@ -853,11 +862,12 @@ pboolean gram_prepare( Grammar* g )
 		plist_push( &call, sym );
 	}
 
+	/* Pull through lexeme configurations to superior non-terminals */
 	while( plist_pop( &call, &sym ) )
 	{
 		plist_push( &done, sym );
 
-		for( i = 0; ( prod = sym_getprod( sym, i ) ); i++ )
+		parray_for( &sym->prods, prod )
 		{
 			plist_for( prod->rhs, f )
 			{
@@ -875,27 +885,41 @@ pboolean gram_prepare( Grammar* g )
 	}
 
 	/* Clear all lists */
-	plist_erase( &call );
-	plist_erase( &done );
+	plist_clear( &call );
+	plist_clear( &done );
 
-	/* Inherit precedences */
-	plist_for( g->prods, e )
+	/* -------------------------------------------------------------------------
+		Inherit precedences
+	------------------------------------------------------------------------- */
+	do
 	{
-		prod = (Production*)plist_access( e );
+		changes = FALSE;
 
-		if( prod->prec < prod->lhs->prec )
-			prod->prec = prod->lhs->prec;
-
-		for( f = plist_last( prod->rhs ); f; f = plist_prev( f ) )
+		plist_for( g->prods, e )
 		{
-			sym = (Symbol*)plist_access( f );
-			if( sym->prec > prod->prec )
+			prod = (Production*)plist_access( e );
+
+			/* Pass left-hand side precedence to productions */
+			if( prod->prec < prod->lhs->prec )
 			{
-				prod->prec = sym->prec;
-				break;
+				prod->prec = prod->lhs->prec;
+				changes = TRUE;
+			}
+
+			/* Inherit production's precedence from rightmost symbol */
+			for( f = plist_last( prod->rhs ); f; f = plist_prev( f ) )
+			{
+				sym = (Symbol*)plist_access( f );
+				if( sym->prec > prod->prec )
+				{
+					prod->prec = sym->prec;
+					changes = TRUE;
+					break;
+				}
 			}
 		}
 	}
+	while( changes );
 
 	/* Set finalized */
 	g->flags.finalized = TRUE;
