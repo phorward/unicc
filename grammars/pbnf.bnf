@@ -19,6 +19,7 @@
 #@Function		:= /[A-Za-z_][A-Za-z0-9_]*\(\)/
 
 @goal			:= '$'
+@lexem			:= '!'
 
 // Nonterminals ----------------------------------------------------------------
 
@@ -50,7 +51,7 @@
 @alternation	: rule ('|' rule)+
 				| rule
 
-@definition		: '@' variable goal? colon alternation	= definition
+@definition		: '@' variable (goal | lexem)? colon alternation = definition
 				| /%(ignore|skip)/ ( terminal | variable )+	= ignore
 
 @assocdef		: '<' terminal+	= assoc_left

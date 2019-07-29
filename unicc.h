@@ -74,6 +74,9 @@ struct _Symbol
 #ifndef SYM_T_EOF
 #define SYM_T_EOF			"&eof"
 #endif
+#ifndef SYM_T_WHITESPACE
+#define SYM_T_WHITESPACE	"&whitespace"
+#endif
 
 	struct
 	{
@@ -100,7 +103,7 @@ struct _Symbol
 	unsigned int			prec;		/* LR precedence level */
 
 	parray					first;		/* Set of FIRST() symbols */
-	parray					prods;		/* Productions */
+	plist					prods;		/* Productions associated with symbol */
 
 	char*					emit;		/* AST emitting node */
 
@@ -219,6 +222,7 @@ struct _Parser_ctx
 	Parser_stat				state;		/* State */
 	Production*				reduce;		/* Reduce */
 	parray					stack;		/* Stack */
+
 	AST_node*				ast;		/* AST root node */
 	AST_node*				last;		/* AST last node */
 

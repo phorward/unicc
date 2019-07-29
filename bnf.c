@@ -10,24 +10,6 @@ Usage:	Parsing full parser definitions from Phorward BNF (PBNF).
 
 #include "unicc.h"
 
-/* Derive name from basename */
-static char* derive_name( Grammar* gram, char* base )
-{
-	int             i;
-	static char		deriv   [ ( NAMELEN * 2 ) + 1 ];
-
-	sprintf( deriv, "%s%c", base, DERIVCHAR );
-
-	for( i = 0; strlen( deriv ) < ( NAMELEN * 2 ); i++ )
-	{
-		if( !sym_get_by_name( gram, deriv ) )
-			return pstrdup( deriv );
-
-		sprintf( deriv + strlen( deriv ), "%c", DERIVCHAR );
-	}
-
-	return (char*)NULL;
-}
 
 /* Traverse a grammar from a parsed AST */
 static void traverse( Grammar* g, AST_node* ast )
@@ -137,12 +119,10 @@ static void traverse( Grammar* g, AST_node* ast )
 
 				VARS( "sym->name", "%s", sym->name );
 
-				node->ptr = sym = sym_create( g,
-									derive_name( g, sym->name ) );
+				node->ptr = sym = sym_obtain_derivative( sym, TRUE );
 
 				VARS( "sym->name", "%s", sym->name );
 
-				sym->flags.freename = TRUE;
 				sym->flags.nameless = TRUE;
 				sym->flags.defined = TRUE;
 				sym->flags.generated = TRUE;
@@ -159,6 +139,11 @@ static void traverse( Grammar* g, AST_node* ast )
 				if( node && !strcmp( node->emit, "goal" ) )
 				{
 					g->goal = sym;
+					node = node->next;
+				}
+				else if( node && !strcmp( node->emit, "lexem" ) )
+				{
+					sym->flags.lexem = TRUE;
 					node = node->next;
 				}
 
@@ -327,6 +312,7 @@ pboolean gram_from_bnf( Grammar* g, char* src )
 	Symbol*	t_ignoreskip;
 	Symbol*	t_trn;
 	Symbol*	t_goal;
+	Symbol*	t_lexem;
 	Symbol*	n_opt_emits;
 	Symbol*	_t_noname[ 13 ];
 	Symbol*	n_terminal;
@@ -335,7 +321,7 @@ pboolean gram_from_bnf( Grammar* g, char* src )
 	Symbol*	n_emits;
 	Symbol*	n_pos_alternation;
 	Symbol*	n_pos_definition;
-	Symbol*	n_opt_goal;
+	Symbol*	n_opt_definition;
 	Symbol*	t_String;
 	Symbol*	t_nnnn;
 
@@ -353,6 +339,10 @@ pboolean gram_from_bnf( Grammar* g, char* src )
 	t_goal = sym_create( pbnf, "goal" );
 	t_goal->str = "$";
 	t_goal->emit = t_goal->name;
+
+	t_lexem = sym_create( pbnf, "lexem" );
+	t_lexem->str = "!";
+	t_lexem->emit = t_lexem->name;
 
 	_t_noname[ 0 ] = sym_create( pbnf, "':='" );
 	_t_noname[ 0 ]->str = ":=";
@@ -462,9 +452,9 @@ pboolean gram_from_bnf( Grammar* g, char* src )
 
 	n_definition[ 0 ] = sym_create( pbnf, "definition" );
 
-	n_opt_goal = sym_create( pbnf, "opt_goal" );
-
 	n_definition[ 1 ] = sym_create( pbnf, "definition'" );
+
+	n_opt_definition = sym_create( pbnf, "opt_definition'" );
 
 	n_pos_definition = sym_create( pbnf, "pos_definition'" );
 
@@ -620,11 +610,20 @@ pboolean gram_from_bnf( Grammar* g, char* src )
 		(Symbol*)NULL
 	);
 
-	prod_create( pbnf, n_opt_goal /* opt_goal */,
+	prod_create( pbnf, n_definition[ 1 ] /* definition' */,
 		t_goal, /* "$" */
 		(Symbol*)NULL
 	);
-	prod_create( pbnf, n_opt_goal /* opt_goal */,
+	prod_create( pbnf, n_definition[ 1 ] /* definition' */,
+		t_lexem, /* "!" */
+		(Symbol*)NULL
+	);
+
+	prod_create( pbnf, n_opt_definition /* opt_definition' */,
+		n_definition[ 1 ], /* definition' */
+		(Symbol*)NULL
+	);
+	prod_create( pbnf, n_opt_definition /* opt_definition' */,
 		(Symbol*)NULL
 	);
 
@@ -650,7 +649,7 @@ pboolean gram_from_bnf( Grammar* g, char* src )
 	prod_create( pbnf, n_definition[ 0 ] /* definition */,
 		_t_noname[ 9 ], /* "@" */
 		n_variable, /* variable */
-		n_opt_goal, /* opt_goal */
+		n_opt_definition, /* opt_definition' */
 		n_colon, /* colon */
 		n_alternation[ 0 ], /* alternation */
 		(Symbol*)NULL
@@ -804,13 +803,12 @@ pboolean gram_from_bnf( Grammar* g, char* src )
 	/* Look for unique goal sequence */
 	if( sym_getprod( g->goal, 1 ) )
 	{
-		Symbol*		s;
+		Symbol*		goal;
 
-		s = sym_create( g, derive_name( g, g->goal->name ) );
-		s->flags.freename = TRUE;
+		goal = sym_obtain_derivative( g->goal, TRUE );
+		prod_create( g, goal, g->goal, (Symbol*)NULL );
 
-		prod_create( g, s, g->goal, (Symbol*)NULL );
-		g->goal = s;
+		g->goal = goal;
 	}
 
 	/* gram_dump( stderr, gram ); */

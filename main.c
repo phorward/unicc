@@ -154,6 +154,8 @@ int main( int argc, char** argv )
 
 	if( dg )
 	{
+		gram_transform_to_scannerless( g );
+
 		GRAMMAR_DUMP( g );
 		printf( "%s\n", gram_to_bnf( g ) );
 	}

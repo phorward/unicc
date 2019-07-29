@@ -212,14 +212,9 @@ void ast_dump_short( FILE* stream, AST_node* ast )
 
 		fprintf( stream, "%s", ast->emit );
 
-		if( SYM_IS_TERMINAL( ast->sym ) || ast->sym->flags.lexem )
-		{
-			if( ast->val )
-				fprintf( stream, " (%p)", ast->val );
-			else if( ast->token.start && ast->token.len )
-				fprintf( stream, " >%.*s<",
-							(int)ast->token.len, ast->token.start );
-		}
+		if( ast->token.start && ast->token.len )
+			fprintf( stream, " >%.*s<",
+						(int)ast->token.len, ast->token.start );
 
 		fprintf( stream, "\n" );
 
@@ -454,8 +449,7 @@ typedef struct
 
 	AST_node*		node;			/* AST construction */
 
-	int				row;			/* Positioning in source */
-	int				col;			/* Positioning in source */
+	Token			token;			/* Token */
 } LRstackitem;
 
 
@@ -570,7 +564,7 @@ plex* par_autolex( Parser* p )
 			VARS( "sym->name", "%s", sym->name ? sym->name : "(null)" );
 
 			plex_define( lex, sym->str ? sym->str : sym->name,
-				(int)sym->idx, PREGEX_COMP_STATIC );
+				(int)sym->idx, sym->str ? PREGEX_COMP_STATIC : 0 );
 		}
 	}
 
@@ -717,21 +711,36 @@ Parser_ctx* parctx_free( Parser_ctx* ctx )
 	return (Parser_ctx*)NULL;
 }
 
-#if 0
+#define PRINT_TOKEN( title, token ) \
+	fprintf( stderr, "%s >%.*s<%s", title ? title : "", \
+		(token)->len ? (int)(token)->len : 6, \
+			(token)->start ? (token)->start : "(null)", \
+				title && *title ? "\n" : "" )
+
+#if 1
 /* Function to dump the parse stack content */
 static void print_stack( char* title, parray* stack )
 {
 	LRstackitem*	e;
-	int		i;
+	int				i;
 
 	fprintf( stderr, "STACK DUMP %s\n", title );
 
 	for( i = 0; i < parray_count( stack ); i++ )
 	{
 		e = (LRstackitem*)parray_get( stack, i );
-		fprintf( stderr, "%02d: %s %d >%.*s<\n",
-			i, e->sym->name, e->state
-				e->end - e->start, e->start );
+		fprintf( stderr, "%02d: %s %d",
+			i, e->sym->name, e->state );
+
+		PRINT_TOKEN( "", &e->token );
+
+		if( e->node )
+		{
+			fprintf( stderr, " [%s]", e->node->emit );
+			PRINT_TOKEN( "", &e->node->token );
+		}
+
+		fprintf( stderr, "\n" );
 	}
 }
 #endif
@@ -760,6 +769,7 @@ Parser_stat parctx_next( Parser_ctx* ctx, Token* tok )
 	int				shift;
 	int				reduce;
 	Parser*			par;
+	Token			range;
 
 	PROC( "parctx_next" );
 
@@ -805,6 +815,7 @@ Parser_stat parctx_next( Parser_ctx* ctx, Token* tok )
 							ctx->reduce->lhs->name );
 
 			ctx->last = (AST_node*)NULL;
+			memset( &range, 0, sizeof( Token ) );
 
 			for( i = 0; i < plist_count( ctx->reduce->rhs ); i++ )
 			{
@@ -827,6 +838,17 @@ Parser_stat parctx_next( Parser_ctx* ctx, Token* tok )
 					while( ctx->last->prev )
 						ctx->last = ctx->last->prev;
 				}
+
+				if( tos->token.start )
+				{
+					if( !range.start )
+						range = tos->token;
+					else
+					{
+						range.start = tos->token.start;
+						range.len = range.end - range.start;
+					}
+				}
 			}
 
 			tos = (LRstackitem*)parray_last( &ctx->stack );
@@ -837,7 +859,8 @@ Parser_stat parctx_next( Parser_ctx* ctx, Token* tok )
 				ctx->last = ast_create(
 						ctx->reduce->emit ? ctx->reduce->emit
 							: ctx->reduce->lhs->emit, ctx->reduce->lhs,
-								ctx->reduce, NULL, ctx->last );
+								ctx->reduce, &range,
+									ctx->last );
 			}
 
 			/* Goal symbol reduced? */
@@ -872,6 +895,7 @@ Parser_stat parctx_next( Parser_ctx* ctx, Token* tok )
 			tos->sym = ctx->reduce->lhs;
 			tos->state = shift - 1;
 			tos->node = ctx->last;
+			tos->token = range;
 
 			ctx->reduce = reduce ? prod_get( par->gram, reduce - 1 )
 									: (Production*)NULL;
@@ -939,6 +963,7 @@ Parser_stat parctx_next( Parser_ctx* ctx, Token* tok )
 
 	tos->sym = tok->symbol;
 	tos->state = ctx->reduce ? 0 : shift - 1;
+	tos->token = *tok;
 
 	/* Shifted symbol becomes AST node? */
 	if( tok->symbol->emit )

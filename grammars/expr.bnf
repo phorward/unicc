@@ -1,7 +1,8 @@
 %skip	/[\s]+/
-@Int	: /[0-9]+/ = int
 
-@factor	: Int
+@int !  := [0-9]+
+
+@factor	: int
 		| '(' expr ')'
 
 @term	: term '*' factor = mul

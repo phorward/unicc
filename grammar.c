@@ -62,9 +62,54 @@ Symbol* sym_create( Grammar* g, char* name )
 		sym->flags.nameless = TRUE;
 
 	parray_init( &sym->first, sizeof( Symbol* ), 64 );
-	parray_init( &sym->prods, sizeof( Production* ), 32 );
+	plist_init( &sym->prods, 0, PLIST_MOD_PTR | PLIST_MOD_RECYCLE );
 
 	g->flags.finalized = FALSE;
+	return sym;
+}
+
+/** Find or optionally create a derivative of symbol //origin//.
+
+This function checks for, or creates a new symbol, as a derivation of //sym//.
+
+If //unique// is TRUE, the function will always create a new, unique symbol.
+If //unique// is FALSE, the function checks for an existing derivation of
+//origin//, and only creates a new derivative if no derivation exists yet.
+*/
+Symbol* sym_obtain_derivative( Symbol* origin, pboolean unique )
+{
+	Symbol*			sym;
+	static char		deriv   [ NAMELEN * 2 + 1 ];
+
+	if( !( origin && origin->name ) )
+	{
+		WRONGPARAM;
+		return (Symbol*)NULL;
+	}
+
+	/* fixme: Allow for dynamically sized names! */
+	if( pstrlen( origin->name ) > NAMELEN )
+		CORE;
+
+	sprintf( deriv, "%s%c", origin->name, DERIVCHAR );
+
+	/* Create unique symbol name */
+	while( ( sym = sym_get_by_name( origin->grm, deriv ) )
+		   && ( !unique || sym->origin != origin ) )
+		sprintf( deriv + strlen( deriv ), "%c", DERIVCHAR );
+
+	if( !sym )
+	{
+		sym = sym_create( origin->grm, pstrdup( deriv ) );
+
+		sym->flags.freename = TRUE;
+		sym->flags.generated = TRUE;
+
+		sym->origin = origin;
+		sym->prec = origin->prec;
+		sym->assoc = origin->assoc;
+	}
+
 	return sym;
 }
 
@@ -90,7 +135,7 @@ Symbol* sym_free( Symbol* sym )
 		pregex_ptn_free( sym->ptn );
 
 	parray_erase( &sym->first );
-	parray_erase( &sym->prods );
+	plist_erase( &sym->prods );
 
 	return (Symbol*)NULL;
 }
@@ -191,10 +236,10 @@ Production* sym_getprod( Symbol* sym, size_t n )
 		return (Production*)NULL;
 	}
 
-	if( SYM_IS_TERMINAL( sym ) || n >= parray_count( &sym->prods ) )
+	if( SYM_IS_TERMINAL( sym ) )
 		return (Production*)NULL;
 
-	return *(Production**)parray_get( &sym->prods, n );
+	return (Production*)plist_access( plist_get( &sym->prods, n ) );
 }
 
 /** Returns the string representation of symbol //sym//.
@@ -224,8 +269,7 @@ char* sym_to_str( Symbol* sym )
 			sym->strval = pasprintf( "/%s/", pregex_ptn_to_regex( sym->ptn ) );
 		else if( ( name = sym->strval = sym->name ) && !sym->grm->flags.debug )
 		{
-			if( sym->flags.generated
-					&& name[ strlen( name ) - 1 ] == DERIVCHAR )
+			if( sym->flags.generated && !sym->origin )
 			{
 				int			i;
 				plistel*	e;
@@ -477,7 +521,7 @@ Production* prod_create( Grammar* g, Symbol* lhs, ... )
 	prod->grm = g;
 
 	prod->lhs = lhs;
-	parray_push( &lhs->prods, &prod );
+	plist_push( &lhs->prods, prod );
 
 	prod->rhs = plist_create( 0, PLIST_MOD_PTR );
 
@@ -513,7 +557,7 @@ Production* prod_free( Production* p )
 	pfree( p->strval );
 	plist_free( p->rhs );
 
-	parray_remove( &p->lhs->prods, parray_offset( &p->lhs->prods, p ), NULL );
+	plist_remove( &p->lhs->prods, plist_get_by_ptr( &p->lhs->prods, p ) );
 	plist_remove( p->grm->prods, plist_get_by_ptr( p->grm->prods, p ) );
 
 	return (Production*)NULL;
@@ -710,9 +754,9 @@ pboolean gram_prepare( Grammar* g )
 {
 	plistel*		e;
 	plistel*		f;
+	plistel*		h;
 	Production*		prod;
 	Production*		cprod;
-	Production**	pprod;
 	Symbol*			sym;
 	pboolean		nullable;
 	pboolean		changes;
@@ -807,9 +851,9 @@ pboolean gram_prepare( Grammar* g )
 					if( !SYM_IS_TERMINAL( sym ) )
 					{
 						/* Put prods on stack */
-						parray_for( &sym->prods, pprod )
+						plist_for( &sym->prods, h )
 						{
-							prod = *pprod;
+							prod = (Production*)plist_access( h );
 
 							if( plist_count( prod->rhs ) == 0 )
 							{
@@ -867,8 +911,10 @@ pboolean gram_prepare( Grammar* g )
 	{
 		plist_push( &done, sym );
 
-		parray_for( &sym->prods, prod )
+		plist_for( &sym->prods, e )
 		{
+			prod = (Production*)plist_access( e );
+
 			plist_for( prod->rhs, f )
 			{
 				sym = (Symbol*)plist_access( f );
@@ -924,6 +970,189 @@ pboolean gram_prepare( Grammar* g )
 	/* Set finalized */
 	g->flags.finalized = TRUE;
 	g->strval = pfree( g->strval );
+
+	RETURN( TRUE );
+}
+
+
+/** Transform grammar's whitespace symbol handling to make it parseable
+using a scannerless parser. */
+pboolean gram_transform_to_scannerless( Grammar* g )
+{
+	Symbol		*	ws		= (Symbol*)NULL,
+				*	ws_pos,
+				*	ws_kle,
+				*	sym,
+				*	nsym;
+
+	Production	*	p;
+
+	plist		stack,
+				done,
+				rewritten;
+
+	plistel		*	e,
+				*	f;
+
+	PROC( "gram_transform_to_scannerless" );
+
+	if( !g )
+	{
+		WRONGPARAM;
+		RETURN( FALSE );
+	}
+
+	/* Create productions for all whitespaces */
+	plist_for( g->symbols, e )
+	{
+		sym = (Symbol*)plist_access( e );
+
+		if( sym->flags.whitespace )
+		{
+			if( !ws )
+			{
+				ws = sym_create( g, SYM_T_WHITESPACE );
+
+				ws->flags.special = TRUE;
+				ws->flags.lexem = TRUE;
+				ws->flags.generated = TRUE;
+			}
+
+			p = prod_create( g, ws, sym, NULL );
+		}
+	}
+
+	if( !ws )
+		RETURN( FALSE );
+
+	ws->flags.whitespace = TRUE;
+
+	ws_kle = sym_mod_kleene( ws );
+	ws_kle->flags.lexem = TRUE;
+	ws_kle->flags.whitespace = TRUE;
+
+	ws_pos = sym_mod_positive( ws );
+	ws_pos->flags.lexem = TRUE;
+	ws_pos->flags.whitespace = TRUE;
+
+	/*
+		Find out all lexeme non-terminals and those
+		which belong to them.
+	*/
+	plist_init( &done, 0, PLIST_MOD_PTR | PLIST_MOD_RECYCLE );
+	plist_init( &stack, 0, PLIST_MOD_PTR | PLIST_MOD_RECYCLE );
+	plist_init( &rewritten, 0, PLIST_MOD_PTR | PLIST_MOD_RECYCLE );
+
+	plist_for( g->symbols, e )
+	{
+		sym = (Symbol*)plist_access( e );
+
+		if( sym->flags.lexem && !SYM_IS_TERMINAL( sym ) )
+		{
+			plist_push( &done, sym );
+			plist_push( &stack, sym );
+		}
+	}
+
+	while( plist_pop( &stack, &sym ) )
+	{
+		plist_for( &sym->prods, e )
+		{
+			p = (Production*)plist_access( e );
+
+			plist_for( p->rhs, f )
+			{
+				sym = (Symbol*)plist_access( f );
+
+				if( !SYM_IS_TERMINAL( sym ) )
+				{
+					if( !plist_get_by_ptr( &done, sym ) )
+					{
+						sym->flags.lexem = TRUE;
+
+						plist_push( &done, sym );
+						plist_push( &stack, sym );
+					}
+				}
+			}
+		}
+	}
+
+	/*
+		Find all non-terminals from goal; If there is a call to a
+		lexem non-terminal or a terminal, rewrite their rules and
+		replace them.
+	*/
+	if( !( g->goal->flags.lexem ) )
+	{
+		plist_clear( &done );
+		plist_clear( &stack );
+
+		plist_push( &done, g->goal );
+		plist_push( &stack, g->goal );
+
+		while( plist_pop( &stack, &sym ) )
+		{
+			plist_for( &sym->prods, e )
+			{
+				p = (Production*)plist_access( e );
+
+				/* Don't rewrite a production twice! */
+				if( plist_get_by_ptr( &rewritten, p ) )
+					continue;
+
+				plist_for( p->rhs, f )
+				{
+					sym = (Symbol*)plist_access( f );
+
+					if( !SYM_IS_TERMINAL( sym ) && !( sym->flags.lexem ) )
+					{
+						if( !plist_get_by_ptr( &done, sym ) )
+						{
+							plist_push( &done, sym );
+							plist_push( &stack, sym );
+						}
+					}
+					else if( ( !SYM_IS_TERMINAL( sym )
+								&& !( sym->flags.lexem ) )
+							 || SYM_IS_TERMINAL( sym ) )
+					{
+						/* Do not rewrite special symbols! */
+						if( sym->flags.special )
+							continue;
+
+						nsym = sym_obtain_derivative( sym, FALSE );
+
+						/* If you already found a symbol, don't do anything! */
+						if( !sym_getprod( nsym, 0 ) )
+						{
+							prod_create( g, nsym, sym, ws_kle, NULL );
+
+							//fixme?
+							//nsym->keyword = sym->keyword;
+							//nsym->vtype = sym->vtype;
+						}
+
+						/* Replace the rewritten symbol with the
+						  		production's symbol! */
+						memcpy( f + 1, &nsym, sizeof( Symbol* ) );
+					}
+				}
+
+				/* Mark this production as already rewritten! */
+				plist_push( &rewritten, p );
+			}
+		}
+	}
+
+	plist_erase( &done );
+	plist_erase( &rewritten );
+	plist_erase( &stack );
+
+	/* Add whitespace behind goal symbol */
+	sym = sym_obtain_derivative( g->goal, TRUE );
+	prod_create( g, sym, g->goal, ws_kle, NULL );
+	g->goal = sym;
 
 	RETURN( TRUE );
 }

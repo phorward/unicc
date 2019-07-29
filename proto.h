@@ -3,6 +3,7 @@ pboolean gram_from_bnf( Grammar* g, char* src );
 
 /* grammar.c */
 Symbol* sym_create( Grammar* g, char* name );
+Symbol* sym_obtain_derivative( Symbol* origin, pboolean unique );
 Symbol* sym_free( Symbol* sym );
 Symbol* sym_drop( Symbol* sym );
 Symbol* sym_get( Grammar* g, unsigned int n );
@@ -22,6 +23,7 @@ Symbol* prod_getfromrhs( Production* p, int off );
 char* prod_to_str( Production* p );
 Grammar* gram_create( void );
 pboolean gram_prepare( Grammar* g );
+pboolean gram_transform_to_scannerless( Grammar* g );
 void __dbg_gram_dump( char* file, int line, char* function, char* name, Grammar* g );
 char* gram_to_bnf( Grammar* grm );
 pboolean gram_dump_json( FILE* stream, Grammar* grm );
