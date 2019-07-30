@@ -117,11 +117,16 @@ static void traverse( Grammar* g, AST_node* ast )
 					}
 				}
 
-				VARS( "sym->name", "%s", sym->name );
+				if( sym )
+				{
+					VARS( "sym->name", "%s", sym->name );
 
-				node->ptr = sym = sym_obtain_derivative( sym, TRUE );
+					node->ptr = sym = sym_obtain_derivative( sym, TRUE );
 
-				VARS( "sym->name", "%s", sym->name );
+					VARS( "sym->name", "%s", sym->name );
+				}
+				else
+					node->ptr = sym = sym_create( g, NULL );
 
 				sym->flags.nameless = TRUE;
 				sym->flags.defined = TRUE;
@@ -301,6 +306,7 @@ pboolean gram_from_bnf( Grammar* g, char* src )
 	Symbol*	t_nn;
 	Symbol*	n_variable;
 	Symbol*	n_definition[ 2 ];
+	Symbol*	n_pos_symbol;
 	Symbol*	t_Identifier;
 	Symbol*	n_rule;
 	Symbol*	n_modifier;
@@ -320,7 +326,6 @@ pboolean gram_from_bnf( Grammar* g, char* src )
 	Symbol*	t_Token;
 	Symbol*	n_emits;
 	Symbol*	n_pos_alternation;
-	Symbol*	n_pos_definition;
 	Symbol*	n_opt_definition;
 	Symbol*	t_String;
 	Symbol*	t_nnnn;
@@ -456,7 +461,7 @@ pboolean gram_from_bnf( Grammar* g, char* src )
 
 	n_opt_definition = sym_create( pbnf, "opt_definition'" );
 
-	n_pos_definition = sym_create( pbnf, "pos_definition'" );
+	n_pos_symbol = sym_create( pbnf, "pos_symbol" );
 
 	n_assocdef = sym_create( pbnf, "assocdef" );
 
@@ -627,22 +632,13 @@ pboolean gram_from_bnf( Grammar* g, char* src )
 		(Symbol*)NULL
 	);
 
-	prod_create( pbnf, n_definition[ 1 ] /* definition' */,
-		n_terminal, /* terminal */
+	prod_create( pbnf, n_pos_symbol /* pos_symbol */,
+		n_pos_symbol, /* pos_symbol */
+		n_symbol, /* symbol */
 		(Symbol*)NULL
 	);
-	prod_create( pbnf, n_definition[ 1 ] /* definition' */,
-		n_variable, /* variable */
-		(Symbol*)NULL
-	);
-
-	prod_create( pbnf, n_pos_definition /* pos_definition' */,
-		n_pos_definition, /* pos_definition' */
-		n_definition[ 1 ], /* definition' */
-		(Symbol*)NULL
-	);
-	prod_create( pbnf, n_pos_definition /* pos_definition' */,
-		n_definition[ 1 ], /* definition' */
+	prod_create( pbnf, n_pos_symbol /* pos_symbol */,
+		n_symbol, /* symbol */
 		(Symbol*)NULL
 	);
 
@@ -657,7 +653,7 @@ pboolean gram_from_bnf( Grammar* g, char* src )
 
 	prod_create( pbnf, n_definition[ 0 ] /* definition */,
 		t_ignoreskip, /* /%(ignore|skip)/ */
-		n_pos_definition, /* pos_definition' */
+		n_pos_symbol, /* pos_symbol */
 		(Symbol*)NULL
 	)->emit = "ignore";
 

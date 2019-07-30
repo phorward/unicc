@@ -52,7 +52,7 @@
 				| rule
 
 @definition		: '@' variable (goal | lexem)? colon alternation = definition
-				| /%(ignore|skip)/ ( terminal | variable )+	= ignore
+				| /%(ignore|skip)/ symbol+ = ignore
 
 @assocdef		: '<' terminal+	= assoc_left
 				| '>' terminal+	= assoc_right

@@ -135,6 +135,8 @@ Symbol* sym_free( Symbol* sym )
 		pregex_ptn_free( sym->ptn );
 
 	parray_erase( &sym->first );
+
+	plist_iter_access( &sym->prods, (plistfn)prod_free );
 	plist_erase( &sym->prods );
 
 	return (Symbol*)NULL;
@@ -557,7 +559,9 @@ Production* prod_free( Production* p )
 	pfree( p->strval );
 	plist_free( p->rhs );
 
-	plist_remove( &p->lhs->prods, plist_get_by_ptr( &p->lhs->prods, p ) );
+	if( plist_get_by_ptr( &p->lhs->prods, p ) )
+		plist_remove( &p->lhs->prods, plist_get_by_ptr( &p->lhs->prods, p ) );
+
 	plist_remove( p->grm->prods, plist_get_by_ptr( p->grm->prods, p ) );
 
 	return (Production*)NULL;
@@ -1114,7 +1118,7 @@ pboolean gram_transform_to_scannerless( Grammar* g )
 						}
 					}
 					else if( ( !SYM_IS_TERMINAL( sym )
-								&& !( sym->flags.lexem ) )
+								&& sym->flags.lexem )
 							 || SYM_IS_TERMINAL( sym ) )
 					{
 						/* Do not rewrite special symbols! */
