@@ -1,4 +1,4 @@
-# UniCC [![Build Status](https://travis-ci.org/phorward/unicc.svg?branch=develop)](https://travis-ci.org/phorward/unicc)
+# UniCC [![Build Status](https://travis-ci.org/phorward/unicc.svg?branch=master)](https://travis-ci.org/phorward/unicc)
 
 **UniCC** is a universal LALR(1) parser generator, targetting C, C++, Python, JavaScript, JSON and XML.
 
@@ -9,6 +9,8 @@ UniCC (UNIversal Compiler-Compiler) is a LALR(1) parser generator.
 It compiles an augmented grammar definition into a program source code that parses the described grammar. Because UniCC is intended to be target-language independent, it can be configured via template definition files to emit parsers in almost any programming language.
 
 UniCC comes with out of the box support for the programming languages **C**, **C++**, **Python** (both 2.x and 3.x) and **JavaScript**. Parsers can also be generated into **JSON** and **XML**.
+
+UniCC can generate both scanner-less and scanner-mode parsers. The more powerful scanner-less parsing is the default, and allows to break the barrier between the grammar and its tokens, so tokens are under full control of the context-free grammar. Scanner-less parsing requires that the provided grammar is internally rewritten according to whitespace and lexeme settings.
 
 ## Example
 
@@ -59,8 +61,8 @@ UniCC provides the following features and tools:
 
 - Grammars are expressed in a powerful Backus-Naur-style meta language
 - Generates parsers in C, C++, Python, JavaScript, JSON and XML
-- Allows for scannerless parsing and scanner-enabled parsing modes
-- Generated parsers are fully Unicode-enabled
+- Scanner-less and scanner-mode parser construction supported
+- Build-in full Unicode processing
 - Grammar prototyping features, virtual productions and anonymous nonterminals
 - Abstract syntax tree notation features
 - Semantically determined symbols
