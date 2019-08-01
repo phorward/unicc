@@ -51,7 +51,7 @@ char* error_txt[128] =
 	"Action references to undefined right-hand side symbol '%.*s'",
 	"Left-hand side '%s' not known",
 	"Terminal '%s' not known",
-	"Semantic code will be ignored: No target specified.",
+	"Ignoring semantic code: `#!language´ must explicitly be specified.",
 	"Multiple use of directive '#%s' ignored; It has already been defined."
 };
 
@@ -88,7 +88,7 @@ void print_error( PARSER* parser, ERRORCODE err_id, int err_style, ... )
 	va_start( params, err_style );
 
 	if( err_style & ERRSTYLE_WARNING && no_warnings )
-		do_print = FALSE;
+		do_print = TRUEBOOLEAN( err_style & ERRSTYLE_IMPORTANT );
 
 	if( parser->gen_xml )
 	{

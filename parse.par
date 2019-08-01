@@ -1129,8 +1129,9 @@ code			:	code_begin inner_code_opt "*]"
 						{
 							print_error( parser,
 								ERR_NO_TARGET_TPL_SUPPLY,
-									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
-										parser->filename, last_code_begin );
+									ERRSTYLE_WARNING | ERRSTYLE_IMPORTANT
+									        | ERRSTYLE_FILEINFO,
+								        parser->filename, last_code_begin );
 
 							reset_strbuf();
 						}
