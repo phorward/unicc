@@ -3673,8 +3673,9 @@ int _parse( _pcb* pcb )
 						{
 							print_error( parser,
 								ERR_NO_TARGET_TPL_SUPPLY,
-									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
-										parser->filename, last_code_begin );
+									ERRSTYLE_WARNING | ERRSTYLE_IMPORTANT
+									        | ERRSTYLE_FILEINFO,
+								        parser->filename, last_code_begin );
 
 							reset_strbuf();
 						}
@@ -3683,7 +3684,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 153:
 				{
-					#line 1142 "parse.par"
+					#line 1143 "parse.par"
  last_code_begin = line; 
 					;
 				}				break;
@@ -3694,19 +3695,19 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 155:
 				{
-					#line 1146 "parse.par"
+					#line 1147 "parse.par"
 	reset_strbuf(); 
 					;
 				}				break;
 					case 156:
 				{
-					#line 1150 "parse.par"
+					#line 1151 "parse.par"
 	strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) );		
 					;
 				}				break;
 					case 157:
 				{
-					#line 1153 "parse.par"
+					#line 1154 "parse.par"
 	reset_strbuf();
 						strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) );
 					
@@ -3724,7 +3725,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 163:
 				{
-					#line 1163 "parse.par"
+					#line 1164 "parse.par"
  line++;	
 					;
 				}				break;
@@ -3740,7 +3741,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 167:
 				{
-					#line 1167 "parse.par"
+					#line 1168 "parse.par"
  line++; 	
 					;
 				}				break;
@@ -3756,7 +3757,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 170:
 				{
-					#line 1175 "parse.par"
+					#line 1176 "parse.par"
 	if( ( ( pcb->tos - 0 )->value.value_5 ) == '\n' )
 							line++;
 						pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 );
@@ -3775,7 +3776,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 173:
 				{
-					#line 1185 "parse.par"
+					#line 1186 "parse.par"
  pcb->ret.value_5 = line; 
 					;
 				}				break;

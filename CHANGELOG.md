@@ -13,6 +13,7 @@ This is the current development version.
 
 Released on: May 27, 2019
 
+- v1.6.2: Provide ERRSTYLE_IMPORTANT-flag to show up important warnings
 - v1.6.1: Removed memory leaking bug
 - Renamed top-level directive `#!mode` options to `scannerless` (default)
   and `scanner`.

@@ -84,7 +84,7 @@ Usage:	Global declarations, structures and includes
 /* UniCC version number */
 #define UNICC_VER_MAJOR			1
 #define UNICC_VER_MINOR			6
-#define UNICC_VER_PATCH			1
+#define UNICC_VER_PATCH			2
 #define UNICC_VER_EXTSTR		""
 
 /* Default target language */
@@ -446,14 +446,15 @@ struct _generator
 
 /* Error styles */
 
-#define ERRSTYLE_NONE				0
-#define ERRSTYLE_FATAL				1
-#define ERRSTYLE_WARNING			2
-#define ERRSTYLE_FILEINFO			4
-#define ERRSTYLE_STATEINFO			8
-#define ERRSTYLE_LINEINFO			16
-#define ERRSTYLE_PRODUCTION			32
-#define ERRSTYLE_SYMBOL				64
+#define ERRSTYLE_NONE				0x00
+#define ERRSTYLE_FATAL				0x01
+#define ERRSTYLE_WARNING			0x02
+#define ERRSTYLE_IMPORTANT			0x04
+#define ERRSTYLE_FILEINFO			0x08
+#define ERRSTYLE_STATEINFO			0x10
+#define ERRSTYLE_LINEINFO			0x20
+#define ERRSTYLE_PRODUCTION			0x40
+#define ERRSTYLE_SYMBOL				0x80
 
 /* Error codes */
 
