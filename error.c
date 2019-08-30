@@ -88,7 +88,7 @@ void print_error( PARSER* parser, ERRORCODE err_id, int err_style, ... )
 	va_start( params, err_style );
 
 	if( err_style & ERRSTYLE_WARNING && no_warnings )
-		do_print = TRUEBOOLEAN( err_style & ERRSTYLE_IMPORTANT );
+		do_print = MAKE_BOOLEAN( err_style & ERRSTYLE_IMPORTANT );
 
 	if( parser->gen_xml )
 	{
