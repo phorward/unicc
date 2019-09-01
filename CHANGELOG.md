@@ -6,7 +6,8 @@ This file is used to document any relevant changes done to UniCC.
 
 This is the current development version.
 
-- Minor function API changes regarding libphorward 0.25 compatibility
+- Minor function API changes regarding libphorward v1.0.0 compatibility
+- Distributed libphorward sources integrated into the lib/-directory
 - Auto-generated prototypes using pproto: `make -f Makefile.gnu proto.h`
 
 ## [v1.6]

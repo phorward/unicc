@@ -83,8 +83,6 @@ make
 make install
 ```
 
-Previously, the [Phorward Toolkit](https://github.com/phorward/phorward) must be compiled and installed, because UniCC depends on it.
-
 Windows users may download the pre-built setup package that can be found on the Phorward download server at https://phorward.info/download/unicc.
 
 ## Contributions

@@ -51,7 +51,7 @@ clean: boot_clean
 	-rm unicc
 
 proto.h: boot_clean
-	pproto *.c | awk "/int _parse/ { next } { print }" >$@
+	lib/pproto *.c | awk "/int _parse/ { next } { print }" >$@
 	
 make_install:
 	cp Makefile.gnu Makefile
