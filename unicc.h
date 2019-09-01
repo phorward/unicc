@@ -18,7 +18,7 @@ Usage:	Global declarations, structures and includes
  */
 
 /* Including the Phorward Foundation Library */
-#include <phorward.h>
+#include "lib/phorward.h"
 
 /* ezXML Library */
 #include "xml.h"

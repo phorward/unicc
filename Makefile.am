@@ -29,23 +29,40 @@ AM_CPPFLAGS = -DTLTDIR=\"$(targetsdir)\"
 # All sources except the grammar parser are equal in all bootstrappers.
 #
 
-SOURCES			= 	\
-				mem.c \
-				error.c \
-				first.c \
-				lalr.c \
-				utils.c \
-				string.c \
-				integrity.c \
-				virtual.c \
-				rewrite.c \
-				debug.c \
-				lex.c \
-				list.c \
-				build.c \
-				buildxml.c \
-				main.c \
-				xml.c
+SOURCES	= 	\
+	lib/array.c \
+	lib/ccl.c \
+	lib/convert.c \
+	lib/dbg.c \
+	lib/list.c \
+	lib/memory.c \
+	lib/string.c \
+	lib/system.c \
+	lib/utf8.c \
+	lib/dfa.c \
+	lib/direct.c \
+	lib/lex.c \
+	lib/misc.c \
+	lib/nfa.c \
+	lib/ptn.c \
+	lib/regex.c \
+	lib/util.c \
+	mem.c \
+	error.c \
+	first.c \
+	lalr.c \
+	utils.c \
+	string.c \
+	integrity.c \
+	virtual.c \
+	rewrite.c \
+	debug.c \
+	lex.c \
+	list.c \
+	build.c \
+	buildxml.c \
+	main.c \
+	xml.c
 
 if WITH_BOOTSTRAP
 

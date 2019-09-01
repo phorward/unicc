@@ -1,0 +1,281 @@
+#!/bin/sh
+#-------------------------------------------------------------------------------
+# Phorward C/C++ Library
+# Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
+# https://phorward.info ++ contact<at>phorward<dash>software<dot>com
+# All rights reserved. See LICENSE for more information.
+#
+# Script:		ptest
+# Author:		Jan Max Meyer
+# Usage:		C function prototype generator
+#-------------------------------------------------------------------------------
+
+. .phorward >/dev/null
+
+help()
+{
+	echo "Usage: `basename $0` OPTIONS file..."
+	echo
+	echo "    -D  --debug              Print test case outputs"
+	echo "    -h  --help               Show this help, and exit."
+	echo "    -k  --keep               Keep generates files (for debugging)"
+	echo "    -V  --version            Show version info and exit."
+	echo
+}
+
+
+#assemble options
+options="-v pid=$$"
+
+while [ "$1" ]
+do
+	case "$1" in
+		-D|--debug)
+		    options="$options -vdebug=1"
+		    ;;
+		-h|--help)
+		    help
+		    exit 0
+		    ;;
+		-v|--verbose)
+		    options="$options -vverbose=1"
+		    ;;
+		-k|--keep)
+		    options="$options -vkeep=1"
+		    ;;
+		-V|--version)
+		    version `basename $0` "C test checker"
+		    exit 0
+		    ;;
+		*)
+			break
+			;;
+	esac
+
+	shift
+done
+
+if [ $# -lt 1 ]
+then
+	help
+	exit 1
+fi
+
+#perform test cases
+
+awk $options '
+BEGIN				{
+                        count = 1
+                        fails = 0
+                        goods = 0
+                        mode = ""
+                        line = 1
+
+                        code = 0
+                        failed = 0
+
+                        testcase = ""
+                        testmake = ""
+                        testsrc = ""
+                        testbin = ""
+                        testout = ""
+
+                        if( !debug )
+                            dbgopt = " >/dev/null 2>&1"
+                        else
+                            dbgopt = ""
+
+                        FS="[: ()]"
+					}
+
+END                 {
+                        if( verbose )
+                        {
+                            print ""
+                            printf("%d total, %d successful, %d failed\n", \
+                                        goods + fails, goods, fails )
+                        }
+
+                        exit fails
+                    }
+
+/\/\*TESTCASE/	    {
+                        mode = "code"
+						testcase = $2 ? $2 : FILENAME "-test-" count
+
+						for( i = 3; i <= NF; i++ )
+						    testcase = testcase " " $i
+
+						testbin = "testcase-" pid "-" count++
+                        testsrc = testbin ".c"
+                        testobj = testbin ".o"
+                        testmake = testbin ".make"
+                        testout = testbin ".out"
+						next
+					}
+
+/^---+$/            {
+                        if( !mode )
+                            next
+
+                        mode = "output"
+                        line = 1
+
+                        if( !( testcase && code ) )
+                            error("Invalid testcase definition, missing code")
+
+                        system("pproto -n " testsrc " >" testsrc ".proto")
+
+                        entry = ""
+                        while( (getline < (testsrc ".proto")) > 0 )
+                        {
+                            if( $0 ~ "void [A-Za-z_][A-Za-z0-9_]*\\([ \t]*(void)?[ \t]*\\)" )
+                                entry = $2
+                        }
+
+                        close(cmd)
+
+                        if( !entry )
+                            error("No entry function found!")
+
+                        # Write main() function
+                        print "int main()" >> testsrc
+                        print "{" >> testsrc
+                        print "\t" entry "();" >> testsrc
+                        print "\treturn 0;" >> testsrc
+                        print "}" >> testsrc
+
+                        # Write Makefile
+                        print testbin ": " testobj >testmake
+
+                        # Compile
+                        if( system( "make -f " testmake dbgopt ) )
+                            error( "`make` failed" )
+
+                        # Run
+                        if( ( failed = system( \
+                                "./" testbin " > " testout " 2>&1") ) )
+                        {
+                            failure( "Program call `./" testbin \
+                                "` generally failed" )
+                            next
+                        }
+
+                        if( debug )
+                            system( "cat " testout )
+
+                        next
+                    }
+
+/^(TESTCASE)?\*\//	{
+                        if( !mode )
+                            next
+                        else if( mode == "code" )
+                            error( "Incomplete test case" )
+
+                        if( !failed && ( getline row < testout ) > 0 )
+                        {
+                            failure( "Output mismatch, expecting `" \
+                                        "(" FILENAME ", " NR ") <empty line>" \
+                                            "`, got `(" line ") " row "`" )
+                        }
+                        else if( !failed )
+                            success( "OK" )
+
+                        mode = ""
+                        failed = 0
+                        clean()
+                        next
+					}
+
+					{
+						if( mode == "code" )
+						{
+						    code = 1
+						    gsub("\\\\\\*", "/*")
+						    gsub("\\*\\\\", "*/")
+							print >> testsrc
+						}
+						else if( mode == "output" )
+						{
+						    if( !failed )
+						    {
+						        if( ( getline row < testout ) > 0 )
+						        {
+                                    sub( /[ \t\n]+$/, "", row )
+                                    failed = ( $0 != row )
+                                }
+
+                                if( failed )
+                                    failure( "Output mismatch, expecting `" \
+                                                "(" FILENAME ", " NR ") " $0 \
+                                                "`, got `(" line ") " row "`" )
+
+						    }
+
+						    line++
+						}
+					}
+
+function clean()
+{
+    if( !testsrc )
+        return
+
+    if( keep )
+		return
+
+    system("rm " \
+        testsrc " " \
+        testbin " " \
+        testobj " " \
+        testmake " " \
+        testout " " \
+        testsrc ".proto " \
+        dbgopt \
+    )
+
+    testsrc = testcase = ""
+}
+
+function info( s, origin )
+{
+    msg = ""
+    if( testcase )
+        msg = FILENAME ", " testcase " - "
+
+    if( origin )
+        msg = msg "(" FILENAME ", " NR "): "
+
+    return msg s
+}
+
+function failure( s )
+{
+    fails++
+
+    if( verbose || debug )
+        print info( s, 0 )
+
+    clean()
+}
+
+function success( s )
+{
+    goods++
+
+    if( verbose || debug )
+        print info( s, 0 )
+
+    clean()
+}
+
+function error( s )
+{
+    fails++
+    print info( s, 1 )
+    clean()
+}
+	' $*
+
+exit $?

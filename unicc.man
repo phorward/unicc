@@ -1,4 +1,4 @@
-.TH "UNICC" 1 "Nov 2018" "Version 1.5"
+.TH "UNICC" 1 "Sep 2019" "Version 1.6"
 
 .SH NAME
 .P
@@ -104,7 +104,7 @@ Please report bugs into the issue tracker on GitHub:
 https://github.com/phorward/unicc/issues
 .SH COPYRIGHT
 .P
-Copyright (C) 2006\-2018 by Phorward Software Technologies, Jan Max Meyer.
+Copyright (C) 2006\-2019 by Phorward Software Technologies, Jan Max Meyer.
 .P
 You may use, modify and distribute this software under the terms and conditions of the 3\-clause BSD license.
 

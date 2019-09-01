@@ -1,5 +1,5 @@
 AC_PREREQ([2.69])
-AC_INIT([UniCC], [1.6.0])
+AC_INIT([UniCC], [1.6.3])
 AC_PREFIX_DEFAULT([/usr])
 AC_CONFIG_SRCDIR([main.c])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
@@ -31,13 +31,9 @@ AC_PROG_MAKE_SET
 
 # Checks for libraries.
 AC_CHECK_LIB([rt], [sprintf])
-AC_CHECK_LIB([phorward], [pmalloc], [], [AC_MSG_ERROR([Cannot build without libphorward; Install Phorward Foundation Toolkit first, or set your LDFLAGS correct.])])
 
 AC_DEFINE([UNICODE],[1])
 AC_DEFINE([UTF8],[1])
-
-# Checks for header files.
-AC_CHECK_HEADER([phorward.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T

@@ -1,0 +1,206 @@
+#!/bin/sh
+#-------------------------------------------------------------------------------
+# Phorward C/C++ Library
+# Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
+# https://phorward.info ++ contact<at>phorward<dash>software<dot>com
+# All rights reserved. See LICENSE for more information.
+#
+# Script:		pproto
+# Author:		Jan Max Meyer
+# Usage:		C function prototype generator
+#-------------------------------------------------------------------------------
+
+. .phorward >/dev/null
+
+help()
+{
+	echo "Usage: `basename $0` OPTIONS file..."
+	echo
+	echo "    -h  --help               Show this help, and exit."
+	echo "    -n  --no-comments        Disable output of comments between files"
+	echo "    -s  --with-static        Output static declarations also"
+	echo "    -S  --only-static        Output static declarations only"
+	echo "    -V  --version            Show version info and exit."
+	echo
+}
+
+
+#assemble options
+options=""
+comments=1
+
+while [ "$1" ]
+do
+	case "$1" in
+		-h|--help)
+		    help
+		    exit 0
+		    ;;
+		-n|--no-comments)
+			comments=0
+			;;
+		-s|--with-static)
+			options="$options -vwith_static=1"
+			;;
+		-S|--only-static)
+			options="$options -vonly_static=1"
+			;;
+		-V|--version)
+		    version `basename $0` "C Protoype Generator"
+		    exit 0
+		    ;;
+		*)
+			break
+			;;
+	esac
+
+	shift
+done
+
+if [ $# -lt 1 ]
+then
+	help
+	exit 1
+fi
+
+#build the prototypes
+
+while [ "$1" != "" ]
+do
+    if [ $comments -eq 1 ]
+    then
+	    echo "/* $1 */"
+	fi
+
+	remove_c_comments $1 | awk $options '
+
+BEGIN				{	FS = "[ \t]+"
+						same_line = 0
+
+						if( only_static )
+							with_static = 1
+
+						entry = 1
+					}
+
+END					{
+						in_block = 0
+						begin_at[ 1 ] = 0
+
+						/* First, delete all empty preprocessor blocks */
+						for( i = 1; i < entry; i++ )
+						{
+							if( match( entries[ i ], /^# ?if/ ) == 1 )
+							{
+								in_block++
+								begin_at[ in_block ] = i
+							}
+							else if( match( entries[ i ], /^# ?(else|elif)/ ) \
+										== 1 )
+							{
+								#ok, better to do nothing here...
+								if( 0 && !in_block )
+								{
+									in_block++
+									begin_at[ in_block ] = i
+								}
+								#This may run into an error, but I
+								#dont want to fix this now ;( ...
+							}
+							else if( match( entries[ i ], /^# ?endif/ ) == 1 \
+										&& in_block )
+							{
+								for( j = begin_at[ in_block ]; j <= i; j++ )
+									entries[j] = ""
+
+								in_block--
+							}
+							else if( in_block )
+							{
+								in_block = 0
+							}
+						}
+
+						/* Then, print the remaining lines */
+						for( i = 1; i < entry; i++ )
+						{
+							if( entries[ i ] != "" )
+								print entries[ i ]
+						}
+					}
+
+/#[ \t]*(if|else|elif|ifdef|ifndef|endif)/	{
+						line = $0
+						gsub( "[ \t]+", " ", line )
+						gsub( "^[ \t]+", "", line )
+						entries[ entry++ ] = line
+						next
+					}
+
+/^[ \t]*([A-Za-z_]+[ \t]+)?[A-Za-z_][A-Za-z0-9_]*[ \t*]+[A-Za-z_][A-Za-z0-9_]*[ \t]*\(/ \
+					{
+						if( $1 == "static" \
+							|| $1 == "PRIVATE" \
+							|| $1 == "UNICC_STATIC" )
+						{
+							if( !with_static )
+								next
+						}
+						else if( only_static )
+							next
+
+						if( match( $2, /^main/ ) == 1 )
+							next
+
+
+						akt_proto = akt_proto $0
+						same_line = 1
+					}
+
+/^{[ \t]*$/			{
+						if( akt_proto != "" )
+						{
+							gsub( "[ \t]+", " ", akt_proto )
+							entries[ entry++ ] = akt_proto ";"
+							akt_proto = ""
+						}
+
+						next
+					}
+
+					{
+						if( akt_proto != "" )
+						{
+							if( !same_line )
+								akt_proto = akt_proto $0
+
+							test_line = $0
+							gsub( "[ \t]+", "", test_line )
+
+							test_chr = substr( test_line, \
+										length( test_line ), 1 )
+
+							if( test_chr == ";" )
+							{
+								akt_proto = ""
+							}
+						}
+
+						same_line = 0
+					}
+
+	'
+
+	if [ $? -ne 0 ]
+	then
+		exit 1
+	fi
+
+    if [ $comments -eq 1 ]
+    then
+	    echo
+	fi
+
+	shift
+done
+

@@ -113,25 +113,46 @@ am__dirstamp = $(am__leading_dot)dirstamp
 @WITH_BOOTSTRAP_TRUE@	min_lalr1/min_lalr1.$(OBJEXT)
 boot_min_lalr1_OBJECTS = $(am_boot_min_lalr1_OBJECTS)
 boot_min_lalr1_LDADD = $(LDADD)
-am__objects_1 = mem.$(OBJEXT) error.$(OBJEXT) first.$(OBJEXT) \
-	lalr.$(OBJEXT) utils.$(OBJEXT) string.$(OBJEXT) \
-	integrity.$(OBJEXT) virtual.$(OBJEXT) rewrite.$(OBJEXT) \
-	debug.$(OBJEXT) lex.$(OBJEXT) list.$(OBJEXT) build.$(OBJEXT) \
+am__objects_1 = lib/array.$(OBJEXT) lib/ccl.$(OBJEXT) \
+	lib/convert.$(OBJEXT) lib/dbg.$(OBJEXT) lib/list.$(OBJEXT) \
+	lib/memory.$(OBJEXT) lib/string.$(OBJEXT) lib/system.$(OBJEXT) \
+	lib/utf8.$(OBJEXT) lib/dfa.$(OBJEXT) lib/direct.$(OBJEXT) \
+	lib/lex.$(OBJEXT) lib/misc.$(OBJEXT) lib/nfa.$(OBJEXT) \
+	lib/ptn.$(OBJEXT) lib/regex.$(OBJEXT) lib/util.$(OBJEXT) \
+	mem.$(OBJEXT) error.$(OBJEXT) first.$(OBJEXT) lalr.$(OBJEXT) \
+	utils.$(OBJEXT) string.$(OBJEXT) integrity.$(OBJEXT) \
+	virtual.$(OBJEXT) rewrite.$(OBJEXT) debug.$(OBJEXT) \
+	lex.$(OBJEXT) list.$(OBJEXT) build.$(OBJEXT) \
 	buildxml.$(OBJEXT) main.$(OBJEXT) xml.$(OBJEXT)
 am_unicc_OBJECTS = parse.$(OBJEXT) $(am__objects_1)
 unicc_OBJECTS = $(am_unicc_OBJECTS)
 unicc_LDADD = $(LDADD)
-am__unicc_boot1_SOURCES_DIST = parse_boot1.c mem.c error.c first.c \
-	lalr.c utils.c string.c integrity.c virtual.c rewrite.c \
-	debug.c lex.c list.c build.c buildxml.c main.c xml.c
-am__objects_2 = unicc_boot1-mem.$(OBJEXT) unicc_boot1-error.$(OBJEXT) \
-	unicc_boot1-first.$(OBJEXT) unicc_boot1-lalr.$(OBJEXT) \
-	unicc_boot1-utils.$(OBJEXT) unicc_boot1-string.$(OBJEXT) \
-	unicc_boot1-integrity.$(OBJEXT) unicc_boot1-virtual.$(OBJEXT) \
-	unicc_boot1-rewrite.$(OBJEXT) unicc_boot1-debug.$(OBJEXT) \
-	unicc_boot1-lex.$(OBJEXT) unicc_boot1-list.$(OBJEXT) \
-	unicc_boot1-build.$(OBJEXT) unicc_boot1-buildxml.$(OBJEXT) \
-	unicc_boot1-main.$(OBJEXT) unicc_boot1-xml.$(OBJEXT)
+am__unicc_boot1_SOURCES_DIST = parse_boot1.c lib/array.c lib/ccl.c \
+	lib/convert.c lib/dbg.c lib/list.c lib/memory.c lib/string.c \
+	lib/system.c lib/utf8.c lib/dfa.c lib/direct.c lib/lex.c \
+	lib/misc.c lib/nfa.c lib/ptn.c lib/regex.c lib/util.c mem.c \
+	error.c first.c lalr.c utils.c string.c integrity.c virtual.c \
+	rewrite.c debug.c lex.c list.c build.c buildxml.c main.c xml.c
+am__objects_2 = lib/unicc_boot1-array.$(OBJEXT) \
+	lib/unicc_boot1-ccl.$(OBJEXT) \
+	lib/unicc_boot1-convert.$(OBJEXT) \
+	lib/unicc_boot1-dbg.$(OBJEXT) lib/unicc_boot1-list.$(OBJEXT) \
+	lib/unicc_boot1-memory.$(OBJEXT) \
+	lib/unicc_boot1-string.$(OBJEXT) \
+	lib/unicc_boot1-system.$(OBJEXT) \
+	lib/unicc_boot1-utf8.$(OBJEXT) lib/unicc_boot1-dfa.$(OBJEXT) \
+	lib/unicc_boot1-direct.$(OBJEXT) lib/unicc_boot1-lex.$(OBJEXT) \
+	lib/unicc_boot1-misc.$(OBJEXT) lib/unicc_boot1-nfa.$(OBJEXT) \
+	lib/unicc_boot1-ptn.$(OBJEXT) lib/unicc_boot1-regex.$(OBJEXT) \
+	lib/unicc_boot1-util.$(OBJEXT) unicc_boot1-mem.$(OBJEXT) \
+	unicc_boot1-error.$(OBJEXT) unicc_boot1-first.$(OBJEXT) \
+	unicc_boot1-lalr.$(OBJEXT) unicc_boot1-utils.$(OBJEXT) \
+	unicc_boot1-string.$(OBJEXT) unicc_boot1-integrity.$(OBJEXT) \
+	unicc_boot1-virtual.$(OBJEXT) unicc_boot1-rewrite.$(OBJEXT) \
+	unicc_boot1-debug.$(OBJEXT) unicc_boot1-lex.$(OBJEXT) \
+	unicc_boot1-list.$(OBJEXT) unicc_boot1-build.$(OBJEXT) \
+	unicc_boot1-buildxml.$(OBJEXT) unicc_boot1-main.$(OBJEXT) \
+	unicc_boot1-xml.$(OBJEXT)
 @WITH_BOOTSTRAP_TRUE@am_unicc_boot1_OBJECTS =  \
 @WITH_BOOTSTRAP_TRUE@	unicc_boot1-parse_boot1.$(OBJEXT) \
 @WITH_BOOTSTRAP_TRUE@	$(am__objects_2)
@@ -139,17 +160,32 @@ unicc_boot1_OBJECTS = $(am_unicc_boot1_OBJECTS)
 unicc_boot1_LDADD = $(LDADD)
 unicc_boot1_LINK = $(CCLD) $(unicc_boot1_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-am__unicc_boot2_SOURCES_DIST = parse_boot2.c mem.c error.c first.c \
-	lalr.c utils.c string.c integrity.c virtual.c rewrite.c \
-	debug.c lex.c list.c build.c buildxml.c main.c xml.c
-am__objects_3 = unicc_boot2-mem.$(OBJEXT) unicc_boot2-error.$(OBJEXT) \
-	unicc_boot2-first.$(OBJEXT) unicc_boot2-lalr.$(OBJEXT) \
-	unicc_boot2-utils.$(OBJEXT) unicc_boot2-string.$(OBJEXT) \
-	unicc_boot2-integrity.$(OBJEXT) unicc_boot2-virtual.$(OBJEXT) \
-	unicc_boot2-rewrite.$(OBJEXT) unicc_boot2-debug.$(OBJEXT) \
-	unicc_boot2-lex.$(OBJEXT) unicc_boot2-list.$(OBJEXT) \
-	unicc_boot2-build.$(OBJEXT) unicc_boot2-buildxml.$(OBJEXT) \
-	unicc_boot2-main.$(OBJEXT) unicc_boot2-xml.$(OBJEXT)
+am__unicc_boot2_SOURCES_DIST = parse_boot2.c lib/array.c lib/ccl.c \
+	lib/convert.c lib/dbg.c lib/list.c lib/memory.c lib/string.c \
+	lib/system.c lib/utf8.c lib/dfa.c lib/direct.c lib/lex.c \
+	lib/misc.c lib/nfa.c lib/ptn.c lib/regex.c lib/util.c mem.c \
+	error.c first.c lalr.c utils.c string.c integrity.c virtual.c \
+	rewrite.c debug.c lex.c list.c build.c buildxml.c main.c xml.c
+am__objects_3 = lib/unicc_boot2-array.$(OBJEXT) \
+	lib/unicc_boot2-ccl.$(OBJEXT) \
+	lib/unicc_boot2-convert.$(OBJEXT) \
+	lib/unicc_boot2-dbg.$(OBJEXT) lib/unicc_boot2-list.$(OBJEXT) \
+	lib/unicc_boot2-memory.$(OBJEXT) \
+	lib/unicc_boot2-string.$(OBJEXT) \
+	lib/unicc_boot2-system.$(OBJEXT) \
+	lib/unicc_boot2-utf8.$(OBJEXT) lib/unicc_boot2-dfa.$(OBJEXT) \
+	lib/unicc_boot2-direct.$(OBJEXT) lib/unicc_boot2-lex.$(OBJEXT) \
+	lib/unicc_boot2-misc.$(OBJEXT) lib/unicc_boot2-nfa.$(OBJEXT) \
+	lib/unicc_boot2-ptn.$(OBJEXT) lib/unicc_boot2-regex.$(OBJEXT) \
+	lib/unicc_boot2-util.$(OBJEXT) unicc_boot2-mem.$(OBJEXT) \
+	unicc_boot2-error.$(OBJEXT) unicc_boot2-first.$(OBJEXT) \
+	unicc_boot2-lalr.$(OBJEXT) unicc_boot2-utils.$(OBJEXT) \
+	unicc_boot2-string.$(OBJEXT) unicc_boot2-integrity.$(OBJEXT) \
+	unicc_boot2-virtual.$(OBJEXT) unicc_boot2-rewrite.$(OBJEXT) \
+	unicc_boot2-debug.$(OBJEXT) unicc_boot2-lex.$(OBJEXT) \
+	unicc_boot2-list.$(OBJEXT) unicc_boot2-build.$(OBJEXT) \
+	unicc_boot2-buildxml.$(OBJEXT) unicc_boot2-main.$(OBJEXT) \
+	unicc_boot2-xml.$(OBJEXT)
 @WITH_BOOTSTRAP_TRUE@am_unicc_boot2_OBJECTS =  \
 @WITH_BOOTSTRAP_TRUE@	unicc_boot2-parse_boot2.$(OBJEXT) \
 @WITH_BOOTSTRAP_TRUE@	$(am__objects_3)
@@ -157,17 +193,32 @@ unicc_boot2_OBJECTS = $(am_unicc_boot2_OBJECTS)
 unicc_boot2_LDADD = $(LDADD)
 unicc_boot2_LINK = $(CCLD) $(unicc_boot2_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-am__unicc_boot3_SOURCES_DIST = parse_boot3.c mem.c error.c first.c \
-	lalr.c utils.c string.c integrity.c virtual.c rewrite.c \
-	debug.c lex.c list.c build.c buildxml.c main.c xml.c
-am__objects_4 = unicc_boot3-mem.$(OBJEXT) unicc_boot3-error.$(OBJEXT) \
-	unicc_boot3-first.$(OBJEXT) unicc_boot3-lalr.$(OBJEXT) \
-	unicc_boot3-utils.$(OBJEXT) unicc_boot3-string.$(OBJEXT) \
-	unicc_boot3-integrity.$(OBJEXT) unicc_boot3-virtual.$(OBJEXT) \
-	unicc_boot3-rewrite.$(OBJEXT) unicc_boot3-debug.$(OBJEXT) \
-	unicc_boot3-lex.$(OBJEXT) unicc_boot3-list.$(OBJEXT) \
-	unicc_boot3-build.$(OBJEXT) unicc_boot3-buildxml.$(OBJEXT) \
-	unicc_boot3-main.$(OBJEXT) unicc_boot3-xml.$(OBJEXT)
+am__unicc_boot3_SOURCES_DIST = parse_boot3.c lib/array.c lib/ccl.c \
+	lib/convert.c lib/dbg.c lib/list.c lib/memory.c lib/string.c \
+	lib/system.c lib/utf8.c lib/dfa.c lib/direct.c lib/lex.c \
+	lib/misc.c lib/nfa.c lib/ptn.c lib/regex.c lib/util.c mem.c \
+	error.c first.c lalr.c utils.c string.c integrity.c virtual.c \
+	rewrite.c debug.c lex.c list.c build.c buildxml.c main.c xml.c
+am__objects_4 = lib/unicc_boot3-array.$(OBJEXT) \
+	lib/unicc_boot3-ccl.$(OBJEXT) \
+	lib/unicc_boot3-convert.$(OBJEXT) \
+	lib/unicc_boot3-dbg.$(OBJEXT) lib/unicc_boot3-list.$(OBJEXT) \
+	lib/unicc_boot3-memory.$(OBJEXT) \
+	lib/unicc_boot3-string.$(OBJEXT) \
+	lib/unicc_boot3-system.$(OBJEXT) \
+	lib/unicc_boot3-utf8.$(OBJEXT) lib/unicc_boot3-dfa.$(OBJEXT) \
+	lib/unicc_boot3-direct.$(OBJEXT) lib/unicc_boot3-lex.$(OBJEXT) \
+	lib/unicc_boot3-misc.$(OBJEXT) lib/unicc_boot3-nfa.$(OBJEXT) \
+	lib/unicc_boot3-ptn.$(OBJEXT) lib/unicc_boot3-regex.$(OBJEXT) \
+	lib/unicc_boot3-util.$(OBJEXT) unicc_boot3-mem.$(OBJEXT) \
+	unicc_boot3-error.$(OBJEXT) unicc_boot3-first.$(OBJEXT) \
+	unicc_boot3-lalr.$(OBJEXT) unicc_boot3-utils.$(OBJEXT) \
+	unicc_boot3-string.$(OBJEXT) unicc_boot3-integrity.$(OBJEXT) \
+	unicc_boot3-virtual.$(OBJEXT) unicc_boot3-rewrite.$(OBJEXT) \
+	unicc_boot3-debug.$(OBJEXT) unicc_boot3-lex.$(OBJEXT) \
+	unicc_boot3-list.$(OBJEXT) unicc_boot3-build.$(OBJEXT) \
+	unicc_boot3-buildxml.$(OBJEXT) unicc_boot3-main.$(OBJEXT) \
+	unicc_boot3-xml.$(OBJEXT)
 @WITH_BOOTSTRAP_TRUE@am_unicc_boot3_OBJECTS =  \
 @WITH_BOOTSTRAP_TRUE@	unicc_boot3-parse_boot3.$(OBJEXT) \
 @WITH_BOOTSTRAP_TRUE@	$(am__objects_4)
@@ -241,7 +292,65 @@ am__depfiles_remade = ./$(DEPDIR)/build.Po ./$(DEPDIR)/buildxml.Po \
 	./$(DEPDIR)/unicc_boot3-virtual.Po \
 	./$(DEPDIR)/unicc_boot3-xml.Po ./$(DEPDIR)/utils.Po \
 	./$(DEPDIR)/virtual.Po ./$(DEPDIR)/xml.Po \
-	min_lalr1/$(DEPDIR)/min_lalr1.Po
+	lib/$(DEPDIR)/array.Po lib/$(DEPDIR)/ccl.Po \
+	lib/$(DEPDIR)/convert.Po lib/$(DEPDIR)/dbg.Po \
+	lib/$(DEPDIR)/dfa.Po lib/$(DEPDIR)/direct.Po \
+	lib/$(DEPDIR)/lex.Po lib/$(DEPDIR)/list.Po \
+	lib/$(DEPDIR)/memory.Po lib/$(DEPDIR)/misc.Po \
+	lib/$(DEPDIR)/nfa.Po lib/$(DEPDIR)/ptn.Po \
+	lib/$(DEPDIR)/regex.Po lib/$(DEPDIR)/string.Po \
+	lib/$(DEPDIR)/system.Po lib/$(DEPDIR)/unicc_boot1-array.Po \
+	lib/$(DEPDIR)/unicc_boot1-ccl.Po \
+	lib/$(DEPDIR)/unicc_boot1-convert.Po \
+	lib/$(DEPDIR)/unicc_boot1-dbg.Po \
+	lib/$(DEPDIR)/unicc_boot1-dfa.Po \
+	lib/$(DEPDIR)/unicc_boot1-direct.Po \
+	lib/$(DEPDIR)/unicc_boot1-lex.Po \
+	lib/$(DEPDIR)/unicc_boot1-list.Po \
+	lib/$(DEPDIR)/unicc_boot1-memory.Po \
+	lib/$(DEPDIR)/unicc_boot1-misc.Po \
+	lib/$(DEPDIR)/unicc_boot1-nfa.Po \
+	lib/$(DEPDIR)/unicc_boot1-ptn.Po \
+	lib/$(DEPDIR)/unicc_boot1-regex.Po \
+	lib/$(DEPDIR)/unicc_boot1-string.Po \
+	lib/$(DEPDIR)/unicc_boot1-system.Po \
+	lib/$(DEPDIR)/unicc_boot1-utf8.Po \
+	lib/$(DEPDIR)/unicc_boot1-util.Po \
+	lib/$(DEPDIR)/unicc_boot2-array.Po \
+	lib/$(DEPDIR)/unicc_boot2-ccl.Po \
+	lib/$(DEPDIR)/unicc_boot2-convert.Po \
+	lib/$(DEPDIR)/unicc_boot2-dbg.Po \
+	lib/$(DEPDIR)/unicc_boot2-dfa.Po \
+	lib/$(DEPDIR)/unicc_boot2-direct.Po \
+	lib/$(DEPDIR)/unicc_boot2-lex.Po \
+	lib/$(DEPDIR)/unicc_boot2-list.Po \
+	lib/$(DEPDIR)/unicc_boot2-memory.Po \
+	lib/$(DEPDIR)/unicc_boot2-misc.Po \
+	lib/$(DEPDIR)/unicc_boot2-nfa.Po \
+	lib/$(DEPDIR)/unicc_boot2-ptn.Po \
+	lib/$(DEPDIR)/unicc_boot2-regex.Po \
+	lib/$(DEPDIR)/unicc_boot2-string.Po \
+	lib/$(DEPDIR)/unicc_boot2-system.Po \
+	lib/$(DEPDIR)/unicc_boot2-utf8.Po \
+	lib/$(DEPDIR)/unicc_boot2-util.Po \
+	lib/$(DEPDIR)/unicc_boot3-array.Po \
+	lib/$(DEPDIR)/unicc_boot3-ccl.Po \
+	lib/$(DEPDIR)/unicc_boot3-convert.Po \
+	lib/$(DEPDIR)/unicc_boot3-dbg.Po \
+	lib/$(DEPDIR)/unicc_boot3-dfa.Po \
+	lib/$(DEPDIR)/unicc_boot3-direct.Po \
+	lib/$(DEPDIR)/unicc_boot3-lex.Po \
+	lib/$(DEPDIR)/unicc_boot3-list.Po \
+	lib/$(DEPDIR)/unicc_boot3-memory.Po \
+	lib/$(DEPDIR)/unicc_boot3-misc.Po \
+	lib/$(DEPDIR)/unicc_boot3-nfa.Po \
+	lib/$(DEPDIR)/unicc_boot3-ptn.Po \
+	lib/$(DEPDIR)/unicc_boot3-regex.Po \
+	lib/$(DEPDIR)/unicc_boot3-string.Po \
+	lib/$(DEPDIR)/unicc_boot3-system.Po \
+	lib/$(DEPDIR)/unicc_boot3-utf8.Po \
+	lib/$(DEPDIR)/unicc_boot3-util.Po lib/$(DEPDIR)/utf8.Po \
+	lib/$(DEPDIR)/util.Po min_lalr1/$(DEPDIR)/min_lalr1.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -448,22 +557,39 @@ AM_CPPFLAGS = -DTLTDIR=\"$(targetsdir)\"
 # All sources except the grammar parser are equal in all bootstrappers.
 #
 SOURCES = \
-				mem.c \
-				error.c \
-				first.c \
-				lalr.c \
-				utils.c \
-				string.c \
-				integrity.c \
-				virtual.c \
-				rewrite.c \
-				debug.c \
-				lex.c \
-				list.c \
-				build.c \
-				buildxml.c \
-				main.c \
-				xml.c
+	lib/array.c \
+	lib/ccl.c \
+	lib/convert.c \
+	lib/dbg.c \
+	lib/list.c \
+	lib/memory.c \
+	lib/string.c \
+	lib/system.c \
+	lib/utf8.c \
+	lib/dfa.c \
+	lib/direct.c \
+	lib/lex.c \
+	lib/misc.c \
+	lib/nfa.c \
+	lib/ptn.c \
+	lib/regex.c \
+	lib/util.c \
+	mem.c \
+	error.c \
+	first.c \
+	lalr.c \
+	utils.c \
+	string.c \
+	integrity.c \
+	virtual.c \
+	rewrite.c \
+	debug.c \
+	lex.c \
+	list.c \
+	build.c \
+	buildxml.c \
+	main.c \
+	xml.c
 
 @WITH_BOOTSTRAP_TRUE@BUILT_SOURCES = \
 @WITH_BOOTSTRAP_TRUE@				parse_boot1.c \
@@ -605,18 +731,148 @@ min_lalr1/min_lalr1.$(OBJEXT): min_lalr1/$(am__dirstamp) \
 boot_min_lalr1$(EXEEXT): $(boot_min_lalr1_OBJECTS) $(boot_min_lalr1_DEPENDENCIES) $(EXTRA_boot_min_lalr1_DEPENDENCIES) 
 	@rm -f boot_min_lalr1$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(boot_min_lalr1_OBJECTS) $(boot_min_lalr1_LDADD) $(LIBS)
+lib/$(am__dirstamp):
+	@$(MKDIR_P) lib
+	@: > lib/$(am__dirstamp)
+lib/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) lib/$(DEPDIR)
+	@: > lib/$(DEPDIR)/$(am__dirstamp)
+lib/array.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
+lib/ccl.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
+lib/convert.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/dbg.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
+lib/list.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
+lib/memory.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/string.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/system.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/utf8.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
+lib/dfa.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
+lib/direct.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/lex.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
+lib/misc.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
+lib/nfa.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
+lib/ptn.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
+lib/regex.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
+lib/util.$(OBJEXT): lib/$(am__dirstamp) lib/$(DEPDIR)/$(am__dirstamp)
 
 unicc$(EXEEXT): $(unicc_OBJECTS) $(unicc_DEPENDENCIES) $(EXTRA_unicc_DEPENDENCIES) 
 	@rm -f unicc$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(unicc_OBJECTS) $(unicc_LDADD) $(LIBS)
+lib/unicc_boot1-array.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot1-ccl.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot1-convert.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot1-dbg.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot1-list.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot1-memory.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot1-string.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot1-system.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot1-utf8.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot1-dfa.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot1-direct.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot1-lex.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot1-misc.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot1-nfa.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot1-ptn.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot1-regex.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot1-util.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
 
 unicc_boot1$(EXEEXT): $(unicc_boot1_OBJECTS) $(unicc_boot1_DEPENDENCIES) $(EXTRA_unicc_boot1_DEPENDENCIES) 
 	@rm -f unicc_boot1$(EXEEXT)
 	$(AM_V_CCLD)$(unicc_boot1_LINK) $(unicc_boot1_OBJECTS) $(unicc_boot1_LDADD) $(LIBS)
+lib/unicc_boot2-array.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot2-ccl.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot2-convert.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot2-dbg.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot2-list.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot2-memory.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot2-string.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot2-system.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot2-utf8.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot2-dfa.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot2-direct.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot2-lex.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot2-misc.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot2-nfa.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot2-ptn.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot2-regex.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot2-util.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
 
 unicc_boot2$(EXEEXT): $(unicc_boot2_OBJECTS) $(unicc_boot2_DEPENDENCIES) $(EXTRA_unicc_boot2_DEPENDENCIES) 
 	@rm -f unicc_boot2$(EXEEXT)
 	$(AM_V_CCLD)$(unicc_boot2_LINK) $(unicc_boot2_OBJECTS) $(unicc_boot2_LDADD) $(LIBS)
+lib/unicc_boot3-array.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot3-ccl.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot3-convert.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot3-dbg.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot3-list.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot3-memory.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot3-string.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot3-system.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot3-utf8.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot3-dfa.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot3-direct.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot3-lex.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot3-misc.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot3-nfa.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot3-ptn.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot3-regex.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
+lib/unicc_boot3-util.$(OBJEXT): lib/$(am__dirstamp) \
+	lib/$(DEPDIR)/$(am__dirstamp)
 
 unicc_boot3$(EXEEXT): $(unicc_boot3_OBJECTS) $(unicc_boot3_DEPENDENCIES) $(EXTRA_unicc_boot3_DEPENDENCIES) 
 	@rm -f unicc_boot3$(EXEEXT)
@@ -624,6 +880,7 @@ unicc_boot3$(EXEEXT): $(unicc_boot3_OBJECTS) $(unicc_boot3_DEPENDENCIES) $(EXTRA
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f lib/*.$(OBJEXT)
 	-rm -f min_lalr1/*.$(OBJEXT)
 
 distclean-compile:
@@ -697,6 +954,74 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utils.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/virtual.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xml.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/array.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/ccl.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/convert.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/dbg.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/dfa.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/direct.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/lex.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/list.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/memory.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/misc.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/nfa.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/ptn.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/regex.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/string.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/system.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot1-array.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot1-ccl.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot1-convert.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot1-dbg.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot1-dfa.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot1-direct.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot1-lex.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot1-list.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot1-memory.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot1-misc.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot1-nfa.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot1-ptn.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot1-regex.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot1-string.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot1-system.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot1-utf8.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot1-util.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot2-array.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot2-ccl.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot2-convert.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot2-dbg.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot2-dfa.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot2-direct.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot2-lex.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot2-list.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot2-memory.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot2-misc.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot2-nfa.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot2-ptn.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot2-regex.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot2-string.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot2-system.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot2-utf8.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot2-util.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot3-array.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot3-ccl.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot3-convert.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot3-dbg.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot3-dfa.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot3-direct.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot3-lex.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot3-list.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot3-memory.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot3-misc.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot3-nfa.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot3-ptn.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot3-regex.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot3-string.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot3-system.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot3-utf8.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/unicc_boot3-util.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/utf8.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@lib/$(DEPDIR)/util.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@min_lalr1/$(DEPDIR)/min_lalr1.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
@@ -734,6 +1059,244 @@ unicc_boot1-parse_boot1.obj: parse_boot1.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='parse_boot1.c' object='unicc_boot1-parse_boot1.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o unicc_boot1-parse_boot1.obj `if test -f 'parse_boot1.c'; then $(CYGPATH_W) 'parse_boot1.c'; else $(CYGPATH_W) '$(srcdir)/parse_boot1.c'; fi`
+
+lib/unicc_boot1-array.o: lib/array.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-array.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-array.Tpo -c -o lib/unicc_boot1-array.o `test -f 'lib/array.c' || echo '$(srcdir)/'`lib/array.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-array.Tpo lib/$(DEPDIR)/unicc_boot1-array.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/array.c' object='lib/unicc_boot1-array.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-array.o `test -f 'lib/array.c' || echo '$(srcdir)/'`lib/array.c
+
+lib/unicc_boot1-array.obj: lib/array.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-array.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-array.Tpo -c -o lib/unicc_boot1-array.obj `if test -f 'lib/array.c'; then $(CYGPATH_W) 'lib/array.c'; else $(CYGPATH_W) '$(srcdir)/lib/array.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-array.Tpo lib/$(DEPDIR)/unicc_boot1-array.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/array.c' object='lib/unicc_boot1-array.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-array.obj `if test -f 'lib/array.c'; then $(CYGPATH_W) 'lib/array.c'; else $(CYGPATH_W) '$(srcdir)/lib/array.c'; fi`
+
+lib/unicc_boot1-ccl.o: lib/ccl.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-ccl.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-ccl.Tpo -c -o lib/unicc_boot1-ccl.o `test -f 'lib/ccl.c' || echo '$(srcdir)/'`lib/ccl.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-ccl.Tpo lib/$(DEPDIR)/unicc_boot1-ccl.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/ccl.c' object='lib/unicc_boot1-ccl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-ccl.o `test -f 'lib/ccl.c' || echo '$(srcdir)/'`lib/ccl.c
+
+lib/unicc_boot1-ccl.obj: lib/ccl.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-ccl.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-ccl.Tpo -c -o lib/unicc_boot1-ccl.obj `if test -f 'lib/ccl.c'; then $(CYGPATH_W) 'lib/ccl.c'; else $(CYGPATH_W) '$(srcdir)/lib/ccl.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-ccl.Tpo lib/$(DEPDIR)/unicc_boot1-ccl.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/ccl.c' object='lib/unicc_boot1-ccl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-ccl.obj `if test -f 'lib/ccl.c'; then $(CYGPATH_W) 'lib/ccl.c'; else $(CYGPATH_W) '$(srcdir)/lib/ccl.c'; fi`
+
+lib/unicc_boot1-convert.o: lib/convert.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-convert.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-convert.Tpo -c -o lib/unicc_boot1-convert.o `test -f 'lib/convert.c' || echo '$(srcdir)/'`lib/convert.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-convert.Tpo lib/$(DEPDIR)/unicc_boot1-convert.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/convert.c' object='lib/unicc_boot1-convert.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-convert.o `test -f 'lib/convert.c' || echo '$(srcdir)/'`lib/convert.c
+
+lib/unicc_boot1-convert.obj: lib/convert.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-convert.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-convert.Tpo -c -o lib/unicc_boot1-convert.obj `if test -f 'lib/convert.c'; then $(CYGPATH_W) 'lib/convert.c'; else $(CYGPATH_W) '$(srcdir)/lib/convert.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-convert.Tpo lib/$(DEPDIR)/unicc_boot1-convert.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/convert.c' object='lib/unicc_boot1-convert.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-convert.obj `if test -f 'lib/convert.c'; then $(CYGPATH_W) 'lib/convert.c'; else $(CYGPATH_W) '$(srcdir)/lib/convert.c'; fi`
+
+lib/unicc_boot1-dbg.o: lib/dbg.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-dbg.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-dbg.Tpo -c -o lib/unicc_boot1-dbg.o `test -f 'lib/dbg.c' || echo '$(srcdir)/'`lib/dbg.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-dbg.Tpo lib/$(DEPDIR)/unicc_boot1-dbg.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/dbg.c' object='lib/unicc_boot1-dbg.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-dbg.o `test -f 'lib/dbg.c' || echo '$(srcdir)/'`lib/dbg.c
+
+lib/unicc_boot1-dbg.obj: lib/dbg.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-dbg.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-dbg.Tpo -c -o lib/unicc_boot1-dbg.obj `if test -f 'lib/dbg.c'; then $(CYGPATH_W) 'lib/dbg.c'; else $(CYGPATH_W) '$(srcdir)/lib/dbg.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-dbg.Tpo lib/$(DEPDIR)/unicc_boot1-dbg.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/dbg.c' object='lib/unicc_boot1-dbg.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-dbg.obj `if test -f 'lib/dbg.c'; then $(CYGPATH_W) 'lib/dbg.c'; else $(CYGPATH_W) '$(srcdir)/lib/dbg.c'; fi`
+
+lib/unicc_boot1-list.o: lib/list.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-list.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-list.Tpo -c -o lib/unicc_boot1-list.o `test -f 'lib/list.c' || echo '$(srcdir)/'`lib/list.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-list.Tpo lib/$(DEPDIR)/unicc_boot1-list.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/list.c' object='lib/unicc_boot1-list.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-list.o `test -f 'lib/list.c' || echo '$(srcdir)/'`lib/list.c
+
+lib/unicc_boot1-list.obj: lib/list.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-list.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-list.Tpo -c -o lib/unicc_boot1-list.obj `if test -f 'lib/list.c'; then $(CYGPATH_W) 'lib/list.c'; else $(CYGPATH_W) '$(srcdir)/lib/list.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-list.Tpo lib/$(DEPDIR)/unicc_boot1-list.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/list.c' object='lib/unicc_boot1-list.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-list.obj `if test -f 'lib/list.c'; then $(CYGPATH_W) 'lib/list.c'; else $(CYGPATH_W) '$(srcdir)/lib/list.c'; fi`
+
+lib/unicc_boot1-memory.o: lib/memory.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-memory.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-memory.Tpo -c -o lib/unicc_boot1-memory.o `test -f 'lib/memory.c' || echo '$(srcdir)/'`lib/memory.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-memory.Tpo lib/$(DEPDIR)/unicc_boot1-memory.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/memory.c' object='lib/unicc_boot1-memory.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-memory.o `test -f 'lib/memory.c' || echo '$(srcdir)/'`lib/memory.c
+
+lib/unicc_boot1-memory.obj: lib/memory.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-memory.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-memory.Tpo -c -o lib/unicc_boot1-memory.obj `if test -f 'lib/memory.c'; then $(CYGPATH_W) 'lib/memory.c'; else $(CYGPATH_W) '$(srcdir)/lib/memory.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-memory.Tpo lib/$(DEPDIR)/unicc_boot1-memory.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/memory.c' object='lib/unicc_boot1-memory.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-memory.obj `if test -f 'lib/memory.c'; then $(CYGPATH_W) 'lib/memory.c'; else $(CYGPATH_W) '$(srcdir)/lib/memory.c'; fi`
+
+lib/unicc_boot1-string.o: lib/string.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-string.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-string.Tpo -c -o lib/unicc_boot1-string.o `test -f 'lib/string.c' || echo '$(srcdir)/'`lib/string.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-string.Tpo lib/$(DEPDIR)/unicc_boot1-string.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/string.c' object='lib/unicc_boot1-string.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-string.o `test -f 'lib/string.c' || echo '$(srcdir)/'`lib/string.c
+
+lib/unicc_boot1-string.obj: lib/string.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-string.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-string.Tpo -c -o lib/unicc_boot1-string.obj `if test -f 'lib/string.c'; then $(CYGPATH_W) 'lib/string.c'; else $(CYGPATH_W) '$(srcdir)/lib/string.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-string.Tpo lib/$(DEPDIR)/unicc_boot1-string.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/string.c' object='lib/unicc_boot1-string.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-string.obj `if test -f 'lib/string.c'; then $(CYGPATH_W) 'lib/string.c'; else $(CYGPATH_W) '$(srcdir)/lib/string.c'; fi`
+
+lib/unicc_boot1-system.o: lib/system.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-system.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-system.Tpo -c -o lib/unicc_boot1-system.o `test -f 'lib/system.c' || echo '$(srcdir)/'`lib/system.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-system.Tpo lib/$(DEPDIR)/unicc_boot1-system.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/system.c' object='lib/unicc_boot1-system.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-system.o `test -f 'lib/system.c' || echo '$(srcdir)/'`lib/system.c
+
+lib/unicc_boot1-system.obj: lib/system.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-system.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-system.Tpo -c -o lib/unicc_boot1-system.obj `if test -f 'lib/system.c'; then $(CYGPATH_W) 'lib/system.c'; else $(CYGPATH_W) '$(srcdir)/lib/system.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-system.Tpo lib/$(DEPDIR)/unicc_boot1-system.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/system.c' object='lib/unicc_boot1-system.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-system.obj `if test -f 'lib/system.c'; then $(CYGPATH_W) 'lib/system.c'; else $(CYGPATH_W) '$(srcdir)/lib/system.c'; fi`
+
+lib/unicc_boot1-utf8.o: lib/utf8.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-utf8.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-utf8.Tpo -c -o lib/unicc_boot1-utf8.o `test -f 'lib/utf8.c' || echo '$(srcdir)/'`lib/utf8.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-utf8.Tpo lib/$(DEPDIR)/unicc_boot1-utf8.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/utf8.c' object='lib/unicc_boot1-utf8.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-utf8.o `test -f 'lib/utf8.c' || echo '$(srcdir)/'`lib/utf8.c
+
+lib/unicc_boot1-utf8.obj: lib/utf8.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-utf8.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-utf8.Tpo -c -o lib/unicc_boot1-utf8.obj `if test -f 'lib/utf8.c'; then $(CYGPATH_W) 'lib/utf8.c'; else $(CYGPATH_W) '$(srcdir)/lib/utf8.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-utf8.Tpo lib/$(DEPDIR)/unicc_boot1-utf8.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/utf8.c' object='lib/unicc_boot1-utf8.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-utf8.obj `if test -f 'lib/utf8.c'; then $(CYGPATH_W) 'lib/utf8.c'; else $(CYGPATH_W) '$(srcdir)/lib/utf8.c'; fi`
+
+lib/unicc_boot1-dfa.o: lib/dfa.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-dfa.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-dfa.Tpo -c -o lib/unicc_boot1-dfa.o `test -f 'lib/dfa.c' || echo '$(srcdir)/'`lib/dfa.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-dfa.Tpo lib/$(DEPDIR)/unicc_boot1-dfa.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/dfa.c' object='lib/unicc_boot1-dfa.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-dfa.o `test -f 'lib/dfa.c' || echo '$(srcdir)/'`lib/dfa.c
+
+lib/unicc_boot1-dfa.obj: lib/dfa.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-dfa.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-dfa.Tpo -c -o lib/unicc_boot1-dfa.obj `if test -f 'lib/dfa.c'; then $(CYGPATH_W) 'lib/dfa.c'; else $(CYGPATH_W) '$(srcdir)/lib/dfa.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-dfa.Tpo lib/$(DEPDIR)/unicc_boot1-dfa.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/dfa.c' object='lib/unicc_boot1-dfa.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-dfa.obj `if test -f 'lib/dfa.c'; then $(CYGPATH_W) 'lib/dfa.c'; else $(CYGPATH_W) '$(srcdir)/lib/dfa.c'; fi`
+
+lib/unicc_boot1-direct.o: lib/direct.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-direct.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-direct.Tpo -c -o lib/unicc_boot1-direct.o `test -f 'lib/direct.c' || echo '$(srcdir)/'`lib/direct.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-direct.Tpo lib/$(DEPDIR)/unicc_boot1-direct.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/direct.c' object='lib/unicc_boot1-direct.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-direct.o `test -f 'lib/direct.c' || echo '$(srcdir)/'`lib/direct.c
+
+lib/unicc_boot1-direct.obj: lib/direct.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-direct.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-direct.Tpo -c -o lib/unicc_boot1-direct.obj `if test -f 'lib/direct.c'; then $(CYGPATH_W) 'lib/direct.c'; else $(CYGPATH_W) '$(srcdir)/lib/direct.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-direct.Tpo lib/$(DEPDIR)/unicc_boot1-direct.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/direct.c' object='lib/unicc_boot1-direct.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-direct.obj `if test -f 'lib/direct.c'; then $(CYGPATH_W) 'lib/direct.c'; else $(CYGPATH_W) '$(srcdir)/lib/direct.c'; fi`
+
+lib/unicc_boot1-lex.o: lib/lex.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-lex.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-lex.Tpo -c -o lib/unicc_boot1-lex.o `test -f 'lib/lex.c' || echo '$(srcdir)/'`lib/lex.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-lex.Tpo lib/$(DEPDIR)/unicc_boot1-lex.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/lex.c' object='lib/unicc_boot1-lex.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-lex.o `test -f 'lib/lex.c' || echo '$(srcdir)/'`lib/lex.c
+
+lib/unicc_boot1-lex.obj: lib/lex.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-lex.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-lex.Tpo -c -o lib/unicc_boot1-lex.obj `if test -f 'lib/lex.c'; then $(CYGPATH_W) 'lib/lex.c'; else $(CYGPATH_W) '$(srcdir)/lib/lex.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-lex.Tpo lib/$(DEPDIR)/unicc_boot1-lex.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/lex.c' object='lib/unicc_boot1-lex.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-lex.obj `if test -f 'lib/lex.c'; then $(CYGPATH_W) 'lib/lex.c'; else $(CYGPATH_W) '$(srcdir)/lib/lex.c'; fi`
+
+lib/unicc_boot1-misc.o: lib/misc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-misc.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-misc.Tpo -c -o lib/unicc_boot1-misc.o `test -f 'lib/misc.c' || echo '$(srcdir)/'`lib/misc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-misc.Tpo lib/$(DEPDIR)/unicc_boot1-misc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/misc.c' object='lib/unicc_boot1-misc.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-misc.o `test -f 'lib/misc.c' || echo '$(srcdir)/'`lib/misc.c
+
+lib/unicc_boot1-misc.obj: lib/misc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-misc.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-misc.Tpo -c -o lib/unicc_boot1-misc.obj `if test -f 'lib/misc.c'; then $(CYGPATH_W) 'lib/misc.c'; else $(CYGPATH_W) '$(srcdir)/lib/misc.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-misc.Tpo lib/$(DEPDIR)/unicc_boot1-misc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/misc.c' object='lib/unicc_boot1-misc.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-misc.obj `if test -f 'lib/misc.c'; then $(CYGPATH_W) 'lib/misc.c'; else $(CYGPATH_W) '$(srcdir)/lib/misc.c'; fi`
+
+lib/unicc_boot1-nfa.o: lib/nfa.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-nfa.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-nfa.Tpo -c -o lib/unicc_boot1-nfa.o `test -f 'lib/nfa.c' || echo '$(srcdir)/'`lib/nfa.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-nfa.Tpo lib/$(DEPDIR)/unicc_boot1-nfa.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/nfa.c' object='lib/unicc_boot1-nfa.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-nfa.o `test -f 'lib/nfa.c' || echo '$(srcdir)/'`lib/nfa.c
+
+lib/unicc_boot1-nfa.obj: lib/nfa.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-nfa.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-nfa.Tpo -c -o lib/unicc_boot1-nfa.obj `if test -f 'lib/nfa.c'; then $(CYGPATH_W) 'lib/nfa.c'; else $(CYGPATH_W) '$(srcdir)/lib/nfa.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-nfa.Tpo lib/$(DEPDIR)/unicc_boot1-nfa.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/nfa.c' object='lib/unicc_boot1-nfa.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-nfa.obj `if test -f 'lib/nfa.c'; then $(CYGPATH_W) 'lib/nfa.c'; else $(CYGPATH_W) '$(srcdir)/lib/nfa.c'; fi`
+
+lib/unicc_boot1-ptn.o: lib/ptn.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-ptn.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-ptn.Tpo -c -o lib/unicc_boot1-ptn.o `test -f 'lib/ptn.c' || echo '$(srcdir)/'`lib/ptn.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-ptn.Tpo lib/$(DEPDIR)/unicc_boot1-ptn.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/ptn.c' object='lib/unicc_boot1-ptn.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-ptn.o `test -f 'lib/ptn.c' || echo '$(srcdir)/'`lib/ptn.c
+
+lib/unicc_boot1-ptn.obj: lib/ptn.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-ptn.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-ptn.Tpo -c -o lib/unicc_boot1-ptn.obj `if test -f 'lib/ptn.c'; then $(CYGPATH_W) 'lib/ptn.c'; else $(CYGPATH_W) '$(srcdir)/lib/ptn.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-ptn.Tpo lib/$(DEPDIR)/unicc_boot1-ptn.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/ptn.c' object='lib/unicc_boot1-ptn.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-ptn.obj `if test -f 'lib/ptn.c'; then $(CYGPATH_W) 'lib/ptn.c'; else $(CYGPATH_W) '$(srcdir)/lib/ptn.c'; fi`
+
+lib/unicc_boot1-regex.o: lib/regex.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-regex.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-regex.Tpo -c -o lib/unicc_boot1-regex.o `test -f 'lib/regex.c' || echo '$(srcdir)/'`lib/regex.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-regex.Tpo lib/$(DEPDIR)/unicc_boot1-regex.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/regex.c' object='lib/unicc_boot1-regex.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-regex.o `test -f 'lib/regex.c' || echo '$(srcdir)/'`lib/regex.c
+
+lib/unicc_boot1-regex.obj: lib/regex.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-regex.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-regex.Tpo -c -o lib/unicc_boot1-regex.obj `if test -f 'lib/regex.c'; then $(CYGPATH_W) 'lib/regex.c'; else $(CYGPATH_W) '$(srcdir)/lib/regex.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-regex.Tpo lib/$(DEPDIR)/unicc_boot1-regex.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/regex.c' object='lib/unicc_boot1-regex.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-regex.obj `if test -f 'lib/regex.c'; then $(CYGPATH_W) 'lib/regex.c'; else $(CYGPATH_W) '$(srcdir)/lib/regex.c'; fi`
+
+lib/unicc_boot1-util.o: lib/util.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-util.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-util.Tpo -c -o lib/unicc_boot1-util.o `test -f 'lib/util.c' || echo '$(srcdir)/'`lib/util.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-util.Tpo lib/$(DEPDIR)/unicc_boot1-util.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/util.c' object='lib/unicc_boot1-util.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-util.o `test -f 'lib/util.c' || echo '$(srcdir)/'`lib/util.c
+
+lib/unicc_boot1-util.obj: lib/util.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT lib/unicc_boot1-util.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot1-util.Tpo -c -o lib/unicc_boot1-util.obj `if test -f 'lib/util.c'; then $(CYGPATH_W) 'lib/util.c'; else $(CYGPATH_W) '$(srcdir)/lib/util.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot1-util.Tpo lib/$(DEPDIR)/unicc_boot1-util.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/util.c' object='lib/unicc_boot1-util.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot1-util.obj `if test -f 'lib/util.c'; then $(CYGPATH_W) 'lib/util.c'; else $(CYGPATH_W) '$(srcdir)/lib/util.c'; fi`
 
 unicc_boot1-mem.o: mem.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot1_CFLAGS) $(CFLAGS) -MT unicc_boot1-mem.o -MD -MP -MF $(DEPDIR)/unicc_boot1-mem.Tpo -c -o unicc_boot1-mem.o `test -f 'mem.c' || echo '$(srcdir)/'`mem.c
@@ -973,6 +1536,244 @@ unicc_boot2-parse_boot2.obj: parse_boot2.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o unicc_boot2-parse_boot2.obj `if test -f 'parse_boot2.c'; then $(CYGPATH_W) 'parse_boot2.c'; else $(CYGPATH_W) '$(srcdir)/parse_boot2.c'; fi`
 
+lib/unicc_boot2-array.o: lib/array.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-array.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-array.Tpo -c -o lib/unicc_boot2-array.o `test -f 'lib/array.c' || echo '$(srcdir)/'`lib/array.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-array.Tpo lib/$(DEPDIR)/unicc_boot2-array.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/array.c' object='lib/unicc_boot2-array.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-array.o `test -f 'lib/array.c' || echo '$(srcdir)/'`lib/array.c
+
+lib/unicc_boot2-array.obj: lib/array.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-array.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-array.Tpo -c -o lib/unicc_boot2-array.obj `if test -f 'lib/array.c'; then $(CYGPATH_W) 'lib/array.c'; else $(CYGPATH_W) '$(srcdir)/lib/array.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-array.Tpo lib/$(DEPDIR)/unicc_boot2-array.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/array.c' object='lib/unicc_boot2-array.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-array.obj `if test -f 'lib/array.c'; then $(CYGPATH_W) 'lib/array.c'; else $(CYGPATH_W) '$(srcdir)/lib/array.c'; fi`
+
+lib/unicc_boot2-ccl.o: lib/ccl.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-ccl.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-ccl.Tpo -c -o lib/unicc_boot2-ccl.o `test -f 'lib/ccl.c' || echo '$(srcdir)/'`lib/ccl.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-ccl.Tpo lib/$(DEPDIR)/unicc_boot2-ccl.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/ccl.c' object='lib/unicc_boot2-ccl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-ccl.o `test -f 'lib/ccl.c' || echo '$(srcdir)/'`lib/ccl.c
+
+lib/unicc_boot2-ccl.obj: lib/ccl.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-ccl.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-ccl.Tpo -c -o lib/unicc_boot2-ccl.obj `if test -f 'lib/ccl.c'; then $(CYGPATH_W) 'lib/ccl.c'; else $(CYGPATH_W) '$(srcdir)/lib/ccl.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-ccl.Tpo lib/$(DEPDIR)/unicc_boot2-ccl.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/ccl.c' object='lib/unicc_boot2-ccl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-ccl.obj `if test -f 'lib/ccl.c'; then $(CYGPATH_W) 'lib/ccl.c'; else $(CYGPATH_W) '$(srcdir)/lib/ccl.c'; fi`
+
+lib/unicc_boot2-convert.o: lib/convert.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-convert.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-convert.Tpo -c -o lib/unicc_boot2-convert.o `test -f 'lib/convert.c' || echo '$(srcdir)/'`lib/convert.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-convert.Tpo lib/$(DEPDIR)/unicc_boot2-convert.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/convert.c' object='lib/unicc_boot2-convert.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-convert.o `test -f 'lib/convert.c' || echo '$(srcdir)/'`lib/convert.c
+
+lib/unicc_boot2-convert.obj: lib/convert.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-convert.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-convert.Tpo -c -o lib/unicc_boot2-convert.obj `if test -f 'lib/convert.c'; then $(CYGPATH_W) 'lib/convert.c'; else $(CYGPATH_W) '$(srcdir)/lib/convert.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-convert.Tpo lib/$(DEPDIR)/unicc_boot2-convert.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/convert.c' object='lib/unicc_boot2-convert.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-convert.obj `if test -f 'lib/convert.c'; then $(CYGPATH_W) 'lib/convert.c'; else $(CYGPATH_W) '$(srcdir)/lib/convert.c'; fi`
+
+lib/unicc_boot2-dbg.o: lib/dbg.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-dbg.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-dbg.Tpo -c -o lib/unicc_boot2-dbg.o `test -f 'lib/dbg.c' || echo '$(srcdir)/'`lib/dbg.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-dbg.Tpo lib/$(DEPDIR)/unicc_boot2-dbg.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/dbg.c' object='lib/unicc_boot2-dbg.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-dbg.o `test -f 'lib/dbg.c' || echo '$(srcdir)/'`lib/dbg.c
+
+lib/unicc_boot2-dbg.obj: lib/dbg.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-dbg.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-dbg.Tpo -c -o lib/unicc_boot2-dbg.obj `if test -f 'lib/dbg.c'; then $(CYGPATH_W) 'lib/dbg.c'; else $(CYGPATH_W) '$(srcdir)/lib/dbg.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-dbg.Tpo lib/$(DEPDIR)/unicc_boot2-dbg.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/dbg.c' object='lib/unicc_boot2-dbg.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-dbg.obj `if test -f 'lib/dbg.c'; then $(CYGPATH_W) 'lib/dbg.c'; else $(CYGPATH_W) '$(srcdir)/lib/dbg.c'; fi`
+
+lib/unicc_boot2-list.o: lib/list.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-list.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-list.Tpo -c -o lib/unicc_boot2-list.o `test -f 'lib/list.c' || echo '$(srcdir)/'`lib/list.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-list.Tpo lib/$(DEPDIR)/unicc_boot2-list.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/list.c' object='lib/unicc_boot2-list.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-list.o `test -f 'lib/list.c' || echo '$(srcdir)/'`lib/list.c
+
+lib/unicc_boot2-list.obj: lib/list.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-list.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-list.Tpo -c -o lib/unicc_boot2-list.obj `if test -f 'lib/list.c'; then $(CYGPATH_W) 'lib/list.c'; else $(CYGPATH_W) '$(srcdir)/lib/list.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-list.Tpo lib/$(DEPDIR)/unicc_boot2-list.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/list.c' object='lib/unicc_boot2-list.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-list.obj `if test -f 'lib/list.c'; then $(CYGPATH_W) 'lib/list.c'; else $(CYGPATH_W) '$(srcdir)/lib/list.c'; fi`
+
+lib/unicc_boot2-memory.o: lib/memory.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-memory.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-memory.Tpo -c -o lib/unicc_boot2-memory.o `test -f 'lib/memory.c' || echo '$(srcdir)/'`lib/memory.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-memory.Tpo lib/$(DEPDIR)/unicc_boot2-memory.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/memory.c' object='lib/unicc_boot2-memory.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-memory.o `test -f 'lib/memory.c' || echo '$(srcdir)/'`lib/memory.c
+
+lib/unicc_boot2-memory.obj: lib/memory.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-memory.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-memory.Tpo -c -o lib/unicc_boot2-memory.obj `if test -f 'lib/memory.c'; then $(CYGPATH_W) 'lib/memory.c'; else $(CYGPATH_W) '$(srcdir)/lib/memory.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-memory.Tpo lib/$(DEPDIR)/unicc_boot2-memory.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/memory.c' object='lib/unicc_boot2-memory.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-memory.obj `if test -f 'lib/memory.c'; then $(CYGPATH_W) 'lib/memory.c'; else $(CYGPATH_W) '$(srcdir)/lib/memory.c'; fi`
+
+lib/unicc_boot2-string.o: lib/string.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-string.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-string.Tpo -c -o lib/unicc_boot2-string.o `test -f 'lib/string.c' || echo '$(srcdir)/'`lib/string.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-string.Tpo lib/$(DEPDIR)/unicc_boot2-string.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/string.c' object='lib/unicc_boot2-string.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-string.o `test -f 'lib/string.c' || echo '$(srcdir)/'`lib/string.c
+
+lib/unicc_boot2-string.obj: lib/string.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-string.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-string.Tpo -c -o lib/unicc_boot2-string.obj `if test -f 'lib/string.c'; then $(CYGPATH_W) 'lib/string.c'; else $(CYGPATH_W) '$(srcdir)/lib/string.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-string.Tpo lib/$(DEPDIR)/unicc_boot2-string.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/string.c' object='lib/unicc_boot2-string.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-string.obj `if test -f 'lib/string.c'; then $(CYGPATH_W) 'lib/string.c'; else $(CYGPATH_W) '$(srcdir)/lib/string.c'; fi`
+
+lib/unicc_boot2-system.o: lib/system.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-system.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-system.Tpo -c -o lib/unicc_boot2-system.o `test -f 'lib/system.c' || echo '$(srcdir)/'`lib/system.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-system.Tpo lib/$(DEPDIR)/unicc_boot2-system.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/system.c' object='lib/unicc_boot2-system.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-system.o `test -f 'lib/system.c' || echo '$(srcdir)/'`lib/system.c
+
+lib/unicc_boot2-system.obj: lib/system.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-system.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-system.Tpo -c -o lib/unicc_boot2-system.obj `if test -f 'lib/system.c'; then $(CYGPATH_W) 'lib/system.c'; else $(CYGPATH_W) '$(srcdir)/lib/system.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-system.Tpo lib/$(DEPDIR)/unicc_boot2-system.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/system.c' object='lib/unicc_boot2-system.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-system.obj `if test -f 'lib/system.c'; then $(CYGPATH_W) 'lib/system.c'; else $(CYGPATH_W) '$(srcdir)/lib/system.c'; fi`
+
+lib/unicc_boot2-utf8.o: lib/utf8.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-utf8.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-utf8.Tpo -c -o lib/unicc_boot2-utf8.o `test -f 'lib/utf8.c' || echo '$(srcdir)/'`lib/utf8.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-utf8.Tpo lib/$(DEPDIR)/unicc_boot2-utf8.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/utf8.c' object='lib/unicc_boot2-utf8.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-utf8.o `test -f 'lib/utf8.c' || echo '$(srcdir)/'`lib/utf8.c
+
+lib/unicc_boot2-utf8.obj: lib/utf8.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-utf8.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-utf8.Tpo -c -o lib/unicc_boot2-utf8.obj `if test -f 'lib/utf8.c'; then $(CYGPATH_W) 'lib/utf8.c'; else $(CYGPATH_W) '$(srcdir)/lib/utf8.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-utf8.Tpo lib/$(DEPDIR)/unicc_boot2-utf8.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/utf8.c' object='lib/unicc_boot2-utf8.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-utf8.obj `if test -f 'lib/utf8.c'; then $(CYGPATH_W) 'lib/utf8.c'; else $(CYGPATH_W) '$(srcdir)/lib/utf8.c'; fi`
+
+lib/unicc_boot2-dfa.o: lib/dfa.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-dfa.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-dfa.Tpo -c -o lib/unicc_boot2-dfa.o `test -f 'lib/dfa.c' || echo '$(srcdir)/'`lib/dfa.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-dfa.Tpo lib/$(DEPDIR)/unicc_boot2-dfa.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/dfa.c' object='lib/unicc_boot2-dfa.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-dfa.o `test -f 'lib/dfa.c' || echo '$(srcdir)/'`lib/dfa.c
+
+lib/unicc_boot2-dfa.obj: lib/dfa.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-dfa.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-dfa.Tpo -c -o lib/unicc_boot2-dfa.obj `if test -f 'lib/dfa.c'; then $(CYGPATH_W) 'lib/dfa.c'; else $(CYGPATH_W) '$(srcdir)/lib/dfa.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-dfa.Tpo lib/$(DEPDIR)/unicc_boot2-dfa.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/dfa.c' object='lib/unicc_boot2-dfa.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-dfa.obj `if test -f 'lib/dfa.c'; then $(CYGPATH_W) 'lib/dfa.c'; else $(CYGPATH_W) '$(srcdir)/lib/dfa.c'; fi`
+
+lib/unicc_boot2-direct.o: lib/direct.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-direct.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-direct.Tpo -c -o lib/unicc_boot2-direct.o `test -f 'lib/direct.c' || echo '$(srcdir)/'`lib/direct.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-direct.Tpo lib/$(DEPDIR)/unicc_boot2-direct.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/direct.c' object='lib/unicc_boot2-direct.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-direct.o `test -f 'lib/direct.c' || echo '$(srcdir)/'`lib/direct.c
+
+lib/unicc_boot2-direct.obj: lib/direct.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-direct.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-direct.Tpo -c -o lib/unicc_boot2-direct.obj `if test -f 'lib/direct.c'; then $(CYGPATH_W) 'lib/direct.c'; else $(CYGPATH_W) '$(srcdir)/lib/direct.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-direct.Tpo lib/$(DEPDIR)/unicc_boot2-direct.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/direct.c' object='lib/unicc_boot2-direct.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-direct.obj `if test -f 'lib/direct.c'; then $(CYGPATH_W) 'lib/direct.c'; else $(CYGPATH_W) '$(srcdir)/lib/direct.c'; fi`
+
+lib/unicc_boot2-lex.o: lib/lex.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-lex.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-lex.Tpo -c -o lib/unicc_boot2-lex.o `test -f 'lib/lex.c' || echo '$(srcdir)/'`lib/lex.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-lex.Tpo lib/$(DEPDIR)/unicc_boot2-lex.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/lex.c' object='lib/unicc_boot2-lex.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-lex.o `test -f 'lib/lex.c' || echo '$(srcdir)/'`lib/lex.c
+
+lib/unicc_boot2-lex.obj: lib/lex.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-lex.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-lex.Tpo -c -o lib/unicc_boot2-lex.obj `if test -f 'lib/lex.c'; then $(CYGPATH_W) 'lib/lex.c'; else $(CYGPATH_W) '$(srcdir)/lib/lex.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-lex.Tpo lib/$(DEPDIR)/unicc_boot2-lex.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/lex.c' object='lib/unicc_boot2-lex.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-lex.obj `if test -f 'lib/lex.c'; then $(CYGPATH_W) 'lib/lex.c'; else $(CYGPATH_W) '$(srcdir)/lib/lex.c'; fi`
+
+lib/unicc_boot2-misc.o: lib/misc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-misc.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-misc.Tpo -c -o lib/unicc_boot2-misc.o `test -f 'lib/misc.c' || echo '$(srcdir)/'`lib/misc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-misc.Tpo lib/$(DEPDIR)/unicc_boot2-misc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/misc.c' object='lib/unicc_boot2-misc.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-misc.o `test -f 'lib/misc.c' || echo '$(srcdir)/'`lib/misc.c
+
+lib/unicc_boot2-misc.obj: lib/misc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-misc.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-misc.Tpo -c -o lib/unicc_boot2-misc.obj `if test -f 'lib/misc.c'; then $(CYGPATH_W) 'lib/misc.c'; else $(CYGPATH_W) '$(srcdir)/lib/misc.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-misc.Tpo lib/$(DEPDIR)/unicc_boot2-misc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/misc.c' object='lib/unicc_boot2-misc.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-misc.obj `if test -f 'lib/misc.c'; then $(CYGPATH_W) 'lib/misc.c'; else $(CYGPATH_W) '$(srcdir)/lib/misc.c'; fi`
+
+lib/unicc_boot2-nfa.o: lib/nfa.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-nfa.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-nfa.Tpo -c -o lib/unicc_boot2-nfa.o `test -f 'lib/nfa.c' || echo '$(srcdir)/'`lib/nfa.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-nfa.Tpo lib/$(DEPDIR)/unicc_boot2-nfa.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/nfa.c' object='lib/unicc_boot2-nfa.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-nfa.o `test -f 'lib/nfa.c' || echo '$(srcdir)/'`lib/nfa.c
+
+lib/unicc_boot2-nfa.obj: lib/nfa.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-nfa.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-nfa.Tpo -c -o lib/unicc_boot2-nfa.obj `if test -f 'lib/nfa.c'; then $(CYGPATH_W) 'lib/nfa.c'; else $(CYGPATH_W) '$(srcdir)/lib/nfa.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-nfa.Tpo lib/$(DEPDIR)/unicc_boot2-nfa.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/nfa.c' object='lib/unicc_boot2-nfa.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-nfa.obj `if test -f 'lib/nfa.c'; then $(CYGPATH_W) 'lib/nfa.c'; else $(CYGPATH_W) '$(srcdir)/lib/nfa.c'; fi`
+
+lib/unicc_boot2-ptn.o: lib/ptn.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-ptn.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-ptn.Tpo -c -o lib/unicc_boot2-ptn.o `test -f 'lib/ptn.c' || echo '$(srcdir)/'`lib/ptn.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-ptn.Tpo lib/$(DEPDIR)/unicc_boot2-ptn.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/ptn.c' object='lib/unicc_boot2-ptn.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-ptn.o `test -f 'lib/ptn.c' || echo '$(srcdir)/'`lib/ptn.c
+
+lib/unicc_boot2-ptn.obj: lib/ptn.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-ptn.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-ptn.Tpo -c -o lib/unicc_boot2-ptn.obj `if test -f 'lib/ptn.c'; then $(CYGPATH_W) 'lib/ptn.c'; else $(CYGPATH_W) '$(srcdir)/lib/ptn.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-ptn.Tpo lib/$(DEPDIR)/unicc_boot2-ptn.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/ptn.c' object='lib/unicc_boot2-ptn.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-ptn.obj `if test -f 'lib/ptn.c'; then $(CYGPATH_W) 'lib/ptn.c'; else $(CYGPATH_W) '$(srcdir)/lib/ptn.c'; fi`
+
+lib/unicc_boot2-regex.o: lib/regex.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-regex.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-regex.Tpo -c -o lib/unicc_boot2-regex.o `test -f 'lib/regex.c' || echo '$(srcdir)/'`lib/regex.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-regex.Tpo lib/$(DEPDIR)/unicc_boot2-regex.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/regex.c' object='lib/unicc_boot2-regex.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-regex.o `test -f 'lib/regex.c' || echo '$(srcdir)/'`lib/regex.c
+
+lib/unicc_boot2-regex.obj: lib/regex.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-regex.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-regex.Tpo -c -o lib/unicc_boot2-regex.obj `if test -f 'lib/regex.c'; then $(CYGPATH_W) 'lib/regex.c'; else $(CYGPATH_W) '$(srcdir)/lib/regex.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-regex.Tpo lib/$(DEPDIR)/unicc_boot2-regex.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/regex.c' object='lib/unicc_boot2-regex.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-regex.obj `if test -f 'lib/regex.c'; then $(CYGPATH_W) 'lib/regex.c'; else $(CYGPATH_W) '$(srcdir)/lib/regex.c'; fi`
+
+lib/unicc_boot2-util.o: lib/util.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-util.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-util.Tpo -c -o lib/unicc_boot2-util.o `test -f 'lib/util.c' || echo '$(srcdir)/'`lib/util.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-util.Tpo lib/$(DEPDIR)/unicc_boot2-util.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/util.c' object='lib/unicc_boot2-util.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-util.o `test -f 'lib/util.c' || echo '$(srcdir)/'`lib/util.c
+
+lib/unicc_boot2-util.obj: lib/util.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT lib/unicc_boot2-util.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot2-util.Tpo -c -o lib/unicc_boot2-util.obj `if test -f 'lib/util.c'; then $(CYGPATH_W) 'lib/util.c'; else $(CYGPATH_W) '$(srcdir)/lib/util.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot2-util.Tpo lib/$(DEPDIR)/unicc_boot2-util.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/util.c' object='lib/unicc_boot2-util.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot2-util.obj `if test -f 'lib/util.c'; then $(CYGPATH_W) 'lib/util.c'; else $(CYGPATH_W) '$(srcdir)/lib/util.c'; fi`
+
 unicc_boot2-mem.o: mem.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot2_CFLAGS) $(CFLAGS) -MT unicc_boot2-mem.o -MD -MP -MF $(DEPDIR)/unicc_boot2-mem.Tpo -c -o unicc_boot2-mem.o `test -f 'mem.c' || echo '$(srcdir)/'`mem.c
 @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/unicc_boot2-mem.Tpo $(DEPDIR)/unicc_boot2-mem.Po
@@ -1210,6 +2011,244 @@ unicc_boot3-parse_boot3.obj: parse_boot3.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='parse_boot3.c' object='unicc_boot3-parse_boot3.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o unicc_boot3-parse_boot3.obj `if test -f 'parse_boot3.c'; then $(CYGPATH_W) 'parse_boot3.c'; else $(CYGPATH_W) '$(srcdir)/parse_boot3.c'; fi`
+
+lib/unicc_boot3-array.o: lib/array.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-array.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-array.Tpo -c -o lib/unicc_boot3-array.o `test -f 'lib/array.c' || echo '$(srcdir)/'`lib/array.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-array.Tpo lib/$(DEPDIR)/unicc_boot3-array.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/array.c' object='lib/unicc_boot3-array.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-array.o `test -f 'lib/array.c' || echo '$(srcdir)/'`lib/array.c
+
+lib/unicc_boot3-array.obj: lib/array.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-array.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-array.Tpo -c -o lib/unicc_boot3-array.obj `if test -f 'lib/array.c'; then $(CYGPATH_W) 'lib/array.c'; else $(CYGPATH_W) '$(srcdir)/lib/array.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-array.Tpo lib/$(DEPDIR)/unicc_boot3-array.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/array.c' object='lib/unicc_boot3-array.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-array.obj `if test -f 'lib/array.c'; then $(CYGPATH_W) 'lib/array.c'; else $(CYGPATH_W) '$(srcdir)/lib/array.c'; fi`
+
+lib/unicc_boot3-ccl.o: lib/ccl.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-ccl.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-ccl.Tpo -c -o lib/unicc_boot3-ccl.o `test -f 'lib/ccl.c' || echo '$(srcdir)/'`lib/ccl.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-ccl.Tpo lib/$(DEPDIR)/unicc_boot3-ccl.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/ccl.c' object='lib/unicc_boot3-ccl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-ccl.o `test -f 'lib/ccl.c' || echo '$(srcdir)/'`lib/ccl.c
+
+lib/unicc_boot3-ccl.obj: lib/ccl.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-ccl.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-ccl.Tpo -c -o lib/unicc_boot3-ccl.obj `if test -f 'lib/ccl.c'; then $(CYGPATH_W) 'lib/ccl.c'; else $(CYGPATH_W) '$(srcdir)/lib/ccl.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-ccl.Tpo lib/$(DEPDIR)/unicc_boot3-ccl.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/ccl.c' object='lib/unicc_boot3-ccl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-ccl.obj `if test -f 'lib/ccl.c'; then $(CYGPATH_W) 'lib/ccl.c'; else $(CYGPATH_W) '$(srcdir)/lib/ccl.c'; fi`
+
+lib/unicc_boot3-convert.o: lib/convert.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-convert.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-convert.Tpo -c -o lib/unicc_boot3-convert.o `test -f 'lib/convert.c' || echo '$(srcdir)/'`lib/convert.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-convert.Tpo lib/$(DEPDIR)/unicc_boot3-convert.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/convert.c' object='lib/unicc_boot3-convert.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-convert.o `test -f 'lib/convert.c' || echo '$(srcdir)/'`lib/convert.c
+
+lib/unicc_boot3-convert.obj: lib/convert.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-convert.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-convert.Tpo -c -o lib/unicc_boot3-convert.obj `if test -f 'lib/convert.c'; then $(CYGPATH_W) 'lib/convert.c'; else $(CYGPATH_W) '$(srcdir)/lib/convert.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-convert.Tpo lib/$(DEPDIR)/unicc_boot3-convert.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/convert.c' object='lib/unicc_boot3-convert.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-convert.obj `if test -f 'lib/convert.c'; then $(CYGPATH_W) 'lib/convert.c'; else $(CYGPATH_W) '$(srcdir)/lib/convert.c'; fi`
+
+lib/unicc_boot3-dbg.o: lib/dbg.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-dbg.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-dbg.Tpo -c -o lib/unicc_boot3-dbg.o `test -f 'lib/dbg.c' || echo '$(srcdir)/'`lib/dbg.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-dbg.Tpo lib/$(DEPDIR)/unicc_boot3-dbg.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/dbg.c' object='lib/unicc_boot3-dbg.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-dbg.o `test -f 'lib/dbg.c' || echo '$(srcdir)/'`lib/dbg.c
+
+lib/unicc_boot3-dbg.obj: lib/dbg.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-dbg.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-dbg.Tpo -c -o lib/unicc_boot3-dbg.obj `if test -f 'lib/dbg.c'; then $(CYGPATH_W) 'lib/dbg.c'; else $(CYGPATH_W) '$(srcdir)/lib/dbg.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-dbg.Tpo lib/$(DEPDIR)/unicc_boot3-dbg.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/dbg.c' object='lib/unicc_boot3-dbg.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-dbg.obj `if test -f 'lib/dbg.c'; then $(CYGPATH_W) 'lib/dbg.c'; else $(CYGPATH_W) '$(srcdir)/lib/dbg.c'; fi`
+
+lib/unicc_boot3-list.o: lib/list.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-list.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-list.Tpo -c -o lib/unicc_boot3-list.o `test -f 'lib/list.c' || echo '$(srcdir)/'`lib/list.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-list.Tpo lib/$(DEPDIR)/unicc_boot3-list.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/list.c' object='lib/unicc_boot3-list.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-list.o `test -f 'lib/list.c' || echo '$(srcdir)/'`lib/list.c
+
+lib/unicc_boot3-list.obj: lib/list.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-list.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-list.Tpo -c -o lib/unicc_boot3-list.obj `if test -f 'lib/list.c'; then $(CYGPATH_W) 'lib/list.c'; else $(CYGPATH_W) '$(srcdir)/lib/list.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-list.Tpo lib/$(DEPDIR)/unicc_boot3-list.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/list.c' object='lib/unicc_boot3-list.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-list.obj `if test -f 'lib/list.c'; then $(CYGPATH_W) 'lib/list.c'; else $(CYGPATH_W) '$(srcdir)/lib/list.c'; fi`
+
+lib/unicc_boot3-memory.o: lib/memory.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-memory.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-memory.Tpo -c -o lib/unicc_boot3-memory.o `test -f 'lib/memory.c' || echo '$(srcdir)/'`lib/memory.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-memory.Tpo lib/$(DEPDIR)/unicc_boot3-memory.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/memory.c' object='lib/unicc_boot3-memory.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-memory.o `test -f 'lib/memory.c' || echo '$(srcdir)/'`lib/memory.c
+
+lib/unicc_boot3-memory.obj: lib/memory.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-memory.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-memory.Tpo -c -o lib/unicc_boot3-memory.obj `if test -f 'lib/memory.c'; then $(CYGPATH_W) 'lib/memory.c'; else $(CYGPATH_W) '$(srcdir)/lib/memory.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-memory.Tpo lib/$(DEPDIR)/unicc_boot3-memory.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/memory.c' object='lib/unicc_boot3-memory.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-memory.obj `if test -f 'lib/memory.c'; then $(CYGPATH_W) 'lib/memory.c'; else $(CYGPATH_W) '$(srcdir)/lib/memory.c'; fi`
+
+lib/unicc_boot3-string.o: lib/string.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-string.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-string.Tpo -c -o lib/unicc_boot3-string.o `test -f 'lib/string.c' || echo '$(srcdir)/'`lib/string.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-string.Tpo lib/$(DEPDIR)/unicc_boot3-string.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/string.c' object='lib/unicc_boot3-string.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-string.o `test -f 'lib/string.c' || echo '$(srcdir)/'`lib/string.c
+
+lib/unicc_boot3-string.obj: lib/string.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-string.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-string.Tpo -c -o lib/unicc_boot3-string.obj `if test -f 'lib/string.c'; then $(CYGPATH_W) 'lib/string.c'; else $(CYGPATH_W) '$(srcdir)/lib/string.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-string.Tpo lib/$(DEPDIR)/unicc_boot3-string.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/string.c' object='lib/unicc_boot3-string.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-string.obj `if test -f 'lib/string.c'; then $(CYGPATH_W) 'lib/string.c'; else $(CYGPATH_W) '$(srcdir)/lib/string.c'; fi`
+
+lib/unicc_boot3-system.o: lib/system.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-system.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-system.Tpo -c -o lib/unicc_boot3-system.o `test -f 'lib/system.c' || echo '$(srcdir)/'`lib/system.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-system.Tpo lib/$(DEPDIR)/unicc_boot3-system.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/system.c' object='lib/unicc_boot3-system.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-system.o `test -f 'lib/system.c' || echo '$(srcdir)/'`lib/system.c
+
+lib/unicc_boot3-system.obj: lib/system.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-system.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-system.Tpo -c -o lib/unicc_boot3-system.obj `if test -f 'lib/system.c'; then $(CYGPATH_W) 'lib/system.c'; else $(CYGPATH_W) '$(srcdir)/lib/system.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-system.Tpo lib/$(DEPDIR)/unicc_boot3-system.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/system.c' object='lib/unicc_boot3-system.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-system.obj `if test -f 'lib/system.c'; then $(CYGPATH_W) 'lib/system.c'; else $(CYGPATH_W) '$(srcdir)/lib/system.c'; fi`
+
+lib/unicc_boot3-utf8.o: lib/utf8.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-utf8.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-utf8.Tpo -c -o lib/unicc_boot3-utf8.o `test -f 'lib/utf8.c' || echo '$(srcdir)/'`lib/utf8.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-utf8.Tpo lib/$(DEPDIR)/unicc_boot3-utf8.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/utf8.c' object='lib/unicc_boot3-utf8.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-utf8.o `test -f 'lib/utf8.c' || echo '$(srcdir)/'`lib/utf8.c
+
+lib/unicc_boot3-utf8.obj: lib/utf8.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-utf8.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-utf8.Tpo -c -o lib/unicc_boot3-utf8.obj `if test -f 'lib/utf8.c'; then $(CYGPATH_W) 'lib/utf8.c'; else $(CYGPATH_W) '$(srcdir)/lib/utf8.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-utf8.Tpo lib/$(DEPDIR)/unicc_boot3-utf8.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/utf8.c' object='lib/unicc_boot3-utf8.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-utf8.obj `if test -f 'lib/utf8.c'; then $(CYGPATH_W) 'lib/utf8.c'; else $(CYGPATH_W) '$(srcdir)/lib/utf8.c'; fi`
+
+lib/unicc_boot3-dfa.o: lib/dfa.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-dfa.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-dfa.Tpo -c -o lib/unicc_boot3-dfa.o `test -f 'lib/dfa.c' || echo '$(srcdir)/'`lib/dfa.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-dfa.Tpo lib/$(DEPDIR)/unicc_boot3-dfa.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/dfa.c' object='lib/unicc_boot3-dfa.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-dfa.o `test -f 'lib/dfa.c' || echo '$(srcdir)/'`lib/dfa.c
+
+lib/unicc_boot3-dfa.obj: lib/dfa.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-dfa.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-dfa.Tpo -c -o lib/unicc_boot3-dfa.obj `if test -f 'lib/dfa.c'; then $(CYGPATH_W) 'lib/dfa.c'; else $(CYGPATH_W) '$(srcdir)/lib/dfa.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-dfa.Tpo lib/$(DEPDIR)/unicc_boot3-dfa.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/dfa.c' object='lib/unicc_boot3-dfa.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-dfa.obj `if test -f 'lib/dfa.c'; then $(CYGPATH_W) 'lib/dfa.c'; else $(CYGPATH_W) '$(srcdir)/lib/dfa.c'; fi`
+
+lib/unicc_boot3-direct.o: lib/direct.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-direct.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-direct.Tpo -c -o lib/unicc_boot3-direct.o `test -f 'lib/direct.c' || echo '$(srcdir)/'`lib/direct.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-direct.Tpo lib/$(DEPDIR)/unicc_boot3-direct.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/direct.c' object='lib/unicc_boot3-direct.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-direct.o `test -f 'lib/direct.c' || echo '$(srcdir)/'`lib/direct.c
+
+lib/unicc_boot3-direct.obj: lib/direct.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-direct.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-direct.Tpo -c -o lib/unicc_boot3-direct.obj `if test -f 'lib/direct.c'; then $(CYGPATH_W) 'lib/direct.c'; else $(CYGPATH_W) '$(srcdir)/lib/direct.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-direct.Tpo lib/$(DEPDIR)/unicc_boot3-direct.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/direct.c' object='lib/unicc_boot3-direct.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-direct.obj `if test -f 'lib/direct.c'; then $(CYGPATH_W) 'lib/direct.c'; else $(CYGPATH_W) '$(srcdir)/lib/direct.c'; fi`
+
+lib/unicc_boot3-lex.o: lib/lex.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-lex.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-lex.Tpo -c -o lib/unicc_boot3-lex.o `test -f 'lib/lex.c' || echo '$(srcdir)/'`lib/lex.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-lex.Tpo lib/$(DEPDIR)/unicc_boot3-lex.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/lex.c' object='lib/unicc_boot3-lex.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-lex.o `test -f 'lib/lex.c' || echo '$(srcdir)/'`lib/lex.c
+
+lib/unicc_boot3-lex.obj: lib/lex.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-lex.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-lex.Tpo -c -o lib/unicc_boot3-lex.obj `if test -f 'lib/lex.c'; then $(CYGPATH_W) 'lib/lex.c'; else $(CYGPATH_W) '$(srcdir)/lib/lex.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-lex.Tpo lib/$(DEPDIR)/unicc_boot3-lex.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/lex.c' object='lib/unicc_boot3-lex.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-lex.obj `if test -f 'lib/lex.c'; then $(CYGPATH_W) 'lib/lex.c'; else $(CYGPATH_W) '$(srcdir)/lib/lex.c'; fi`
+
+lib/unicc_boot3-misc.o: lib/misc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-misc.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-misc.Tpo -c -o lib/unicc_boot3-misc.o `test -f 'lib/misc.c' || echo '$(srcdir)/'`lib/misc.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-misc.Tpo lib/$(DEPDIR)/unicc_boot3-misc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/misc.c' object='lib/unicc_boot3-misc.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-misc.o `test -f 'lib/misc.c' || echo '$(srcdir)/'`lib/misc.c
+
+lib/unicc_boot3-misc.obj: lib/misc.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-misc.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-misc.Tpo -c -o lib/unicc_boot3-misc.obj `if test -f 'lib/misc.c'; then $(CYGPATH_W) 'lib/misc.c'; else $(CYGPATH_W) '$(srcdir)/lib/misc.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-misc.Tpo lib/$(DEPDIR)/unicc_boot3-misc.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/misc.c' object='lib/unicc_boot3-misc.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-misc.obj `if test -f 'lib/misc.c'; then $(CYGPATH_W) 'lib/misc.c'; else $(CYGPATH_W) '$(srcdir)/lib/misc.c'; fi`
+
+lib/unicc_boot3-nfa.o: lib/nfa.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-nfa.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-nfa.Tpo -c -o lib/unicc_boot3-nfa.o `test -f 'lib/nfa.c' || echo '$(srcdir)/'`lib/nfa.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-nfa.Tpo lib/$(DEPDIR)/unicc_boot3-nfa.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/nfa.c' object='lib/unicc_boot3-nfa.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-nfa.o `test -f 'lib/nfa.c' || echo '$(srcdir)/'`lib/nfa.c
+
+lib/unicc_boot3-nfa.obj: lib/nfa.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-nfa.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-nfa.Tpo -c -o lib/unicc_boot3-nfa.obj `if test -f 'lib/nfa.c'; then $(CYGPATH_W) 'lib/nfa.c'; else $(CYGPATH_W) '$(srcdir)/lib/nfa.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-nfa.Tpo lib/$(DEPDIR)/unicc_boot3-nfa.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/nfa.c' object='lib/unicc_boot3-nfa.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-nfa.obj `if test -f 'lib/nfa.c'; then $(CYGPATH_W) 'lib/nfa.c'; else $(CYGPATH_W) '$(srcdir)/lib/nfa.c'; fi`
+
+lib/unicc_boot3-ptn.o: lib/ptn.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-ptn.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-ptn.Tpo -c -o lib/unicc_boot3-ptn.o `test -f 'lib/ptn.c' || echo '$(srcdir)/'`lib/ptn.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-ptn.Tpo lib/$(DEPDIR)/unicc_boot3-ptn.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/ptn.c' object='lib/unicc_boot3-ptn.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-ptn.o `test -f 'lib/ptn.c' || echo '$(srcdir)/'`lib/ptn.c
+
+lib/unicc_boot3-ptn.obj: lib/ptn.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-ptn.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-ptn.Tpo -c -o lib/unicc_boot3-ptn.obj `if test -f 'lib/ptn.c'; then $(CYGPATH_W) 'lib/ptn.c'; else $(CYGPATH_W) '$(srcdir)/lib/ptn.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-ptn.Tpo lib/$(DEPDIR)/unicc_boot3-ptn.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/ptn.c' object='lib/unicc_boot3-ptn.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-ptn.obj `if test -f 'lib/ptn.c'; then $(CYGPATH_W) 'lib/ptn.c'; else $(CYGPATH_W) '$(srcdir)/lib/ptn.c'; fi`
+
+lib/unicc_boot3-regex.o: lib/regex.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-regex.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-regex.Tpo -c -o lib/unicc_boot3-regex.o `test -f 'lib/regex.c' || echo '$(srcdir)/'`lib/regex.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-regex.Tpo lib/$(DEPDIR)/unicc_boot3-regex.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/regex.c' object='lib/unicc_boot3-regex.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-regex.o `test -f 'lib/regex.c' || echo '$(srcdir)/'`lib/regex.c
+
+lib/unicc_boot3-regex.obj: lib/regex.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-regex.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-regex.Tpo -c -o lib/unicc_boot3-regex.obj `if test -f 'lib/regex.c'; then $(CYGPATH_W) 'lib/regex.c'; else $(CYGPATH_W) '$(srcdir)/lib/regex.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-regex.Tpo lib/$(DEPDIR)/unicc_boot3-regex.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/regex.c' object='lib/unicc_boot3-regex.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-regex.obj `if test -f 'lib/regex.c'; then $(CYGPATH_W) 'lib/regex.c'; else $(CYGPATH_W) '$(srcdir)/lib/regex.c'; fi`
+
+lib/unicc_boot3-util.o: lib/util.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-util.o -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-util.Tpo -c -o lib/unicc_boot3-util.o `test -f 'lib/util.c' || echo '$(srcdir)/'`lib/util.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-util.Tpo lib/$(DEPDIR)/unicc_boot3-util.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/util.c' object='lib/unicc_boot3-util.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-util.o `test -f 'lib/util.c' || echo '$(srcdir)/'`lib/util.c
+
+lib/unicc_boot3-util.obj: lib/util.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT lib/unicc_boot3-util.obj -MD -MP -MF lib/$(DEPDIR)/unicc_boot3-util.Tpo -c -o lib/unicc_boot3-util.obj `if test -f 'lib/util.c'; then $(CYGPATH_W) 'lib/util.c'; else $(CYGPATH_W) '$(srcdir)/lib/util.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) lib/$(DEPDIR)/unicc_boot3-util.Tpo lib/$(DEPDIR)/unicc_boot3-util.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='lib/util.c' object='lib/unicc_boot3-util.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -c -o lib/unicc_boot3-util.obj `if test -f 'lib/util.c'; then $(CYGPATH_W) 'lib/util.c'; else $(CYGPATH_W) '$(srcdir)/lib/util.c'; fi`
 
 unicc_boot3-mem.o: mem.c
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(unicc_boot3_CFLAGS) $(CFLAGS) -MT unicc_boot3-mem.o -MD -MP -MF $(DEPDIR)/unicc_boot3-mem.Tpo -c -o unicc_boot3-mem.o `test -f 'mem.c' || echo '$(srcdir)/'`mem.c
@@ -1778,6 +2817,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f lib/$(DEPDIR)/$(am__dirstamp)
+	-rm -f lib/$(am__dirstamp)
 	-rm -f min_lalr1/$(DEPDIR)/$(am__dirstamp)
 	-rm -f min_lalr1/$(am__dirstamp)
 
@@ -1860,6 +2901,74 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/utils.Po
 	-rm -f ./$(DEPDIR)/virtual.Po
 	-rm -f ./$(DEPDIR)/xml.Po
+	-rm -f lib/$(DEPDIR)/array.Po
+	-rm -f lib/$(DEPDIR)/ccl.Po
+	-rm -f lib/$(DEPDIR)/convert.Po
+	-rm -f lib/$(DEPDIR)/dbg.Po
+	-rm -f lib/$(DEPDIR)/dfa.Po
+	-rm -f lib/$(DEPDIR)/direct.Po
+	-rm -f lib/$(DEPDIR)/lex.Po
+	-rm -f lib/$(DEPDIR)/list.Po
+	-rm -f lib/$(DEPDIR)/memory.Po
+	-rm -f lib/$(DEPDIR)/misc.Po
+	-rm -f lib/$(DEPDIR)/nfa.Po
+	-rm -f lib/$(DEPDIR)/ptn.Po
+	-rm -f lib/$(DEPDIR)/regex.Po
+	-rm -f lib/$(DEPDIR)/string.Po
+	-rm -f lib/$(DEPDIR)/system.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-array.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-ccl.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-convert.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-dbg.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-dfa.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-direct.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-lex.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-list.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-memory.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-misc.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-nfa.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-ptn.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-regex.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-string.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-system.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-utf8.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-util.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-array.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-ccl.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-convert.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-dbg.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-dfa.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-direct.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-lex.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-list.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-memory.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-misc.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-nfa.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-ptn.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-regex.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-string.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-system.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-utf8.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-util.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-array.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-ccl.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-convert.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-dbg.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-dfa.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-direct.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-lex.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-list.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-memory.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-misc.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-nfa.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-ptn.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-regex.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-string.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-system.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-utf8.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-util.Po
+	-rm -f lib/$(DEPDIR)/utf8.Po
+	-rm -f lib/$(DEPDIR)/util.Po
 	-rm -f min_lalr1/$(DEPDIR)/min_lalr1.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -1977,6 +3086,74 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/utils.Po
 	-rm -f ./$(DEPDIR)/virtual.Po
 	-rm -f ./$(DEPDIR)/xml.Po
+	-rm -f lib/$(DEPDIR)/array.Po
+	-rm -f lib/$(DEPDIR)/ccl.Po
+	-rm -f lib/$(DEPDIR)/convert.Po
+	-rm -f lib/$(DEPDIR)/dbg.Po
+	-rm -f lib/$(DEPDIR)/dfa.Po
+	-rm -f lib/$(DEPDIR)/direct.Po
+	-rm -f lib/$(DEPDIR)/lex.Po
+	-rm -f lib/$(DEPDIR)/list.Po
+	-rm -f lib/$(DEPDIR)/memory.Po
+	-rm -f lib/$(DEPDIR)/misc.Po
+	-rm -f lib/$(DEPDIR)/nfa.Po
+	-rm -f lib/$(DEPDIR)/ptn.Po
+	-rm -f lib/$(DEPDIR)/regex.Po
+	-rm -f lib/$(DEPDIR)/string.Po
+	-rm -f lib/$(DEPDIR)/system.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-array.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-ccl.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-convert.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-dbg.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-dfa.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-direct.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-lex.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-list.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-memory.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-misc.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-nfa.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-ptn.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-regex.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-string.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-system.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-utf8.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot1-util.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-array.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-ccl.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-convert.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-dbg.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-dfa.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-direct.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-lex.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-list.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-memory.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-misc.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-nfa.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-ptn.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-regex.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-string.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-system.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-utf8.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot2-util.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-array.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-ccl.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-convert.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-dbg.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-dfa.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-direct.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-lex.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-list.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-memory.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-misc.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-nfa.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-ptn.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-regex.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-string.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-system.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-utf8.Po
+	-rm -f lib/$(DEPDIR)/unicc_boot3-util.Po
+	-rm -f lib/$(DEPDIR)/utf8.Po
+	-rm -f lib/$(DEPDIR)/util.Po
 	-rm -f min_lalr1/$(DEPDIR)/min_lalr1.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
