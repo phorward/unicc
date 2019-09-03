@@ -146,7 +146,7 @@ unicc.man: unicc.t2t
 # --- UniCC CI Test Suite ------------------------------------------------------
 
 TESTPREFIX=test_
-TESTEXPR="42*23+1337"
+TESTEXPR="42 * 23 + 1337"
 TESTRESULT="= 2303"
 
 # C
