@@ -1,6 +1,6 @@
 # phorward v1.0.0
 
-This is a stand-alone copy of the Phorward C/C++ library that was generated on 2019-09-03 from the official phorward repository.
+This is a stand-alone copy of the Phorward C/C++ library that was generated on 2019-09-05 from the official phorward repository.
 
 It is not intended to be used for further development. To contribute changes, please check out the official repository, which can be found here:
 https://github.com/phorward/phorward

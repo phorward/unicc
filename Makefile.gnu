@@ -4,23 +4,7 @@
 CFLAGS 			= -g -DUTF8 -DUNICODE -DDEBUG -Wall $(CLOCAL)
 
 SOURCES	= 	\
-	lib/array.c \
-	lib/ccl.c \
-	lib/convert.c \
-	lib/dbg.c \
-	lib/list.c \
-	lib/memory.c \
-	lib/string.c \
-	lib/system.c \
-	lib/utf8.c \
-	lib/dfa.c \
-	lib/direct.c \
-	lib/lex.c \
-	lib/misc.c \
-	lib/nfa.c \
-	lib/ptn.c \
-	lib/regex.c \
-	lib/util.c \
+	lib/phorward.c \
 	mem.c \
 	error.c \
 	first.c \

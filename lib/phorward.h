@@ -43,6 +43,7 @@ Usage:	Phorward C/C++ Library Global Header
 
 
 typedef char 					pboolean;	
+
 #ifndef BOOLEAN
 #define BOOLEAN					pboolean
 #endif
@@ -74,6 +75,7 @@ typedef char 					pboolean;
 
 
 #define MAKE_BOOLEAN( b ) 		( ( b ) ? TRUE : FALSE )
+
 
 
 
