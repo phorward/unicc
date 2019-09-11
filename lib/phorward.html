@@ -3204,7 +3204,7 @@ if <i>left</i> is greater <i>right</i> and a value == 0 if <i>left</i> is equal 
 </p>
 <div class='definition'>
 <p>
-pboolean parray_erase( <a href="#parray">parray</a>* array )
+void parray_erase( <a href="#parray">parray</a>* array )
 </div>
 </p>
 <p>
@@ -3240,7 +3240,7 @@ void* parray_first( <a href="#parray">parray</a>* array )
 Access first element of the array.
 </p>
 <p>
-Returns the address of the accessed item, and (void*)NULL if nothing is in
+Returns the address of the accessed item, and NULL if nothing is in
 the array.
 </div>
 <!-- NEED 13 -->
@@ -3292,13 +3292,13 @@ Access an element from the array by its offset position from the left.
 base address.
 </p>
 <p>
-Returns the address of the accessed item, and (void*)NULL if the item could not
-be accessed (e.g. if the array is empty or offset is beyond the last of array).
+Returns the address of the accessed item, and NULL if the item could not
+be accessed (e.g. if the array is empty or offset is beyond the top of array).
 </p>
 <p>
 Use <a href="#fn_parray_rget">parray_rget()</a> for access items from the end.
 </div>
-<!-- NEED 21 -->
+<!-- NEED 22 -->
 <div class='function'>
 </p>
 
@@ -3309,7 +3309,7 @@ Use <a href="#fn_parray_rget">parray_rget()</a> for access items from the end.
 </p>
 <div class='definition'>
 <p>
-pboolean parray_init( <a href="#parray">parray</a>* array, size_t size, size_t chunk )
+void parray_init( <a href="#parray">parray</a>* array, size_t size, size_t chunk )
 </div>
 </p>
 <p>
@@ -3329,7 +3329,8 @@ This should be evaluated using the <a href="#fn_sizeof">sizeof()</a>-macro.
 <i>chunk</i> defines the chunk size, when an array-(re)allocation will be
 performed. If, e.g. this is set to 128, then, if the 128th item is created
 within the array, a realloction is done. Once allocated memory remains until
-the array is freed again.
+the array is freed again. The array's elements may change their heap address
+when a chunk reallocation is required.
 </div>
 <!-- NEED 15 -->
 <div class='function'>
@@ -3401,7 +3402,7 @@ void* parray_last( <a href="#parray">parray</a>* array )
 Access last element of the array.
 </p>
 <p>
-Returns the address of the accessed item, and (void*)NULL if nothing is in
+Returns the address of the accessed item, and NULL if nothing is in
 the array.
 </div>
 <!-- NEED 14 -->
@@ -3425,7 +3426,7 @@ void* parray_malloc( <a href="#parray">parray</a>* array )
 Pushes and "allocates" an empty element on the array.
 </p>
 <p>
-This function is just a shortcut to <code>`parray_push( array, (void*)NULL )`</code>,
+This function is just a shortcut to <code>`parray_push( array, NULL )`</code>,
 and the memory of the pushed element is initialized to zero.
 </div>
 <!-- NEED 14 -->
@@ -3449,10 +3450,10 @@ void* parray_next( <a href="#parray">parray</a>* array, void* ptr )
 Access next element from <i>ptr</i> in <i>array</i>.
 </p>
 <p>
-Returns the address of the next element, and (void*)NULL if the access gets
+Returns the address of the next element, and NULL if the access gets
 out of bounds.
 </div>
-<!-- NEED 16 -->
+<!-- NEED 17 -->
 <div class='function'>
 </p>
 
@@ -3471,6 +3472,8 @@ size_t parray_offset( <a href="#parray">parray</a>* array, void* ptr )
 </p>
 <p>
 Return offset of element <i>ptr</i> in array <i>array</i>.
+</p>
+<p>
 Returns the offset of <i>ptr</i> in <i>array</i>.
 The function returns the size of the array (which is an invalid offset)
 if <i>ptr</i> is not part of <i>array</i>.
@@ -3489,7 +3492,7 @@ To check if a pointer belongs to an array, call <a href="#fn_parray_partof">parr
 </p>
 <div class='definition'>
 <p>
-pboolean parray_partof( <a href="#parray">parray</a>* array, void* ptr )
+void* parray_partof( <a href="#parray">parray</a>* array, void* ptr )
 </div>
 </p>
 <p>
@@ -3527,7 +3530,7 @@ only be overridden with the next push operation.
 <i>array</i> is the pointer to array where to pop an item off.
 </p>
 <p>
-The function returns the address of the popped item, and (void*)NULL if the
+The function returns the address of the popped item, and NULL if the
 item could not be popped (e.g. array is empty).
 </div>
 <!-- NEED 14 -->
@@ -3551,7 +3554,7 @@ void* parray_prev( <a href="#parray">parray</a>* array, void* ptr )
 Access previous element from <i>ptr</i> in <i>array</i>.
 </p>
 <p>
-Returns the address of the previous element, and (void*)NULL if the access gets
+Returns the address of the previous element, and NULL if the access gets
 out of bounds.
 </div>
 <!-- NEED 23 -->
@@ -3584,10 +3587,10 @@ memory size as used at array initialization.
 <p>
 <i>item</i> is the pointer to the memory of the item that should be pushed onto the
 array. The caller should cast his type into void, or wrap the push-operation
-with a macro. It can be left (void*)NULL, so no memory will be copied.
+with a macro. It can be left NULL, so no memory will be copied.
 </p>
 <p>
-The function returns the address of the newly pushed item, and (void*)NULL if
+The function returns the address of the newly pushed item, and NULL if
 the item could not be pushed.
 </div>
 <!-- NEED 20 -->
@@ -3657,7 +3660,7 @@ moved up data part or invalid memory, if on the end).
 </p>
 <div class='definition'>
 <p>
-pboolean parray_reserve( <a href="#parray">parray</a>* array, size_t n )
+void* parray_reserve( <a href="#parray">parray</a>* array, size_t n )
 </div>
 </p>
 <p>
@@ -3696,7 +3699,7 @@ Access an element from the array by its offset position from the right.
 base address.
 </p>
 <p>
-Returns the address of the accessed item, and (void*)NULL if the item could not
+Returns the address of the accessed item, and NULL if the item could not
 be accessed (e.g. if the array is empty or offset is beyond the bottom of
 the array).
 </p>
@@ -3748,7 +3751,7 @@ void* parray_rmalloc( <a href="#parray">parray</a>* array )
 Unshifts and "allocates" an empty element on the array.
 </p>
 <p>
-This function is just a shortcut to <code>`parray_unshift( array, (void*)NULL )`</code>,
+This function is just a shortcut to <code>`parray_unshift( array, NULL )`</code>,
 and the memory of the unshifted element is initialized to zero.
 </div>
 <!-- NEED 21 -->
@@ -3794,7 +3797,7 @@ is out of the array bounds.
 </p>
 <div class='definition'>
 <p>
-pboolean parray_set_comparefn( <a href="#parray">parray</a>* array, int (*comparefn)( <a href="#parray">parray</a>*, void*, void* ) )
+void parray_set_comparefn( <a href="#parray">parray</a>* array, int (*comparefn)( <a href="#parray">parray</a>*, void*, void* ) )
 </div>
 </p>
 <p>
@@ -3818,7 +3821,7 @@ as default fallback.
 </p>
 <div class='definition'>
 <p>
-pboolean parray_set_sortfn( <a href="#parray">parray</a>* array, int (*sortfn)( <a href="#parray">parray</a>*, void*, void* ) )
+void parray_set_sortfn( <a href="#parray">parray</a>* array, int (*sortfn)( <a href="#parray">parray</a>*, void*, void* ) )
 </div>
 </p>
 <p>
@@ -3861,7 +3864,7 @@ operation.
 <i>array</i> is the pointer to array where to pop an item off.
 </p>
 <p>
-The function returns the address of the shifted item, and (void*)NULL if the
+The function returns the address of the shifted item, and NULL if the
 item could not be popped (e.g. array is empty).
 </div>
 <!-- NEED 18 -->
@@ -3875,7 +3878,7 @@ item could not be popped (e.g. array is empty).
 </p>
 <div class='definition'>
 <p>
-pboolean parray_sort( <a href="#parray">parray</a>* array )
+void parray_sort( <a href="#parray">parray</a>* array )
 </div>
 </p>
 <p>
@@ -3905,7 +3908,7 @@ standard function.
 </p>
 <div class='definition'>
 <p>
-pboolean parray_subsort( <a href="#parray">parray</a>* array, size_t from, size_t to )
+void parray_subsort( <a href="#parray">parray</a>* array, size_t from, size_t to )
 </div>
 </p>
 <p>
@@ -3913,7 +3916,7 @@ pboolean parray_subsort( <a href="#parray">parray</a>* array, size_t from, size_
 </p>
 <p>
 Sorts <i>array</i> between the elements <i>from</i> and <i>to</i> according to the
-sort-function that was set for the list.
+sort-function that was set for the array.
 </p>
 <p>
 To sort the entire array, use <a href="#fn_parray_sort">parray_sort()</a>.
@@ -4005,10 +4008,10 @@ memory size as used at array initialization.
 <p>
 <i>item</i> is the pointer to the memory of the item that should be pushed onto the
 array. The caller should cast his type into void, or wrap the push-operation
-with a macro. It can be left (void*)NULL, so no memory will be copied.
+with a macro. It can be left NULL, so no memory will be copied.
 </p>
 <p>
-The function returns the address of the newly unshifted item, and (void*)NULL
+The function returns the address of the newly unshifted item, and NULL
 if the item could not be unshifted.
 </div>
 <!-- NEED 19 -->
@@ -4218,7 +4221,7 @@ to be in the same character universe and compatible for operations.
 </p>
 <div class='definition'>
 <p>
-int pccl_count( <a href="#pccl">pccl</a>* ccl )
+size_t pccl_count( <a href="#pccl">pccl</a>* ccl )
 </div>
 </p>
 <p>
@@ -4430,7 +4433,7 @@ The function always returns (<a href="#pccl">pccl</a>*)NULL.
 </p>
 <div class='definition'>
 <p>
-pboolean pccl_get( wchar_t* from, wchar_t* to, <a href="#pccl">pccl</a>* ccl, int offset )
+pboolean pccl_get( wchar_t* from, wchar_t* to, <a href="#pccl">pccl</a>* ccl, size_t offset )
 </div>
 </p>
 <p>
@@ -4689,7 +4692,7 @@ left (FILE*)NULL, so <i>stderr</i> will be used.
 </p>
 <div class='definition'>
 <p>
-int pccl_size( <a href="#pccl">pccl</a>* ccl )
+size_t pccl_size( <a href="#pccl">pccl</a>* ccl )
 </div>
 </p>
 <p>
@@ -5598,7 +5601,7 @@ Access data-content of the current element <i>e</i>.
 </p>
 <div class='definition'>
 <p>
-pboolean plist_clear( <a href="#plist">plist</a>* list )
+void plist_clear( <a href="#plist">plist</a>* list )
 </div>
 </p>
 <p>
@@ -5792,7 +5795,7 @@ All elements of <i>list</i> are duplicated and stand-alone.
 </p>
 <div class='definition'>
 <p>
-pboolean plist_erase( <a href="#plist">plist</a>* list )
+void plist_erase( <a href="#plist">plist</a>* list )
 </div>
 </p>
 <p>
@@ -6018,7 +6021,7 @@ Access previous element with same hash value of a current unit <i>u</i>.
 </p>
 <div class='definition'>
 <p>
-pboolean plist_init( <a href="#plist">plist</a>* list, size_t size, short flags )
+void plist_init( <a href="#plist">plist</a>* list, size_t size, short flags )
 </div>
 </p>
 <p>
@@ -6300,7 +6303,7 @@ in use.
 </p>
 <div class='definition'>
 <p>
-pboolean plist_remove( <a href="#plist">plist</a>* list, <a href="#plistel">plistel</a>* e )
+void plist_remove( <a href="#plist">plist</a>* list, <a href="#plistel">plistel</a>* e )
 </div>
 </p>
 <p>
@@ -6419,7 +6422,7 @@ The function works as a shortcut for <a href="#fn_plist_access">plist_access()</
 </p>
 <div class='definition'>
 <p>
-pboolean plist_set_comparefn( <a href="#plist">plist</a>* list, int (*comparefn)( <a href="#plist">plist</a>*, <a href="#plistel">plistel</a>*, <a href="#plistel">plistel</a>* ) )
+void plist_set_comparefn( <a href="#plist">plist</a>* list, int (*comparefn)( <a href="#plist">plist</a>*, <a href="#plistel">plistel</a>*, <a href="#plistel">plistel</a>* ) )
 </div>
 </p>
 <p>
@@ -6443,7 +6446,7 @@ as default fallback.
 </p>
 <div class='definition'>
 <p>
-pboolean plist_set_printfn( <a href="#plist">plist</a>* list, void (*printfn)( <a href="#plist">plist</a>* ) )
+void plist_set_printfn( <a href="#plist">plist</a>* list, void (*printfn)( <a href="#plist">plist</a>* ) )
 </div>
 </p>
 <p>
@@ -6463,7 +6466,7 @@ Set an element dump function.
 </p>
 <div class='definition'>
 <p>
-pboolean plist_set_sortfn( <a href="#plist">plist</a>* list, int (*sortfn)( <a href="#plist">plist</a>*, <a href="#plistel">plistel</a>*, <a href="#plistel">plistel</a>* ) )
+void plist_set_sortfn( <a href="#plist">plist</a>* list, int (*sortfn)( <a href="#plist">plist</a>*, <a href="#plistel">plistel</a>*, <a href="#plistel">plistel</a>* ) )
 </div>
 </p>
 <p>
@@ -6532,7 +6535,7 @@ Return element size of list <i>l</i>.
 </p>
 <div class='definition'>
 <p>
-pboolean plist_sort( <a href="#plist">plist</a>* list )
+void plist_sort( <a href="#plist">plist</a>* list )
 </div>
 </p>
 <p>
@@ -6562,7 +6565,7 @@ standard function.
 </p>
 <div class='definition'>
 <p>
-pboolean plist_subsort( <a href="#plist">plist</a>* list, <a href="#plistel">plistel</a>* from, <a href="#plistel">plistel</a>* to )
+void plist_subsort( <a href="#plist">plist</a>* list, <a href="#plistel">plistel</a>* from, <a href="#plistel">plistel</a>* to )
 </div>
 </p>
 <p>
@@ -6593,7 +6596,7 @@ standard function.
 </p>
 <div class='definition'>
 <p>
-pboolean plist_swap( <a href="#plist">plist</a>* l, <a href="#plistel">plistel</a>* a, <a href="#plistel">plistel</a>* b )
+void plist_swap( <a href="#plist">plist</a>* l, <a href="#plistel">plistel</a>* a, <a href="#plistel">plistel</a>* b )
 </div>
 </p>
 <p>

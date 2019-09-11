@@ -5,7 +5,7 @@ https://phorward.info ++ contact<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
 File:	phorward.c
-Usage:	Phorward C/C++ library; Merged by standalone.sh on 2019-09-05
+Usage:	Phorward C/C++ library; Merged by standalone.sh on 2019-09-10
 ----------------------------------------------------------------------------- */
 
 #include "phorward.h"
@@ -34,22 +34,12 @@ This should be evaluated using the sizeof()-macro.
 //chunk// defines the chunk size, when an array-(re)allocation will be
 performed. If, e.g. this is set to 128, then, if the 128th item is created
 within the array, a realloction is done. Once allocated memory remains until
-the array is freed again.
+the array is freed again. The array's elements may change their heap address
+when a chunk reallocation is required.
 */
-pboolean parray_init( parray* array, size_t size, size_t chunk )
+void parray_init( parray* array, size_t size, size_t chunk )
 {
-	PROC( "parray_init" );
-	PARMS( "array", "%p", array );
-	PARMS( "size", "%ld", size );
-	PARMS( "chunk", "%ld", chunk );
-
-	if( !( array && size > 0 ) )
-	{
-		WRONGPARAM;
-		RETURN( FALSE );
-	}
-
-	if( chunk <= 0 )
+	if( !chunk )
 		chunk = PARRAY_DEFAULT_CHUNK;
 
 	memset( array, 0, sizeof( parray ) );
@@ -57,8 +47,6 @@ pboolean parray_init( parray* array, size_t size, size_t chunk )
 	array->chunk = chunk;
 
 	array->sortfn = parray_compare;
-
-	RETURN( TRUE );
 }
 
 /** Create a new parray as an object with an element allocation size //size//,
@@ -68,12 +56,6 @@ The returned memory must be released with parray_free().  */
 parray* parray_create( size_t size, size_t chunk )
 {
 	parray*	array;
-
-	if( size <= 0 )
-	{
-		WRONGPARAM;
-		return (parray*)NULL;
-	}
 
 	array = (parray*)pmalloc( sizeof( parray ) );
 	parray_init( array, size, chunk );
@@ -86,21 +68,10 @@ parray* parray_create( size_t size, size_t chunk )
 The array must not be reinitialized after destruction, using parray_init().
 
 //array// is the pointer to the array to be erased. */
-pboolean parray_erase( parray* array )
+void parray_erase( parray* array )
 {
-	PROC( "parray_free" );
-	PARMS( "array", "%p", array );
-
-	if( !array )
-	{
-		WRONGPARAM;
-		RETURN( FALSE );
-	}
-
 	array->bottom = array->top = array->start = pfree( array->start );
 	array->count = array->first = array->last = 0;
-
-	RETURN( TRUE );
 }
 
 /** Releases all the memory //array// uses and destroys the array object.
@@ -126,19 +97,13 @@ memory size as used at array initialization.
 
 //item// is the pointer to the memory of the item that should be pushed onto the
 array. The caller should cast his type into void, or wrap the push-operation
-with a macro. It can be left (void*)NULL, so no memory will be copied.
+with a macro. It can be left NULL, so no memory will be copied.
 
-The function returns the address of the newly pushed item, and (void*)NULL if
+The function returns the address of the newly pushed item, and NULL if
 the item could not be pushed.
 */
 void* parray_push( parray* array, void* item )
 {
-	if( !( array ) )
-	{
-		WRONGPARAM;
-		return (void*)NULL;
-	}
-
 	/* Is reallocation required? */
 	if( !array->count || array->last == array->count )
 	{
@@ -146,7 +111,7 @@ void* parray_push( parray* array, void* item )
 
 		if( !( array->start = (void*)prealloc(
 				(void*)array->start, array->count * array->size ) ) )
-			return (void*)NULL;
+			return NULL;
 	}
 
 	array->bottom = array->start + array->first * array->size;
@@ -163,51 +128,32 @@ void* parray_push( parray* array, void* item )
 
 This function is only used to assume that no memory reallocation is done when
 the next //n// items are inserted/malloced. */
-pboolean parray_reserve( parray* array, size_t n )
+void* parray_reserve( parray* array, size_t n )
 {
-	PROC( "parray_reserve" );
-	PARMS( "array", "%p", array );
-	PARMS( "n", "%ld", n );
-
-	if( !( array && n > 0 ) )
-	{
-		WRONGPARAM;
-		RETURN( FALSE );
-	}
-
 	if( array->last + n < array->count )
-		RETURN( TRUE );
+		return array->bottom + n;
 
 	array->count += n + ( n % array->chunk );
 
 	if( !( array->start = (void*)prealloc(
 			(void*)array->start, array->count * array->size ) ) )
-		RETURN( FALSE );
+		return NULL;
 
 	array->bottom = array->start + array->first * array->size;
 	array->top = array->start + array->last * array->size;
 
-	RETURN( TRUE );
+	return array->bottom + n;
 }
 
 /** Pushes and "allocates" an empty element on the array.
 
-This function is just a shortcut to ```parray_push( array, (void*)NULL )```,
+This function is just a shortcut to ```parray_push( array, NULL )```,
 and the memory of the pushed element is initialized to zero. */
 void* parray_malloc( parray* array )
 {
 	void*	ptr;
 
-	PROC( "parray_malloc" );
-	PARMS( "array", "%p", array );
-
-	if( !( array ) )
-	{
-		WRONGPARAM;
-		RETURN( (void*)NULL );
-	}
-
-	if( !( ptr = parray_push( array, (void*)NULL ) ) )
+	if( !( ptr = parray_push( array, NULL ) ) )
 		return ptr;
 
 	memset( ptr, 0, array->size );
@@ -216,22 +162,13 @@ void* parray_malloc( parray* array )
 
 /** Unshifts and "allocates" an empty element on the array.
 
-This function is just a shortcut to ```parray_unshift( array, (void*)NULL )```,
+This function is just a shortcut to ```parray_unshift( array, NULL )```,
 and the memory of the unshifted element is initialized to zero. */
 void* parray_rmalloc( parray* array )
 {
 	void*	ptr;
 
-	PROC( "parray_rmalloc" );
-	PARMS( "array", "%p", array );
-
-	if( !( array ) )
-	{
-		WRONGPARAM;
-		RETURN( (void*)NULL );
-	}
-
-	if( !( ptr = parray_unshift( array, (void*)NULL ) ) )
+	if( !( ptr = parray_unshift( array, NULL ) ) )
 		return ptr;
 
 	memset( ptr, 0, array->size );
@@ -247,22 +184,9 @@ void* parray_insert( parray* array, size_t offset, void* item )
 {
 	void*	slot;
 
-	PROC( "parray_insert" );
-	PARMS( "array", "%p", array );
-	PARMS( "offset", "%ld", offset );
-	PARMS( "item", "%p", item );
-
-	if( !array )
-	{
-		WRONGPARAM;
-		RETURN( (void*)NULL );
-	}
-
 	/* Within current bounds? */
 	if( array->first + offset < array->last )
 	{
-		MSG( "offset within bounds, inserting" );
-
 		/* Allocate one item for moving up */
 		parray_malloc( array );
 
@@ -279,22 +203,17 @@ void* parray_insert( parray* array, size_t offset, void* item )
 		else
 			memset( slot, 0, array->size );
 
-		RETURN( slot );
+		return slot;
 	}
 
 	while( array->first + offset >= array->last )
-	{
 		if( !( slot = parray_malloc( array ) ) )
-		{
-			MSG( "Out of mem?" );
-			RETURN( slot );
-		}
-	}
+			return slot;
 
 	if( item )
 		memcpy( slot, item, array->size );
 
-	RETURN( slot );
+	return slot;
 }
 
 /** Remove item on //offset// from array //array//.
@@ -306,23 +225,9 @@ void* parray_remove( parray* array, size_t offset, void** item )
 {
 	void*	slot;
 
-	PROC( "parray_remove" );
-	PARMS( "array", "%p", array );
-	PARMS( "offset", "%ld", offset );
-	PARMS( "item", "%p", item );
-
-	if( !array )
-	{
-		WRONGPARAM;
-		RETURN( (void*)NULL );
-	}
-
 	/* Within current bounds? */
 	if( array->first + offset >= array->last )
-	{
-		MSG( "Index out of bounds." );
-		RETURN( (void*)NULL );
-	}
+		return NULL;
 
 	slot = array->start + ( array->first + offset ) * array->size;
 
@@ -338,7 +243,7 @@ void* parray_remove( parray* array, size_t offset, void** item )
 	array->last--;
 	array->top -= array->size;
 
-	RETURN( slot );
+	return slot;
 }
 
 /** Removes an element from the end of an array.
@@ -349,29 +254,18 @@ only be overridden with the next push operation.
 
 //array// is the pointer to array where to pop an item off.
 
-The function returns the address of the popped item, and (void*)NULL if the
+The function returns the address of the popped item, and NULL if the
 item could not be popped (e.g. array is empty).
 */
 void* parray_pop( parray* array )
 {
-	PROC( "parray_pop" );
-	PARMS( "array", "%p", array );
-
-	if( !array )
-	{
-		WRONGPARAM;
-		RETURN( (void*)NULL );
-	}
-
 	if( array->last == array->first )
-	{
-		MSG( "last is zero, no items on the array." );
-		RETURN( (void*)NULL );
-	}
+		/* last is zero, no items on the array */
+		return NULL;
 
 	array->top -= array->size;
 
-	RETURN( array->start + ( ( --array->last ) * array->size ) );
+	return array->start + ( ( --array->last ) * array->size );
 }
 
 /** Appends an element to the begin of the array.
@@ -383,23 +277,13 @@ memory size as used at array initialization.
 
 //item// is the pointer to the memory of the item that should be pushed onto the
 array. The caller should cast his type into void, or wrap the push-operation
-with a macro. It can be left (void*)NULL, so no memory will be copied.
+with a macro. It can be left NULL, so no memory will be copied.
 
-The function returns the address of the newly unshifted item, and (void*)NULL
+The function returns the address of the newly unshifted item, and NULL
 if the item could not be unshifted.
 */
 void* parray_unshift( parray* array, void* item )
 {
-	PROC( "parray_unshift" );
-	PARMS( "array", "%p", array );
-	PARMS( "item", "%p", item );
-
-	if( !( array ) )
-	{
-		WRONGPARAM;
-		RETURN( (void*)NULL );
-	}
-
 	/* Is reallocation required? */
 	if( !array->count || array->first == 0 )
 	{
@@ -407,7 +291,7 @@ void* parray_unshift( parray* array, void* item )
 
 		if( !( array->start = (void*)prealloc(
 				(void*)array->start, array->count * array->size ) ) )
-			RETURN( (void*)NULL );
+			return NULL;
 
 		array->first = array->chunk;
 
@@ -428,7 +312,7 @@ void* parray_unshift( parray* array, void* item )
 	if( item )
 		memcpy( array->bottom, item, array->size );
 
-	RETURN( array->bottom );
+	return array->bottom;
 }
 
 /** Removes an element from the begin of an array.
@@ -440,28 +324,17 @@ operation.
 
 //array// is the pointer to array where to pop an item off.
 
-The function returns the address of the shifted item, and (void*)NULL if the
+The function returns the address of the shifted item, and NULL if the
 item could not be popped (e.g. array is empty).
 */
 void* parray_shift( parray* array )
 {
-	PROC( "parray_shift" );
-	PARMS( "array", "%p", array );
-
-	if( !array )
-	{
-		WRONGPARAM;
-		RETURN( (void*)NULL );
-	}
-
 	if( array->last == array->first )
-	{
-		MSG( "last is zero, no items on the array." );
-		RETURN( (void*)NULL );
-	}
+		/* last is zero, no items on the array. */
+		return NULL;
 
 	array->bottom += array->size;
-	RETURN( array->start + array->first++ * array->size );
+	return array->start + array->first++ * array->size;
 }
 
 /** Access an element from the array by its offset position from the left.
@@ -470,31 +343,19 @@ void* parray_shift( parray* array )
 //offset// is the offset of the element to be accessed from the array's
 base address.
 
-Returns the address of the accessed item, and (void*)NULL if the item could not
-be accessed (e.g. if the array is empty or offset is beyond the last of array).
+Returns the address of the accessed item, and NULL if the item could not
+be accessed (e.g. if the array is empty or offset is beyond the top of array).
 
 Use parray_rget() for access items from the end.
 */
 void* parray_get( parray* array, size_t offset )
 {
-	PROC( "parray_get" );
-	PARMS( "array", "%p", array );
-	PARMS( "offset", "%d", offset );
-
-	if( !array )
-	{
-		WRONGPARAM;
-		RETURN( (void*)NULL );
-	}
-
 	if( array->last == array->first
 			|| offset >= ( array->last - array->first ) )
-	{
-		MSG( "offset defines an item that is out of bounds of the array" );
-		RETURN( (void*)NULL );
-	}
+		/* offset defines an item that is out of bounds of the array */
+		return NULL;
 
-	RETURN( array->start + ( array->first + offset ) * array->size );
+	return array->start + ( array->first + offset ) * array->size;
 }
 
 /** Put an element //item// at position //offset// of array //array//.
@@ -512,23 +373,10 @@ void* parray_put( parray* array, size_t offset, void* item )
 {
 	void*	slot;
 
-	PROC( "parray_put" );
-	PARMS( "array", "%p", array );
-	PARMS( "offset", "%d", offset );
-	PARMS( "item", "%p", item );
-
-	if( !array )
-	{
-		WRONGPARAM;
-		RETURN( (void*)NULL );
-	}
-
 	if( array->last == array->first
 			|| offset >= ( array->last - array->first ) )
-	{
-		MSG( "Index out of bounds" );
-		RETURN( (void*)NULL );
-	}
+		/* offset defines an item that is out of bounds of the array */
+		return NULL;
 
 	slot = array->start + ( array->first + offset ) * array->size;
 
@@ -537,7 +385,7 @@ void* parray_put( parray* array, size_t offset, void* item )
 	else
 		memset( slot, 0, array->size );
 
-	RETURN( slot );
+	return slot;
 }
 
 /** Access an element from the array by its offset position from the right.
@@ -546,7 +394,7 @@ void* parray_put( parray* array, size_t offset, void* item )
 //offset// is the offset of the element to be accessed from the array's
 base address.
 
-Returns the address of the accessed item, and (void*)NULL if the item could not
+Returns the address of the accessed item, and NULL if the item could not
 be accessed (e.g. if the array is empty or offset is beyond the bottom of
 the array).
 
@@ -554,17 +402,7 @@ Use parray_get() to access items from the begin.
 */
 void* parray_rget( parray* array, size_t offset )
 {
-	PROC( "parray_rget" );
-	PARMS( "array", "%p", array );
-	PARMS( "offset", "%d", offset );
-
-	if( !array )
-	{
-		WRONGPARAM;
-		RETURN( (void*)NULL );
-	}
-
-	RETURN( parray_get( array, array->last - offset ) );
+	return parray_get( array, array->last - offset );
 }
 
 /** Put an element //item// at position //offset// from the right of
@@ -581,18 +419,7 @@ is out of the array bounds.
 */
 void* parray_rput( parray* array, size_t offset, void* item )
 {
-	PROC( "parray_rput" );
-	PARMS( "array", "%p", array );
-	PARMS( "offset", "%d", offset );
-	PARMS( "item", "%p", item );
-
-	if( !array )
-	{
-		WRONGPARAM;
-		RETURN( (void*)NULL );
-	}
-
-	RETURN( parray_put( array, array->last - offset, item ) );
+	return parray_put( array, array->last - offset, item );
 }
 
 /** Iterates over //array//.
@@ -603,20 +430,8 @@ void parray_iter( parray* array, parrayfn callback )
 {
 	void*	ptr;
 
-	PROC( "parray_iter" );
-	PARMS( "array", "%p", array );
-	PARMS( "callback", "%p", callback );
-
-	if( !( array && callback ) )
-	{
-		WRONGPARAM;
-		VOIDRET;
-	}
-
-	for( ptr = parray_first( array ); ptr; ptr = parray_next( array, ptr ) )
+	parray_for( array, ptr )
 		(*callback)( array, ptr );
-
-	VOIDRET;
 }
 
 /** Iterates backwards over //array//.
@@ -627,96 +442,60 @@ void parray_riter( parray* array, parrayfn callback )
 {
 	void*	ptr;
 
-	PROC( "parray_riter" );
-	PARMS( "array", "%p", array );
-	PARMS( "callback", "%p", callback );
-
-	if( !( array && callback ) )
-	{
-		WRONGPARAM;
-		VOIDRET;
-	}
-
 	for( ptr = parray_last( array ); ptr; ptr = parray_prev( array, ptr ) )
 		(*callback)( array, ptr );
-
-	VOIDRET;
 }
 
 /** Access first element of the array.
 
-Returns the address of the accessed item, and (void*)NULL if nothing is in
+Returns the address of the accessed item, and NULL if nothing is in
 the array.
 */
 void* parray_first( parray* array )
 {
-	if( !array )
-	{
-		WRONGPARAM;
-		return (void*)NULL;
-	}
-
 	if( array->first == array->last )
-		return (void*)NULL;
+		return NULL;
 
 	return array->bottom;
 }
 
 /** Access last element of the array.
 
-Returns the address of the accessed item, and (void*)NULL if nothing is in
+Returns the address of the accessed item, and NULL if nothing is in
 the array.
 */
 void* parray_last( parray* array )
 {
-	if( !array )
-	{
-		WRONGPARAM;
-		return (void*)NULL;
-	}
-
 	if( array->first == array->last )
-		return (void*)NULL;
+		return NULL;
 
 	return array->top - array->size;
 }
 
 /** Access next element from //ptr// in //array//.
 
-Returns the address of the next element, and (void*)NULL if the access gets
+Returns the address of the next element, and NULL if the access gets
 out of bounds.
 */
 void* parray_next( parray* array, void* ptr )
 {
-	if( !( array && ptr ) )
-	{
-		WRONGPARAM;
-		return (void*)NULL;
-	}
-
 	ptr += array->size;
 	if( ptr > parray_last( array ) || ptr < parray_first( array ) )
-		return (void*)NULL;
+		return NULL;
 
 	return ptr;
 }
 
 /** Access previous element from //ptr// in //array//.
 
-Returns the address of the previous element, and (void*)NULL if the access gets
+Returns the address of the previous element, and NULL if the access gets
 out of bounds.
 */
 void* parray_prev( parray* array, void* ptr )
 {
-	if( !( array && ptr ) )
-	{
-		WRONGPARAM;
-		return (void*)NULL;
-	}
-
 	ptr -= array->size;
 	if( ptr < parray_first( array ) || ptr > parray_last( array ) )
-		return (void*)NULL;
+		return NULL;
 
 	return ptr;
 }
@@ -727,15 +506,9 @@ void* parray_swap( parray* array, size_t pos1, size_t pos2 )
 	void*	ptr1;
 	void*	ptr2;
 
-	if( !( array ) )
-	{
-		WRONGPARAM;
-		return (void*)NULL;
-	}
-
 	if( !( ( ptr1 = parray_get( array, pos1 ) )
 			&& ( ptr2 = parray_get( array, pos2 ) ) ) )
-		return (void*)NULL;
+		return NULL;
 
 	if( ptr1 == ptr2 )
 		return ptr1;
@@ -757,21 +530,16 @@ size_t parray_count( parray* array )
 }
 
 /** Returns TRUE, if //ptr// is an element of array //array//. */
-pboolean parray_partof( parray* array, void* ptr )
+void* parray_partof( parray* array, void* ptr )
 {
-	if( !( array && ptr ) )
-	{
-		WRONGPARAM;
-		return FALSE;
-	}
+	if( ptr >= (void*)array->bottom && ptr <= (void*)array->top )
+		return ptr;
 
-	if( ptr >= parray_first( array ) && ptr <= parray_last( array ) )
-		return TRUE;
-
-	return FALSE;
+	return NULL;
 }
 
 /** Return offset of element //ptr// in array //array//.
+
 Returns the offset of //ptr// in //array//.
 The function returns the size of the array (which is an invalid offset)
 if //ptr// is not part of //array//.
@@ -779,12 +547,6 @@ if //ptr// is not part of //array//.
 To check if a pointer belongs to an array, call parray_partof(). */
 size_t parray_offset( parray* array, void* ptr )
 {
-	if( !( array && ptr ) )
-	{
-		WRONGPARAM;
-		return 0;
-	}
-
 	if( !parray_partof( array, ptr ) )
 		return parray_count( array );
 
@@ -915,11 +677,8 @@ size_t parray_concat( parray* dest, parray* src )
 	size_t		count;
 	char*       p;
 
-	if( !( dest && src && dest->size == src->size ) )
-	{
-		WRONGPARAM;
+	if( dest->size != src->size )
 		return 0;
-	}
 
 	count = dest->count;
 
@@ -946,20 +705,11 @@ size_t parray_union( parray* all, parray* from )
 	char*       p;
 	char*       q;
 
-	PROC( "parray_union" );
-	PARMS( "all", "%p", all );
-	PARMS( "from", "%p", from );
-
-	if( !( all && from
-		&& all->size == from->size
-		&& all->comparefn == from->comparefn ) )
-	{
-		WRONGPARAM;
-		RETURN( 0 );
-	}
+	if( !( all->size == from->size && all->comparefn == from->comparefn ) )
+		return 0;
 
 	if( !( last = all->last ) )
-		RETURN( parray_concat( all, from ) );
+		return parray_concat( all, from );
 
 	for( p = from->bottom; p < from->top; p += from->size )
 	{
@@ -974,8 +724,7 @@ size_t parray_union( parray* all, parray* from )
 				break;
 	}
 
-	VARS( "added", "%ld", parray_count( all ) - last );
-	RETURN( parray_count( all ) - last );
+	return parray_count( all ) - last;
 }
 
 /*TESTCASE:parray_union
@@ -1029,39 +778,26 @@ int parray_diff( parray* left, parray* right )
 	char*   p;
 	char*   q;
 
-	PROC( "parray_diff" );
-	PARMS( "left", "%p", left );
-	PARMS( "right", "%p", right );
 
-	if( !( left && right
-			&& left->size == right->size
-			&& left->comparefn == right->comparefn ) )
-	{
-		WRONGPARAM;
-		RETURN( -1 );
-	}
+	if( !( left->size == right->size && left->comparefn == right->comparefn ) )
+		return -1;
 
-	MSG( "Checking for same element count" );
+	/* Checking for same element count */
 	if( parray_count( right ) < parray_count( left ) )
-		RETURN( 1 );
+		return 1;
 	else if( parray_count( right ) > parray_count( left ) )
-		RETURN( -1 );
+		return -1;
 
-	MSG( "OK, requiring deep check" );
-
+	/* OK, requiring deep check */
 	for( p = left->bottom, q = right->bottom;
 			p < left->top && q < right->top;
 				p += left->size, q += right->size )
 	{
 		if( ( diff = parray_compare( left, p, q ) ) )
-		{
-			MSG( "Elements are not equal" );
 			break;
-		}
 	}
 
-	VARS( "diff", "%d", diff );
-	RETURN( diff );
+	return diff;
 }
 
 /*TESTCASE:parray_diff
@@ -1131,7 +867,7 @@ b
 */
 
 /** Sorts //array// between the elements //from// and //to// according to the
-sort-function that was set for the list.
+sort-function that was set for the array.
 
 To sort the entire array, use parray_sort().
 
@@ -1139,20 +875,14 @@ The sort-function can be modified by using parray_set_sortfn().
 
 The default sort function sorts the list by content using the memcmp()
 standard function. */
-pboolean parray_subsort( parray* array, size_t from, size_t to )
+void parray_subsort( parray* array, size_t from, size_t to )
 {
 	size_t	a	    = from;
 	size_t	b	    = to;
 	size_t  ref;
 
-	if( !( array ) )
-	{
-		WRONGPARAM;
-		return FALSE;
-	}
-
 	if( from == to )
-		return TRUE;
+		return;
 
 	if( from > to )
 	{
@@ -1191,8 +921,6 @@ pboolean parray_subsort( parray* array, size_t from, size_t to )
 
 	if( ( a != to ) && ( a != to + 1 ) )
 		parray_subsort( array, a, to );
-
-	return TRUE;
 }
 
 /** Sorts //list// according to the sort-function that was set for the list.
@@ -1203,18 +931,12 @@ The sort-function can be modified by using plist_set_sortfn().
 
 The default sort function sorts the list by content using the memcmp()
 standard function. */
-pboolean parray_sort( parray* array )
+void parray_sort( parray* array )
 {
-	if( !( array ) )
-	{
-		WRONGPARAM;
-		return FALSE;
-	}
-
 	if( !parray_first( array ) )
-		return TRUE;
+		return;
 
-	return parray_subsort( array, array->first, array->last - 1 );
+	parray_subsort( array, array->first, array->last - 1 );
 }
 
 /*TESTCASE:parray_sort
@@ -1277,48 +999,23 @@ AaBbbcdekx
 
 If no compare function is set or NULL is provided, memcmp() will be used
 as default fallback. */
-pboolean parray_set_comparefn( parray* array,
+void parray_set_comparefn( parray* array,
 			int (*comparefn)( parray*, void*, void* ) )
 {
-	PROC( "parray_set_comparefn" );
-	PARMS( "array", "%p", array );
-	PARMS( "compare_fn", "%p", comparefn );
-
-	if( !( array ) )
-	{
-		WRONGPARAM;
-		RETURN( FALSE );
-	}
-
 	if( !( array->comparefn = comparefn ) )
 		array->comparefn = parray_compare;
-
-	RETURN( TRUE );
 }
 
 /** Sets array sort function.
 
 If no sort function is given, the compare function set by parray_set_comparefn()
 is used. If even unset, memcmp() will be used. */
-pboolean parray_set_sortfn( parray* array,
+void parray_set_sortfn( parray* array,
 			int (*sortfn)( parray*, void*, void* ) )
 {
-	PROC( "parray_set_sortfn" );
-	PARMS( "array", "%p", array );
-	PARMS( "sortfn", "%p", sortfn );
-
-	if( !( array ) )
-	{
-		WRONGPARAM;
-		RETURN( FALSE );
-	}
-
 	if( !( array->sortfn = sortfn ) )
 		array->sortfn = parray_compare;
-
-	RETURN( TRUE );
 }
-
 
 
 /* Prototype */
@@ -2372,7 +2069,8 @@ pboolean pccl_erase( pccl* ccl )
 		return FALSE;
 	}
 
-	return parray_erase( &ccl->ranges );
+	parray_erase( &ccl->ranges );
+	return TRUE;
 }
 
 /** Frees a character-class //ccl// and all its used memory.
@@ -2999,12 +2697,6 @@ static int plist_get_load_factor( plist* list )
 	int 	load = 0;
 	float	l = 0.00;
 
-	if ( !list )
-	{
-		WRONGPARAM;
-		return -1;
-	}
-
 	l = (float)plist_count( list ) / (float)list->hashsize;
 	load = (int)( l * 100 );
 
@@ -3015,12 +2707,6 @@ static int plist_get_load_factor( plist* list )
 static int plist_hash_compare( plist* list, char* l, char* r, size_t n )
 {
 	int		res;
-
-	if( !( list && l && r ) )
-	{
-		WRONGPARAM;
-		return -1;
-	}
 
 	if( list->flags & PLIST_MOD_PTRKEYS )
 		res = (int)( l - r );
@@ -3043,12 +2729,6 @@ static int plist_hash_compare( plist* list, char* l, char* r, size_t n )
 static size_t plist_hash_index( plist* list, char* key, size_t n )
 {
 	size_t hashval	= 5381L;
-
-	if( !( list ) )
-	{
-		WRONGPARAM;
-		return 0;
-	}
 
 	if( list->flags & PLIST_MOD_PTRKEYS )
 		hashval = (size_t)key;
@@ -3096,18 +2776,8 @@ static pboolean plist_hash_insert( plist* list, plistel* e )
 	plistel*	he;
 	plistel**	bucket;
 
-	PROC( "plist_hash_insert" );
-	PARMS( "list", "%p", list );
-	PARMS( "e", "%p", e );
-
-	if( !( list && e ) )
-	{
-		WRONGPARAM;
-		RETURN( FALSE );
-	}
-
 	if( !e->key )
-		RETURN( FALSE );
+		return FALSE;
 
 	e->hashnext = (plistel*)NULL;
 	e->hashprev = (plistel*)NULL;
@@ -3118,21 +2788,17 @@ static pboolean plist_hash_insert( plist* list, plistel* e )
 
 		/* check load factor */
 		list->load_factor = plist_get_load_factor( list );
-		VARS( "load_factor", "%d", list->load_factor );
 
 		if( list->load_factor > LOAD_FACTOR_HIGH )
 		{
-			MSG( "hashmap has to be resized." );
+			/* hashmap has to be resized. */
 			if( !plist_hash_rebuild( list ) )
-			{
-				RETURN( FALSE );
-			}
+				return FALSE;
 
 			/* store new load factor */
 			list->load_factor = plist_get_load_factor( list );
 
-			VARS( "load_factor", "%d", list->load_factor );
-			RETURN( TRUE ); /* e has been inserted by plist_hash_rebuild()! */
+			return TRUE; /* e has been inserted by plist_hash_rebuild()! */
 		}
 	}
 
@@ -3140,25 +2806,20 @@ static pboolean plist_hash_insert( plist* list, plistel* e )
 
 	if( ! *bucket )
 	{
-		MSG( "Bucket is empty, chaining start position" );
-		VARS( "e->key", "%s", e->key );
-
+		/* Bucket is empty, chaining start position */
 		*bucket = e;
 		list->free_hash_entries--;
 	}
 	else
 	{
-		MSG( "Chaining into hash" );
+		/* Chaining into hashed bucket */
 
 		for( he = *bucket; he; he = he->hashnext )
 		{
-			VARS( "he->key", "%s", he->key );
-			VARS( "e->key", "%s", e->key );
-
 			if( plist_hash_compare( list, he->key, e->key, 0 ) == 0 )
 			{
 				if( list->flags & PLIST_MOD_UNIQUE )
-					RETURN( FALSE );
+					return FALSE;
 
 				if( list->flags & PLIST_MOD_KEEPKEYS )
 				{
@@ -3194,9 +2855,8 @@ static pboolean plist_hash_insert( plist* list, plistel* e )
 
 	/* store new load factor */
 	list->load_factor = plist_get_load_factor( list );
-	VARS( "load_factor", "%d", list->load_factor );
 
-	RETURN( TRUE );
+	return TRUE;
 }
 
 /* Rebuild hash-table */
@@ -3204,20 +2864,9 @@ static pboolean plist_hash_rebuild( plist* list )
 {
 	plistel*	e;
 
-	PROC( "plist_hash_rebuild" );
-	PARMS( "list", "%p", list );
-
-	if( !list )
-	{
-		WRONGPARAM;
-		RETURN( FALSE );
-	}
-
-	if( list->size_index + 1 >= ( sizeof( table_sizes) / sizeof( *table_sizes ) ) )
-	{
-		MSG( "Maximum size is reached." );
-		RETURN( FALSE );
-	}
+	if( list->size_index + 1 >=
+			( sizeof( table_sizes ) / sizeof( *table_sizes ) ) )
+		return FALSE; /* Maximum size is reached. */
 
 	if( list->hash )
 		list->hash = pfree( list->hash );
@@ -3227,7 +2876,6 @@ static pboolean plist_hash_rebuild( plist* list )
 
 	list->size_index++;
 	list->hashsize = table_sizes[ list->size_index ];
-	VARS( "new list->hashsize", "%ld", list->hashsize );
 
 	list->hash_collisions = 0;
 
@@ -3236,26 +2884,16 @@ static pboolean plist_hash_rebuild( plist* list )
 	for( e = plist_first( list ); e; e = plist_next( e ) )
 		plist_hash_insert( list, e );
 
-	RETURN( TRUE );
+	return TRUE;
 }
 
 /* Drop list element */
-static pboolean plistel_drop( plistel* e )
+static void plistel_drop( plistel* e )
 {
-	PROC( "plistel_drop" );
-
-	if( !( e ) )
-	{
-		WRONGPARAM;
-		RETURN( FALSE );
-	}
-
 	/* TODO: Call element destructor? */
 	if( !( e->flags & PLIST_MOD_EXTKEYS )
 			&& !( e->flags & PLIST_MOD_PTRKEYS ) )
 		e->key = pfree( e->key );
-
-	RETURN( TRUE );
 }
 
 /* Compare elements of a list */
@@ -3271,14 +2909,8 @@ static int plist_compare( plist* list, plistel* l, plistel* r )
 
 //flags// defines an optional flag configuration that modifies the behavior
 of the linked list and hash table usage. */
-pboolean plist_init( plist* list, size_t size, short flags )
+void plist_init( plist* list, size_t size, short flags )
 {
-	if( !( list ) )
-	{
-		WRONGPARAM;
-		return FALSE;
-	}
-
 	/* A size of zero causes a pointer list allocation,
 		so the flag must also be set. */
 	if( size == 0 )
@@ -3299,8 +2931,6 @@ pboolean plist_init( plist* list, size_t size, short flags )
 	list->load_factor = 0;
 	list->free_hash_entries = list->hashsize;
 	list->hash_collisions = 0;
-
-	return TRUE;
 }
 
 /** Create a new plist as an object with an element allocation size //size//.
@@ -3349,12 +2979,6 @@ plist* plist_dup( plist* list )
 {
 	plist*		dup;
 
-	if( !list )
-	{
-		WRONGPARAM;
-		return (plist*)NULL;
-	}
-
 	dup = plist_create( list->size, list->flags );
 	dup->comparefn = list->comparefn;
 	dup->sortfn = list->sortfn;
@@ -3369,20 +2993,12 @@ plist* plist_dup( plist* list )
 
 The object //list// will be still alive, but must be re-configured
 using plist_init(). */
-pboolean plist_erase( plist* list )
+void plist_erase( plist* list )
 {
 	plistel*	e;
 	plistel*	next;
 
-	PROC( "plist_erase" );
-
-	if( !( list ) )
-	{
-		WRONGPARAM;
-		RETURN( FALSE );
-	}
-
-	MSG( "Freeing current list contents" );
+	/* Freeing current list contents */
 	for( e = list->first; e; e = next )
 	{
 		next = e->next;
@@ -3391,25 +3007,23 @@ pboolean plist_erase( plist* list )
 		pfree( e );
 	}
 
-	MSG( "Freeing list of unused nodes" );
+	/* Freeing list of unused nodes */
 	for( e = list->unused; e; e = next )
 	{
 		next = e->next;
 		pfree( e );
 	}
 
-	MSG( "Resetting hash table" );
+	/* Resetting hash table */
 	if( list->hash )
 		pfree( list->hash );
 
-	MSG( "Resetting list-object pointers" );
+	/* Resetting list-object pointers */
 	list->first = (plistel*)NULL;
 	list->last = (plistel*)NULL;
 	list->hash = (plistel**)NULL;
 	list->unused = (plistel*)NULL;
 	list->count = 0;
-
-	RETURN( TRUE );
 }
 
 /** Clear content of the list //list//.
@@ -3417,20 +3031,10 @@ pboolean plist_erase( plist* list )
 The function has nearly the same purpose as plist_erase(), except that
 the entire list is only cleared, but if the list was initialized with
 PLIST_MOD_RECYCLE, existing pointers are held for later usage. */
-pboolean plist_clear( plist* list )
+void plist_clear( plist* list )
 {
-	PROC( "plist_clear" );
-
-	if( !( list ) )
-	{
-		WRONGPARAM;
-		RETURN( FALSE );
-	}
-
 	while( list->first )
 		plist_remove( list, list->first );
-
-	RETURN( TRUE );
 }
 
 /** Releases all the memory //list// uses and destroys the list object.
@@ -3438,7 +3042,7 @@ pboolean plist_clear( plist* list )
 The function always returns (plist*)NULL. */
 plist* plist_free( plist* list )
 {
-	if( !( list ) )
+	if( !list )
 		return (plist*)NULL;
 
 	plist_erase( list );
@@ -3461,62 +3065,41 @@ plistel* plist_insert( plist* list, plistel* pos, char* key, void* src )
 {
 	plistel*	e;
 
-	PROC( "plist_insert" );
-	PARMS( "list", "%p", list );
-	PARMS( "pos", "%p", pos );
-	PARMS( "key", "%s", key );
-	PARMS( "src", "%p", src );
-
-	if( !( list ) )
-	{
-		WRONGPARAM;
-		RETURN( (plistel*)NULL );
-	}
-
 	/* Rebuild hash-table if necessary */
 	if( key && !list->hash && !plist_hash_rebuild( list ) )
-		RETURN( (plistel*)NULL );
+		return (plistel*)NULL;
 
 	/* Recycle existing elements? */
 	if( list->unused )
 	{
-		MSG( "Recycle list contains element, recycling" );
+		/* Recycle list contains element, will recycle this now */
 		e = list->unused;
 		list->unused = e->next;
-		memset( e, 0, sizeof( plistel ) + list->size );
 		list->recycled--;
 	}
 	else
 	{
-		MSG( "Allocating new element" );
-		VARS( "size", "%d", sizeof( plistel ) + list->size );
-
+		/* No elements to recycle, allocating a new one */
 		e = (plistel*)pmalloc( sizeof( plistel ) + list->size );
 	}
+
+	memset( e, 0, sizeof( plistel ) + list->size );
 
 	e->flags = list->flags;
 
 	if( src )
 	{
-		MSG( "data is provided, will copy memory" );
-		VARS( "sizeof( plistel )", "%d", sizeof( plistel ) );
-		VARS( "size", "%d", list->size );
+		/* data is provided, copy memory */
 
 		if( list->flags & PLIST_MOD_PTR )
-		{
-			MSG( "Pointer mode, just store the pointer" );
-			*( (void**)( e + 1 ) ) = src;
-		}
+			*( (void**)( e + 1 ) ) = src; /* Pointer mode: just store pointer */
 		else
-		{
-			LOG( "Copying %ld bytes", list->size );
-			memcpy( e + 1, src, list->size );
-		}
+			memcpy( e + 1, src, list->size ); /* Copy memory into element */
 	}
 
 	if( !pos )
 	{
-		MSG( "pos unset, will chain at end of list" );
+		/* pos unset, will chain at end of list */
 		if( !( pos = plist_last( list ) ) )
 			list->first = e;
 		else
@@ -3542,8 +3125,7 @@ plistel* plist_insert( plist* list, plistel* pos, char* key, void* src )
 
 	if( key )
 	{
-		MSG( "Key provided, will insert into hash table" );
-		VARS( "key", "%s", key );
+		/* Key provided, will insert into hash table */
 
 		if( list->flags & PLIST_MOD_EXTKEYS
 				|| list->flags & PLIST_MOD_PTRKEYS )
@@ -3557,17 +3139,16 @@ plistel* plist_insert( plist* list, plistel* pos, char* key, void* src )
 
 		if( !plist_hash_insert( list, e ) )
 		{
-			MSG( "This item collides!" );
+			/* Item collides! */
 			plist_remove( list, e );
-			RETURN( (plistel*)NULL );
+			return (plistel*)NULL;
 		}
 	}
 
 	if( list->flags & PLIST_MOD_AUTOSORT )
 		plist_sort( list );
 
-	VARS( "list->count", "%d", list->count );
-	RETURN( e );
+	return e;
 }
 
 /** Push //src// to end of //list//.
@@ -3577,12 +3158,6 @@ This function can only be used for linked lists without the hash-table feature
 in use. */
 plistel* plist_push( plist* list, void* src )
 {
-	if( !( list ) )
-	{
-		WRONGPARAM;
-		return (plistel*)NULL;
-	}
-
 	return plist_insert( list, (plistel*)NULL, (char*)NULL, src );
 }
 
@@ -3593,12 +3168,6 @@ This function can only be used for linked lists without the hash-table feature
 in use. */
 plistel* plist_shift( plist* list, void* src )
 {
-	if( !( list ) )
-	{
-		WRONGPARAM;
-		return (plistel*)NULL;
-	}
-
 	return plist_insert( list, plist_first( list ), (char*)NULL, src );
 }
 
@@ -3610,12 +3179,6 @@ plist_push().
 */
 void* plist_malloc( plist* list )
 {
-	if( !( list ) )
-	{
-		WRONGPARAM;
-		return (void*)NULL;
-	}
-
 	return plist_access( plist_push( list, (void*)NULL ) );
 }
 
@@ -3627,27 +3190,13 @@ plist_shift().
 */
 void* plist_rmalloc( plist* list )
 {
-	if( !( list ) )
-	{
-		WRONGPARAM;
-		return (void*)NULL;
-	}
-
 	return plist_access( plist_shift( list, (void*)NULL ) );
 }
 
 /** Removes the element //e// from the //list// and frees it or puts
  it into the unused element chain if PLIST_MOD_RECYCLE is flagged. */
-pboolean plist_remove( plist* list, plistel* e )
+void plist_remove( plist* list, plistel* e )
 {
-	PROC( "plist_remove" );
-
-	if( !( list && e ) )
-	{
-		WRONGPARAM;
-		RETURN( FALSE );
-	}
-
 	if( e->prev )
 		e->prev->next = e->next;
 	else
@@ -3672,31 +3221,23 @@ pboolean plist_remove( plist* list, plistel* e )
 	/* Put unused node into unused list or free? */
 	if( list->flags & PLIST_MOD_RECYCLE )
 	{
-		LOG( "Will recycle current element, resetting %d bytes",
-			sizeof( plistel ) + list->size );
-
+		/* Recycling element */
 		memset( e, 0, sizeof( plistel ) + list->size );
 
 		e->next = list->unused;
 		list->unused = e;
 		list->recycled++;
-
-		MSG( "Element is now discarded, for later usage" );
 	}
 	else
 	{
-		MSG( "Freeing current element" );
+		/* Free element */
 		pfree( e );
-		MSG( "Element gone" );
 	}
 
 	list->count--;
 
 	/* store new load factor */
 	list->load_factor = plist_get_load_factor( list );
-	VARS( "load_factor", "%d<", list->load_factor );
-
-	RETURN( TRUE );
 }
 
 /** Pop last element to //dest// off the list //list//.
@@ -3708,12 +3249,6 @@ its content is written to //dest//, if provided at the end of the list.
 be popped off the list and discards. */
 pboolean plist_pop( plist* list, void* dest )
 {
-	if( !( list ) )
-	{
-		WRONGPARAM;
-		return FALSE;
-	}
-
 	if( !list->last )
 	{
 		if( dest )
@@ -3749,12 +3284,6 @@ its content is written to //dest//.
 //list// will be taken and discarded. */
 pboolean plist_unshift( plist* list, void* dest )
 {
-	if( !( list ) )
-	{
-		WRONGPARAM;
-		return FALSE;
-	}
-
 	if( !list->first )
 	{
 		if( dest )
@@ -3788,12 +3317,6 @@ plistel* plist_get( plist* list, size_t n )
 {
 	plistel*	e;
 
-	if( !( list ) )
-	{
-		WRONGPARAM;
-		return (plistel*)NULL;
-	}
-
 	for( e = plist_first( list ); e && n;
 			e = plist_next( e ), n-- )
 		;
@@ -3809,48 +3332,21 @@ plistel* plist_getkey( plist* list, size_t n )
 	int			i;
 	plistel*	e;
 
-	PROC( "plist_getkey" );
-	PARMS( "list", "%p", list );
-	PARMS( "n", "%ld", n );
-
-	if( !( list ) )
-	{
-		WRONGPARAM;
-		RETURN( (plistel*)NULL );
-	}
-
 	/* Iterate trough the buckets */
 	for( i = 0; i < list->hashsize; i++ )
 	{
-		VARS( "i", "%d", i );
-
 		if( !( e = list->hash[ i ] ) )
 			continue;
 
 		while( e )
 		{
-			VARS( "n", "%ld", n );
 			if( !n )
-				RETURN( e );
+				return e;
 
 			n--;
 
 			while( ( e = e->hashnext ) )
 			{
-				if( !( list->flags & PLIST_MOD_PTRKEYS ) )
-				{
-					if( list->flags & PLIST_MOD_WCHAR )
-					{
-						VARS( "e->hashprev->key", "%ls", e->hashprev->key );
-						VARS( "e->key", "%ls", e->key );
-					}
-					else
-					{
-						VARS( "e->hashprev->key", "%s", e->hashprev->key );
-						VARS( "e->key", "%s", e->key );
-					}
-				}
-
 				if( e && plist_hash_compare(
 							list, e->hashprev->key, e->key, 0 ) )
 					break;
@@ -3858,7 +3354,7 @@ plistel* plist_getkey( plist* list, size_t n )
 		}
 	}
 
-	RETURN( (plistel*)NULL );
+	return NULL;
 }
 
 /** Retrieve list element by its index from the end.
@@ -3868,12 +3364,6 @@ from the right. */
 plistel* plist_rget( plist* list, size_t n )
 {
 	plistel*	e;
-
-	if( !( list ) )
-	{
-		WRONGPARAM;
-		return (plistel*)NULL;
-	}
 
 	for( e = plist_last( list ); e && n;
 			e = plist_prev( e ), n-- )
@@ -3892,35 +3382,16 @@ plistel* plist_get_by_key( plist* list, char* key )
 	int			bucket;
 	plistel*	e;
 
-	PROC( "plist_get_by_key" );
-	PARMS( "list", "%p", list );
-	PARMS( "key", "%p", key );
-
-	if( !( list && key ) )
-	{
-		WRONGPARAM;
-		RETURN( (plistel*)NULL );
-	}
-
 	if( !list->hash )
-		RETURN( (plistel*)NULL );
+		return NULL;
 
 	bucket = plist_hash_index( list, key, 0 );
-	VARS( "bucket", "%d", bucket );
 
 	for( e = list->hash[ bucket ]; e; e = e->hashnext )
-	{
-		VARS( "e", "%p", e );
-		VARS( "e->key", "%p", e->key );
-
 		if( plist_hash_compare( list, e->key, key, 0 ) == 0 )
-		{
-			MSG( "Key matches" );
-			RETURN( e );
-		}
-	}
+			return e;
 
-	RETURN( e );
+	return NULL;
 }
 
 /** Retrieve list element by hash-table //key//,
@@ -3934,36 +3405,16 @@ plistel* plist_get_by_nkey( plist* list, char* key, size_t n )
 	int			bucket;
 	plistel*	e;
 
-	PROC( "plist_get_by_nkey" );
-	PARMS( "list", "%p", list );
-	PARMS( "key", "%p", key );
-	PARMS( "n", "%ld", n );
-
-	if( !( list && key && n ) )
-	{
-		WRONGPARAM;
-		RETURN( (plistel*)NULL );
-	}
-
 	if( !list->hash )
-		RETURN( (plistel*)NULL );
+		return NULL;
 
 	bucket = plist_hash_index( list, key, n );
-	VARS( "bucket", "%d", bucket );
 
 	for( e = list->hash[ bucket ]; e; e = e->hashnext )
-	{
-		VARS( "e", "%p", e );
-		VARS( "e->key", "%p", e->key );
-
 		if( plist_hash_compare( list, e->key, key, n ) == 0 )
-		{
-			MSG( "Key matches" );
-			RETURN( e );
-		}
-	}
+			return e;
 
-	RETURN( e );
+	return NULL;
 }
 
 /** Retrieve list element by pointer.
@@ -3974,12 +3425,6 @@ that is the pointer //ptr//.
 plistel* plist_get_by_ptr( plist* list, void* ptr )
 {
 	plistel*	e;
-
-	if( !( list && ptr ) )
-	{
-		WRONGPARAM;
-		return (plistel*)NULL;
-	}
 
 	for( e = plist_first( list ); e; e = plist_next( e ) )
 		if( plist_access( e ) == ptr )
@@ -3998,16 +3443,10 @@ size_t plist_concat( plist* dest, plist* src )
 	plistel*	e;
 	size_t		count;
 
-	if( !( dest && src && dest->size == src->size ) )
-	{
-		WRONGPARAM;
-		return 0;
-	}
-
 	count = dest->count;
 
 	plist_for( src, e )
-		if( !plist_insert( dest, (plistel*)NULL, e->key, plist_access( e ) ) )
+		if( !plist_insert( dest, NULL, e->key, plist_access( e ) ) )
 			break;
 
 	return dest->count - count;
@@ -4022,20 +3461,8 @@ void plist_iter( plist* list, plistelfn callback )
 {
 	plistel*	e;
 
-	PROC( "plist_iter" );
-	PARMS( "list", "%p", list );
-	PARMS( "callback", "%p", callback );
-
-	if( !( list && callback ) )
-	{
-		WRONGPARAM;
-		VOIDRET;
-	}
-
 	plist_for( list, e )
 		(*callback)( e );
-
-	VOIDRET;
 }
 
 /** Iterates backwards over //list//.
@@ -4047,20 +3474,8 @@ void plist_riter( plist* list, plistelfn callback )
 {
 	plistel*	e;
 
-	PROC( "plist_riter" );
-	PARMS( "list", "%p", list );
-	PARMS( "callback", "%p", callback );
-
-	if( !( list && callback ) )
-	{
-		WRONGPARAM;
-		VOIDRET;
-	}
-
 	for( e = plist_last( list ); e; e = plist_prev( e ) )
 		(*callback)( e );
-
-	VOIDRET;
 }
 
 /** Iterates over //list// and accesses every item.
@@ -4072,20 +3487,8 @@ void plist_iter_access( plist* list, plistfn callback )
 {
 	plistel*	e;
 
-	PROC( "plist_iter_access" );
-	PARMS( "list", "%p", list );
-	PARMS( "callback", "%p", callback );
-
-	if( !( list && callback ) )
-	{
-		WRONGPARAM;
-		VOIDRET;
-	}
-
 	plist_for( list, e )
 		(*callback)( plist_access( e ) );
-
-	VOIDRET;
 }
 
 /** Iterates backwards over //list//.
@@ -4097,20 +3500,8 @@ void plist_riter_access( plist* list, plistfn callback )
 {
 	plistel*	e;
 
-	PROC( "plist_riter_access" );
-	PARMS( "list", "%p", list );
-	PARMS( "callback", "%p", callback );
-
-	if( !( list && callback ) )
-	{
-		WRONGPARAM;
-		VOIDRET;
-	}
-
 	for( e = plist_last( list ); e; e = plist_prev( e ) )
 		(*callback)( plist_access( e ) );
-
-	VOIDRET;
 }
 
 /** Unions elements from list //from// into list //all//.
@@ -4128,20 +3519,17 @@ size_t plist_union( plist* all, plist* from )
 	plistel*	p;
 	plistel*	q;
 
-	PROC( "plist_union" );
-	PARMS( "all", "%p", all );
-	PARMS( "from", "%p", from );
-
 	if( !( all && from
 		&& all->size == from->size
 		&& all->comparefn == from->comparefn ) )
 	{
-		WRONGPARAM;
-		RETURN( 0 );
+		/* Invalid list configurations,
+			size and compare function must be equal! */
+		return 0;
 	}
 
 	if( !( count = all->count ) )
-		RETURN( plist_concat( all, from ) );
+		return plist_concat( all, from );
 
 	last = plist_last( all );
 
@@ -4156,8 +3544,7 @@ size_t plist_union( plist* all, plist* from )
 				break;
 	}
 
-	VARS( "added", "%ld", all->count - count );
-	RETURN( all->count - count );
+	return all->count - count;
 }
 
 /** Tests the contents (data parts) of the list //left// and the list //right//
@@ -4172,37 +3559,33 @@ int plist_diff( plist* left, plist* right )
 	plistel*	q;
 	int			diff;
 
-	PROC( "plist_diff" );
-	PARMS( "left", "%p", left );
-	PARMS( "right", "%p", right );
-
 	if( !( left && right
 		   && left->size == right->size
 		   && left->comparefn == right->comparefn ) )
 	{
-		WRONGPARAM;
-		RETURN( -1 );
+		/* Invalid list configurations,
+			size and compare function must be equal! */
+		return -1;
 	}
 
+	/* Check number of elements */
 	if( right->count < left->count )
-		RETURN( 1 );
+		return 1;
 	else if( right->count > left->count )
-		RETURN( -1 );
+		return -1;
 
-	MSG( "OK, requiring deep check" );
-
+	/* OK, requiring deep check */
 	for( p = plist_first( left ), q = plist_first( right );
 				p && q; p = plist_next( p ), q = plist_next( q ) )
 	{
 		if( ( diff = plist_compare( left, p, q ) ) )
 		{
-			MSG( "Elements are not equal" );
+			/* Elements are not equal */
 			break;
 		}
 	}
 
-	VARS( "diff", "%d", diff );
-	RETURN( diff );
+	return diff;
 }
 
 /** Sorts //list// between the elements //from// and //to// according to the
@@ -4214,7 +3597,7 @@ The sort-function can be modified by using plist_set_sortfn().
 
 The default sort function sorts the list by content using the memcmp()
 standard function. */
-pboolean plist_subsort( plist* list, plistel* from, plistel* to )
+void plist_subsort( plist* list, plistel* from, plistel* to )
 {
 	plistel*	a	= from;
 	plistel*	b	= to;
@@ -4224,24 +3607,15 @@ pboolean plist_subsort( plist* list, plistel* from, plistel* to )
 	int			i	= 0;
 	int			j	= 0;
 
-	if( !( list && from && to ) )
-	{
-		WRONGPARAM;
-		return FALSE;
-	}
-
 	if( from == to )
-		return TRUE;
+		return;
 
 	while( a != b )
 	{
 		j++;
 
 		if( !( a = a->next ) )
-		{
-			WRONGPARAM;
-			return FALSE;
-		}
+			return;
 	}
 
 	a = from;
@@ -4290,8 +3664,6 @@ pboolean plist_subsort( plist* list, plistel* from, plistel* to )
 
 	if( ( a != to ) && ( a != to->next ) )
 		plist_subsort( list, a, to );
-
-	return TRUE;
 }
 
 /** Sorts //list// according to the sort-function that was set for the list.
@@ -4302,92 +3674,46 @@ The sort-function can be modified by using plist_set_sortfn().
 
 The default sort function sorts the list by content using the memcmp()
 standard function. */
-pboolean plist_sort( plist* list )
+void plist_sort( plist* list )
 {
-	pboolean	ret;
-
-	if( !( list ) )
-	{
-		WRONGPARAM;
-		return FALSE;
-	}
-
 	if( !plist_first( list ) )
-		return TRUE;
+		return;
 
 	if( list->printfn )
 		(*list->printfn)( list );
 
-	ret = plist_subsort( list, plist_first( list ), plist_last( list ) );
+	plist_subsort( list, plist_first( list ), plist_last( list ) );
 
 	if( list->printfn )
 		(*list->printfn)( list );
-
-	return ret;
 }
 
 /** Set compare function.
 
 If no compare function is set or NULL is provided, memcmp() will be used
 as default fallback. */
-pboolean plist_set_comparefn( plist* list,
+void plist_set_comparefn( plist* list,
 			int (*comparefn)( plist*, plistel*, plistel* ) )
 {
-	PROC( "plist_set_comparefn" );
-	PARMS( "list", "%p", list );
-	PARMS( "compare_fn", "%p", comparefn );
-
-	if( !( list ) )
-	{
-		WRONGPARAM;
-		RETURN( FALSE );
-	}
-
 	if( !( list->comparefn = comparefn ) )
 		list->comparefn = plist_compare;
-
-	RETURN( TRUE );
 }
 
 /** Set sort function.
 
 If no sort function is given, the compare function set by plist_set_comparefn()
 is used. If even unset, memcmp() will be used. */
-pboolean plist_set_sortfn( plist* list,
+void plist_set_sortfn( plist* list,
 			int (*sortfn)( plist*, plistel*, plistel* ) )
 {
-	PROC( "plist_set_sortfn" );
-	PARMS( "list", "%p", list );
-	PARMS( "sortfn", "%p", sortfn );
-
-	if( !( list ) )
-	{
-		WRONGPARAM;
-		RETURN( FALSE );
-	}
-
 	if( !( list->sortfn = sortfn ) )
 		list->sortfn = plist_compare;
-
-	RETURN( TRUE );
 }
 
 /** Set an element dump function. */
-pboolean plist_set_printfn( plist* list, void (*printfn)( plist* ) )
+void plist_set_printfn( plist* list, void (*printfn)( plist* ) )
 {
-	PROC( "plist_set_printfn" );
-	PARMS( "list", "%p", list );
-	PARMS( "printfn", "%p", printfn );
-
-	if( !( list ) )
-	{
-		WRONGPARAM;
-		RETURN( FALSE );
-	}
-
 	list->printfn = printfn;
-
-	RETURN( TRUE );
 }
 
 /** Access data-content of the current element //e//. */
@@ -4462,21 +3788,15 @@ int plist_offset( plistel* u )
 /** Swaps the positions of the list elements //a// and //b// with each
 other. The elements must be in the same plist object, else the function
 returns FALSE. */
-pboolean plist_swap( plist* l, plistel* a, plistel* b )
+void plist_swap( plist* l, plistel* a, plistel* b )
 {
 	plistel*	aprev;
 	plistel*	anext;
 	plistel*	bprev;
 	plistel*	bnext;
 
-	if( !( l && a && b ) )
-	{
-		WRONGPARAM;
-		return FALSE;
-	}
-
 	if( a == b )
-		return TRUE;
+		return;
 
 	/* Retrieve pointers */
 	aprev = a->prev;
@@ -4531,14 +3851,12 @@ pboolean plist_swap( plist* l, plistel* a, plistel* b )
 		l->last = b;
 	else if( b == l->last )
 		l->last = a;
-
-	return TRUE;
 }
 
 /** Return first element of list //l//. */
 plistel* plist_first( plist* l )
 {
-	if( !( l ) )
+	if( !l )
 		return (plistel*)NULL;
 
 	return l->first;
@@ -4547,7 +3865,7 @@ plistel* plist_first( plist* l )
 /** Return last element of list //l//. */
 plistel* plist_last( plist* l )
 {
-	if( !( l ) )
+	if( !l )
 		return (plistel*)NULL;
 
 	return l->last;
@@ -4556,7 +3874,7 @@ plistel* plist_last( plist* l )
 /** Return element size of list //l//. */
 int plist_size( plist* l )
 {
-	if( !( l ) )
+	if( !l )
 		return 0;
 
 	return l->size;
@@ -4565,7 +3883,7 @@ int plist_size( plist* l )
 /** Return element count of list //l//. */
 int plist_count( plist* l )
 {
-	if( !( l ) )
+	if( !l )
 		return 0;
 
 	return l->count;
@@ -4574,16 +3892,6 @@ int plist_count( plist* l )
 /** Prints some statistics for the hashmap in //list// on stderr. */
 void plist_dbgstats( FILE* stream, plist* list )
 {
-	PROC( "plist_dbgstats" );
-	PARMS( "stream", "%p", stream );
-	PARMS( "list", "%p", list );
-
-	if( !list )
-	{
-		WRONGPARAM;
-		VOIDRET;
-	}
-
 	if( !stream )
 		stream = stderr;
 
@@ -4599,8 +3907,6 @@ void plist_dbgstats( FILE* stream, plist* list )
 	fprintf( stream, "load factor %%:\t\t %7d\n", list->load_factor );
 	fprintf( stream, "# of collisions:\t %7d\n", list->hash_collisions );
 	fprintf( stream, "\n" );
-
-	VOIDRET;
 }
 
 /*TESTCASE:plist object functions

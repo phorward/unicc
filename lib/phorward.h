@@ -535,12 +535,12 @@ extern "C"
 #endif
 
 
-pboolean parray_init( parray* array, size_t size, size_t chunk );
+void parray_init( parray* array, size_t size, size_t chunk );
 parray* parray_create( size_t size, size_t chunk );
-pboolean parray_erase( parray* array );
+void parray_erase( parray* array );
 parray* parray_free( parray* array );
 void* parray_push( parray* array, void* item );
-pboolean parray_reserve( parray* array, size_t n );
+void* parray_reserve( parray* array, size_t n );
 void* parray_malloc( parray* array );
 void* parray_rmalloc( parray* array );
 void* parray_insert( parray* array, size_t offset, void* item );
@@ -560,15 +560,15 @@ void* parray_next( parray* array, void* ptr );
 void* parray_prev( parray* array, void* ptr );
 void* parray_swap( parray* array, size_t pos1, size_t pos2 );
 size_t parray_count( parray* array );
-pboolean parray_partof( parray* array, void* ptr );
+void* parray_partof( parray* array, void* ptr );
 size_t parray_offset( parray* array, void* ptr );
 size_t parray_concat( parray* dest, parray* src );
 size_t parray_union( parray* all, parray* from );
 int parray_diff( parray* left, parray* right );
-pboolean parray_subsort( parray* array, size_t from, size_t to );
-pboolean parray_sort( parray* array );
-pboolean parray_set_comparefn( parray* array, int (*comparefn)( parray*, void*, void* ) );
-pboolean parray_set_sortfn( parray* array, int (*sortfn)( parray*, void*, void* ) );
+void parray_subsort( parray* array, size_t from, size_t to );
+void parray_sort( parray* array );
+void parray_set_comparefn( parray* array, int (*comparefn)( parray*, void*, void* ) );
+void parray_set_sortfn( parray* array, int (*sortfn)( parray*, void*, void* ) );
 
 
 pccl* pccl_create( int min, int max, char* ccldef );
@@ -610,18 +610,18 @@ pboolean _dbg_trace_enabled( char* file, char* function, char* type );
 void _dbg_trace( char* file, int line, char* type, char* function, char* format, ... );
 
 
-pboolean plist_init( plist* list, size_t size, short flags );
+void plist_init( plist* list, size_t size, short flags );
 plist* plist_create( size_t size, short flags );
 plist* plist_dup( plist* list );
-pboolean plist_erase( plist* list );
-pboolean plist_clear( plist* list );
+void plist_erase( plist* list );
+void plist_clear( plist* list );
 plist* plist_free( plist* list );
 plistel* plist_insert( plist* list, plistel* pos, char* key, void* src );
 plistel* plist_push( plist* list, void* src );
 plistel* plist_shift( plist* list, void* src );
 void* plist_malloc( plist* list );
 void* plist_rmalloc( plist* list );
-pboolean plist_remove( plist* list, plistel* e );
+void plist_remove( plist* list, plistel* e );
 pboolean plist_pop( plist* list, void* dest );
 pboolean plist_unshift( plist* list, void* dest );
 plistel* plist_get( plist* list, size_t n );
@@ -637,11 +637,11 @@ void plist_iter_access( plist* list, plistfn callback );
 void plist_riter_access( plist* list, plistfn callback );
 size_t plist_union( plist* all, plist* from );
 int plist_diff( plist* left, plist* right );
-pboolean plist_subsort( plist* list, plistel* from, plistel* to );
-pboolean plist_sort( plist* list );
-pboolean plist_set_comparefn( plist* list, int (*comparefn)( plist*, plistel*, plistel* ) );
-pboolean plist_set_sortfn( plist* list, int (*sortfn)( plist*, plistel*, plistel* ) );
-pboolean plist_set_printfn( plist* list, void (*printfn)( plist* ) );
+void plist_subsort( plist* list, plistel* from, plistel* to );
+void plist_sort( plist* list );
+void plist_set_comparefn( plist* list, int (*comparefn)( plist*, plistel*, plistel* ) );
+void plist_set_sortfn( plist* list, int (*sortfn)( plist*, plistel*, plistel* ) );
+void plist_set_printfn( plist* list, void (*printfn)( plist* ) );
 void* plist_access( plistel* e );
 char* plist_key( plistel* e );
 plistel* plist_next( plistel* u );
@@ -649,7 +649,7 @@ plistel* plist_prev( plistel* u );
 plistel* plist_hashnext( plistel* u );
 plistel* plist_hashprev( plistel* u );
 int plist_offset( plistel* u );
-pboolean plist_swap( plist* l, plistel* a, plistel* b );
+void plist_swap( plist* l, plistel* a, plistel* b );
 plistel* plist_first( plist* l );
 plistel* plist_last( plist* l );
 int plist_size( plist* l );
