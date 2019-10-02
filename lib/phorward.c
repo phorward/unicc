@@ -5,7 +5,7 @@ https://phorward.info ++ contact<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
 File:	phorward.c
-Usage:	Phorward C/C++ library; Merged by standalone.sh on 2019-09-10
+Usage:	Phorward C/C++ library; Merged by standalone.sh on 2019-09-23
 ----------------------------------------------------------------------------- */
 
 #include "phorward.h"
@@ -1039,11 +1039,6 @@ pccl* pccl_create( int min, int max, char* ccldef )
 {
 	pccl*	ccl;
 
-	PROC( "pccl_create" );
-	PARMS( "min", "%d", min );
-	PARMS( "max", "%d", max );
-	PARMS( "ccldef", "%s", ccldef );
-
 	if( min < 0 )
 		min = PCCL_MIN;
 	if( max < 0 )
@@ -1068,7 +1063,7 @@ pccl* pccl_create( int min, int max, char* ccldef )
 	if( ccldef )
 		pccl_parse( ccl, ccldef, FALSE );
 
-	RETURN( ccl );
+	return ccl;
 }
 
 /** Checks if the character-classes //l// and //r// are configured
@@ -1095,12 +1090,6 @@ Returns the number of pairs the charclass holds.
 */
 size_t pccl_size( pccl* ccl )
 {
-	if( !ccl )
-	{
-		WRONGPARAM;
-		return 0;
-	}
-
 	return parray_count( &ccl->ranges );
 }
 
@@ -1116,10 +1105,7 @@ size_t pccl_count( pccl* ccl )
 	size_t		cnt	= 0;
 
 	if( !ccl )
-	{
-		WRONGPARAM;
 		return 0;
-	}
 
 	parray_for( &ccl->ranges, cr )
 		cnt += ( cr->end - cr->begin ) + 1;
@@ -1138,12 +1124,6 @@ pccl* pccl_dup( pccl* ccl )
 {
 	pccl* 		dup;
 	pcrange*	cr;
-
-	if( !ccl )
-	{
-		WRONGPARAM;
-		return (pccl*)NULL;
-	}
 
 	/* Create new, empty ccl */
 	dup = pccl_create( ccl->min, ccl->max, (char*)NULL );
@@ -1167,22 +1147,13 @@ character-class to be used for further operations.
 
 Returns the number of cycles used for normalization.
 */
-static int pccl_normalize( pccl* ccl )
+static size_t pccl_normalize( pccl* ccl )
 {
 	pcrange*	l;
 	pcrange*	r;
-	size_t		count		= 0;
-	size_t		oldcount;
-	int			cycles		= 0;
-
-	PROC( "pccl_normalize" );
-	PARMS( "ccl", "%p", ccl );
-
-	if( !( ccl ) )
-	{
-		WRONGPARAM;
-		RETURN( -1 );
-	}
+	size_t		count;
+	size_t		oldcount	= 0;
+	size_t		cycles		= 0;
 
 	while( ( count = pccl_size( ccl ) ) != oldcount )
 	{
@@ -1218,7 +1189,7 @@ static int pccl_normalize( pccl* ccl )
 		cycles++;
 	}
 
-	RETURN( cycles );
+	return cycles;
 }
 
 /** Tests a character-class to match a character range.
@@ -1232,12 +1203,6 @@ Returns TRUE if the entire character range matches the class, and FALSE if not.
 pboolean pccl_testrange( pccl* ccl, wchar_t begin, wchar_t end )
 {
 	pcrange*	cr;
-
-	if( !( ccl ) )
-	{
-		WRONGPARAM;
-		return FALSE;
-	}
 
 	parray_for( &ccl->ranges, cr )
 		if( begin >= cr->begin && end <= cr->end )
@@ -1272,12 +1237,6 @@ It returns TRUE, if the character matches the class, and FALSE if not.
 */
 pboolean pccl_instest( pccl* ccl, wchar_t ch )
 {
-	if( !ccl )
-	{
-		WRONGPARAM;
-		return FALSE;
-	}
-
 	if( pccl_test( ccl, ch ) )
 		return TRUE;
 
@@ -1301,17 +1260,6 @@ static pboolean pccl_ADDRANGE( pccl* ccl, wchar_t begin, wchar_t end )
 {
 	pcrange		cr;
 
-	PROC( "pccl_ADDRANGE" );
-	PARMS( "ccl", "%p", ccl );
-	PARMS( "begin", "%d", begin );
-	PARMS( "end", "%d", end );
-
-	if( !( ccl ) )
-	{
-		WRONGPARAM;
-		RETURN( FALSE );
-	}
-
 	if( begin > end )
 	{
 		cr.begin = end;
@@ -1330,20 +1278,14 @@ static pboolean pccl_ADDRANGE( pccl* ccl, wchar_t begin, wchar_t end )
 		cr.end = ccl->max;
 
 	if( pccl_testrange( ccl, cr.begin, cr.end ) )
-	{
-		MSG( "Range already in character-class" );
-		RETURN( TRUE );
-	}
+		/* Range already in character-class */
+		return TRUE;
 
 	if( cr.begin > ccl->max || cr.end < ccl->min )
-	{
-		MSG( "Character-range not in the universe of character-class" );
-		RETURN( FALSE );
-	}
+		/* Character-range not in the universe of character-class */
+		return FALSE;
 
-	parray_push( &ccl->ranges, &cr );
-
-	RETURN( TRUE );
+	return parray_push( &ccl->ranges, &cr ) ? TRUE : FALSE;
 }
 
 /** Integrates a character range into a character-class.
@@ -1358,16 +1300,11 @@ If //begin// is greater than //end//, the values will be swapped.
 */
 pboolean pccl_addrange( pccl* ccl, wchar_t begin, wchar_t end )
 {
-	PROC( "pccl_addrange" );
-	PARMS( "ccl", "%p", ccl );
-	PARMS( "begin", "%d", begin );
-	PARMS( "end", "%d", end );
-
 	if( !pccl_ADDRANGE( ccl, begin, end ) )
-		RETURN( FALSE );
+		return FALSE;
 
 	pccl_normalize( ccl );
-	RETURN( TRUE );
+	return TRUE;
 }
 
 
@@ -1394,17 +1331,6 @@ pboolean pccl_delrange( pccl* ccl, wchar_t begin, wchar_t end )
 	pcrange		d;
 	pcrange*	r;
 
-	PROC( "pccl_delrange" );
-	PARMS( "ccl", "%p", ccl );
-	PARMS( "begin", "%d", begin );
-	PARMS( "end", "%d", end );
-
-	if( !( ccl ) )
-	{
-		WRONGPARAM;
-		RETURN( FALSE );
-	}
-
 	if( begin > end )
 	{
 		d.begin = end;
@@ -1426,31 +1352,24 @@ pboolean pccl_delrange( pccl* ccl, wchar_t begin, wchar_t end )
 				/* Slitting required? */
 				if( d.begin > r->begin && d.end < r->end )
 				{
-					MSG( "Split current range" );
+					/* Split current range */
 					end = r->end;
 					r->end = d.begin - 1;
 
 					if( !pccl_addrange( ccl, d.end + 1, end ) )
-						RETURN( FALSE );
+						return FALSE;
 
 					break;
 				}
-				/* Move the end */
+				/* Move end of current range */
 				else if( d.begin > r->begin )
-				{
-					MSG( "Move end of current range" );
 					r->end = d.begin - 1;
-				}
-				/* Move the begin */
+				/* Change begin of current range */
 				else if( d.end < r->end )
-				{
-					MSG( "Change begin of current range" );
 					r->begin = d.end + 1;
-				}
 				/* Remove entire range */
 				else
 				{
-					MSG( "Remove entire range" );
 					parray_remove( &ccl->ranges,
 							parray_offset( &ccl->ranges, r ), NULL );
 
@@ -1463,7 +1382,7 @@ pboolean pccl_delrange( pccl* ccl, wchar_t begin, wchar_t end )
 	while( r );
 
 	pccl_normalize( ccl );
-	RETURN( TRUE );
+	return TRUE;
 }
 
 /** Removes a character from a character-class.
@@ -1489,15 +1408,6 @@ pccl* pccl_negate( pccl* ccl )
 	wchar_t		start;
 	wchar_t		end;
 	pcrange*	r;
-
-	PROC( "pccl_negate" );
-	PARMS( "ccl", "%p", ccl );
-
-	if( !ccl )
-	{
-		WRONGPARAM;
-		RETURN( (pccl*)NULL );
-	}
 
 	start = end = ccl->min;
 
@@ -1529,7 +1439,7 @@ pccl* pccl_negate( pccl* ccl )
 
 	pccl_normalize( ccl );
 
-	RETURN( ccl );
+	return ccl;
 }
 
 /** Creates the union of two character-classes and returns the newly created,
@@ -1547,31 +1457,19 @@ pccl* pccl_union( pccl* ccl, pccl* add )
 	pccl*		un;
 	pcrange*	r;
 
-	PROC( "pccl_union" );
-	PARMS( "ccl", "%p", ccl );
-	PARMS( "add", "%p", add );
-
-	if( !( ccl && add ) )
-	{
-		WRONGPARAM;
-		RETURN( (pccl*)NULL );
-	}
-
 	if( !pccl_compat( ccl, add ) )
-	{
-		MSG( "Incompatible character-classes" );
-		RETURN( (pccl*)NULL );
-	}
+		/* Incompatible character-classes */
+		return NULL;
 
 	un = pccl_dup( ccl );
 
 	parray_for( &add->ranges, r )
 		if( !pccl_ADDRANGE( un, r->begin, r->end ) )
-			RETURN( FALSE );
+			return NULL;
 
 	pccl_normalize( un );
 
-	RETURN( un );
+	return un;
 }
 
 
@@ -1591,29 +1489,17 @@ pccl* pccl_diff( pccl* ccl, pccl* rem )
 	pcrange*	r;
 	pccl*		diff;
 
-	PROC( "pccl_diff" );
-	PARMS( "ccl", "%p", ccl );
-	PARMS( "rem", "%p", rem );
-
-	if( !( ccl && rem ) )
-	{
-		WRONGPARAM;
-		RETURN( (pccl*)NULL );
-	}
-
 	if( !pccl_compat( ccl, rem ) )
-	{
-		MSG( "Incompatible character-classes" );
-		RETURN( (pccl*)NULL );
-	}
+		/* Incompatible character-classes */
+		return NULL;
 
 	if( !( diff = pccl_dup( ccl ) ) )
-		RETURN( (pccl*)NULL );
+		return diff;
 
 	parray_for( &rem->ranges, r )
 		pccl_delrange( diff, r->begin, r->end );
 
-	RETURN( diff );
+	return diff;
 }
 
 /** Checks for differences in two character-classes.
@@ -1628,29 +1514,15 @@ int pccl_compare( pccl* left, pccl* right )
 {
 	size_t	ret;
 
-	PROC( "pccl_compare" );
-	PARMS( "left", "%p", left );
-	PARMS( "right", "%p", right );
-
-	if( !( left && right ) )
-	{
-		WRONGPARAM;
-		RETURN( -1 );
-	}
-
 	if( !pccl_compat( left, right ) )
-	{
-		MSG( "Incompatible character-classes" );
-		RETURN( left->max - right->max );
-	}
+		/* Incompatible character-classes */
+		return left->max - right->max;
 
 	if( ( ret = pccl_size( left ) - pccl_size( right ) ) != 0 )
-	{
-		MSG( "Unequal number of range pairs" );
-		RETURN( ret < 0 ? -1 : 1 );
-	}
+		/* Unequal number of range pairs */
+		return ret < 0 ? -1 : 1;
 
-	RETURN( parray_diff( &left->ranges, &right->ranges ) );
+	return parray_diff( &left->ranges, &right->ranges );
 }
 
 /** Returns a new character-class with all characters that exist in both
@@ -1669,21 +1541,9 @@ pccl* pccl_intersect( pccl* ccl, pccl* within )
 	pcrange*	s;
 	pccl*		in	= (pccl*)NULL;
 
-	PROC( "pccl_intersect" );
-	PARMS( "ccl", "%p", ccl );
-	PARMS( "within", "%p", within );
-
-	if( !( ccl && within ) )
-	{
-		WRONGPARAM;
-		RETURN( (pccl*)NULL );
-	}
-
 	if( !pccl_compat( ccl, within ) )
-	{
-		MSG( "Character-classes are not compatible" );
-		RETURN( (pccl*)NULL );
-	}
+		/* Incompatible character-classes */
+		return NULL;
 
 	parray_for( &ccl->ranges, r )
 	{
@@ -1704,7 +1564,7 @@ pccl* pccl_intersect( pccl* ccl, pccl* within )
 	if( in )
 		pccl_normalize( in );
 
-	RETURN( in );
+	return in;
 }
 
 /** Return a character or a character-range by its offset.
@@ -1724,64 +1584,39 @@ pboolean pccl_get( wchar_t* from, wchar_t* to, pccl* ccl, size_t offset )
 {
 	pcrange*	cr;
 
-	PROC( "pccl_get" );
-	PARMS( "from", "%p", from );
-	PARMS( "to", "%p", to );
-	PARMS( "ccl", "%p", ccl );
-	PARMS( "offset", "%ld", offset );
-
-	if( !( ccl && from ) )
-	{
-		WRONGPARAM;
-		RETURN( FALSE );
-	}
-
 	if( !to )
 	{
-		MSG( "Single-character retrieval" );
+		/* Single-character retrieval */
 
 		parray_for( &ccl->ranges, cr )
 		{
-			VARS( "offset", "%d", offset );
-			VARS( "cr->begin", "%d", cr->begin );
-			VARS( "cr->end", "%d", cr->end );
-			VARS( "LEN cr->end - cr->begin + 1", "%d",
-					cr->end - cr->begin + 1 );
-
 			if( offset >= ( cr->end - cr->begin ) + 1 )
 			{
-				MSG( "Offset not in this range" );
+				/* Offset not in this range */
 				offset -= ( cr->end - cr->begin ) + 1;
 			}
 			else if( offset < ( cr->end - cr->begin ) + 1 )
 			{
-				MSG( "Offset is within this class" );
-
+				/* Offset is within this class */
 				*from = cr->begin + offset;
-
-				VARS( "*from", "%d", *from );
-				RETURN( TRUE );
+				return TRUE;
 			}
 		}
 	}
 	else
 	{
-		MSG( "Range retrieval" );
+		/* Range retrieval */
 
 		if( ( cr = (pcrange*)parray_get( &ccl->ranges, offset ) ) )
 		{
 			*from = cr->begin;
 			*to = cr->end;
-
-			VARS( "*from", "%d", *from );
-			VARS( "*to", "%d", *to );
-
-			RETURN( TRUE );
+			return TRUE;
 		}
 	}
 
-	MSG( "Offset not available" );
-	RETURN( FALSE );
+	/* Offset not available */
+	return FALSE;
 }
 
 /** Reads a character from a string. The character may consist of one single
@@ -1793,102 +1628,70 @@ The function returns the number of bytes read.
 If //escapeseq// is TRUE, the function regards escape sequences, else it ignores
 them.
 
-Returns the number of bytes that had been read for the character.
-*/
+Returns the number of bytes that had been read for the character. */
 size_t pccl_parsechar( wchar_t* retc, char *str, pboolean escapeseq )
 {
 	wchar_t	ch;
+	char* 	esc;
     char 	digs[9]		=	"\0\0\0\0\0\0\0\0";
     int		dno 		= 0;
 	char*	p			= str;
-
-	PROC( "pccl_parsechar" );
-	PARMS( "retc", "%p", retc );
-	PARMS( "str", "%s", str );
-	PARMS( "escapeseq", "%s", BOOLEAN_STR( escapeseq ) );
 
 	if( escapeseq && *p == '\\' )
 	{
 		p++;
 
-		switch( *p )
+		if( *p >= 'a' &&  *p <= 'z'
+			&& ( esc = strchr( "n\nt\tr\rb\bf\fv\va\a", *p ) ) )
 		{
-			case 'n':
-				ch = '\n';
-				p++;
-				break;
-			case 't':
-				ch = '\t';
-				p++;
-				break;
-			case 'r':
-				ch = '\r';
-				p++;
-				break;
-			case 'b':
-				ch = '\b';
-				p++;
-				break;
-			case 'f':
-				ch = '\f';
-				p++;
-				break;
-			case 'v':
-				ch = '\v';
-				p++;
-				break;
-			case 'a':
-				ch = '\a';
-				p++;
-				break;
+			ch = *( esc + 1 );
+			p++;
+		}
+		else if( octal_digit( *p ) )
+		{
+			do
+				digs[dno++] = *( p++ );
+			while( octal_digit( *p ) && dno < 3 );
 
-			default:
-				if( octal_digit( *p ) )
-				{
-					do
-						digs[dno++] = *( p++ );
-					while( octal_digit( *p ) && dno < 3 );
-					ch = strtol( digs, (char**)NULL, 8 );
-				}
-				else if( *p == 'x' )
-				{
-					p++;
-					while( hex_digit( *p ) && dno < 2 )
-						digs[ dno++ ] = *( p++ );
+			ch = strtol( digs, (char**)NULL, 8 );
+		}
+		else if( *p == 'x' )
+		{
+			p++;
+			while( hex_digit( *p ) && dno < 2 )
+				digs[ dno++ ] = *( p++ );
 
-					if (dno > 0)
-						ch = strtol( digs, (char**)NULL, 16 );
-				}
+			if (dno > 0)
+				ch = strtol( digs, (char**)NULL, 16 );
+		}
 #ifdef UTF8
-				else if( *p == 'u' )
-				{
-					p++;
-					while( hex_digit( *p ) && dno < 4 )
-						digs[dno++] = *( p++ );
+		else if( *p == 'u' )
+		{
+			p++;
+			while( hex_digit( *p ) && dno < 4 )
+				digs[dno++] = *( p++ );
 
-					if( dno > 0 )
-						ch = strtol( digs, (char**)NULL, 16 );
-				}
-				else if( *p == 'U' )
-				{
-					p++;
-					while( hex_digit( *p ) && dno < 8 )
-						digs[dno++] = *( p++ );
+			if( dno > 0 )
+				ch = strtol( digs, (char**)NULL, 16 );
+		}
+		else if( *p == 'U' )
+		{
+			p++;
+			while( hex_digit( *p ) && dno < 8 )
+				digs[dno++] = *( p++ );
 
-					if( dno > 0 )
-						ch = strtol( digs, (char**)NULL, 16 );
-				}
+			if( dno > 0 )
+				ch = strtol( digs, (char**)NULL, 16 );
+		}
 #endif
-				else
-				{
+		else
+		{
 #ifdef UTF8
-					ch = putf8_char( p );
-					p += putf8_seqlen( p );
+			ch = putf8_char( p );
+			p += putf8_seqlen( p );
 #else
-					ch = *( p++ );
+			ch = *( p++ );
 #endif
-				}
-				break;
 		}
 	}
 	else
@@ -1901,11 +1704,9 @@ size_t pccl_parsechar( wchar_t* retc, char *str, pboolean escapeseq )
 #endif
 	}
 
-	VARS( "ch", "%d", ch );
-	VARS( "len", "%d", (int)( p - str ) );
 	*retc = ch;
 
-    RETURN( (size_t)( p - str ) );
+    return (size_t)( p - str );
 }
 
 /**  Tries to parse a shorthand sequence from a string. This matches the
@@ -1916,9 +1717,7 @@ The function returns TRUE in case a shorthand has been parsed. If so,
 the pointer //str// is moved the characters consumed.
 
 If no shorthand sequence could be found, it returns FALSE, leaving //ccl//
-untouched.
-*/
-
+untouched. */
 pboolean pccl_parseshorthand( pccl* ccl, char** str )
 {
 	pccl*		sh;
@@ -1927,69 +1726,58 @@ pboolean pccl_parseshorthand( pccl* ccl, char** str )
 	wchar_t		begin;
 	wchar_t		end;
 
-	PROC( "pccl_parseshorthand" );
-
-	if( !( ccl && str && *str ) )
-	{
-		WRONGPARAM;
-		RETURN( 0 );
-	}
-
-	PARMS( "ccl", "%p", ccl );
-	PARMS( "str", "%s", *str );
-
 	/* Check for shorthand */
-	if( **str == '\\' )
+	if( **str != '\\' )
+		return FALSE;
+
+	switch( *(*str + 1) )
 	{
-		VARS( "ch", "%c", *(*str + 1) );
+		/* This solution is ugly and does not support any Unicode features.
+			So it would be nice to find out a cooler solution in future. */
+		case 'D':
+			neg = TRUE;
+		case 'd':
+			sh = pccl_create( ccl->min, ccl->max, "0-9" );
+			break;
 
-		switch( *(*str + 1) )
-		{
-			/* This solution is ugly and does not support any Unicode features.
-				So it would be nice to find out a cooler solution in future. */
-			case 'D':
-				neg = TRUE;
-			case 'd':
-				sh = pccl_create( ccl->min, ccl->max, "0-9" );
-				break;
+		case 'W':
+			neg = TRUE;
+		case 'w':
+			sh = pccl_create( ccl->min, ccl->max, "a-zA-Z_0-9" );
+			break;
 
-			case 'W':
-				neg = TRUE;
-			case 'w':
-				sh = pccl_create( ccl->min, ccl->max, "a-zA-Z_0-9" );
-				break;
+		case 'S':
+			neg = TRUE;
+		case 's':
+			sh = pccl_create( ccl->min, ccl->max, " \f\n\r\t\v\a" );
+			break;
 
-			case 'S':
-				neg = TRUE;
-			case 's':
-				sh = pccl_create( ccl->min, ccl->max, " \f\n\r\t\v" );
-				break;
-
-			default:
-				MSG( "Not a shorthand" );
-				RETURN( FALSE ); /* Not a shorthand! */
-		}
-
-		if( neg )
-			pccl_negate( sh );
-
-		for( i = 0; pccl_get( &begin, &end, sh, i ); i++ )
-			pccl_ADDRANGE( ccl, begin, end );
-
-		pccl_free( sh );
-		pccl_normalize( ccl );
-
-		*str += 2;
-		RETURN( TRUE );
+		default:
+			/* This is not a supported shorthand! */
+			return FALSE;
 	}
 
-	RETURN( FALSE );
+	if( neg )
+		pccl_negate( sh );
+
+	for( i = 0; pccl_get( &begin, &end, sh, i ); i++ )
+		pccl_ADDRANGE( ccl, begin, end );
+
+	pccl_free( sh );
+	pccl_normalize( ccl );
+
+	*str += 2;
+	return TRUE;
 }
 
 /** Parses the character-class definition provided in //ccldef// and assigns
-this definition to the character-class //ccl//. //ccldef// may contain
-UTF-8 formatted input. Escape-sequences will be interpreted to their correct
-character representations.
+this definition to the character-class //ccl//.
+
+If //ccl// is NULL, a new character-class with the PCCL_MIN/PCCL_MAX
+configuration will be created.
+
+//ccldef// may contain UTF-8 formatted input. Escape-sequences will be
+ interpreted to their correct character representations.
 
 A typical character-class definition simply exists of single characters and
 range definitions. For example, "$A-Z#0-9" defines a character-class that
@@ -2002,57 +1790,45 @@ character-class, should be erased first or not.
 
 The function returns TRUE on success, and FALSE on an error.
 */
-pboolean pccl_parse( pccl* ccl, char* ccldef, pboolean extend )
+pccl* pccl_parse( pccl* ccl, char* ccldef, pboolean extend )
 {
+	pccl*		own;
 	char*		cclptr;
 	wchar_t		begin;
 	wchar_t		end;
 
-	PROC( "pccl_parse" );
-	PARMS( "ccl", "%p", ccl );
-	PARMS( "ccldef", "%s", ccldef );
-	PARMS( "extend", "%s", BOOLEAN_STR( extend ) );
-
-	if( !( ccl ) )
-	{
-		WRONGPARAM;
-		RETURN( FALSE );
-	}
-
-	if( !extend )
+	if( !ccl )
+		ccl = own = pccl_create( 0, 0, NULL );
+	else if( !extend )
 		pccl_erase( ccl );
 
-	for( cclptr = pstrget( ccldef ); *cclptr; )
+	for( cclptr = ccldef; *cclptr; )
 	{
-		VARS( "cclptr", "%s", cclptr );
-
 		if( pccl_parseshorthand( ccl, &cclptr ) )
 			continue;
 
 		cclptr += pccl_parsechar( &begin, cclptr, TRUE );
 		end = begin;
 
-		VARS( "begin", "%d", begin );
-		VARS( "end", "%d", end );
-
 		/* Is this a range def? */
 		if( *cclptr == '-' )
 		{
-			MSG( "This is a range!" );
 			cclptr++;
 			cclptr += pccl_parsechar( &end, cclptr, TRUE );
-			VARS( "end", "%d", end );
 		}
 
-		VARS( "cclptr", "%s", cclptr );
+		if( !pccl_ADDRANGE( ccl, begin, end ) )
+		{
+			if( own )
+				pccl_free( own );
 
-		pccl_ADDRANGE( ccl, begin, end );
+			return NULL;
+		}
 	}
 
-	MSG( "Finally normalize the character-class" );
 	pccl_normalize( ccl );
 
-	RETURN( TRUE );
+	return ccl;
 }
 
 /** Erases a character-class //ccl//.
@@ -2061,16 +1837,10 @@ The function sets a character-class to zero, as it contains no character range
 definitions. The object //ccl// will be still alive. To delete the entire
 object, use pccl_free().
 */
-pboolean pccl_erase( pccl* ccl )
+void pccl_erase( pccl* ccl )
 {
-	if( !ccl )
-	{
-		WRONGPARAM;
-		return FALSE;
-	}
-
 	parray_erase( &ccl->ranges );
-	return TRUE;
+	ccl->str = pfree( ccl->str );
 }
 
 /** Frees a character-class //ccl// and all its used memory.
@@ -2082,9 +1852,7 @@ pccl* pccl_free( pccl* ccl )
 	if( !ccl )
 		return (pccl*)NULL;
 
-	parray_erase( &ccl->ranges );
-	pfree( ccl->str );
-
+	pccl_erase( ccl );
 	pfree( ccl );
 
 	return (pccl*)NULL;
@@ -2105,44 +1873,49 @@ character-class handling functions, so it should not be freed manually.
 */
 char* pccl_to_str( pccl* ccl, pboolean escape )
 {
+	size_t		len		= 1;
 	pcrange*	r;
-	char		from	[ 40 + 1 ];
-	char		to		[ 20 + 1 ];
-
-	PROC( "pccl_to_str" );
-	PARMS( "ccl", "%p", ccl );
-	PARMS( "escape", "%s", BOOLEAN_STR( escape ) );
-
-	if( !( ccl ) )
-	{
-		WRONGPARAM;
-		RETURN( (char*)NULL );
-	}
 
 	ccl->str = pfree( ccl->str );
+
+	/* Examine required size of the resulting string */
+	parray_for( &ccl->ranges, r )
+		len += ( ( r->begin != r->end ? 1 : 2 )			/* Two or one char? */
+					* ( escape ? 10 : 6 ) ) 			/* Escaped or not? */
+				+ ( ( r->begin != r->end ) ? 1 : 0 );	/* Range-dash? */
+
+	if( !( ccl->str = (char*)pmalloc( len * sizeof( char ) ) ) )
+		return NULL;
+
+	*ccl->str = '\0';
 
 	parray_for( &ccl->ranges, r )
 	{
 		if( escape )
-			putf8_escape_wchar( from, sizeof( from ), r->begin );
+			putf8_escape_wchar(
+					ccl->str + strlen( ccl->str ),
+						len - strlen( ccl->str ) - 1, r->begin );
 		else
-			putf8_toutf8( from, sizeof( from ), &( r->begin ), 1 );
+			putf8_toutf8( ccl->str + strlen( ccl->str ),
+					len - strlen( ccl->str ) - 1,
+						&( r->begin ), 1 );
 
 		if( r->begin != r->end )
 		{
+			strcat( ccl->str, "-" );
+
 			if( escape )
-				putf8_escape_wchar( to, sizeof( to ), r->end );
+				putf8_escape_wchar(
+						ccl->str + strlen( ccl->str ),
+							len - strlen( ccl->str ) - 1, r->end );
 			else
-				putf8_toutf8( to, sizeof( to ), &( r->end ), 1 );
-
-			sprintf( from + strlen( from ), "-%s", to );
+				putf8_toutf8( ccl->str + strlen( ccl->str ),
+							  len - strlen( ccl->str ) - 1,
+							  &( r->end ), 1 );
 		}
-
-		ccl->str = pstrcatstr( ccl->str, from, FALSE );
 	}
 
-	VARS( "ret", "%s", ccl->str );
-	RETURN( ccl->str ? ccl->str : "" );
+	return ccl->str ? ccl->str : "";
 }
 
 /** Print character-class to output stream.
