@@ -12,9 +12,43 @@ UniCC comes with out of the box support for the programming languages **C**, **C
 
 UniCC can generate both scanner-less and scanner-mode parsers. The more powerful scanner-less parsing is the default, and allows to break the barrier between the grammar and its tokens, so tokens are under full control of the context-free grammar. Scanner-less parsing requires that the provided grammar is internally rewritten according to whitespace and lexeme settings.
 
-## Example
+## Examples
 
-This is the full definition of a four-function arithmetic syntax including their integer calculation semantics (in C).
+Below is the full definition of a simple, universal grammar example that can be compiled to any of UniCC's target languages.
+This example uses the automatic abstract syntax tree construction syntax to define nodes and leafs of the resulting syntax tree.
+
+```c
+#whitespaces    ' \t';
+
+@integer        '0-9'+                       =int;
+
+#left           '+' '-';
+#left           '*' '/';
+
+//Defining the grammar
+calculator$     : expression
+                ;
+
+expression      : expression '+' expression  =add
+                | expression '-' expression  =sub
+                | expression '*' expression  =mul
+                | expression '/' expression  =div
+                | '(' expression ')'
+                | @integer
+                ;
+```
+
+On the input `42 * 23 + 1337`, this will result in the AST output
+
+```
+add
+ mul
+  int (42)
+  int (23)
+ int (1337)
+```
+
+Next is the full definition of a four-function arithmetic syntax including their calculation semantics, for integer values, written in C.
 
 ```c
 #!language      "C";	// <- target language!
@@ -27,33 +61,35 @@ This is the full definition of a four-function arithmetic syntax including their
 #left           '*' '/';
 
 //Defining the grammar
-calc$           : expr           [* printf( "= %d\n", @expr ) *]
+calc$           : expr                 [* printf( "= %d\n", @expr ) *]
                 ;
 
-expr            : expr '+' expr  [* @@ = @1 + @3 *]
-                | expr '-' expr  [* @@ = @1 - @3 *]
-                | expr '*' expr  [* @@ = @1 * @3 *]
-                | expr '/' expr  [* @@ = @1 / @3 *]
-                | '(' expr ')'   [* @@ = @2 *]
+expr            : expr:a '+' expr:b    [* @@ = @a + @b *]
+                | expr:a '-' expr:b    [* @@ = @a - @b *]
+                | expr:a '*' expr:b    [* @@ = @a * @b *]
+                | expr:a '/' expr:b    [* @@ = @a / @b *]
+                | '(' expr ')'         [* @@ = @expr *]
                 | int
                 ;
 
-int             : '0-9'          [* @@ = @1 - '0' *]
-                | int '0-9'      [* @@ = @int * 10 + @2 - '0' *]
+int             : '0-9'                [* @@ = @1 - '0' *]
+                | int '0-9'            [* @@ = @int * 10 + @2 - '0' *]
                 ;
 ```
 
-To build and run this example, do
+To build and run this example, run the following commands
 
 ```
 $ unicc expr.par
 $ cc -o expr expr.c
-$ ./expr -sl
-3*10-(2*4)+1
-= 23
+./expr -sl
+42 * 23 + 1337
+= 2303
 ```
 
-More real-world examples for parsers implemented with UniCC are [xpl](https://github.com/phorward/xpl), [rapidbatch](https://github.com/phorward/rapidbatch) and [ViUR logics](https://github.com/viur-framework/logics) or can be found in the [examples-folder](https://github.com/phorward/unicc/tree/develop/examples).
+This [C](examples/expr.c.par)-example can also be found for [C++](examples/expr.cpp.par), [Python](examples/expr.py.par) and [JavaScript](examples/expr.js.par).
+
+More real-world examples for parsing tasks implemented with UniCC can be found in [xpl](https://github.com/phorward/xpl), [rapidbatch](https://github.com/phorward/rapidbatch) and [ViUR logics](https://github.com/viur-framework/logics).
 
 ## Features
 
@@ -71,7 +107,8 @@ UniCC provides the following features and tools:
 
 ## Documentation
 
-The **UniCC User's Manual** is the official standard documentation of the UniCC Parser Generator. Download it for free [here](https://www.phorward-software.com/products/unicc/unicc.pdf).
+The **UniCC User's Manual** is the official standard documentation of the UniCC Parser Generator.
+Download it for free [here](https://www.phorward-software.com/products/unicc/unicc.pdf).
 
 ## Installation
 

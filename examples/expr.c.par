@@ -1,27 +1,24 @@
-//Some grammar-related directives
-#!language      C;
+#!language      "C";
 
 #whitespaces    ' \t';
-#lexeme         integer;
-#default action	[* @@ = @1; *];
+#lexeme         int;
+#default action [* @@ = @1 *];
 
 #left           '+' '-';
 #left           '*' '/';
 
 //Defining the grammar
-calculator$     : expression                 [* printf( "= %d\n",
-                                                   @expression ) *]
+calc$           : expr                 [* printf( "= %d\n", @expr ) *]
                 ;
 
-expression      : expression '+' expression  [* @@ = @1 + @3 *]
-                | expression '-' expression  [* @@ = @1 - @3 *]
-                | expression '*' expression  [* @@ = @1 * @3 *]
-                | expression '/' expression  [* @@ = @1 / @3 *]
-                | '(' expression ')'         [* @@ = @2 *]
-                | integer
+expr            : expr:a '+' expr:b    [* @@ = @a + @b *]
+                | expr:a '-' expr:b    [* @@ = @a - @b *]
+                | expr:a '*' expr:b    [* @@ = @a * @b *]
+                | expr:a '/' expr:b    [* @@ = @a / @b *]
+                | '(' expr ')'         [* @@ = @expr *]
+                | int
                 ;
 
-integer         : '0-9'                      [* @@ = @1 - '0' *]
-                | integer '0-9'              [* @@ = @integer * 10 + @2 - '0' *]
+int             : '0-9'                [* @@ = @1 - '0' *]
+                | int '0-9'            [* @@ = @int * 10 + @2 - '0' *]
                 ;
-

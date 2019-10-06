@@ -9,8 +9,8 @@
 
 //Defining the grammar
 calculator$     : expression                [* console.log(
-													"= %d", @expression);
-												@@ = @expression;
+                                                    "= %d", @expression);
+                                                @@ = @expression;
                                             *]
                 ;
 
@@ -23,10 +23,10 @@ expression      : expression '+' expression [* @@ = @1 + @3 *]
                 ;
 
 integer         : '0-9'                     [* @@ = @1.charCodeAt(0)
-														- '0'.charCodeAt(0) *]
+                                                        - '0'.charCodeAt(0) *]
                 | integer '0-9'             [* @@ = @integer * 10 +
-														@2.charCodeAt(0)
-															- '0'.charCodeAt(0) 
+                                                        @2.charCodeAt(0)
+                                                            - '0'.charCodeAt(0)
                                             *]
                 ;
 

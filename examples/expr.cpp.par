@@ -9,16 +9,16 @@
 #left           '*' '/';
 
 #prologue		[* 
-	#include <stdlib.h>
-	#include <stdio.h>
-	#include <string.h>
-	#include <locale.h>
-	#include <iostream>
-	*];
+    #include <stdlib.h>
+    #include <stdio.h>
+    #include <string.h>
+    #include <locale.h>
+    #include <iostream>
+    *];
 
 //Defining the grammar
 calculator$     : expression                 [* std::cout << "= " <<
-											        @expression << std::endl *]
+                                                    @expression << std::endl *]
                 ;
 
 expression      : expression '+' expression  [* @@ = @1 + @3 *]
