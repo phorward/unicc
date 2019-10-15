@@ -1,6 +1,6 @@
-%skip	([\s]+)
+%skip   [\s]
 
-@int !  := [0-9]+
+@int!   := [0-9]+
 
 @factor	: int
 		| '(' expr ')'

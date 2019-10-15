@@ -1177,7 +1177,7 @@ void __dbg_gram_dump( char* file, int line, char* function,
 	plistel*	f;
 	Production*	p;
 	Symbol*		s;
-	Symbol**	l;
+	Symbol*		l;
 	int			maxlhslen	= 0;
 	int			maxemitlen	= 0;
 	int			maxsymlen	= 0;
@@ -1222,7 +1222,8 @@ void __dbg_gram_dump( char* file, int line, char* function,
 			if( f != plist_first( p->rhs ) )
 				fprintf( stderr, " " );
 
-			fprintf( stderr, "%s", sym_to_str( s ) );
+			fprintf( stderr, "%s",
+						sym_to_str( s ) ? sym_to_str( s ) : "(null)" );
 		}
 
 		fprintf( stderr, "\n" );
@@ -1246,7 +1247,7 @@ void __dbg_gram_dump( char* file, int line, char* function,
 			parray_for( &s->first, l )
 			{
 				fprintf( stderr, " " );
-				fprintf( stderr, "%s", sym_to_str( *l ) );
+				fprintf( stderr, "%s", sym_to_str( *( (Symbol**)l ) ) );
 			}
 
 			fprintf( stderr, " }" );

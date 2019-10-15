@@ -443,6 +443,7 @@ void ast_dump_pvm( pvmprog* prog, AST_node* ast )
 typedef struct
 {
 	int				state;			/* State */
+	int				dstate;			/* Diagnose state */
 	Symbol*			sym;			/* Symbol */
 
 	char*			start;			/* Start */
@@ -894,6 +895,10 @@ Parser_stat parctx_next( Parser_ctx* ctx, Token* tok )
 
 			tos->sym = ctx->reduce->lhs;
 			tos->state = shift - 1;
+
+			if( !tos->sym->flags.whitespace )
+				tos->dstate = tos->state;
+
 			tos->node = ctx->last;
 			tos->token = range;
 
@@ -938,13 +943,13 @@ Parser_stat parctx_next( Parser_ctx* ctx, Token* tok )
 			/* TODO: Error Recovery */
 			fprintf( stderr, "Parse Error @ %s\n", tok->symbol->name );
 
-			for( i = 2; i < par->dfa[tos->state][0]; i += 3 )
+			for( i = 2; i < par->dfa[tos->dstate][0]; i += 3 )
 			{
 				Symbol*	la;
 
-				la = sym_get( par->gram, par->dfa[tos->state][i] - 1 );
+				la = sym_get( par->gram, par->dfa[tos->dstate][i] - 1 );
 				fprintf( stderr, "state %d, expecting '%s'\n",
-					tos->state, la->name );
+					tos->dstate, la->name );
 			}
 
 			MSG( "Parsing failed" );
@@ -963,6 +968,10 @@ Parser_stat parctx_next( Parser_ctx* ctx, Token* tok )
 
 	tos->sym = tok->symbol;
 	tos->state = ctx->reduce ? 0 : shift - 1;
+
+	if( !tos->sym->flags.whitespace )
+		tos->dstate = tos->state;
+
 	tos->token = *tok;
 
 	/* Shifted symbol becomes AST node? */

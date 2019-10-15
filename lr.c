@@ -12,7 +12,7 @@ Usage:	LR/LALR/GLR parse table construction and execution.
 
 /* Defines */
 
-#define DEBUGLEVEL		0
+#define DEBUGLEVEL		1
 
 /* Closure item */
 typedef struct
@@ -55,7 +55,7 @@ static void lritem_print( LRitem* it )
 {
 	int			i;
 	Symbol*		sym;
-	Symbol**	la;
+	Symbol*		la;
 
 	if( ( !it ) )
 	{
@@ -91,7 +91,7 @@ static void lritem_print( LRitem* it )
 				if( la != parray_first( &it->lookahead ) )
 					fprintf( stderr, " " );
 
-				fprintf( stderr, ">%s<", sym_to_str( *la ) );
+				fprintf( stderr, ">%s<", sym_to_str( *( (Symbol**)la ) ) );
 			}
 
 			fprintf( stderr, " }" );
@@ -355,7 +355,6 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 	LRitem*			cit;
 	Symbol*			sym;
 	Symbol*			lhs;
-	Symbol**		la;
 	Production*		prod;
 	LRcolumn*		col;
 	LRcolumn*		ccol;
@@ -699,8 +698,9 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 
 				/* Put entries for each lookahead */
 				parray_sort( &it->lookahead );
-				parray_for( &it->lookahead, la )
-					lrcolumn_create( st, *la, (LRstate*)NULL, it->prod );
+
+				parray_for( &it->lookahead, sym )
+					lrcolumn_create( st, *((Symbol**)sym), NULL, it->prod );
 			}
 		}
 
@@ -882,6 +882,7 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 /** Build parse tables */
 pboolean lr_build( unsigned int* cnt, unsigned int*** dfa, Grammar* grm )
 {
+	static int		calls	= 0;
 	plist*			states;
 	unsigned int**	tab;
 	LRstate*		st;
@@ -913,8 +914,11 @@ pboolean lr_build( unsigned int* cnt, unsigned int*** dfa, Grammar* grm )
 	states = lr_closure( grm, TRUE, TRUE );
 
 	#if DEBUGLEVEL > 0
-	fprintf( stderr, "\n\n--- FINAL GLR STATES ---\n\n" );
-	lr_print( states );
+	if( calls++ > 0 )
+	{
+		fprintf( stderr, "\n\n--- FINAL GLR STATES ---\n\n" );
+		lr_print( states );
+	}
 	#endif
 
 	/* Allocate and fill return tables, free states */
