@@ -1,18 +1,14 @@
 #whitespaces    ' \t';
 
-@integer        '0-9'+                       =int;
-
 #left           '+' '-';
 #left           '*' '/';
 
-//Defining the grammar
-calculator$     : expression
-                ;
+@int            '0-9'+           = int;
 
-expression      : expression '+' expression  =add
-                | expression '-' expression  =sub
-                | expression '*' expression  =mul
-                | expression '/' expression  =div
-                | '(' expression ')'
-                | @integer
+expr$           : expr '+' expr  = add
+                | expr '-' expr  = sub
+                | expr '*' expr  = mul
+                | expr '/' expr  = div
+                | '(' expr ')'
+                | @int
                 ;

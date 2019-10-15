@@ -1,33 +1,29 @@
 #!language     javascript;
 
 #whitespaces    ' \t';
-#lexeme         integer;
+#lexeme         int;
 #default action	[* @@ = @1 *];
 
 #left           '+' '-';
 #left           '*' '/';
 
-//Defining the grammar
-calculator$     : expression                [* console.log(
-                                                    "= %d", @expression);
-                                                @@ = @expression;
-                                            *]
+calc$           : expr                 [* console.log("= %d", @expr);
+                                            @@ = @expr;
+                                       *]
                 ;
 
-expression      : expression '+' expression [* @@ = @1 + @3 *]
-                | expression '-' expression [* @@ = @1 - @3 *]
-                | expression '*' expression [* @@ = @1 * @3 *]
-                | expression '/' expression [* @@ = @1 / @3*]
-                | '(' expression ')'        [* @@ = @2 *]
-                | integer
+expr            : expr:a '+' expr:b    [* @@ = @a + @b *]
+                | expr:a '-' expr:b    [* @@ = @a - @b *]
+                | expr:a '*' expr:b    [* @@ = @a * @b *]
+                | expr:a '/' expr:b    [* @@ = @a / @b *]
+                | '(' expr ')'         [* @@ = @expr *]
+                | int
                 ;
 
-integer         : '0-9'                     [* @@ = @1.charCodeAt(0)
+int             : '0-9'                     [* @@ = @1.charCodeAt(0)
                                                         - '0'.charCodeAt(0) *]
-                | integer '0-9'             [* @@ = @integer * 10 +
+                | int '0-9'                 [* @@ = @int * 10 +
                                                         @2.charCodeAt(0)
                                                             - '0'.charCodeAt(0)
                                             *]
                 ;
-
-//End of definition

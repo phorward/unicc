@@ -1,35 +1,32 @@
-//Some grammar-related directives
 #!language      "C++";
 
 #whitespaces    ' \t';
-#lexeme         integer;
-#default action	[* @@ = @1; *];
+#lexeme         int;
+#default action	[* @@ = @1 *];
 
 #left           '+' '-';
 #left           '*' '/';
 
-#prologue		[* 
+#prologue		[*
     #include <stdlib.h>
     #include <stdio.h>
     #include <string.h>
     #include <locale.h>
     #include <iostream>
-    *];
+*];
 
-//Defining the grammar
-calculator$     : expression                 [* std::cout << "= " <<
-                                                    @expression << std::endl *]
+calc$           : expr                 [* std::cout << "= " <<
+                                            @expr << std::endl *]
                 ;
 
-expression      : expression '+' expression  [* @@ = @1 + @3 *]
-                | expression '-' expression  [* @@ = @1 - @3 *]
-                | expression '*' expression  [* @@ = @1 * @3 *]
-                | expression '/' expression  [* @@ = @1 / @3 *]
-                | '(' expression ')'         [* @@ = @2 *]
-                | integer
+expr            : expr:a '+' expr:b    [* @@ = @a + @b *]
+                | expr:a '-' expr:b    [* @@ = @a - @b *]
+                | expr:a '*' expr:b    [* @@ = @a * @b *]
+                | expr:a '/' expr:b    [* @@ = @a / @b *]
+                | '(' expr ')'         [* @@ = @expr *]
+                | int
                 ;
 
-integer         : '0-9'                      [* @@ = @1 - '0' *]
-                | integer '0-9'              [* @@ = @integer * 10 + @2 - '0' *]
+int             : '0-9'                [* @@ = @1 - '0' *]
+                | int '0-9'            [* @@ = @int * 10 + @2 - '0' *]
                 ;
-

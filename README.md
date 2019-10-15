@@ -20,21 +20,17 @@ This example uses the automatic abstract syntax tree construction syntax to defi
 ```c
 #whitespaces    ' \t';
 
-@integer        '0-9'+                       =int;
-
 #left           '+' '-';
 #left           '*' '/';
 
-//Defining the grammar
-calculator$     : expression
-                ;
+@int            '0-9'+           = int;
 
-expression      : expression '+' expression  =add
-                | expression '-' expression  =sub
-                | expression '*' expression  =mul
-                | expression '/' expression  =div
-                | '(' expression ')'
-                | @integer
+expr$           : expr '+' expr  = add
+                | expr '-' expr  = sub
+                | expr '*' expr  = mul
+                | expr '/' expr  = div
+                | '(' expr ')'
+                | @int
                 ;
 ```
 
@@ -48,10 +44,10 @@ add
  int (1337)
 ```
 
-Next is the full definition of a four-function arithmetic syntax including their calculation semantics, for integer values, written in C.
+Next is a (more complex) version of the four-function arithmetic syntax including their calculation semantics, for integer values. In this example, the scannerless parsing capabilities of UniCC are used to parse the **int** value from its single characters, so the symbol **int** is configured to be handled as a `lexeme`, which influences the behavior how whitespace is handled.
 
 ```c
-#!language      "C";	// <- target language!
+#!language      C;	// <- target language!
 
 #whitespaces    ' \t';
 #lexeme         int;
@@ -60,7 +56,6 @@ Next is the full definition of a four-function arithmetic syntax including their
 #left           '+' '-';
 #left           '*' '/';
 
-//Defining the grammar
 calc$           : expr                 [* printf( "= %d\n", @expr ) *]
                 ;
 
@@ -89,7 +84,7 @@ $ cc -o expr expr.c
 
 This [C](examples/expr.c.par)-example can also be found for [C++](examples/expr.cpp.par), [Python](examples/expr.py.par) and [JavaScript](examples/expr.js.par).
 
-More real-world examples for parsing tasks implemented with UniCC can be found in [xpl](https://github.com/phorward/xpl), [rapidbatch](https://github.com/phorward/rapidbatch) and [ViUR logics](https://github.com/viur-framework/logics).
+More real-world examples for parsers implemented with UniCC can be found in [xpl](https://github.com/phorward/xpl), [rapidbatch](https://github.com/phorward/rapidbatch) and [ViUR logics](https://github.com/viur-framework/logics).
 
 ## Features
 

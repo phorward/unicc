@@ -1,4 +1,4 @@
-#!language      "C";
+#!language      C;
 
 #whitespaces    ' \t';
 #lexeme         int;
@@ -7,7 +7,6 @@
 #left           '+' '-';
 #left           '*' '/';
 
-//Defining the grammar
 calc$           : expr                 [* printf( "= %d\n", @expr ) *]
                 ;
 
