@@ -8,7 +8,7 @@ File:	parse.h
 Usage:	Phorward parsing library
 ----------------------------------------------------------------------------- */
 
-#include <phorward.h>
+#include "lib/phorward.h"
 
 #define UNICC_VERSION		"2.0.0-dev"
 

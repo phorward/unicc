@@ -1,0 +1,232 @@
+html, body
+{
+	font-family: Atlas, "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+	font-size: 14pt;
+
+	background-color: #000055;
+}
+
+body
+{
+    margin: 1% 2%;
+    padding: 3%;
+
+    background-color: #fff;
+	border-radius: 25px;
+}
+
+table
+{
+    border-collapse: collapse;
+    border-color: #ccc;
+    width: 100%;
+}
+
+tr, td
+{
+	border-color: #ccc;
+}
+
+pre, code
+{
+	font-family: Monaco, monospace;
+}
+
+pre
+{
+	margin-left: 3%;
+}
+
+a
+{
+	text-decoration: none;
+}
+
+a, a:link, a:visited
+{
+	color: #0066CC;
+	padding: 2px;
+}
+
+a:hover
+{
+	color: #FF9933;
+}
+
+li
+{
+	padding-top: 8px;
+}
+
+
+div.page-break
+{
+	display: none;
+}
+
+div#header
+{
+	text-align: center;
+	font-size: 18pt;
+	padding-bottom: 10px;
+	margin-bottom: 5px;
+}
+
+div#header h1:before
+{
+	content: url(phorward.png);
+	display: block;
+	padding: 10px;
+}
+
+div#header h1
+{
+	font-size: 1.7em;
+
+}
+
+div#header h2
+{
+	font-size: 1.3em;
+}
+
+div#header h3
+{
+	font-size: 1.3em;
+	font-style: italic;
+}
+
+div#body h1
+{
+	border-top: 3px solid #333;
+	font-size: 1.8em;
+	margin-top: 3em;
+}
+
+div.function
+{
+	page-break-before:auto;
+	border-top: 1px dotted #000066;
+	padding: 0 1%;
+	margin-bottom: 3.5%;
+}
+
+div.function .definition
+{
+	margin-left: 16px;
+	font-size: 1.1em;
+	font-family: "Lucida Console", Monaco, monospace;
+}
+
+div#body h2
+{
+	border-top: 1px dashed #666;
+	font-size: 1.4em;
+	margin-right: 5%;
+}
+
+div#body h3
+{
+	font-size: 1.2em;
+	margin: 1% 5% 1% 0%;
+	padding: 0;
+}
+
+table.ref
+{
+}
+
+table.ref li
+{
+}
+
+td.reftitle
+{
+	width: 10%;
+	color: #707070;
+}
+
+td.refsynopsis, div.codestyle
+{
+	font-family: courier;
+}
+
+td.refusage
+{
+}
+
+td.refauthor
+{
+}
+
+td.refparameters
+{
+}
+
+td.refreturns
+{
+}
+
+/* Media Querys */
+@media only screen and (max-width: 1024px) {
+
+	body
+	{
+		margin: initial;
+		background-color: #fff;
+		border-radius: initial;
+	}
+}
+
+@media print
+{
+	html, body, table
+	{
+		font-size: 12.5pt;
+		background-color: initial;
+	}
+
+	body
+	{
+		margin: initial;
+		padding: initial;
+		background-color: initial;
+	}
+
+	div#body h1
+	{
+		page-break-before: left;
+		margin-top: 0;
+		border: 0;
+	}
+
+	div#body h2
+	{
+		border: 0;
+	}
+
+	.header h1
+	{
+		page-break-before: avoid;
+		margin-top: 8cm;
+	}
+
+	div.page-break
+	{
+		display: inline-block;
+		width: 0;
+		height: 0;
+		page-break-after: always;
+	}
+
+	div.function
+	{
+		page-break-inside: avoid;
+		border-top: 0;
+	}
+
+	#toc1, div.toc
+	{
+		display: none;
+	}
+}

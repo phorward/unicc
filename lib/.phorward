@@ -1,0 +1,60 @@
+#!/bin/sh
+#-------------------------------------------------------------------------------
+# Phorward C/C++ Library
+# Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
+# https://phorward.info ++ contact<at>phorward<dash>software<dot>com
+# All rights reserved. See LICENSE for more information.
+#
+# Script:		.phorward
+# Author:		Jan Max Meyer
+# Usage:		Phorward Shell Script Tools
+#-------------------------------------------------------------------------------
+
+# This is the official place where the version number is provided:
+VERSION="1.0.0"
+echo "$VERSION"
+
+# ------------------------------------------------------------------------------
+version()
+{
+    if [ -z "$1" ]
+    then
+        prog="Phorward C/C++ Library"
+    else
+        prog="$1"
+    fi
+
+    echo "$prog v$VERSION"
+
+    if [ -n "$2" ]
+    then
+        echo "$2. Part of the Phorward C/C++ Library."
+    fi
+
+    cat <<ENDL
+
+Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
+All rights reserved. See LICENSE for more information.
+ENDL
+}
+
+# ------------------------------------------------------------------------------
+remove_c_comments()
+{
+    sed "/\/\*/!bc
+:a
+/\*\//!{
+N
+ba
+}
+:c
+s:/\*.*\*/::
+s://.*$::g" $1
+}
+
+# ------------------------------------------------------------------------------
+dos2unix()
+{
+    tr -d '\r' <$1
+}
+

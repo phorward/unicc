@@ -1,11 +1,12 @@
-CFLAGS    	= -g -I../phorward/src -DDEBUG -DUTF8 -DUNICODE -Wall $(CLOCAL)
-LIBPHORWARD	= ../phorward/src/libphorward.a
+CFLAGS    	= -g -DDEBUG -DUTF8 -DUNICODE -Wall $(CLOCAL)
 
 HEADERS		= \
+			lib/phorward.h \
 			unicc.h \
 			proto.h
 
 SOURCES   	=	\
+			lib/phorward.c \
 			bnf.c \
 			grammar.c \
 			lr.c \

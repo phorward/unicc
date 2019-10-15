@@ -1,0 +1,379 @@
+#!/bin/sh
+# -SCRIPT-----------------------------------------------------------------------
+# Phorward C/C++ Library
+# Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
+# https://phorward.info ++ contact<at>phorward<dash>software<dot>com
+# All rights reserved. See LICENSE for more information.
+#
+# File:		pdoc
+# Usage:	Phorward Documentation Generator
+# ------------------------------------------------------------------------------
+
+. .phorward >/dev/null
+
+help()
+{
+	echo "Usage: `basename $0` OPTIONS file..."
+	echo
+	echo "    -d  --depth     DEPTH    Enforce headline level DEPTH (default:$depth)"
+	echo "    -h  --help               Show this help, and exit."
+	echo "    -V  --version            Show version info and exit."
+	echo
+}
+
+#assemble options
+depth=1
+
+while [ "$1" ]
+do
+	case "$1" in
+		-d|--depth)
+			depth=$2
+			shift
+			;;
+		-h|--help)
+				help
+				exit 0
+				;;
+		-V|--version)
+				version `basename $0` "Phorward Documentation Generator"
+				exit 0
+				;;
+		*)
+			break
+			;;
+	esac
+
+	shift
+done
+
+if [ $# -lt 1 ]
+then
+	help
+	exit 1
+fi
+
+
+read -r -d '' src <<'ENDL'
+#!/bin/awk -f
+
+/```/					{
+							with_trim = 0
+						}
+
+/\/\*\*[^*]/,/\*\//		{
+							if( on_doc )
+							{
+								len = length( cur_doc )
+
+								if( substr( cur_doc, len, 1 ) == "\\" )
+									cur_doc = substr( cur_doc, 1, len - 1  )
+								else if( cur_doc != "" )
+									cur_doc = cur_doc "\n"
+
+								if( with_trim )
+									cur_doc = cur_doc trim( $0 )
+								else
+									cur_doc = cur_doc $0
+								next
+							}
+						}
+
+/^[ \t]*([A-Za-z_]+[ \t]+)?[A-Za-z_][A-Za-z0-9_]*[ \t*]+[A-Za-z_][A-Za-z0-9_]*[ \t]*\(/					{
+							if( on_doc && cur_doc != "" && cur_func == "" )
+							{
+								cur_func = $0
+								next
+							}
+						}
+
+#Standard-Functions
+
+/^{[ \t]*$/				{
+							if( on_doc )
+							{
+								process( "F" )
+								next
+							}
+						}
+
+#Functions and Macro/Define-declarations via comments.
+
+/\/\*FUNCTION:/			{
+							if( on_doc )
+							{
+								cur_func = $0
+								gsub( /\/\*FUNCTION:/, "", cur_func )
+								gsub( /\*\//, "", cur_func )
+
+								process( "F" )
+								next
+							}
+						}
+
+/\/\*MACRO:/			{
+							if( on_doc )
+							{
+								cur_func = $0
+								gsub( /\/\*MACRO:/, "", cur_func )
+								gsub( /\*\//, "", cur_func )
+
+								process( "M" )
+								next
+							}
+						}
+
+/\/\*DEFINE:/			{
+							if( on_doc )
+							{
+								cur_func = $0
+								gsub( /\/\*DEFINE:/, "", cur_func )
+								gsub( /\*\//, "", cur_func )
+
+								process( "D" )
+								next
+							}
+						}
+
+/\/\*TYPEDEF:/			{
+							if( on_doc )
+							{
+								cur_func = $0
+								gsub( /\/\*TYPEDEF:/, "", cur_func )
+								gsub( /\*\//, "", cur_func )
+
+								process( "T" )
+								next
+							}
+						}
+
+/\/\*NO_DOC\*\//		{
+							on_doc = 0
+						}
+
+/\/\*COD_ON\*\//		{
+							on_doc = 1
+						}
+
+# any further line ...
+
+						{
+							if( cur_func != "" )
+							{
+								test_line = $0
+								gsub( /[ \t]+/, "", test_line )
+
+								test_chr = substr( test_line, \
+											length( test_line ) - 1, 1 )
+
+								if( test_chr == ";" )
+									cur_func = ""
+								else
+									cur_func = cur_func $0
+							}
+						}
+
+BEGINFILE				{
+							cur_func = ""
+							cur_doc = ""
+							on_doc = 1
+						}
+
+BEGIN					{
+							if( prefix == "" )
+								prefix = "fn_"
+
+							on_doc = 1
+							with_trim = 1
+
+							if( !depth )
+								depth = 1
+
+							type[ "F" ] = "Function"
+							types[ "F" ] = "Functions"
+							type[ "M" ] = "Macro"
+							types[ "M" ] = "Macros"
+							type[ "D" ] = "Define"
+							types[ "D" ] = "Defines"
+							type[ "T" ] = "Typedef"
+							types[ "T" ] = "Type Definitions"
+
+							stype["a"] = "D"
+							stype["b"] = "M"
+							stype["c"] = "T"
+							stype["d"] = "F"
+						}
+
+END						{
+							t = 1
+							for( s in entries )
+								sort[t++] = s
+
+							n = asort( sort )
+
+							countof["a"] = 0
+							countof["b"] = 0
+							countof["c"] = 0
+							countof["d"] = 0
+							prev_t = ""
+
+							for( t in stype )
+							{
+								first = 1
+
+								for( s = 1; s <= n; s++ )
+								{
+									if( whatis[ sort[ s ] ] != stype[ t ] )
+										continue
+
+									countof[ t ]++
+
+									if( first )
+									{
+										if( prev_t != "" \
+												&& countof[ prev_t ] > 0 )
+										{
+											print "'''"
+											print "<!-- NEW PAGE -->"
+											print "'''"
+										}
+
+										#if( stype[ t ] != "F" )
+											print headline( depth ) " " \
+												types[ stype[ t ] ] " " \
+													headline( depth )
+
+										first = 0
+									}
+
+									#if( stype[ t ] == "F" )
+									#	render( sort[ s ], depth )
+									#else
+										render( sort[ s ], depth + 1 )
+								}
+
+								prev_t = t
+							}
+						}
+
+function process( is_what )
+{
+	if( cur_func != "" )
+	{
+		gsub( "[ \t]+", " ", cur_func )
+		gsub( /^\/\*\*/, "", cur_doc )
+		gsub( /\*\//, "", cur_doc )
+
+		# Print it, baby!
+		if( cur_doc != "" )
+		{
+			cur_doc = trim( cur_doc )
+
+			text = ""
+
+			pos = match( cur_func, /[a-zA-Z0-9_]+[\t ]*\(/ )
+
+			if( pos > 0 )
+			{
+				funcname = substr( cur_func, pos )
+				funcname = substr( funcname, 1, match( funcname, /\(/ ) - 1 )
+			}
+			else
+				funcname = trim( cur_func )
+
+			if( ( pos = match( cur_doc, /\./ ) ) )
+				title = substr( cur_doc, 1, pos - 1 )
+			else
+				title = cur_doc
+
+			gsub( /`/, "", title )
+
+			# Link functions: Find all functions that do NOT begin with a "&"
+			# and create links.
+			cur_doc = gensub( \
+					/[^&a-zA-Z0-9_]([a-zA-Z0-9_]+)\(\)/, \
+					" [\\1() #" prefix "\\1]", "g", cur_doc )
+
+			# Then, replace all functions beginning with "&" by theirself
+			# without the "&"
+			cur_doc = gensub( \
+					/&([a-zA-Z0-9_]+)\(\)/, \
+					"\\1()", "g", cur_doc )
+
+			# Make C-comments in examples the right way ...
+			gsub( /\\\*/, "/*", cur_doc )
+			gsub( /\*\\/, "*/", cur_doc )
+
+			titles[ funcname ] = title
+			functions[ funcname ] = cur_func
+			entries[ funcname ] = cur_doc
+			whatis[ funcname ] = is_what
+		}
+	}
+
+	cur_func = ""
+	cur_doc = ""
+	with_trim = 1
+}
+
+function render( f, d )
+{
+	count = 10
+	x = functions[ f ] "\n" entries[ f ]
+	count += gsub( /\n/, "", x )
+
+	print "%NEED:" count
+	print "%FUNCTION:BEGIN"
+
+	print headline( d ) " " f " " headline( d ) "[" prefix f "]"
+
+	print ""
+	print "**Definition:**"
+	print ""
+	print "%DEFINITION:BEGIN"
+
+	if( whatis[ f ] != "F" )
+		print functions[ f ] " - //" type[ whatis[ f ] ] "//"
+	else
+		print functions[ f ]
+
+	print "%DEFINITION:END"
+
+	print ""
+	print "**Usage:**\n"
+	print entries[ f ]
+
+	print "%FUNCTION:END"
+
+}
+
+function ltrim( s )
+{
+	sub( /^[ \t\n]+/, "", s )
+	return s
+}
+
+function rtrim( s )
+{
+	sub( /[ \t\n]+$/, "", s )
+	return s
+}
+
+function trim( s )
+{
+	return rtrim(ltrim(s))
+}
+
+function headline( size )
+{
+	line = ""
+
+	for( i = 0; i < size; i++ )
+		line = line "="
+
+	return line
+}
+ENDL
+
+src=`echo "$src" | sed -e "s/'/\\'/g"`
+echo "$src" | awk -f - -vdepth=$depth $*
