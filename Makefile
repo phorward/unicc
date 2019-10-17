@@ -5,19 +5,21 @@ HEADERS		= \
 			unicc.h \
 			proto.h
 
+PHORWARD	= \
+			lib/phorward.c
+
 SOURCES   	=	\
-			lib/phorward.c \
 			bnf.c \
 			grammar.c \
 			lr.c \
 			parse.c
 
-OBJECTS		= $(patsubst %.c,%.o,$(SOURCES))
+OBJECTS		= $(patsubst %.c,%.o,$(PHORWARD)) $(patsubst %.c,%.o,$(SOURCES))
 
 all: unicc gram2c
 
 proto.h: $(SOURCES)
-	pproto $(SOURCES) >$@
+	lib/pproto $(SOURCES) >$@
 
 bnf.c: grammars/pbnf.bnf
 	awk -f etareneg.awk bnf.c >bnf.gen
