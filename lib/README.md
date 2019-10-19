@@ -1,6 +1,6 @@
 # phorward v1.0.0
 
-This is a stand-alone copy of the Phorward C/C++ library that was generated on 2019-09-23 from the [official phorward repository](https://github.com/phorward/phorward).
+This is a stand-alone copy of the Phorward C/C++ library that was generated on 2019-10-15 from the [official phorward repository](https://github.com/phorward/phorward).
 
 It is not intended to be used for further development, but for simple and fast integration into existing projects. To contribute changes, please check out the official repository at https://github.com/phorward/phorward.
 
@@ -54,8 +54,8 @@ Alternatively, there is also a simpler method for setting up a local build syste
 To do so, type
 
 ```bash
-$ make -f Makefile.gnu make_install
-$ make
+make -f Makefile.gnu make_install
+make
 ```
 
 This locally compiles the library or parts of it, and is ideal for development purposes.
@@ -69,11 +69,12 @@ This makes integration of the entire library into other projects possible withou
 
 *libphorward* is developed and maintained by [Jan Max Meyer](https://github.com/phorward/), Phorward Software Technologies.
 
-Contributions by [Marco Wegner](https://github.com/Heavenfighter) and [AGS](https://github.com/FreeBASIC-programmer).
+Contributions by [Heavenfighter](https://github.com/Heavenfighter) and [AGS](https://github.com/FreeBASIC-programmer).
 
 ## License
 
-You may use, modify and distribute this software under the terms and conditions of the 3-clause BSD license.
+You may use, modify and distribute this software under the terms and conditions of the MIT license.
 The full license terms can be obtained from the file LICENSE.
 
 Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer.
+

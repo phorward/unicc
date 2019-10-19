@@ -4385,7 +4385,7 @@ in error case.
 </p>
 <div class='definition'>
 <p>
-pboolean pccl_erase( <a href="#pccl">pccl</a>* ccl )
+void pccl_erase( <a href="#pccl">pccl</a>* ccl )
 </div>
 </p>
 <p>
@@ -4544,7 +4544,7 @@ Negates all ranges in a character-class.
 <p>
 Returns a pointer to <i>ccl</i>.
 </div>
-<!-- NEED 25 -->
+<!-- NEED 29 -->
 <div class='function'>
 </p>
 
@@ -4555,7 +4555,7 @@ Returns a pointer to <i>ccl</i>.
 </p>
 <div class='definition'>
 <p>
-pboolean pccl_parse( <a href="#pccl">pccl</a>* ccl, char* ccldef, <a href="#pboolean">pboolean</a> extend )
+pccl* pccl_parse( <a href="#pccl">pccl</a>* ccl, char* ccldef, <a href="#pboolean">pboolean</a> extend )
 </div>
 </p>
 <p>
@@ -4563,9 +4563,15 @@ pboolean pccl_parse( <a href="#pccl">pccl</a>* ccl, char* ccldef, <a href="#pboo
 </p>
 <p>
 Parses the character-class definition provided in <i>ccldef</i> and assigns
-this definition to the character-class <i>ccl</i>. <i>ccldef</i> may contain
-UTF-8 formatted input. Escape-sequences will be interpreted to their correct
-character representations.
+this definition to the character-class <i>ccl</i>.
+</p>
+<p>
+If <i>ccl</i> is NULL, a new character-class with the PCCL_MIN/PCCL_MAX
+configuration will be created.
+</p>
+<p>
+<i>ccldef</i> may contain UTF-8 formatted input. Escape-sequences will be
+interpreted to their correct character representations.
 </p>
 <p>
 A typical character-class definition simply exists of single characters and

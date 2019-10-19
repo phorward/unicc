@@ -5,7 +5,7 @@ https://phorward.info ++ contact<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
 File:	phorward.c
-Usage:	Phorward C/C++ library; Merged by standalone.sh on 2019-09-23
+Usage:	Phorward C/C++ library; Merged by standalone.sh on 2019-10-15
 ----------------------------------------------------------------------------- */
 
 #include "phorward.h"

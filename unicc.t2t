@@ -1,6 +1,6 @@
 UNICC
-Version 1.6
-Sep 2019
+Version 1.7
+Oct 2019
 %!postproc(md): '```(.?)' '```\1'
 %!postproc(md): '^	([^-$])' '\1'
 %!postproc(md): '^ \* ' '- '
@@ -135,4 +135,4 @@ https://github.com/phorward/unicc/issues
 
 Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer.
 
-You may use, modify and distribute this software under the terms and conditions of the 3-clause BSD license.
+You may use, modify and distribute this software under the terms and conditions of the MIT license.

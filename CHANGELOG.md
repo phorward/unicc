@@ -6,6 +6,7 @@ This file is used to document any relevant changes done to UniCC.
 
 This is the current development version.
 
+- Licensing terms changed from 3-clause BSD-license into MIT license
 - Minor function API changes regarding libphorward v1.0.0 compatibility
 - Distributed libphorward sources integrated into the lib/-directory
 - Auto-generated prototypes using pproto: `make -f Makefile.gnu proto.h`

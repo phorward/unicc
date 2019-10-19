@@ -127,7 +127,7 @@ UniCC is developed and maintained by Jan Max Meyer, Phorward Software Technologi
 
 ## License
 
-This software is an open source project released under the terms and conditions of the 3-clause BSD license. See the LICENSE file for more information.
+This software is an open source project released under the terms and conditions of the MIT license. See the LICENSE file for more information.
 
 Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer.
 
