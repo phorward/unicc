@@ -164,8 +164,7 @@ UNICC_SCHAR* @@prefix_parser::get_lexem( void )
 
 	size = wcstombs( (char*)NULL, this-&gt;buf, 0 );
 
-	if( this-&gt;lexem )
-		free( this-&gt;lexem );
+	free( this-&gt;lexem );
 
 	if( !( this-&gt;lexem = (UNICC_SCHAR*)malloc(
 			( size + 1 ) * sizeof( UNICC_SCHAR ) ) ) )

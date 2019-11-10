@@ -7,8 +7,7 @@ UNICC_SCHAR* @@prefix_parser::get_lexem( void )
 
 	size = wcstombs( (char*)NULL, this->buf, 0 );
 
-	if( this->lexem )
-		free( this->lexem );
+	free( this->lexem );
 
 	if( !( this->lexem = (UNICC_SCHAR*)malloc(
 			( size + 1 ) * sizeof( UNICC_SCHAR ) ) ) )

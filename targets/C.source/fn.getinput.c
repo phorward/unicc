@@ -35,9 +35,7 @@ UNICC_STATIC UNICC_CHAR @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offs
 							* sizeof( UNICC_CHAR ) ) ) )
 			{
 				UNICC_OUTOFMEM( pcb );
-
-				if( pcb->buf )
-					free( pcb->buf );
+				free( pcb->buf );
 
 				return 0;
 			}
