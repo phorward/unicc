@@ -818,8 +818,7 @@ UNICC_STATIC UNICC_SCHAR* @@prefix_lexem( @@prefix_pcb* pcb )
 
 	size = wcstombs( (char*)NULL, pcb-&gt;buf, 0 );
 
-	if( pcb-&gt;lexem )
-		free( pcb-&gt;lexem );
+	free( pcb-&gt;lexem );
 
 	if( !( pcb-&gt;lexem = (UNICC_SCHAR*)malloc(
 			( size + 1 ) * sizeof( UNICC_SCHAR ) ) ) )
@@ -990,9 +989,7 @@ UNICC_STATIC int @@prefix_alloc_stack( @@prefix_pcb* pcb )
 					* sizeof( @@prefix_tok ) ) ) )
 		{
 			UNICC_OUTOFMEM( pcb );
-
-			if( pcb-&gt;stack )
-				free( pcb-&gt;stack );
+			free( pcb-&gt;stack );
 
 			return -1;
 		}
@@ -1851,13 +1848,10 @@ UNICC_STATIC int @@prefix_handle_error( @@prefix_pcb* pcb, FILE* @@prefix_dbg )
 	ret = @@goal-value;
 
 	/* Clean up parser control block */
-	if( pcb-&gt;buf )
-		free( pcb-&gt;buf );
-	if( pcb-&gt;stack )
-		free( pcb-&gt;stack );
+	free( pcb-&gt;buf );
+	free( pcb-&gt;stack );
 #if UNICC_UTF8
-	if( pcb-&gt;lexem )
-		free( pcb-&gt;lexem );
+	free( pcb-&gt;lexem );
 #endif
 
 	/* Clean memory of self-allocated parser control block */

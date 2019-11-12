@@ -276,18 +276,12 @@
 	// Clean up parser control block
 	UNICC_CLEARIN( this );
 
-	if( this->stack )
-	{
-		free( this->stack );
-		this->stack = NULL;
-	}
+	free( this->stack );
+	this->stack = NULL;
 
 #if UNICC_UTF8
-	if( this->lexem )
-	{
-		free( this->lexem );
-		this->lexem = NULL;
-	}
+	free( this->lexem );
+	this->lexem = NULL;
 #endif
 
 	return ret;

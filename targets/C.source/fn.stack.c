@@ -23,9 +23,7 @@ UNICC_STATIC int @@prefix_alloc_stack( @@prefix_pcb* pcb )
 					* sizeof( @@prefix_tok ) ) ) )
 		{
 			UNICC_OUTOFMEM( pcb );
-
-			if( pcb->stack )
-				free( pcb->stack );
+			free( pcb->stack );
 
 			return -1;
 		}

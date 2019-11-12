@@ -109,7 +109,7 @@ BEGIN		{
 					else
 					{
 						gsub( /\\/, "\\\\" )
-						gsub( /\"/, "\\\"" )
+						gsub( /"/, "\\\"" )
 						gsub( /%/, "%%" )
 						print tabs() "L( &out, \"" $0 "\" );"
 					}

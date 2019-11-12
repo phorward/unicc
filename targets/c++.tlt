@@ -385,11 +385,8 @@ UNICC_CHAR @@prefix_parser::get_input( size_t offset )
 			{
 				UNICC_OUTOFMEM( this );
 
-				if( this-&gt;buf )
-				{
-					free( this-&gt;buf );
-					this-&gt;buf = NULL;
-				}
+				free( this-&gt;buf );
+				this-&gt;buf = NULL;
 
 				return 0;
 			}
@@ -1091,18 +1088,12 @@ bool @@prefix_parser::handle_error( FILE* @@prefix_dbg )
 	// Clean up parser control block
 	UNICC_CLEARIN( this );
 
-	if( this-&gt;stack )
-	{
-		free( this-&gt;stack );
-		this-&gt;stack = NULL;
-	}
+	free( this-&gt;stack );
+	this-&gt;stack = NULL;
 
 #if UNICC_UTF8
-	if( this-&gt;lexem )
-	{
-		free( this-&gt;lexem );
-		this-&gt;lexem = NULL;
-	}
+	free( this-&gt;lexem );
+	this-&gt;lexem = NULL;
 #endif
 
 	return ret;

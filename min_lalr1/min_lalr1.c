@@ -756,8 +756,7 @@ void p_def( uchar* s )
 			PERROR( "Parse error at definition" )
 	}
 	
-	if( attribute )
-		free( attribute );
+	free( attribute );
 }
 
 void printgrm( void )

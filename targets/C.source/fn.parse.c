@@ -308,13 +308,10 @@
 	ret = @@goal-value;
 
 	/* Clean up parser control block */
-	if( pcb->buf )
-		free( pcb->buf );
-	if( pcb->stack )
-		free( pcb->stack );
+	free( pcb->buf );
+	free( pcb->stack );
 #if UNICC_UTF8
-	if( pcb->lexem )
-		free( pcb->lexem );
+	free( pcb->lexem );
 #endif
 
 	/* Clean memory of self-allocated parser control block */

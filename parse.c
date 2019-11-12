@@ -1551,8 +1551,7 @@ UNICC_STATIC UNICC_SCHAR* _lexem( _pcb* pcb )
 
 	size = wcstombs( (char*)NULL, pcb->buf, 0 );
 
-	if( pcb->lexem )
-		free( pcb->lexem );
+	free( pcb->lexem );
 
 	if( !( pcb->lexem = (UNICC_SCHAR*)malloc(
 			( size + 1 ) * sizeof( UNICC_SCHAR ) ) ) )
@@ -1723,9 +1722,7 @@ UNICC_STATIC int _alloc_stack( _pcb* pcb )
 					* sizeof( _tok ) ) ) )
 		{
 			UNICC_OUTOFMEM( pcb );
-
-			if( pcb->stack )
-				free( pcb->stack );
+			free( pcb->stack );
 
 			return -1;
 		}
@@ -1839,9 +1836,7 @@ UNICC_STATIC UNICC_CHAR _get_input( _pcb* pcb, unsigned int offset )
 							* sizeof( UNICC_CHAR ) ) ) )
 			{
 				UNICC_OUTOFMEM( pcb );
-
-				if( pcb->buf )
-					free( pcb->buf );
+				free( pcb->buf );
 
 				return 0;
 			}
@@ -5568,13 +5563,10 @@ int _parse( _pcb* pcb )
 	ret = ( ( pcb->tos - 0 )->value.value_5 );
 
 	/* Clean up parser control block */
-	if( pcb->buf )
-		free( pcb->buf );
-	if( pcb->stack )
-		free( pcb->stack );
+	free( pcb->buf );
+	free( pcb->stack );
 #if UNICC_UTF8
-	if( pcb->lexem )
-		free( pcb->lexem );
+	free( pcb->lexem );
 #endif
 
 	/* Clean memory of self-allocated parser control block */

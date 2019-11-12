@@ -7,8 +7,7 @@ UNICC_STATIC UNICC_SCHAR* @@prefix_lexem( @@prefix_pcb* pcb )
 
 	size = wcstombs( (char*)NULL, pcb->buf, 0 );
 
-	if( pcb->lexem )
-		free( pcb->lexem );
+	free( pcb->lexem );
 
 	if( !( pcb->lexem = (UNICC_SCHAR*)malloc(
 			( size + 1 ) * sizeof( UNICC_SCHAR ) ) ) )

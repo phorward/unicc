@@ -36,11 +36,8 @@ UNICC_CHAR @@prefix_parser::get_input( size_t offset )
 			{
 				UNICC_OUTOFMEM( this );
 
-				if( this->buf )
-				{
-					free( this->buf );
-					this->buf = NULL;
-				}
+				free( this->buf );
+				this->buf = NULL;
 
 				return 0;
 			}
