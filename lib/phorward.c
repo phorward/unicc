@@ -3377,8 +3377,8 @@ void plist_subsort( plist* list, plistel* from, plistel* to )
 	plistel*	e;
 	plistel*	ref;
 
-	size_t		i	= 0;
-	size_t		j	= 0;
+	int			i	= 0;
+	int			j	= 0;
 
 	if( from == to )
 		return;
@@ -3396,35 +3396,14 @@ void plist_subsort( plist* list, plistel* from, plistel* to )
 
 	do
 	{
-		while( TRUE )
+		while( ( *list->sortfn )( list, a, ref ) > 0 )
 		{
-			//printf("a %p %p %p %p %p\n", to, a->next, list, a, ref);
-			if( a == to )
-				break;
-				
-			if( !a->next )
-				break;
-				
-			if( ( *list->sortfn )( list, a, ref ) < 0 )
-				break;
-
 			i++;
 			a = a->next;
 		}
 
-		
-		while( TRUE )
+		while( ( *list->sortfn )( list, ref, b ) > 0 )
 		{
-			//printf("b %p %p %p %p %p\n", from, b->next, list, b, ref);
-			if( b == from )
-				break;
-
-			if( !b->prev )
-				break;
-
-			if( ( *list->sortfn )( list, ref, b ) < 0 )
-				break;
-
 			j--;
 			b = b->prev;
 		}
@@ -3451,7 +3430,7 @@ void plist_subsort( plist* list, plistel* from, plistel* to )
 			j--;
 		}
 	}
-	while( i <= j && a && b );
+	while( i <= j );
 
 	if( ( b != from ) && ( b != from->prev ) )
 		plist_subsort( list, from, b );
