@@ -57,6 +57,7 @@ int main( int argc, char** argv )
 	int			i;
 	int			rc;
 	int			next;
+	int			ret		= 0;
 	char		opt		[ 20 + 1 ];
 	char		line	[ 1024 + 1 ];
 	char*		param;
@@ -255,7 +256,10 @@ int main( int argc, char** argv )
 				}
 			}
 			else
-				fprintf( stderr, "%s: Parse error in >%s<\n", ifile, s );
+			{
+				fprintf( stderr, "%s: Parse error\n", ifile );
+				ret = 1;
+			}
 
 			a = ast_free( a );
 		}
@@ -264,6 +268,6 @@ int main( int argc, char** argv )
 		i++;
 	}
 
-	RETURN( 0 );
+	RETURN( ret );
 }
 

@@ -213,8 +213,13 @@ void ast_dump_short( FILE* stream, AST_node* ast )
 		fprintf( stream, "%s", ast->emit );
 
 		if( ast->token.start && ast->token.len )
-			fprintf( stream, " >%.*s<",
+		{
+			if( !memchr( ast->token.start, '\n', ast->token.len ) )
+			{
+				fprintf( stream, " >%.*s<",
 						(int)ast->token.len, ast->token.start );
+			}
+		}
 
 		fprintf( stream, "\n" );
 
@@ -941,7 +946,8 @@ Parser_stat parctx_next( Parser_ctx* ctx, Token* tok )
 		{
 			/* Parse Error */
 			/* TODO: Error Recovery */
-			fprintf( stderr, "Parse Error @ %s\n", tok->symbol->name );
+			fprintf( stderr, "Parse Error on %s at >%.*s<\n",
+						tok->symbol->name, 30, tok->start );
 
 			for( i = 2; i < par->dfa[tos->dstate][0]; i += 3 )
 			{
@@ -995,6 +1001,7 @@ static Symbol* par_scan( Parser* par, plex* lex,
 
 	PROC( "par_scan" );
 
+
 	while( TRUE )
 	{
 		if( ( !lazy && ( tok = plex_lex( lex, *start, end ) ) )
@@ -1005,6 +1012,7 @@ static Symbol* par_scan( Parser* par, plex* lex,
 			if( !( sym = sym_get( par->gram, tok ) )
 				|| sym->flags.whitespace )
 			{
+				/* fprintf( stderr, "w = >%.*s<\n", *end - *start, *start ); */
 				*start = *end;
 				continue;
 			}
@@ -1063,6 +1071,8 @@ pboolean par_parse( AST_node** root, Parser* par, char* start )
 
 		RETURN( FALSE );
 	}
+
+	/* lex->flags |= PREGEX_RUN_DEBUG; */
 
 	for( i = 0; ( sym = sym_get( par->gram, i ) ); i++ )
 	{

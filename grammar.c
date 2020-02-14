@@ -95,7 +95,7 @@ Symbol* sym_obtain_derivative( Symbol* origin, pboolean unique )
 
 	/* Create unique symbol name */
 	while( ( sym = sym_get_by_name( origin->grm, deriv ) )
-		   && ( !unique || sym->origin != origin ) )
+		   && ( unique || sym->origin != origin ) )
 		sprintf( deriv + strlen( deriv ), "%c", DERIVCHAR );
 
 	if( !sym )

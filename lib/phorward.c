@@ -3377,8 +3377,8 @@ void plist_subsort( plist* list, plistel* from, plistel* to )
 	plistel*	e;
 	plistel*	ref;
 
-	int			i	= 0;
-	int			j	= 0;
+	size_t		i	= 0;
+	size_t		j	= 0;
 
 	if( from == to )
 		return;
@@ -3396,14 +3396,35 @@ void plist_subsort( plist* list, plistel* from, plistel* to )
 
 	do
 	{
-		while( ( *list->sortfn )( list, a, ref ) > 0 )
+		while( TRUE )
 		{
+			//printf("a %p %p %p %p %p\n", to, a->next, list, a, ref);
+			if( a == to )
+				break;
+				
+			if( !a->next )
+				break;
+				
+			if( ( *list->sortfn )( list, a, ref ) < 0 )
+				break;
+
 			i++;
 			a = a->next;
 		}
 
-		while( ( *list->sortfn )( list, ref, b ) > 0 )
+		
+		while( TRUE )
 		{
+			//printf("b %p %p %p %p %p\n", from, b->next, list, b, ref);
+			if( b == from )
+				break;
+
+			if( !b->prev )
+				break;
+
+			if( ( *list->sortfn )( list, ref, b ) < 0 )
+				break;
+
 			j--;
 			b = b->prev;
 		}
@@ -3430,7 +3451,7 @@ void plist_subsort( plist* list, plistel* from, plistel* to )
 			j--;
 		}
 	}
-	while( i <= j );
+	while( i <= j && a && b );
 
 	if( ( b != from ) && ( b != from->prev ) )
 		plist_subsort( list, from, b );
@@ -6534,9 +6555,9 @@ static void pregex_dfa_default_trans( pregex_dfa* dfa )
 	plistel*		f;
 	pregex_dfa_st*	st;
 	pregex_dfa_tr*	tr;
-	int				max;
-	int				all;
-	int				cnt;
+	size_t			max;
+	size_t			all;
+	size_t			cnt;
 
 	PROC( "pregex_dfa_default_trans" );
 	PARMS( "dfa", "%p", dfa );
@@ -6566,7 +6587,7 @@ static void pregex_dfa_default_trans( pregex_dfa* dfa )
 			all += cnt;
 		}
 
-		if( all < PCCL_MAX )
+		if( all <= PCCL_MAX ) /* fixme... */
 			st->def_trans = (pregex_dfa_tr*)NULL;
 	}
 
@@ -7794,6 +7815,10 @@ pboolean plex_prepare( plex* lex )
 	}
 
 	pregex_nfa_free( nfa );
+
+	/* Debug */
+	if( lex->flags & PREGEX_RUN_DEBUG )
+		pregex_dfa_to_dfatab( NULL, dfa );
 
 	/* Compile significant DFA table into dfatab array */
 	if( ( lex->trans_cnt = pregex_dfa_to_dfatab( &lex->trans, dfa ) ) <= 0 )
@@ -10412,7 +10437,7 @@ static pboolean parse_char( pregex_ptn** ptn, char** pstr, int flags )
 
 			ccl = pccl_create( -1, -1, (char*)NULL );
 
-			if( !( ccl && pccl_addrange( ccl, PCCL_MIN, PCCL_MAX ) ) )
+			if( !( ccl && pccl_addrange( ccl, PCCL_MIN + 1, PCCL_MAX ) ) )
 			{
 				pccl_free( ccl );
 				RETURN( FALSE );

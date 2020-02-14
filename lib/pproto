@@ -10,7 +10,7 @@
 # Usage:		C function prototype generator
 #-------------------------------------------------------------------------------
 
-. .phorward >/dev/null
+. `dirname $0`/.phorward >/dev/null
 
 help()
 {
