@@ -259,8 +259,8 @@ void __dbg_ast_dump( char* file, int line, char* function,
 Only opening matches are printed. */
 void ast_dump_json( FILE* stream, AST_node* ast )
 {
-	char*	ptr;
-	char*	eptr;
+	char*		ptr;
+	char*		eptr;
 	AST_node*	node	= ast;
 
 	if( ast && ast->next )
@@ -285,7 +285,7 @@ void ast_dump_json( FILE* stream, AST_node* ast )
 		fputc( '"', stream );
 
 		/* Match */
-		if( SYM_IS_TERMINAL( ast->sym ) || node->sym->flags.lexem )
+		if( SYM_IS_TERMINAL( node->sym ) || node->sym->flags.lexem )
 		{
 			fprintf( stream, ",\"match\":" );
 
@@ -310,18 +310,40 @@ void ast_dump_json( FILE* stream, AST_node* ast )
 			if( ptr && eptr && ptr < eptr )
 			{
 				for( ; *ptr && ptr < eptr; ptr++ )
-					if( *ptr == '\"' )
-						fprintf( stream, "\\\"" );
-					else
-						fputc( *ptr, stream );
+					switch( *ptr )
+					{
+						case '\"':
+							fprintf( stream, "\\\"" );
+							break;
+						case '\n':
+							fprintf( stream, "\\n" );
+							break;
+						case '\r':
+							fprintf( stream, "\\r" );
+							break;
+						case '\t':
+							fprintf( stream, "\\t" );
+							break;
+						case '\v':
+							fprintf( stream, "\\v" );
+							break;
+
+						default:
+							if( *ptr >= 0 && *ptr <= 31 )
+								fprintf( stream, "\\u%04x", *ptr );
+							else
+								fputc( *ptr, stream );
+					}
 			}
 
 			fputc( '"', stream );
 		}
 
 		/* Position */
+		/*
 		fprintf( stream, ",\"row\":%ld,\"column\":%ld",
 				node->token.row, node->token.col );
+		*/
 
 		/* Children */
 		if( node->child )
