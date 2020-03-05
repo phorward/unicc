@@ -3370,73 +3370,33 @@ The sort-function can be modified by using plist_set_sortfn().
 
 The default sort function sorts the list by content using the memcmp()
 standard function. */
-void plist_subsort( plist* list, plistel* from, plistel* to )
+void plist_subsort( plist* list, plistel* left, plistel* right )
 {
-	plistel*	a	= from;
-	plistel*	b	= to;
-	plistel*	e;
-	plistel*	ref;
-
-	int			i	= 0;
-	int			j	= 0;
-
-	if( from == to )
-		return;
-
-	while( a != b )
-	{
-		j++;
-
-		if( !( a = a->next ) )
-			return;
-	}
-
-	a = from;
-	ref = from;
+	plistel*	i;
+	pboolean	mod;
 
 	do
 	{
-		while( ( *list->sortfn )( list, a, ref ) > 0 )
+		mod = FALSE;
+
+		for( i = left; i && i->next && i != right; i = i->next )
 		{
-			i++;
-			a = a->next;
+			if( (*list->sortfn)( list, i, i->next ) > 0 )
+			{
+				if( i->next == right )
+					right = i;
+
+				plist_swap( list, i, i->next );
+
+				i = i->prev;
+
+				mod = TRUE;
+			}
 		}
 
-		while( ( *list->sortfn )( list, ref, b ) > 0 )
-		{
-			j--;
-			b = b->prev;
-		}
-
-		if( i <= j )
-		{
-			if( from == a )
-				from = b;
-			else if( from == b )
-				from = a;
-
-			if( to == a )
-				to = b;
-			else if( to == b )
-				to = a;
-
-			plist_swap( list, a, b );
-
-			e = a;
-			a = b->next;
-			b = e->prev;
-
-			i++;
-			j--;
-		}
+		right = right->prev;
 	}
-	while( i <= j );
-
-	if( ( b != from ) && ( b != from->prev ) )
-		plist_subsort( list, from, b );
-
-	if( ( a != to ) && ( a != to->next ) )
-		plist_subsort( list, a, to );
+	while( mod && right );
 }
 
 /** Sorts //list// according to the sort-function that was set for the list.
@@ -6423,7 +6383,7 @@ static int pregex_dfa_sort_trans( plist* list, plistel* el, plistel* er )
 	pregex_dfa_tr*	l = (pregex_dfa_tr*)plist_access( el );
 	pregex_dfa_tr*	r = (pregex_dfa_tr*)plist_access( er );
 
-	return pccl_compare( l->ccl, r->ccl ) < 0 ? 1 : 0;
+	return pccl_compare( l->ccl, r->ccl );
 }
 
 /* Sort transitions by characters */
@@ -6432,7 +6392,7 @@ static int pregex_dfa_sort_classes( plist* list, plistel* el, plistel* er )
 	pccl*	l = (pccl*)plist_access( el );
 	pccl*	r = (pccl*)plist_access( er );
 
-	return pccl_compare( l, r ) < 0 ? 1 : 0;
+	return pccl_compare( l, r );
 }
 
 /* Creating a new DFA state */

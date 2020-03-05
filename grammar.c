@@ -1,6 +1,6 @@
 /* -MODULE----------------------------------------------------------------------
 UniCC² Parser Generator
-Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2020 by Phorward Software Technologies, Jan Max Meyer
 http://www.phorward-software.com ++ contact<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
@@ -697,24 +697,24 @@ static int sort_symbols( plist* lst, plistel* el, plistel* er )
 	Symbol*		r	= (Symbol*)plist_access( er );
 
 	if( l->flags.special && !r->flags.special )
-		return 1;
+		return -1;
 	else if( !l->flags.special && r->flags.special )
-		return -1;
+		return 1;
 	else if( l->ccl && !r->ccl )
-		return 1;
+		return -1;
 	else if( !l->ccl && r->ccl )
-		return -1;
+		return 1;
 	else if( l->str && !r->str )
-		return 1;
+		return -1;
 	else if( !l->str && r->str )
-		return -1;
-	else if( l->ptn && !r->ptn )
 		return 1;
-	else if( !l->ptn && r->ptn )
+	else if( l->ptn && !r->ptn )
 		return -1;
+	else if( !l->ptn && r->ptn )
+		return 1;
 
 	if( l->idx < r->idx )
-		return 1;
+		return -1;
 
 	return 0;
 }
