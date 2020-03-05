@@ -1,6 +1,6 @@
 /* -HEADER----------------------------------------------------------------------
 Phorward C/C++ Library
-Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2020 by Phorward Software Technologies, Jan Max Meyer
 https://phorward.info ++ contact<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
@@ -637,7 +637,7 @@ void plist_iter_access( plist* list, plistfn callback );
 void plist_riter_access( plist* list, plistfn callback );
 size_t plist_union( plist* all, plist* from );
 int plist_diff( plist* left, plist* right );
-void plist_subsort( plist* list, plistel* from, plistel* to );
+void plist_subsort( plist* list, plistel* left, plistel* right );
 void plist_sort( plist* list );
 void plist_set_comparefn( plist* list, int (*comparefn)( plist*, plistel*, plistel* ) );
 void plist_set_sortfn( plist* list, int (*sortfn)( plist*, plistel*, plistel* ) );

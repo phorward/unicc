@@ -481,20 +481,20 @@ static int sort_symbols( plist* lst, plistel* el, plistel* er )
 	SYMBOL*		l	= (SYMBOL*)plist_access( el );
 	SYMBOL*		r	= (SYMBOL*)plist_access( er );
 
-	if( l->type > r->type )
+	if( l->type < r->type )
 		return 1;
-	else if( l->type < r->type )
+	else if( l->type > r->type )
 		return -1;
 
 	if( l->type == SYM_REGEX_TERMINAL && r->type == SYM_REGEX_TERMINAL )
 	{
-		if( l->keyword > r->keyword )
+		if( l->keyword < r->keyword )
 			ret = 1;
-		else if( l->keyword < r->keyword )
+		else if( l->keyword > r->keyword )
 			ret = -1;
 	}
 
-	if( l->id > r->id )
+	if( l->id < r->id )
 		ret = 1;
 
 	return ret;

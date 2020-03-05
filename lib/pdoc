@@ -9,7 +9,7 @@
 # Usage:	Phorward Documentation Generator
 # ------------------------------------------------------------------------------
 
-. .phorward >/dev/null
+. `dirname $0`/.phorward >/dev/null
 
 help()
 {
