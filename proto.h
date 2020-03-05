@@ -41,6 +41,7 @@ AST_node* ast_select( AST_node* node, char* emit, int n );
 void ast_eval( AST_node* ast, Ast_evalfn func );
 void ast_dump( FILE* stream, AST_node* ast );
 void ast_dump_short( FILE* stream, AST_node* ast );
+void ast_dump_yaml( FILE* stream, AST_node* ast, size_t indent );
 void __dbg_ast_dump( char* file, int line, char* function, char* name, AST_node* ast );
 void ast_dump_json( FILE* stream, AST_node* ast );
 void ast_dump_tree2svg( FILE* stream, AST_node* ast );

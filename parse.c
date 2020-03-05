@@ -1,6 +1,6 @@
 /* -MODULE----------------------------------------------------------------------
 UniCC² Parser Generator
-Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2020 by Phorward Software Technologies, Jan Max Meyer
 http://www.phorward-software.com ++ contact<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
@@ -151,7 +151,7 @@ void ast_eval( AST_node* ast, Ast_evalfn func )
 	}
 }
 
-/** Dump detailed //ast// to //stream//. */
+/** Dump //ast// in a human-readable, full-featured format to //stream//. */
 void ast_dump( FILE* stream, AST_node* ast )
 {
 	static int lev		= 0;
@@ -197,7 +197,7 @@ void ast_dump( FILE* stream, AST_node* ast )
 	}
 }
 
-/** Dump simplified //ast// to //stream//.
+/** Dump //ast// in a human-readable, simplified format to //stream//.
 
 Only opening matches are printed. */
 void ast_dump_short( FILE* stream, AST_node* ast )
@@ -228,6 +228,74 @@ void ast_dump_short( FILE* stream, AST_node* ast )
 			lev++;
 			ast_dump_short( stream, ast->child );
 			lev--;
+		}
+
+		ast = ast->next;
+	}
+}
+
+/** Dump //ast// in human-readable YAML-format to //stream//. */
+void ast_dump_yaml( FILE* stream, AST_node* ast, size_t indent )
+{
+	size_t	i;
+	char*	ptr;
+
+	while( ast )
+	{
+		/*
+		for( i = 0; i < indent; i++ )
+			fprintf( stream, "  " );
+
+		fprintf( stream, "node:\n" );
+		*/
+
+		for( i = 0; i < indent; i++ )
+			fprintf( stream, "  " );
+
+		fprintf( stream, "- node: %s\n", ast->emit );
+
+		if( ( SYM_IS_TERMINAL( ast->sym )
+				|| ast->sym->flags.lexem
+					|| !ast->child )
+			&& ast->token.start
+				&& ast->token.len )
+		{
+			for( i = 0; i < indent; i++ )
+				fprintf( stream, "  " );
+
+			if( !memchr( ast->token.start, '\n', ast->token.len ) )
+				fprintf( stream, "  match: %.*s\n",
+					(int)ast->token.len, ast->token.start );
+			else
+			{
+				fprintf( stream, "  match: |" );
+				for( ptr = ast->token.start;
+						*ptr && ptr < ast->token.start + ast->token.len;
+							ptr++ )
+				{
+					if( ptr == ast->token.start || *ptr == '\n' )
+					{
+						fprintf( stream, "\n" );
+
+						for( i = 0; i < indent + 2; i++ )
+							fprintf( stream, "  " );
+					}
+
+					if( *ptr != '\n' )
+						fputc( *ptr, stream );
+				}
+
+				fprintf( stream, "\n" );
+			}
+		}
+
+		if( ast->child )
+		{
+			for( i = 0; i < indent; i++ )
+				fprintf( stream, "  " );
+
+			fprintf( stream, "  child:\n" );
+			ast_dump_yaml( stream, ast->child, indent + 2 );
 		}
 
 		ast = ast->next;
@@ -285,7 +353,9 @@ void ast_dump_json( FILE* stream, AST_node* ast )
 		fputc( '"', stream );
 
 		/* Match */
-		if( SYM_IS_TERMINAL( node->sym ) || node->sym->flags.lexem )
+		if( SYM_IS_TERMINAL( node->sym )
+			|| node->sym->flags.lexem
+			|| !node->child )
 		{
 			fprintf( stream, ",\"match\":" );
 
@@ -1081,6 +1151,8 @@ pboolean par_parse( AST_node** root, Parser* par, char* start )
 		WRONGPARAM;
 		RETURN( FALSE );
 	}
+
+	par_dump_json( stderr, par );
 
 #if TIMEMEASURE
 	cstart = clock();

@@ -1,6 +1,6 @@
 /* -MODULE----------------------------------------------------------------------
 UniCC² Parser Generator
-Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2020 by Phorward Software Technologies, Jan Max Meyer
 http://www.phorward-software.com ++ contact<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
@@ -16,7 +16,7 @@ static void version( char** argv, char* descr )
 {
 	printf( "UniCC %s\n", UNICC_VERSION );
 	printf( "Universal LR/LALR/GLR Parser Generator.\n\n" );
-	printf( "Copyright (C) 2006-2019 by Phorward Software Technologies, "
+	printf( "Copyright (C) 2006-2020 by Phorward Software Technologies, "
 			"Jan Max Meyer\n"
 			"All rights reserved. See LICENSE for more information.\n" );
 }
@@ -31,7 +31,7 @@ static void help( char** argv )
 	"   -G                        Dump constructed grammar\n"
 	"   -h  --help                Show this help, and exit.\n"
 	"   -r  --render  RENDERER    Use AST renderer RENDERER:\n"
-	"                             short (default), full, json, tree2svg\n"
+	"                             full, json, short (default), tree2svg, yaml\n"
 	"   -v  --verbose             Print processing information.\n"
 	"   -V  --version             Show version info and exit.\n"
 
@@ -86,10 +86,8 @@ int main( int argc, char** argv )
 				r = 2;
 			else if( pstrcasecmp( param, "tree2svg" ) == 0 )
 				r = 3;
-			/*
-			else if( pstrcasecmp( param, "pvm" ) == 0 )
+			else if( pstrcasecmp( param, "yaml" ) == 0 )
 				r = 4;
-			*/
 		}
 		else if( !strcmp( opt, "verbose" ) || !strcmp( opt, "v" ) )
 			verbose = TRUE;
@@ -231,8 +229,12 @@ int main( int argc, char** argv )
 						printf( "\n" );
 						break;
 
-					/*
 					case 4:
+						ast_dump_yaml( stdout, a, 0 );
+						break;
+
+					/*
+					case 5:
 						{
 							pvm*		vm;
 							pvmprog*	prg;
