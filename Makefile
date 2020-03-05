@@ -51,5 +51,5 @@ clean:
 	-rm unicc gram2c
 
 install: unicc
-	cp unicc $(PREFIX)/bin/unicc
+	cp unicc $(PREFIX)/bin/unicc2
 
