@@ -1,3 +1,5 @@
+PREFIX		?= /usr
+
 CFLAGS    	= -g -DDEBUG -DUTF8 -DUNICODE -Wall $(CLOCAL)
 
 HEADERS		= \
@@ -47,4 +49,7 @@ clean:
 	-rm $(OBJECTS)
 	-rm *.o
 	-rm unicc gram2c
+
+install: unicc
+	cp unicc $(PREFIX)/bin/unicc
 
