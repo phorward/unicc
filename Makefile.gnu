@@ -31,7 +31,7 @@ boot_clean:
 	-rm unicc_boot1 unicc_boot2 unicc_boot3 boot_min_lalr1
 
 clean: boot_clean
-	-rm *.o
+	-rm src/*.o
 	-rm unicc
 
 src/proto.h: boot_clean
