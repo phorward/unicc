@@ -110,12 +110,11 @@ unicc_boot3: $(unicc_boot3_OBJECTS)
 unicc_SOURCES = src/parse.c $(SOURCES)
 unicc_OBJECTS = $(patsubst %.c,%.o,$(unicc_SOURCES))
 
-src/parse.c src/parse.h: src/parse.par unicc_boot3
-	./unicc_boot3 -svwb src/parse src/parse.par
+#src/parse.c src/parse.h: src/parse.par unicc_boot3
+#	./unicc_boot3 -svwb src/parse src/parse.par
 
 unicc: $(unicc_OBJECTS)
 	$(CC) -o $@ $(unicc_OBJECTS)
-	make -f Makefile.gnu boot_clean
 
 # --- UniCC Documentation ------------------------------------------------------
 #
