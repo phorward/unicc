@@ -5,10 +5,11 @@
 bin_PROGRAMS = unicc$(EXEEXT)
 
 if WITH_BOOTSTRAP
-noinst_PROGRAMS = boot_min_lalr1$(EXEEXT) \
-					unicc_boot1$(EXEEXT) \
-					unicc_boot2$(EXEEXT) \
-					unicc_boot3$(EXEEXT)
+noinst_PROGRAMS = \
+	boot_min_lalr1$(EXEEXT) \
+	unicc_boot1$(EXEEXT) \
+	unicc_boot2$(EXEEXT) \
+	unicc_boot3$(EXEEXT)
 endif
 
 man1_MANS = unicc.man
@@ -31,31 +32,31 @@ AM_CPPFLAGS = -DTLTDIR=\"$(targetsdir)\"
 
 SOURCES	= 	\
 	lib/phorward.c \
-	mem.c \
-	error.c \
-	first.c \
-	lalr.c \
-	utils.c \
-	string.c \
-	integrity.c \
-	virtual.c \
-	rewrite.c \
-	debug.c \
-	lex.c \
-	list.c \
-	build.c \
-	buildxml.c \
-	main.c \
-	xml.c
+	src/mem.c \
+	src/error.c \
+	src/first.c \
+	src/lalr.c \
+	src/utils.c \
+	src/string.c \
+	src/integrity.c \
+	src/virtual.c \
+	src/rewrite.c \
+	src/debug.c \
+	src/lex.c \
+	src/list.c \
+	src/build.c \
+	src/buildxml.c \
+	src/main.c \
+	src/xml.c
 
 if WITH_BOOTSTRAP
 
 BUILT_SOURCES	=	\
-				parse_boot1.c \
-				parse_boot2.c \
-				parse_boot2.h \
-				parse_boot3.c \
-				parse_boot3.h
+	src/parse_boot1.c \
+	src/parse_boot2.c \
+	src/parse_boot2.h \
+	src/parse_boot3.c \
+	src/parse_boot3.h
 
 # --- UniCC Bootstrap phase 0 --------------------------------------------------
 #
@@ -72,11 +73,11 @@ boot_min_lalr1_SOURCES = min_lalr1/min_lalr1.c
 # rudimentary parser for UniCC. min_lalr1 must be installed and in the PATH.
 #
 
-unicc_boot1_SOURCES = parse_boot1.c $(SOURCES)
+unicc_boot1_SOURCES = src/parse_boot1.c $(SOURCES)
 unicc_boot1_CFLAGS = -DUNICC_BOOTSTRAP=1
 
-parse_boot1.c: parse.min boot_min_lalr1$(EXEEXT)
-	./boot_min_lalr1$(EXEEXT) parse.min >$@ 2>/dev/null
+src/parse_boot1.c: src/parse.min boot_min_lalr1$(EXEEXT)
+	./boot_min_lalr1$(EXEEXT) src/parse.min >$@ 2>/dev/null
 
 # --- UniCC Bootstrap phase 2 --------------------------------------------------
 #
@@ -84,12 +85,12 @@ parse_boot1.c: parse.min boot_min_lalr1$(EXEEXT)
 # grammar definition of the UniCC parser (parse.par)
 #
 
-unicc_boot2_SOURCES = parse_boot2.c $(SOURCES)
+unicc_boot2_SOURCES = src/parse_boot2.c $(SOURCES)
 unicc_boot2_CFLAGS = -DUNICC_BOOTSTRAP=2
 #unicc_boot2_DEPENDENCIES = unicc_boot1$(EXEEXT)
 
-parse_boot2.c parse_boot2.h: parse.par unicc_boot1$(EXEEXT)
-	./unicc_boot1$(EXEEXT) -svwb parse_boot2 parse.par
+src/parse_boot2.c src/parse_boot2.h: src/parse.par unicc_boot1$(EXEEXT)
+	./unicc_boot1$(EXEEXT) -svwb src/parse_boot2 src/parse.par
 
 # --- UniCC Bootstrap phase 3 --------------------------------------------------
 #
@@ -97,12 +98,12 @@ parse_boot2.c parse_boot2.h: parse.par unicc_boot1$(EXEEXT)
 # itself.
 #
 
-unicc_boot3_SOURCES = parse_boot3.c $(SOURCES)
+unicc_boot3_SOURCES = src/parse_boot3.c $(SOURCES)
 unicc_boot3_CFLAGS = -DUNICC_BOOTSTRAP=3
 #unicc_boot3_DEPENDENCIES = unicc_boot2$(EXEEXT)
 
-parse_boot3.c parse_boot3.h: parse.par unicc_boot2$(EXEEXT)
-	./unicc_boot2$(EXEEXT) -svwb parse_boot3 parse.par
+src/parse_boot3.c src/parse_boot3.h: src/parse.par unicc_boot2$(EXEEXT)
+	./unicc_boot2$(EXEEXT) -svwb src/parse_boot3 src/parse.par
 
 endif
 
@@ -111,11 +112,11 @@ endif
 # Using the third bootstrap phase, the final UniCC executable is built.
 #
 
-unicc_SOURCES = parse.c $(SOURCES)
+unicc_SOURCES = src/parse.c $(SOURCES)
 #unicc_DEPENDENCIES = unicc_boot3$(EXEEXT)
 
 if WITH_BOOTSTRAP
-parse.c parse.h: parse.par unicc_boot3$(EXEEXT)
-	./unicc_boot3$(EXEEXT) -svwb parse parse.par
+src/parse.c src/parse.h: src/parse.par unicc_boot3$(EXEEXT)
+	./unicc_boot3$(EXEEXT) -svwb src/parse src/parse.par
 endif
 

@@ -1,7 +1,7 @@
 AC_PREREQ([2.69])
-AC_INIT([UniCC], [1.6.3])
+AC_INIT([UniCC], [1.7.0])
 AC_PREFIX_DEFAULT([/usr])
-AC_CONFIG_SRCDIR([main.c])
+AC_CONFIG_SRCDIR([src/main.c])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 
 #Bootstrap toolchain should be built?

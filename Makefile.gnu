@@ -1,40 +1,40 @@
 # Standard GNU Makefile for the generic development environment at
 # Phorward Software (no autotools, etc. wanted in here).
 
-CFLAGS 			= -g -DUTF8 -DUNICODE -DDEBUG -Wall $(CLOCAL)
+CFLAGS 			= -g -DUTF8 -DUNICODE -DDEBUG -Wall -I. $(CLOCAL)
 
 SOURCES	= 	\
 	lib/phorward.c \
-	mem.c \
-	error.c \
-	first.c \
-	lalr.c \
-	utils.c \
-	string.c \
-	integrity.c \
-	virtual.c \
-	rewrite.c \
-	debug.c \
-	lex.c \
-	list.c \
-	build.c \
-	buildxml.c \
-	main.c \
-	xml.c
+	src/mem.c \
+	src/error.c \
+	src/first.c \
+	src/lalr.c \
+	src/utils.c \
+	src/string.c \
+	src/integrity.c \
+	src/virtual.c \
+	src/rewrite.c \
+	src/debug.c \
+	src/lex.c \
+	src/list.c \
+	src/build.c \
+	src/buildxml.c \
+	src/main.c \
+	src/xml.c
 
 all: unicc
 
 boot_clean:
 	-rm min_lalr1/min_lalr1.o
-	-rm parse_boot1.o parse_boot2.o parse_boot3.o
-	-rm parse_boot1.c parse_boot2.c parse_boot2.h parse_boot3.c parse_boot3.h
+	-rm src/parse_boot1.o src/parse_boot2.o src/parse_boot3.o
+	-rm src/parse_boot1.c src/parse_boot2.c src/parse_boot2.h src/parse_boot3.c src/parse_boot3.h
 	-rm unicc_boot1 unicc_boot2 unicc_boot3 boot_min_lalr1
 
 clean: boot_clean
 	-rm *.o
 	-rm unicc
 
-proto.h: boot_clean
+src/proto.h: boot_clean
 	lib/pproto *.c | awk "/int _parse/ { next } { print }" >$@
 	
 make_install:
@@ -63,11 +63,11 @@ boot_min_lalr1: $(boot_min_lalr1_OBJECTS)
 # with its delivered Makefile.gnu in a directory ../min_lalr from here.
 #
 
-unicc_boot1_SOURCES = parse_boot1.c $(SOURCES)
+unicc_boot1_SOURCES = src/parse_boot1.c $(SOURCES)
 unicc_boot1_OBJECTS = $(patsubst %.c,%.o,$(unicc_boot1_SOURCES))
 
-parse_boot1.c: parse.min boot_min_lalr1
-	./boot_min_lalr1 parse.min >$@ 2>/dev/null
+src/parse_boot1.c: src/parse.min boot_min_lalr1
+	./boot_min_lalr1 src/parse.min >$@ 2>/dev/null
 
 unicc_boot1: $(unicc_boot1_OBJECTS)
 	$(CC) -o $@ $(unicc_boot1_OBJECTS)
@@ -78,11 +78,11 @@ unicc_boot1: $(unicc_boot1_OBJECTS)
 # grammar definition of the UniCC parser (parse.par)
 #
 
-unicc_boot2_SOURCES = parse_boot2.c $(SOURCES)
+unicc_boot2_SOURCES = src/parse_boot2.c $(SOURCES)
 unicc_boot2_OBJECTS = $(patsubst %.c,%.o,$(unicc_boot2_SOURCES))
 
-parse_boot2.c parse_boot2.h: parse.par unicc_boot1
-	./unicc_boot1 -svwb parse_boot2 parse.par
+src/parse_boot2.c src/parse_boot2.h: src/parse.par unicc_boot1
+	./unicc_boot1 -svwb src/parse_boot2 src/parse.par
 
 unicc_boot2: $(unicc_boot2_OBJECTS)
 	$(CC) -o $@ $(unicc_boot2_OBJECTS)
@@ -93,11 +93,11 @@ unicc_boot2: $(unicc_boot2_OBJECTS)
 # itself.
 #
 
-unicc_boot3_SOURCES = parse_boot3.c $(SOURCES)
+unicc_boot3_SOURCES = src/parse_boot3.c $(SOURCES)
 unicc_boot3_OBJECTS = $(patsubst %.c,%.o,$(unicc_boot3_SOURCES))
 
-parse_boot3.c parse_boot3.h: parse.par unicc_boot2
-	./unicc_boot2 -svwb parse_boot3 parse.par
+src/parse_boot3.c parse_boot3.h: src/parse.par unicc_boot2
+	./unicc_boot2 -svwb src/parse_boot3 src/parse.par
 
 unicc_boot3: $(unicc_boot3_OBJECTS)
 	$(CC) -o $@ $(unicc_boot3_OBJECTS)
@@ -107,11 +107,11 @@ unicc_boot3: $(unicc_boot3_OBJECTS)
 # Using the third bootstrap phase, the final UniCC executable is built.
 #
 
-unicc_SOURCES = parse.c $(SOURCES)
+unicc_SOURCES = src/parse.c $(SOURCES)
 unicc_OBJECTS = $(patsubst %.c,%.o,$(unicc_SOURCES))
 
-parse.c parse.h: parse.par unicc_boot3
-	./unicc_boot3 -svwb parse parse.par
+src/parse.c src/parse.h: src/parse.par unicc_boot3
+	./unicc_boot3 -svwb src/parse src/parse.par
 
 unicc: $(unicc_OBJECTS)
 	$(CC) -o $@ $(unicc_OBJECTS)

@@ -1,10 +1,10 @@
 *.o
 
-parse_boot1.c
-parse_boot2.c
-parse_boot2.h
-parse_boot3.c
-parse_boot3.h
+src/parse_boot1.c
+src/parse_boot2.c
+src/parse_boot2.h
+src/parse_boot3.c
+src/parse_boot3.h
 
 boot_min_lalr1
 
