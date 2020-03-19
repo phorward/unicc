@@ -237,6 +237,10 @@ typedef struct
 
 	/* User-defined components */
 	
+	pboolean	main;
+	char*		filename;
+	char*		src;
+
 
 } _pcb;
 

@@ -266,6 +266,8 @@ directive_parms: "whitespaces"		symbol_list					{	LIST* l;
 																		parser->p_header, strbuf, FALSE );		}
 				| "epilogue"					code			{	parser->p_footer = pstrcatstr(
 																		parser->p_footer, strbuf, FALSE );		}
+				| "pcb"							code			{	parser->p_pcb = pstrcatstr(
+																		parser->p_pcb, strbuf, FALSE );				}
 				;
 
 boolean:		"on"											{	##.negative = FALSE; 						}
@@ -682,7 +684,7 @@ scomment:	scomment '^\n'
 
 {
 
-int parse_grammar( PARSER* p, char* src )
+int parse_grammar( PARSER* p, char* filename, char* src )
 {
 	char* s,
 		* sp;

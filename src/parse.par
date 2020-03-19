@@ -1,6 +1,6 @@
 /* -PARSER----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2020 by Phorward Software Technologies, Jan Max Meyer
 http://unicc.phorward-software.com ++ unicc<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
@@ -22,7 +22,7 @@ Usage:	Grammar definition parser
  * features.
  *
  * So please consider the following rules, to avoid incompatibilities:
- * 1. Don't use #pcb or something, #option-features are not supported
+ * 1. #option-features are not supported
  * 2. Don't use embedded productions - insert a new nonterminal for this
  * 3. Don't set precedence to productions
  * 4. Don't use long-string identifiers for symbols
@@ -40,6 +40,13 @@ Usage:	Grammar definition parser
 #lexeme separation		on;
 #default action			[* @@ = @1; *];
 #default epsilon action	[* @@ = 0; *];
+
+#pcb [*
+	pboolean	main;
+	char*		filename;
+	char*		src;
+*];
+
 
 /*
  * Prologue
@@ -66,52 +73,21 @@ struct @@prefix_rhs_item
 #define MALLOC_STEP 255
 #endif
 
-#define UNICC_GETINPUT				getinput()
+#define UNICC_GETINPUT				*pcb->src ? *(pcb->src++) : *pcb->src
 #define UNICC_PARSE_ERROR( pcb )	parse_error( pcb )
 
-
-PARSER*	parser			= (PARSER*)NULL;
-
-static char*	src_ptr;
+extern int		error_count;
 
 static int		prec_cnt		= 1; /* Precedence level */
-static int		line			= 1; /* Line within source file */
 static int		last_code_begin;	 /* Last code begin */
 static int		embedded_count	= 0;
 static PROD*	current_prod	= (PROD*)NULL;
 static SYMBOL*	current_sym		= (SYMBOL*)NULL;
 static BOOLEAN	greedy			= TRUE;
+static PARSER*	parser;
 
-extern int	error_count;
-
-char*		strbuf			= (char*)NULL;
-char*		regex			= (char*)NULL;
-
-/* DEBUG */
-static int getinput( void )
-{
-	int ch;
-
-	/*
-		IMPORTANT:
-		We have to watch out for the zero-terminator;
-		The parser will in some cases continue fetching
-		new characters with UNICC_GETINPUT. If we read
-		over the zero terminator, the parser's behavior
-		will be undefined, so we may only increment it
-		if we're not there!
-
-		(Searching this BUG took at least 4 hours and
-		one broken laptop -.- *arghh*)
-	*/
-	if( ( ch = *(src_ptr) ) )
-	{
-		src_ptr++;
-		return ch;
-	}
-
-	return 0;
-}
+char*			strbuf;
+char*			regex;
 
 /* Append character to current string */
 static void strbuf_append( char ch )
@@ -202,11 +178,33 @@ fixed_directive		:   "mode"				mode_type
 						[*
 							if( !( parser->p_template ) )
 								parser->p_template = pstrdup( strbuf );
-							else
+							else if( !pcb->main )
 								print_error( parser, ERR_DIRECTIVE_ALREADY_USED,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
-										parser->filename, line,
+										pcb->filename, pcb->line,
 											"!language" );
+						*]
+					|	"extends"			string
+
+						[*
+							char*	src;
+							char*	filename = strbuf;
+
+							strbuf = NULL;
+
+							if( !pfiletostr( &src, filename ) )
+							{
+								print_error( parser, ERR_OPEN_INPUT_FILE,
+												ERRSTYLE_FATAL, filename );
+							}
+							else
+							{
+								parse_grammar( parser, filename, src );
+								strbuf = NULL;
+								pfree( src );
+							}
+
+							pfree( filename );
 						*]
 
 					//TODO: Must be reworked!
@@ -220,7 +218,7 @@ fixed_directive		:   "mode"				mode_type
 							else
 								print_error( parser, ERR_INVALID_CHAR_UNIVERSE,
 									ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
-										parser->filename, line );
+										pcb->filename, pcb->line, );
 						*]
 */
 					;
@@ -286,7 +284,7 @@ directive_parms		: "whitespaces" 	symbol_list
 								{
 									print_error( parser, ERR_NONTERM_WS_NOT_ALLOWED,
 										ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
-												parser->filename, line,
+												pcb->filename, pcb->line,
 													s->name );
 								}
 								else
@@ -307,7 +305,7 @@ directive_parms		: "whitespaces" 	symbol_list
 							{
 								print_error( parser, ERR_NO_EFFECT_IN_MODE,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
-										parser->filename, line, "lexeme" );
+										pcb->filename, pcb->line, "lexeme" );
 							}
 							else
 							{
@@ -331,7 +329,7 @@ directive_parms		: "whitespaces" 	symbol_list
 							{
 								print_error( parser, ERR_NO_EFFECT_IN_MODE,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
-										parser->filename, line, "fixate" );
+										pcb->filename, pcb->line, "fixate" );
 							}
 							else
 							{
@@ -367,7 +365,7 @@ directive_parms		: "whitespaces" 	symbol_list
 							else
 								print_error( parser, ERR_DIRECTIVE_ALREADY_USED,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
-										parser->filename, line,
+										pcb->filename, pcb->line,
 											"default epsilon action" );
 						*]
 
@@ -377,7 +375,7 @@ directive_parms		: "whitespaces" 	symbol_list
 							else
 								print_error( parser, ERR_DIRECTIVE_ALREADY_USED,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
-										parser->filename, line,
+										pcb->filename, pcb->line,
 											"default epsilon action" );
 						*]
 
@@ -388,7 +386,7 @@ directive_parms		: "whitespaces" 	symbol_list
 							else
 								print_error( parser, ERR_DIRECTIVE_ALREADY_USED,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
-										parser->filename, line,
+										pcb->filename, pcb->line,
 											"default value type" );
 
 							pfree( @type );
@@ -401,7 +399,7 @@ directive_parms		: "whitespaces" 	symbol_list
 							{
 								print_error( parser, ERR_NO_EFFECT_IN_MODE,
 									ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
-										parser->filename, line,
+										pcb->filename, pcb->line,
 											"lexem separation" );
 							}
 							else
@@ -454,7 +452,7 @@ lhs<SYMBOL*>		:	identifier
 						[*	@@ = get_symbol( parser,
 									strbuf, SYM_NON_TERMINAL, TRUE );
 							@@->defined = TRUE;
-							@@->line = line;
+							@@->line = pcb->line;
 						*]
 					;
 
@@ -493,12 +491,12 @@ regex_sym<SYMBOL*>	: identifier
 							{
 								print_error( parser, ERR_DOUBLE_TERMINAL_DEF,
 									ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
-										parser->filename, line,
+										pcb->filename, pcb->line,
 											@@->name );
 							}
 
 							@@->defined = TRUE;
-							@@->line = line;
+							@@->line = pcb->line;
 						*]
 					;
 
@@ -564,7 +562,7 @@ definition			:	lhs:primary
 							list_free( @all );
 
 							/* Goal primary defined? */
-							if( @is_goal )
+							if( @is_goal && pcb->main )
 							{
 								if( parser->goal )
 								{
@@ -796,7 +794,7 @@ sym<SYMBOL*>		: terminal
 							@@->used = TRUE;
 
 							if( @@->line < 0 )
-								@@->line = line;
+								@@->line = pcb->line;
 						*]
 
 					//Embedded productions
@@ -866,7 +864,7 @@ terminal<SYMBOL*>	:	ccl
 							@@->used = TRUE;
 
 							if( @@->line < 0 )
-								@@->line = line;
+								@@->line = pcb->line;
 						*]
 
 					| kw
@@ -884,7 +882,7 @@ terminal<SYMBOL*>	:	ccl
 											PREGEX_COMP_INSENSITIVE : 0 );
 
 							if( @@->line < 0 )
-								@@->line = line;
+								@@->line = pcb->line;
 						*]
 
 					| '@' identifier
@@ -897,7 +895,7 @@ terminal<SYMBOL*>	:	ccl
 							@@->used = TRUE;
 
 							if( @@->line < 0 )
-								@@->line = line;
+								@@->line = pcb->line;
 						*]
 					;
 
@@ -1131,7 +1129,7 @@ code			:	code_begin inner_code_opt "*]"
 								ERR_NO_TARGET_TPL_SUPPLY,
 									ERRSTYLE_WARNING | ERRSTYLE_IMPORTANT
 									        | ERRSTYLE_FILEINFO,
-								        parser->filename, last_code_begin );
+								        pcb->filename, last_code_begin );
 
 							reset_strbuf();
 						}
@@ -1140,7 +1138,7 @@ code			:	code_begin inner_code_opt "*]"
 
 code_begin		:	"[*"
 
-					[* last_code_begin = line; *]
+					[* last_code_begin = pcb->line; *]
 				;
 
 inner_code_opt	:	inner_code
@@ -1160,12 +1158,8 @@ whitespace		: ' '
 				| '\t'
 				| "/*" comment? "*/"
 				| "//" scomment? '\n'
-
-					[* line++;	*]
-
 				| '\r'
 				| '\n'
-					[* line++; 	*]
 				;
 
 comment			:	comment anychar
@@ -1173,8 +1167,7 @@ comment			:	comment anychar
 				;
 
 anychar			:	!'\0'
-					[*	if( @1 == '\n' )
-							line++;
+					[*
 						@@ = @1;
 					*]
 				;
@@ -1183,7 +1176,7 @@ scomment		:	scomment !'\n'
 				| !'\n'
 				;
 
-line_number		:	[* @@ = line; *]
+line_number		:	[* @@ = pcb->line; *]
 				;
 
 #epilogue
@@ -1217,21 +1210,22 @@ static void parse_error( @@prefix_pcb* pcb )
 					parser->filename, pcb->line, cur, valid );
 }
 
-int parse_grammar( PARSER* p, char* src )
+int parse_grammar( PARSER* p, char* filename, char* src )
 {
 	@@prefix_pcb pcb;
 
-	line = 1;
 	prec_cnt = 1;
 	embedded_count = 0;
+
 	memset( &pcb, 0, sizeof( pcb ) );
+	pcb.src = src;
+	pcb.filename = filename;
+	pcb.main = MAKE_BOOLEAN( filename == p->filename );
 
 	if( p && src )
 	{
 		parser = p;
 		strbuf_append( '\0' );
-
-		src_ptr = src;
 
 		@@prefix_parse( &pcb );
 

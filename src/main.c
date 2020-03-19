@@ -1,6 +1,6 @@
 /* -MODULE----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2020 by Phorward Software Technologies, Jan Max Meyer
 https://phorward.info ++ unicc<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
@@ -87,9 +87,9 @@ void print_copyright( FILE* stream )
 		stream = stdout;
 
 	fprintf( stream, "UniCC %s\n", print_version( TRUE ) );
-    fprintf( stream, "Universal LALR(1) parser generator.\n\n" );
+    fprintf( stream, "The Universal LALR(1) parser generator.\n\n" );
 
-    fprintf( stream, "Copyright (C) 2006-2019 by "
+    fprintf( stream, "Copyright (C) 2006-2020 by "
 						"Phorward Software Technologies, Jan Max Meyer\n" );
 	fprintf( stream, "All rights reserved. "
 						"See LICENSE for more information.\n" );
@@ -112,7 +112,7 @@ void print_usage( FILE* stream, char* progname )
 		"  -h    --help            Print this help and exit\n"
 		"  -l    --language TARGET Specify target language (default: %s)\n"
 		"  -n    --no-opt          Disables state optimization\n"
-		"                         (this will cause more states)\n"
+		"                          (this will cause more states)\n"
 		"  -P    --productions     Dump final productions\n"
 		"  -s    --stats           Print statistics message\n"
 		"  -S    --states          Dump LALR(1) states\n"
@@ -280,7 +280,7 @@ int main( int argc, char** argv )
 		PROGRESS( "Parsing grammar" )
 
 		/* Parse grammar structure */
-		if( parse_grammar( parser, parser->source ) == 0 )
+		if( parse_grammar( parser, parser->filename, parser->source ) == 0 )
 		{
 			DONE()
 

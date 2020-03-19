@@ -79,7 +79,7 @@ VTYPE* create_vtype( PARSER* p, char* name );
 void free_vtype( VTYPE* vt );
 
 /* parse.c */
-int parse_grammar( PARSER* p, char* src );
+int parse_grammar( PARSER* p, char* filename, char* src );
 
 /* rewrite.c */
 void rewrite_grammar( PARSER* parser );
