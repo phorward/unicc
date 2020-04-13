@@ -184,28 +184,6 @@ fixed_directive		:   "mode"				mode_type
 										pcb->filename, pcb->line,
 											"!language" );
 						*]
-					|	"extends"			string
-
-						[*
-							char*	src;
-							char*	filename = strbuf;
-
-							strbuf = NULL;
-
-							if( !pfiletostr( &src, filename ) )
-							{
-								print_error( parser, ERR_OPEN_INPUT_FILE,
-												ERRSTYLE_FATAL, filename );
-							}
-							else
-							{
-								parse_grammar( parser, filename, src );
-								strbuf = NULL;
-								pfree( src );
-							}
-
-							pfree( filename );
-						*]
 
 					//TODO: Must be reworked!
 /*
@@ -422,6 +400,29 @@ directive_parms		: "whitespaces" 	symbol_list
 					| "pcb"							code
 						[*	parser->p_pcb = pstrcatstr(
 								parser->p_pcb, strbuf, FALSE );	*]
+
+					| "extends"			string
+
+						[*
+							char*	src;
+							char*	filename = strbuf;
+
+							strbuf = NULL;
+
+							if( !pfiletostr( &src, filename ) )
+							{
+								print_error( parser, ERR_OPEN_INPUT_FILE,
+												ERRSTYLE_FATAL, filename );
+							}
+							else
+							{
+								parse_grammar( parser, filename, src );
+								strbuf = NULL;
+								pfree( src );
+							}
+
+							pfree( filename );
+						*]
 
 					| "option"? line_number @USERDEF:key userparam
 						[*
@@ -719,14 +720,6 @@ rhs_opt<PROD*>		:	rhs
 prod_directives<int>: 	'#' "precedence" terminal
 
 						[*	current_prod->prec = @terminal->prec; *]
-
-					|	'#' "option"? line_number @USERDEF:key userparam
-
-						[* 	set_option( current_prod->options,
-								@key, strbuf, @line_number );
-
-							strbuf = (char*)NULL;
-						*]
 
 					;
 
@@ -1186,28 +1179,46 @@ line_number		:	[* @@ = pcb->line; *]
 static void parse_error( @@prefix_pcb* pcb )
 {
 	int		i;
-	char**	vptr;
-	char**	valid;
-	char*	cur;
-
-	if( !( vptr = valid =
-			(char**)pmalloc( ( @@prefix_act[ pcb->tos->state ][0] + 1 )
-						* sizeof( char* ) ) ) )
-		OUTOFMEM;
+	char*	expect		= NULL;
+	char*	lookahead;
+	char	buf			[ 255 + 1 ];
 
 	for( i = 1; i < @@prefix_act[ pcb->tos->state ][0] * 3; i += 3 )
-		*( vptr++ ) = @@prefix_symbols[ _act[ pcb->tos->state ][i] ].name;
+	{
+		lookahead =  @@prefix_symbols[ _act[ pcb->tos->state ][i] ].name;
 
-	*vptr = (char*)NULL;
+		if( strlen( lookahead ) < sizeof( buf ) - 4 + 1 )
+		{
+			if( i + 3 >= @@prefix_act[ pcb->tos->state ][0] * 3 )
+			{
+				if( expect )
+					sprintf( buf, " or %s", lookahead );
+				else
+					strcpy( buf, lookahead );
+			}
+			else
+				sprintf( buf, "%s%s", expect ? ", " : "", lookahead );
 
-	if( pcb->sym == -1 )
-		cur = pcb->lexem;
-	else
-		cur = @@prefix_symbols[ pcb->sym ].name;
+			expect = pstrcatstr( expect, buf, FALSE );
+		}
+		else
+		{
+			if( expect )
+				expect = pstrcatstr( expect, ", (too long token)", FALSE );
+			else
+				expect = pstrcatstr( expect, "(too long token)", FALSE );
+		}
+	}
 
-	print_error( parser, ERR_PARSE_ERROR,
+	printf( "state %d\n", pcb->tos->state );
+
+	print_error( parser, expect ? ERR_PARSE_ERROR_EXPECT : ERR_PARSE_ERROR,
 				ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
-					parser->filename, pcb->line, cur, valid );
+					parser->filename, pcb->line,
+					pcb->sym == -1 ?
+						pcb->buf :  @@prefix_symbols[ pcb->sym ].name,
+					expect ? expect : "(unknown)" );
+	pfree( expect );
 }
 
 int parse_grammar( PARSER* p, char* filename, char* src )

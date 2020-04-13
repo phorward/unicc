@@ -117,9 +117,11 @@ make install
 
 Windows users may download the pre-built setup package that can be found on the Phorward download server at https://phorward.info/download/unicc.
 
-## Contributions
+## UniCC v2
 
-Contributions, ideas, concepts and code is always welcome. Please feel free to contact me if you have any questions.
+Since 2014, I'm working on a version 2 of UniCC. It currently exists in a [separate branch unicc2](https://github.com/phorward/unicc/tree/unicc2) inside this repository, and is a complete rewrite, but with the intention to provide better tools for grammar prototyping and direct AST traversal. Any help on the unicc2 branch is heavily appreciated, and I hope to bring it into a state that is capable to substitute UniCC v1 at some time.
+
+Please feel free to contact me if you have any questions on any of the two UniCC versions.
 
 ## Credits
 
@@ -129,6 +131,6 @@ UniCC is developed and maintained by Jan Max Meyer, Phorward Software Technologi
 
 This software is an open source project released under the terms and conditions of the MIT license. See the LICENSE file for more information.
 
-Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer.
+Copyright (C) 2006-2020 by Phorward Software Technologies, Jan Max Meyer.
 
-You may use, modify and distribute this software under the terms and conditions of the 3-clause BSD license. The full license terms can be obtained from the file LICENSE.
+You may use, modify and distribute this software under the terms and conditions of the MIT license. The full license terms can be obtained from the file LICENSE.
