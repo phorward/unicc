@@ -29,9 +29,16 @@ static void help( char** argv )
 	"   input                     Input to be processed by the parser.\n\n"
 
 	"   -G                        Dump constructed grammar\n"
+	"                             (as JSON when '-r json' provided)\n"
 	"   -h  --help                Show this help, and exit.\n"
-	"   -r  --render  RENDERER    Use AST renderer RENDERER:\n"
+	"   -P                        Dump constructed parser\n"
+	"                             (as JSON when '-r json' provided)\n"
+	"   -r  --run --repl          Run generated parser either from input\n"
+	"                             or in REPL mode\n"
+	"   -R  --render  RENDERER    Use AST renderer RENDERER:\n"
 	"                             full, json, short (default), tree2svg, yaml\n"
+	"   -s  --scannerless         Transform grammar into scannerless form\n"
+	"   -t  --trim                Trim stdin input before parsing\n"
 	"   -v  --verbose             Print processing information.\n"
 	"   -V  --version             Show version info and exit.\n"
 
@@ -44,7 +51,10 @@ int main( int argc, char** argv )
 	pboolean	verbose	= FALSE;
 	pboolean	lm		= FALSE;
 	pboolean	dg		= FALSE;
-	pboolean	dj		= FALSE;
+	pboolean	dp		= FALSE;
+	pboolean	sg		= FALSE;
+	pboolean	run		= FALSE;
+	pboolean	trim	= FALSE;
 	int			r		= 0;
 	AST_node*	a		= (AST_node*)NULL;
 	Grammar*	g;
@@ -64,21 +74,27 @@ int main( int argc, char** argv )
 
 	PROC( "unicc" );
 
-	for( i = 0; ( rc = pgetopt( opt, &param, &next, argc, argv,
-						"Ghjr:vV",
-						"renderer: help json verbose version", i ) )
-							== 0; i++ )
+	for( i = 0;
+			( rc = pgetopt( opt, &param, &next, argc, argv,
+				"GhPrR:stvV",
+				"help repl run renderer: scannerless "
+					"trim verbose version", i ) )
+						== 0; i++ )
 	{
 		if( !strcmp(opt, "G" ) )
 			dg = TRUE;
-		else if( !strcmp( opt, "json" ) || !strcmp( opt, "j" ) )
-			dj = TRUE;
+		else if( !strcmp(opt, "P" ) )
+			dg = TRUE;
 		else if( !strcmp( opt, "help" ) || !strcmp( opt, "h" ) )
 		{
 			help( argv );
 			RETURN( 0 );
 		}
-		else if( !strcmp( opt, "renderer" ) || !strcmp( opt, "r" ) )
+		else if( !strcmp(opt, "r" )
+					|| !strcmp( opt, "run" )
+						|| !strcmp( opt, "repl") )
+			run = TRUE;
+		else if( !strcmp( opt, "renderer" ) || !strcmp( opt, "R" ) )
 		{
 			if( pstrcasecmp( param, "full" ) == 0 )
 				r = 1;
@@ -89,6 +105,10 @@ int main( int argc, char** argv )
 			else if( pstrcasecmp( param, "yaml" ) == 0 )
 				r = 4;
 		}
+		else if( !strcmp(opt, "s" ) || !strcmp( opt, "scannerless" ) )
+			sg = TRUE;
+		else if( !strcmp(opt, "t" ) || !strcmp( opt, "trim" ) )
+			trim = TRUE;
 		else if( !strcmp( opt, "verbose" ) || !strcmp( opt, "v" ) )
 			verbose = TRUE;
 		else if( !strcmp( opt, "version" ) || !strcmp( opt, "V" ) )
@@ -151,32 +171,52 @@ int main( int argc, char** argv )
 	}
 	*/
 
-	if( dg )
-	{
+	if( sg )
 		gram_transform_to_scannerless( g );
 
-		GRAMMAR_DUMP( g );
-		printf( "%s\n", gram_to_bnf( g ) );
+	if( dg )
+	{
+		if( r == 2 ) /* json */
+			gram_dump_json( stdout, g );
+		else
+		{
+			GRAMMAR_DUMP( g );
+			printf( "%s\n", gram_to_bnf( g ) );
+		}
 	}
 
 	p = par_create( g );
 
 	MSG( "Parser created" );
 
-	if( dj )
-		par_dump_json( stdout, p );
+	if( dp )
+	{
+		if( r == 2 )  /* json */
+			par_dump_json( stdout, p );
+		else
+		{
+			fprintf( stderr, "Parser can only be dumped in JSON for now\n" );
+			par_dump_json( stderr, p );
+		}
+	}
 
 	lm = argc == next;
 	i = 0;
 
-	while( !dj )
+	if( next < argc )
+		run = TRUE;
+
+	while( run )
 	{
 		ifile = (char*)NULL;
 
 		if( lm )
 		{
 			fgets( line, sizeof( line ) - 1, stdin );
-			s = pstrtrim( line );
+			if( trim )
+				s = pstrtrim( line );
+			else
+				s = line;
 
 			if( !*s )
 				break;

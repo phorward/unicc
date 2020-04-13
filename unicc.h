@@ -1,6 +1,6 @@
 /* -HEADER----------------------------------------------------------------------
 UniCC² Parser Generator
-Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2020 by Phorward Software Technologies, Jan Max Meyer
 http://www.phorward-software.com ++ contact<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
@@ -89,6 +89,7 @@ struct _Symbol
 		pboolean			generated	:1;
 		pboolean			special		:1;
 		pboolean			leftrec		:1;	/* Left-recursive */
+		pboolean			emits		:1; /* Direct or indirect AST emitter */
 
 		pboolean			freename	:1;
 		pboolean			freeemit	:1;
@@ -153,8 +154,8 @@ struct _Token
 	size_t					len;		/* Fragment length */
 
 	/* Source */
-	unsigned long			row;		/* Appearance in row */
-	unsigned long			col;		/* Appearance in column */
+	size_t					row;		/* Appearance in row */
+	size_t					col;		/* Appearance in column */
 };
 
 /* AST */

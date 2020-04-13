@@ -939,7 +939,7 @@ pboolean gram_prepare( Grammar* g )
 	plist_clear( &done );
 
 	/* -------------------------------------------------------------------------
-		Inherit precedences
+		Inherit precedences & emits
 	------------------------------------------------------------------------- */
 	do
 	{
@@ -948,6 +948,14 @@ pboolean gram_prepare( Grammar* g )
 		plist_for( g->prods, e )
 		{
 			prod = (Production*)plist_access( e );
+
+			/* Mark productions's left-hand side as emitting when either
+				the production or the nonterminal emits something */
+			if( ( prod->emit || prod->lhs->emit ) && !prod->lhs->flags.emits )
+			{
+				prod->lhs->flags.emits = TRUE;
+				changes = TRUE;
+			}
 
 			/* Pass left-hand side precedence to productions */
 			if( prod->prec < prod->lhs->prec )
