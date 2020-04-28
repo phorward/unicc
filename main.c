@@ -29,10 +29,10 @@ static void help( char** argv )
 	"   input                     Input to be processed by the parser.\n\n"
 
 	"   -G                        Dump constructed grammar\n"
-	"                             (as JSON when '-r json' provided)\n"
+	"                             (as JSON when '-R json' provided)\n"
 	"   -h  --help                Show this help, and exit.\n"
 	"   -P                        Dump constructed parser\n"
-	"                             (as JSON when '-r json' provided)\n"
+	"                             (as JSON when '-R json' provided)\n"
 	"   -r  --run --repl          Run generated parser either from input\n"
 	"                             or in REPL mode\n"
 	"   -R  --render  RENDERER    Use AST renderer RENDERER:\n"
@@ -84,7 +84,7 @@ int main( int argc, char** argv )
 		if( !strcmp(opt, "G" ) )
 			dg = TRUE;
 		else if( !strcmp(opt, "P" ) )
-			dg = TRUE;
+			dp = TRUE;
 		else if( !strcmp( opt, "help" ) || !strcmp( opt, "h" ) )
 		{
 			help( argv );
@@ -177,7 +177,7 @@ int main( int argc, char** argv )
 	if( dg )
 	{
 		if( r == 2 ) /* json */
-			gram_dump_json( stdout, g );
+			gram_dump_json( stdout, g, "" );
 		else
 		{
 			GRAMMAR_DUMP( g );

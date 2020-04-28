@@ -26,7 +26,7 @@ pboolean gram_prepare( Grammar* g );
 pboolean gram_transform_to_scannerless( Grammar* g );
 void __dbg_gram_dump( char* file, int line, char* function, char* name, Grammar* g );
 char* gram_to_bnf( Grammar* grm );
-pboolean gram_dump_json( FILE* stream, Grammar* grm );
+pboolean gram_dump_json( FILE* stream, Grammar* grm, char* prefix );
 Grammar* gram_free( Grammar* g );
 
 /* lr.c */

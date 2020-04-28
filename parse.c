@@ -600,7 +600,7 @@ Parser* par_create( Grammar* g )
 
 	MSG( "LR constructed" );
 
-	GRAMMAR_DUMP( g );
+	/* GRAMMAR_DUMP( g ); */
 	RETURN( p );
 }
 
@@ -690,7 +690,7 @@ pboolean par_dump_json( FILE* stream, Parser* par )
 		stream = stdout;
 
 	fprintf( stream, "{\n\t\"grammar\":\n" );
-	gram_dump_json( stream, par->gram );
+	gram_dump_json( stream, par->gram, "\t" );
 
 	/* LR parser */
 	fprintf( stream, ",\n\t\"states\": [\n" );
@@ -698,6 +698,7 @@ pboolean par_dump_json( FILE* stream, Parser* par )
 	for( i = 0; i < par->states; i++ )
 	{
 		fprintf( stream, "\t\t{\n" );
+		fprintf( stream, "\t\t\t\"state\": %d,\n", i );
 
 		if( par->dfa[ 1 ] )
 			fprintf( stream, "\t\t\t\"reduce-default\": %d,\n",
@@ -1151,8 +1152,6 @@ pboolean par_parse( AST_node** root, Parser* par, char* start )
 		WRONGPARAM;
 		RETURN( FALSE );
 	}
-
-	par_dump_json( stderr, par );
 
 #if TIMEMEASURE
 	cstart = clock();

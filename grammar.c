@@ -1378,7 +1378,7 @@ char* gram_to_bnf( Grammar* grm )
 }
 
 /** Dump grammar in a JSON format to //stream//. */
-pboolean gram_dump_json( FILE* stream, Grammar* grm )
+pboolean gram_dump_json( FILE* stream, Grammar* grm, char* prefix )
 {
 	plistel*		e;
 	plistel*		f;
@@ -1389,6 +1389,7 @@ pboolean gram_dump_json( FILE* stream, Grammar* grm )
 	PROC( "gram_dump_json" );
 	PARMS( "stream", "%p", stream );
 	PARMS( "grm", "%p", grm );
+	PARMS( "prefix", "%s", prefix );
 
 	if( !grm )
 	{
@@ -1406,21 +1407,23 @@ pboolean gram_dump_json( FILE* stream, Grammar* grm )
 		RETURN( FALSE );
 	}
 
-	fprintf( stream, "{ \"symbols\": [" );
+	fprintf( stream, "%s{\n\t\"symbols\": [", prefix );
 
 	/* Symbols */
 	plist_for( grm->symbols, e )
 	{
 		sym = (Symbol*)plist_access( e );
 
-		fprintf( stream, "{ \"id\": %d, ", sym->idx );
+		fprintf( stream, "\n%s\t\t{\n%s\t\t\t\"symbol\": %d, \n",
+			prefix, prefix, sym->idx );
 
-		fprintf( stream, "\"type\": \"%s\"",
+		fprintf( stream, "%s\t\t\t\"type\": \"%s\"",
+			prefix,
 			SYM_IS_TERMINAL( sym ) ? "terminal" : "non-terminal" );
 
 		if( sym->name && *sym->name )
 		{
-			fprintf( stream, ", \"name\": \"" );
+			fprintf( stream, ",\n%s\t\t\t\"name\": \"", prefix );
 
 			for( ptr = sym->name; *ptr; ptr++ )
 				if( *ptr == '\"' )
@@ -1435,7 +1438,7 @@ pboolean gram_dump_json( FILE* stream, Grammar* grm )
 
 		if( sym->emit && *sym->emit )
 		{
-			fprintf( stream, ", \"emit\": \"" );
+			fprintf( stream, ",\n%s\t\t\t\"emit\": \"", prefix );
 
 			for( ptr = sym->emit; *ptr; ptr++ )
 				if( *ptr == '\"' )
@@ -1450,7 +1453,7 @@ pboolean gram_dump_json( FILE* stream, Grammar* grm )
 
 		if( SYM_IS_TERMINAL( sym ) && sym->ptn )
 		{
-			fprintf( stream, ", \"regexp\": \"" );
+			fprintf( stream, ",\n%s\t\t\t\"regexp\": \"", prefix );
 
 			for( ptr = pregex_ptn_to_regex( sym->ptn ); *ptr; ptr++ )
 				if( *ptr == '\"' )
@@ -1463,30 +1466,52 @@ pboolean gram_dump_json( FILE* stream, Grammar* grm )
 			fprintf( stream, "\"" );
 		}
 
-		fprintf( stream, "}%s", plist_next( e ) ? ", " : "" );
+		fprintf( stream, "\n%s\t\t}%s", prefix, plist_next( e ) ? ", " : "" );
 	}
 
-	fprintf( stream, "], \"productions\": [" );
+	fprintf( stream, "\n%s\t],\n%s\t\"productions\": [", prefix, prefix );
 
 	/* Productions */
 	plist_for( grm->prods, e )
 	{
 		prod = (Production*)plist_access( e );
 
-		fprintf( stream, "{\"id\": %d, \"lhs\": %d, \"rhs\": [",
-			prod->idx, prod->lhs->idx );
+		fprintf( stream,
+			"\n%s\t\t{"
+			"\n%s\t\t\t\"production\": %d,"
+			"\n%s\t\t\t\"lhs\": %d,",
+			prefix, prefix, prod->idx, prefix, prod->lhs->idx );
+
+		if( prod->emit && *prod->emit && prod->emit != prod->lhs->emit )
+		{
+			fprintf( stream, "\n%s\t\t\t\"emit\": \"", prefix );
+
+			for( ptr = prod->emit; *ptr; ptr++ )
+				if( *ptr == '\"' )
+					fprintf( stream, "\\\"" );
+				else if( *ptr == '\\' )
+					fprintf( stream, "\\\\" );
+				else
+					fputc( *ptr, stream );
+
+			fprintf( stream, "\"," );
+		}
+
+		fprintf( stream, "\n%s\t\t\t\"rhs\": [", prefix );
 
 		plist_for( prod->rhs, f )
 		{
 			sym = (Symbol*)plist_access( f );
 
-			fprintf( stream, "%d%s", sym->idx, plist_next( f ) ? ", " : "" );
+			fprintf( stream, "\n%s\t\t\t\t%d%s", prefix, sym->idx,
+						plist_next( f ) ? "," : "" );
 		}
 
-		fprintf( stream, "]}%s", plist_next( e ) ? ", " : "" );
+		fprintf( stream, "\n%s\t\t\t]\n%s\t\t}%s",
+			prefix, prefix, plist_next( e ) ? "," : "" );
 	}
 
-	fprintf( stream, "]}" );
+	fprintf( stream, "\n%s\t]\n%s}", prefix, prefix );
 
 	RETURN( TRUE );
 }

@@ -12,7 +12,7 @@ Usage:	LR/LALR/GLR parse table construction and execution.
 
 /* Defines */
 
-#define DEBUGLEVEL		1
+#define DEBUGLEVEL		0
 
 /* Closure item */
 typedef struct
