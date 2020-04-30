@@ -1,0 +1,3 @@
+[submodule "logics"]
+	path = logics
+	url = git@github.com:phorward/viur-logics.git
