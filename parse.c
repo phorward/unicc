@@ -673,8 +673,10 @@ plex* par_autolex( Parser* p )
 /** Dumps parser to JSON */
 pboolean par_dump_json( FILE* stream, Parser* par )
 {
-	int		i;
-	int		j;
+	size_t	i;
+	size_t	j;
+	size_t	k;
+	plex*	lex;
 
 	PROC( "par_dump_json" );
 	PARMS( "stream", "%p", stream );
@@ -689,30 +691,31 @@ pboolean par_dump_json( FILE* stream, Parser* par )
 	if( !stream )
 		stream = stdout;
 
+	/* Grammar */
 	fprintf( stream, "{\n\t\"grammar\":\n" );
 	gram_dump_json( stream, par->gram, "\t" );
 
 	/* LR parser */
-	fprintf( stream, ",\n\t\"states\": [\n" );
+	fprintf( stream, ",\n\t\"states\": [" );
 
 	for( i = 0; i < par->states; i++ )
 	{
-		fprintf( stream, "\t\t{\n" );
-		fprintf( stream, "\t\t\t\"state\": %d,\n", i );
+		fprintf( stream, "\n\t\t{\n" );
+		fprintf( stream, "\t\t\t\"state\": %ld,\n", i );
 
 		if( par->dfa[ 1 ] )
-			fprintf( stream, "\t\t\t\"reduce-default\": %d,\n",
+			fprintf( stream, "\t\t\t\"reduce-default\": %ld,\n",
 				( par->dfa[ i ][ 1 ] - 1 ) );
 
 		else
 			fprintf( stream, "\t\t\t\"reduce-default\": null,\n" );
 
-		fprintf( stream, "\t\t\t\"actions\": [\n" );
+		fprintf( stream, "\t\t\t\"transitions\": [" );
 
 		/* Actions */
 		for( j = 2; j < par->dfa[ i ][ 0 ]; j += 3 )
 		{
-			fprintf( stream, "\t\t\t\t{ \"symbol\": %d, ", par->dfa[ i ][ j ] - 1 );
+			fprintf( stream, "\n\t\t\t\t{\"symbol\": %ld, ", par->dfa[ i ][ j ] - 1 );
 
 			if( par->dfa[ i ][ j + 1 ] & LR_REDUCE )
 				fprintf( stream, "\"action\": \"%s\", \"production\": %d",
@@ -723,11 +726,60 @@ pboolean par_dump_json( FILE* stream, Parser* par )
 				fprintf( stream, "\"action\": \"shift\", \"state\": %d",
 					(int)( par->dfa[ i ][ j + 2 ] - 1 ) );
 
-			fprintf( stream, "}%s\n", j + 3 < par->dfa[ i ][ 0 ] ? "," : "" );
+			fprintf( stream, "}%s", j + 3 < par->dfa[ i ][ 0 ] ? "," : "" );
 		}
 
-		fprintf( stream, "\t\t\t]\n\t\t}%s\n", i + 1 < par->states ? "," : "" );
+		fprintf( stream, "\n\t\t\t]\n\t\t}%s", i + 1 < par->states ? "," : "" );
 	}
+
+	fprintf( stream, "\n\t]" );
+
+	/* Lexer */
+	fprintf( stream, ",\n\t\"lexers\": [" );
+	
+	/* For now there exists only one lexer. */
+	lex = par_autolex( par );
+	plex_prepare( lex );
+
+	fprintf( stream, "\n\t\t[\n" );
+
+	for( j = 0; j < lex->trans_cnt; j++ )
+	{
+		fprintf( stream, "\n\t\t\t{" );
+		fprintf( stream, "\n\t\t\t\t\"state\": %ld,", j );
+		fprintf( stream, "\n\t\t\t\t\"accept\": %d", lex->trans[j][1] );
+		fprintf( stream, ",\n\t\t\t\t\"ref\": %d", lex->trans[j][3] );
+
+		/* Default goto */
+		if( par->dfa[ 1 ] )
+			fprintf( stream, ",\n\t\t\t\t\"goto-default\": %d", lex->trans[j][4] );
+		else
+			fprintf( stream, ",\n\t\t\t\t\"goto-default\": null" );
+
+		/* Flags */
+		fprintf( stream, ",\n\t\t\t\t\"flags\": [" );
+
+		if( lex->trans[j][2] )
+			fprintf( stream, "\n\t\t\t\t\t\"greedy\"" );
+
+		fprintf( stream, "\n\t\t\t\t]" );
+
+		/* Transitions */
+		fprintf( stream, ",\n\t\t\t\t\"transitions\": [" );
+
+		for( k = 5; k < lex->trans[j][0]; k += 3 )
+		{
+			fprintf( stream, "\n\t\t\t\t\t\t{\"character-from\": %d", lex->trans[j][k] );
+			fprintf( stream, ", \"character-until\": %d", lex->trans[j][k + 1] );
+			fprintf( stream, ", \"goto-state\": %d", lex->trans[j][k + 2] );
+			fprintf( stream, "}%s", k + 3 < lex->trans[j][0] ? ",": "" );
+		}
+
+		fprintf( stream, "\n\t\t\t\t]\n\t\t\t}%s", j + 1 < lex->trans_cnt ? ",": "" );
+	}
+	fprintf( stream, "\n\t\t]\n" );
+
+	plex_free( lex );
 
 	fprintf( stream, "\t]\n}\n" );
 
@@ -816,7 +868,7 @@ Parser_ctx* parctx_free( Parser_ctx* ctx )
 			(token)->start ? (token)->start : "(null)", \
 				title && *title ? "\n" : "" )
 
-#if 1
+#if 0
 /* Function to dump the parse stack content */
 static void print_stack( char* title, parray* stack )
 {

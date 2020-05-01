@@ -30,7 +30,7 @@ pboolean gram_dump_json( FILE* stream, Grammar* grm, char* prefix );
 Grammar* gram_free( Grammar* g );
 
 /* lr.c */
-pboolean lr_build( unsigned int* cnt, unsigned int*** dfa, Grammar* grm );
+pboolean lr_build( size_t* cnt, size_t*** dfa, Grammar* grm );
 
 /* parse.c */
 AST_node* ast_create( char* emit, Symbol* sym, Production* prod, Token* tok, AST_node* child );

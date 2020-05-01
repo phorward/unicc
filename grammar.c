@@ -1243,7 +1243,7 @@ void __dbg_gram_dump( char* file, int line, char* function,
 	{
 		s = (Symbol*)plist_access( e );
 
-		fprintf( stderr, "%c%03d  %-*s  %-*s",
+		fprintf( stderr, "%c%03ld  %-*s  %-*s",
 			SYM_IS_TERMINAL( s ) ? 'T' : 'N',
 			s->idx, maxemitlen, s->emit ? s->emit : "",
 				maxsymlen, s->name );
@@ -1385,6 +1385,7 @@ pboolean gram_dump_json( FILE* stream, Grammar* grm, char* prefix )
 	Symbol*			sym;
 	Production*		prod;
 	char*			ptr;
+	pboolean		first;
 
 	PROC( "gram_dump_json" );
 	PARMS( "stream", "%p", stream );
@@ -1407,20 +1408,54 @@ pboolean gram_dump_json( FILE* stream, Grammar* grm, char* prefix )
 		RETURN( FALSE );
 	}
 
-	fprintf( stream, "%s{\n\t\"symbols\": [", prefix );
+	fprintf( stream, "%s{\n%s\t\"symbols\": [", prefix, prefix );
 
 	/* Symbols */
 	plist_for( grm->symbols, e )
 	{
 		sym = (Symbol*)plist_access( e );
 
-		fprintf( stream, "\n%s\t\t{\n%s\t\t\t\"symbol\": %d, \n",
+		/* Symbol ID */
+		fprintf( stream, "\n%s\t\t{\n%s\t\t\t\"symbol\": %ld, \n",
 			prefix, prefix, sym->idx );
 
-		fprintf( stream, "%s\t\t\t\"type\": \"%s\"",
-			prefix,
-			SYM_IS_TERMINAL( sym ) ? "terminal" : "non-terminal" );
+		/* Flags */
+		first = TRUE;
+		fprintf( stream, "%s\t\t\t\"flags\": [", prefix );
 
+		if( SYM_IS_TERMINAL( sym ) )
+		{
+			fprintf( stream, "%s\n%s\t\t\t\t\"terminal\"", !first ? "," : "", prefix );
+			first = FALSE;
+		}
+
+		if( sym->flags.nullable )
+		{
+			fprintf( stream, "%s\n%s\t\t\t\t\"nullable\"", !first ? "," : "", prefix );
+			first = FALSE;
+		}
+
+		if( sym->flags.leftrec )
+		{
+			fprintf( stream, "%s\n%s\t\t\t\t\"left-recursive\"", !first ? "," : "", prefix );
+			first = FALSE;
+		}
+
+		if( sym->flags.lexem )
+		{
+			fprintf( stream, "%s\n%s\t\t\t\t\"lexem\"", !first ? "," : "", prefix );
+			first = FALSE;
+		}
+
+		if( sym->flags.whitespace )
+		{
+			fprintf( stream, "%s\n%s\t\t\t\t\"whitespace\"", !first ? "," : "", prefix );
+			first = FALSE;
+		}
+
+		fprintf( stream, "\n%s\t\t\t]", prefix );
+
+		/* Name */
 		if( sym->name && *sym->name )
 		{
 			fprintf( stream, ",\n%s\t\t\t\"name\": \"", prefix );
@@ -1436,6 +1471,7 @@ pboolean gram_dump_json( FILE* stream, Grammar* grm, char* prefix )
 			fprintf( stream, "\"" );
 		}
 
+		/* Emits */
 		if( sym->emit && *sym->emit )
 		{
 			fprintf( stream, ",\n%s\t\t\t\"emit\": \"", prefix );
@@ -1451,6 +1487,7 @@ pboolean gram_dump_json( FILE* stream, Grammar* grm, char* prefix )
 			fprintf( stream, "\"" );
 		}
 
+		/* Regular expression */
 		if( SYM_IS_TERMINAL( sym ) && sym->ptn )
 		{
 			fprintf( stream, ",\n%s\t\t\t\"regexp\": \"", prefix );
@@ -1478,9 +1515,31 @@ pboolean gram_dump_json( FILE* stream, Grammar* grm, char* prefix )
 
 		fprintf( stream,
 			"\n%s\t\t{"
-			"\n%s\t\t\t\"production\": %d,"
-			"\n%s\t\t\t\"lhs\": %d,",
-			prefix, prefix, prod->idx, prefix, prod->lhs->idx );
+			"\n%s\t\t\t\"production\": %ld,"
+			"\n%s\t\t\t\"symbol\": %ld,",
+			prefix,
+			prefix, prod->idx,
+			prefix, prod->lhs->idx );
+
+		/* Flags */
+		first = TRUE;
+		fprintf( stream, "\n%s\t\t\t\"flags\": [", prefix );
+
+		if( prod->flags.nullable )
+		{
+			fprintf( stream, "%s\n%s\t\t\t\t\"nullable\"", !first ? "," : "", prefix );
+			first = FALSE;
+		}
+
+		if( prod->flags.leftrec )
+		{
+			fprintf( stream, "%s\n%s\t\t\t\t\"left-recursive\"", !first ? "," : "", prefix );
+			first = FALSE;
+		}
+
+		fprintf( stream, "\n%s\t\t\t],", prefix );		
+
+		/* Emit */
 
 		if( prod->emit && *prod->emit && prod->emit != prod->lhs->emit )
 		{
@@ -1503,7 +1562,7 @@ pboolean gram_dump_json( FILE* stream, Grammar* grm, char* prefix )
 		{
 			sym = (Symbol*)plist_access( f );
 
-			fprintf( stream, "\n%s\t\t\t\t%d%s", prefix, sym->idx,
+			fprintf( stream, "\n%s\t\t\t\t%ld%s", prefix, sym->idx,
 						plist_next( f ) ? "," : "" );
 		}
 

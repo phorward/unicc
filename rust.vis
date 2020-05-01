@@ -37,7 +37,7 @@ fn main() {
 		],
 		productions: [{{#unicc.grammar.productions}}
 			Production{
-				lhs: {{lhs}},
+				lhs: {{symbol}},
 				emit: {{#emit}}Some("{{emit}}"){{|}}None{{/}},
 				rhs: vec![{{#rhs}}{{loop.item}}, {{/}}]
 			},{{/}}
@@ -51,7 +51,7 @@ fn main() {
 						Some({{loop.item["reduce-default"]}})
 					{{-/}},
 				actions: vec![
-					{{-#actions}}
+					{{-#transitions}}
 					Action::
 						{{-#action == "shift"}}Shift({{state}})
 						{{-|action == "reduce"}}Reduce({{production}})

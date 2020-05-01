@@ -44,7 +44,7 @@ struct _Production
 {
 	Grammar*				grm;		/* Grammar */
 
-	unsigned int			idx;		/* Production index */
+	size_t					idx;		/* Production index */
 	Symbol*					lhs;		/* Left-hand side */
 	plist*					rhs;		/* Left-hand side items */
 
@@ -57,7 +57,7 @@ struct _Production
 	}						flags;
 
 	Assoc					assoc;		/* LR associativity flag */
-	unsigned int			prec;		/* LR precedence level */
+	size_t					prec;		/* LR precedence level */
 
 	char*					emit;		/* AST emitting node */
 
@@ -69,7 +69,7 @@ struct _Symbol
 {
 	Grammar*				grm;		/* Grammar */
 
-	unsigned int			idx;		/* Symbol index */
+	size_t					idx;		/* Symbol index */
 	char*					name;		/* Unique name */
 #ifndef SYM_T_EOF
 #define SYM_T_EOF			"&eof"
@@ -96,12 +96,12 @@ struct _Symbol
 
 	}						flags;
 
-	int						usages;		/* Number of usages of this symbol */
+	size_t					usages;		/* Number of usages of this symbol */
 
 	Symbol*					origin;		/* Origin of generated symbol */
 
 	Assoc					assoc;		/* LR associativity flag */
-	unsigned int			prec;		/* LR precedence level */
+	size_t					prec;		/* LR precedence level */
 
 	parray					first;		/* Set of FIRST() symbols */
 	plist					prods;		/* Productions associated with symbol */
@@ -208,8 +208,8 @@ typedef struct
 	Grammar*				gram;		/* Grammar */
 
 	/* Parser */
-	unsigned int			states;		/* States count */
-	unsigned int**			dfa;		/* Parse table */
+	size_t					states;		/* States count */
+	size_t**				dfa;		/* Parse table */
 
 } Parser;
 

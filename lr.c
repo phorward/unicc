@@ -18,14 +18,14 @@ Usage:	LR/LALR/GLR parse table construction and execution.
 typedef struct
 {
 	Production*		prod;			/* Production */
-	int				dot;			/* Dot offset */
+	size_t			dot;			/* Dot offset */
 	parray			lookahead;		/* Lookahead symbols */
 } LRitem;
 
 /* LR-State */
 typedef struct
 {
-	int				idx;			/* State index */
+	size_t			idx;			/* State index */
 
 	plist			kernel;			/* Kernel items */
 	plist			epsilon;		/* Empty items */
@@ -53,7 +53,7 @@ typedef struct
 /* Debug for one lritem */
 static void lritem_print( LRitem* it )
 {
-	int			i;
+	size_t		i;
 	Symbol*		sym;
 	Symbol*		la;
 
@@ -137,7 +137,7 @@ static int lritem_lookahead_sort( parray* a, void* p, void* q )
 	return 0;
 }
 
-static LRitem* lritem_create( plist* list, Production* prod, int dot )
+static LRitem* lritem_create( plist* list, Production* prod, size_t dot )
 {
 	LRitem*		item;
 
@@ -246,7 +246,7 @@ static void lrstate_print( LRstate* st )
 {
 	LRcolumn*	col;
 
-	fprintf( stderr, "\n-- State %d --\n", st->idx );
+	fprintf( stderr, "\n-- State %ld --\n", st->idx );
 
 	lritems_print( &st->kernel, "Kernel" );
 	lritems_print( &st->epsilon, "Epsilon" );
@@ -261,7 +261,7 @@ static void lrstate_print( LRstate* st )
 						col->symbol->name,
 							prod_to_str( col->reduce ) );
 		else if( col->shift )
-			fprintf( stderr, " -> Shift on '%s', goto state %d\n",
+			fprintf( stderr, " -> Shift on '%s', goto state %ld\n",
 						col->symbol->name, col->shift->idx );
 		else if( col->reduce )
 			fprintf( stderr, " <- Reduce on '%s' by production '%s'\n",
@@ -283,7 +283,7 @@ static void lrstate_print( LRstate* st )
 						prod_to_str( col->reduce ),
 							col->symbol->name );
 		else if( col->shift )
-			fprintf( stderr, " -> Goto state %d on '%s'\n",
+			fprintf( stderr, " -> Goto state %ld on '%s'\n",
 						col->shift->idx,
 							col->symbol->name );
 		else
@@ -880,16 +880,15 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 }
 
 /** Build parse tables */
-pboolean lr_build( unsigned int* cnt, unsigned int*** dfa, Grammar* grm )
+pboolean lr_build( size_t* cnt, size_t*** dfa, Grammar* grm )
 {
-	static int		calls	= 0;
 	plist*			states;
-	unsigned int**	tab;
+	size_t**		tab;
 	LRstate*		st;
 	LRcolumn*		col;
 	unsigned int	total;
-	int				i;
-	int				j;
+	size_t			i;
+	size_t			j;
 	plistel*		e;
 
 	PROC( "lr_build" );
@@ -924,7 +923,7 @@ pboolean lr_build( unsigned int* cnt, unsigned int*** dfa, Grammar* grm )
 	/* Allocate and fill return tables, free states */
 	MSG( "Filling return array" );
 
-	tab = (unsigned int**)pmalloc( plist_count( states ) * sizeof( int* ) );
+	tab = (size_t**)pmalloc( plist_count( states ) * sizeof( size_t* ) );
 
 	for( i = 0, e = plist_first( states ); e; e = plist_next( e ), i++ )
 	{
@@ -935,7 +934,7 @@ pboolean lr_build( unsigned int* cnt, unsigned int*** dfa, Grammar* grm )
 					+ parray_count( &st->gotos ) * 3
 						+ 2;
 
-		tab[ i ] = (unsigned int*)pmalloc( total * sizeof( int ) );
+		tab[ i ] = (size_t*)pmalloc( total * sizeof( size_t ) );
 		tab[ i ][ 0 ] = total;
 		tab[ i ][ 1 ] = st->def_prod ? st->def_prod->idx + 1 : 0;
 
@@ -989,12 +988,12 @@ pboolean lr_build( unsigned int* cnt, unsigned int*** dfa, Grammar* grm )
 
 		for( i = 0; i < plist_count( states ); i++ )
 		{
-			fprintf( stderr, "%02d:", i );
+			fprintf( stderr, "%03ld:", i );
 
-			fprintf( stderr, " def:%02d",  tab[ i ][ 1 ] );
+			fprintf( stderr, " def:%03ld",  tab[ i ][ 1 ] );
 
 			for( j = 2; j < tab[ i ][ 0 ]; j += 3 )
-				fprintf( stderr, " %02d:%s%s:%02d",
+				fprintf( stderr, " %03ld:%s%s:%03ld",
 					tab[ i ][ j ],
 					tab[ i ][ j + 1 ] & LR_SHIFT ? "s" : "-",
 					tab[ i ][ j + 1 ] & LR_REDUCE ? "r" : "-",
