@@ -19,6 +19,7 @@ JSON="$BASENAME.json"
 RS="$BASENAME.rs"
 
 ./unicc -R json -P $1 >$JSON
-python3 logics/vistache.py -v unicc $JSON -r rust.vis >$RS
+python3 codegen.py -v unicc $JSON -r rust.rs >$RS
+cat $RS
 rustc $RS
 ./$BASENAME

@@ -1,5 +1,7 @@
 unicc
 gram2c
 *.o
+*.json
 
-.idea
+test/
+perf/
