@@ -4,8 +4,8 @@ import logics
 
 if __name__ == "__main__":
 	logics.vistache.main(
-		startDelimiter="/**",
-		endDelimiter="*/",
+		startDelimiter="/*(",
+		endDelimiter=")*/",
 		emptyValue="",
 		startBlock="on",
 		altBlock="or",
