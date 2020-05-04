@@ -1,3 +1,4 @@
+
 #[derive(Debug)]
 struct Symbol {
 	name: &'static str,
@@ -12,6 +13,12 @@ struct Production {
 	lhs: usize,
 	emit: Option<&'static str>,
 	rhs: Vec<usize>
+}
+
+#[derive(Debug)]
+struct Token {
+	symbol: usize,
+	range: std::ops::Range
 }
 
 #[derive(Debug)]
@@ -36,15 +43,12 @@ struct Item {
 }
 
 #[derive(Debug)]
-struct State {
-	stack: Vec<Item>,
-	action: Action
-}
-
-#[derive(Debug)]
 struct Parser {
 	symbols: Vec<Symbol>,
 	productions: Vec<Production>,
+	stack: Vec<Item>,
+	action: Option<Action>,
+	result: Option<Vec<Node>>
 }
 
 impl Parser {
@@ -69,59 +73,91 @@ impl Parser {
 					rhs: vec![/*(on rhs)*//*(loop.item)*/, /*(go)*/]
 				},
 				/*(-go)*/
-			]
+			],
+			stack: vec![Item{state: 0, nodes: None}],
+			action: None,
+			result: None
 		}
 	}
 
-	fn next(&self, state: &mut State) -> Action {
-		while let Action::Reduce(prod) | Action::ShiftAndReduce(prod) = state.action {
-			let mut cnodes: Vec<Node> = Vec::new();
-			
-			for _ in 0..self.productions[prod].rhs.len() {
-				let mut item = state.stack.pop().unwrap();
+	fn get_action(state: usize, symbol: usize) -> Action { 
+		match state {
+			/*(-on unicc.states)*/
+			/*(loop.index0)*/ => {
+				match symbol {
+					/*(on transitions)*/
+					/*(symbol)*/ => Action::
+						/*(-on action == "shift")*/Shift(/*(state)*/)
+						/*(-or action == "reduce")*/Reduce(/*(production)*/)
+						/*(-or)*/ShiftAndReduce(/*(production)*/)
+						/*(-go-)*/,
+					/*(go)*/
+					_ => Action::Error
+				}
+			},
+			/*(-go)*/
+			_ => Action::Error
+		}
+	}
 
-				if let Some(mut nodes) = item.nodes {
-					nodes.extend(cnodes.drain(..));
-					cnodes = nodes;
+	fn next(&mut self, token: &Token) -> Action {
+		// Reduce until shift occurs
+		while let Some(Action::Reduce(prod) | Action::ShiftAndReduce(prod)) = self.action {
+			let mut nodes: Vec<Node> = Vec::new();
+			
+			// Reduce number of production items from the stack, collect AST nodes
+			for _ in 0..self.productions[prod].rhs.len() {
+				if let Some(mut inodes) = self.stack.pop().unwrap().nodes {
+					inodes.extend(nodes.drain(..));
+					nodes = inodes;
 				}
 			}
 
+			let nodes = if nodes.len() > 0 {
+				Some(nodes)
+			} else {
+				None
+			};
+
+			// Make new AST node if necessary
 			if let Some(emit) = self.productions[prod].emit {
-				cnodes = vec![Node{
+				nodes = Some(vec![Node{
 					emit: emit,
-					children: if cnodes.len() > 0 {
-						Some(cnodes)
-					} else {
-						None
-					}
-				}]
+					children: nodes
+				}])
 			}
 
-			match state.stack.last().unwrap().state {
-				/*(-on unicc.states)*/
-				/*(-on [goto for goto in transitions if "terminal" not in unicc.grammar.symbols[int(goto.symbol)].flags])*/
-				/*(-on loop.first)*/
-				/*(loop.parent.index0)*/ => {
-					match self.productions[prod].lhs {
-						/*(-go loop first)*/
-						/*(symbol)*/ => Action::
-							/*(-on action == "shift")*/Shift(/*(state)*/)
-							/*(-or action == "reduce")*/Reduce(/*(production)*/)
-							/*(-or)*/ShiftAndReduce(/*(production)*/)
-							/*(-go-)*/,
-						/*(-on loop.last)*/
-						_ => Action::Error
-					}
-				},
-				/*(-go loop last)*/
-				/*(-go-)*/
-				/*(go)*/
-				_ => Action::Error
-			};
+			// Check if goal-symbol was reduced and stack is empty
+			let lhs = self.productions[prod].lhs;
+
+			if self.stack.len() == 0 && lhs == /*(unicc.grammar.goal)*/ {
+				println!("Goal symbol reduced");
+
+				self.result = nodes;
+				return Action::Accept;
+			}
+
+			// Get next action based on current state and reduced nonterminal
+			self.action = Parser::get_action(self.stack.last().unwrap().state.unwrap(), symbol);
+
+			// Push onto stack
+			match self.action {
+				Action::Shift(state) => self.stack.push(Item{state, nodes}),
+				Action::ShiftAndReduce(_) => self.stack.push(Item{state, nodes}),
+			}
+
+			if let Some(state) = shift {
+				self.stack.push(Item{state: shift, nodes: Some(nodes)});
+			}
 		}
 
-
-		Action::Accept
+		// Push 
+		if let Some(state) = self.stack.pop().unwrap() {
+			self.action = Parser::get_action(state, token.symbol);
+		}
+		
+		// Return current action
+		action
 	}
 
 	pub fn parse(&self) {

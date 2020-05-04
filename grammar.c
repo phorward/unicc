@@ -1528,7 +1528,11 @@ pboolean gram_dump_json( FILE* stream, Grammar* grm, char* prefix )
 			prefix, prefix, plist_next( e ) ? "," : "" );
 	}
 
-	fprintf( stream, "\n%s\t]\n%s}", prefix, prefix );
+	fprintf( stream, "\n%s\t]", prefix );
+
+	fprintf( stream, ",\n\t%s\"goal\": %ld", prefix, grm->goal->idx );
+
+	fprintf( stream, "\n%s}", prefix );
 
 	RETURN( TRUE );
 }
