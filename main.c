@@ -189,6 +189,9 @@ int main( int argc, char** argv )
 
 	MSG( "Parser created" );
 
+	fprintf( stderr, "%ld total states\n", p->states );
+	fflush( stderr );
+
 	if( dp )
 	{
 		if( r == 2 )  /* json */
