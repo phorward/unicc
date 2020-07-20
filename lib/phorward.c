@@ -1,11 +1,11 @@
 /* -MODULE----------------------------------------------------------------------
 Phorward C/C++ Library
-Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2020 by Phorward Software Technologies, Jan Max Meyer
 https://phorward.info ++ contact<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
 File:	phorward.c
-Usage:	Phorward C/C++ library; Merged by standalone.sh on 2019-10-15
+Usage:	Phorward C/C++ library; Merged by standalone.sh on 2020-07-20
 ----------------------------------------------------------------------------- */
 
 #include "phorward.h"
@@ -501,23 +501,23 @@ void* parray_prev( parray* array, void* ptr )
 }
 
 /** Swap two elements of an array. */
-void* parray_swap( parray* array, size_t pos1, size_t pos2 )
+void parray_swap( parray* array, size_t pos1, size_t pos2 )
 {
 	void*	ptr1;
 	void*	ptr2;
 
-	if( !( ( ptr1 = parray_get( array, pos1 ) )
-			&& ( ptr2 = parray_get( array, pos2 ) ) ) )
-		return NULL;
+	if( pos1 == pos2 || pos1 >= array->count || pos2 >= array->count )
+		return;
 
-	if( ptr1 == ptr2 )
-		return ptr1;
+	/* Reserve one entry first before accessing and moving elements. */
+	parray_reserve( array, 1 );
+
+	ptr1 = parray_get( array, pos1 );
+	ptr2 = parray_get( array, pos2 );
 
 	parray_push( array, ptr1 );
 	parray_put( array, pos1, ptr2 );
 	parray_put( array, pos2, parray_pop( array ) );
-
-	return ptr1;
 }
 
 /** Returns the number of elements in a array. */
@@ -3361,7 +3361,7 @@ int plist_diff( plist* left, plist* right )
 	return diff;
 }
 
-/** Sorts //list// between the elements //from// and //to// according to the
+/** Sorts //list// between the elements //left// and //right// according to the
 sort-function that was set for the list.
 
 To sort the entire list, use plist_sort().
@@ -3614,7 +3614,7 @@ int plist_size( plist* l )
 }
 
 /** Return element count of list //l//. */
-int plist_count( plist* l )
+size_t plist_count( plist* l )
 {
 	if( !l )
 		return 0;
@@ -3760,19 +3760,19 @@ void testcase( void )
 - Joli, Monique
 - Mueller, Susan
 4 elements
-- Smith, Melinda
-- Mueller, Susan
-- Joli, Monique
 - Brandon, Brenda
+- Joli, Monique
+- Mueller, Susan
+- Smith, Melinda
 4 elements
 Joli => Joli, Monique
 <No record found matching 'Joli'>
 Ayanami => Ayanami, Rei
-- Smith, Melinda
-- Mueller, Susan
-- Full, Throttle
-- Brandon, Brenda
 - Ayanami, Rei
+- Brandon, Brenda
+- Full, Throttle
+- Mueller, Susan
+- Smith, Melinda
 5 elements
 Ayanami => Full, Throttle
 0 elements
@@ -3905,8 +3905,7 @@ Always returns (void*)NULL.
 */
 void* pfree( void* ptr )
 {
-	if( ptr )
-		free( ptr );
+	free( ptr );
 
 	return (void*)NULL;
 }
@@ -10376,7 +10375,7 @@ static pboolean parse_char( pregex_ptn** ptn, char** pstr, int flags )
 
 			ccl = pccl_create( -1, -1, (char*)NULL );
 
-			if( !( ccl && pccl_addrange( ccl, PCCL_MIN + 1, PCCL_MAX ) ) )
+			if( !( ccl && pccl_addrange( ccl, PCCL_MIN, PCCL_MAX ) ) )
 			{
 				pccl_free( ccl );
 				RETURN( FALSE );

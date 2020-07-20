@@ -1,6 +1,6 @@
 /* -HEADER----------------------------------------------------------------------
 Phorward C/C++ Library
-Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2020 by Phorward Software Technologies, Jan Max Meyer
 https://phorward.info ++ contact<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
@@ -558,7 +558,7 @@ void* parray_first( parray* array );
 void* parray_last( parray* array );
 void* parray_next( parray* array, void* ptr );
 void* parray_prev( parray* array, void* ptr );
-void* parray_swap( parray* array, size_t pos1, size_t pos2 );
+void parray_swap( parray* array, size_t pos1, size_t pos2 );
 size_t parray_count( parray* array );
 void* parray_partof( parray* array, void* ptr );
 size_t parray_offset( parray* array, void* ptr );
@@ -637,7 +637,7 @@ void plist_iter_access( plist* list, plistfn callback );
 void plist_riter_access( plist* list, plistfn callback );
 size_t plist_union( plist* all, plist* from );
 int plist_diff( plist* left, plist* right );
-void plist_subsort( plist* list, plistel* from, plistel* to );
+void plist_subsort( plist* list, plistel* left, plistel* right );
 void plist_sort( plist* list );
 void plist_set_comparefn( plist* list, int (*comparefn)( plist*, plistel*, plistel* ) );
 void plist_set_sortfn( plist* list, int (*sortfn)( plist*, plistel*, plistel* ) );
@@ -653,7 +653,7 @@ void plist_swap( plist* l, plistel* a, plistel* b );
 plistel* plist_first( plist* l );
 plistel* plist_last( plist* l );
 int plist_size( plist* l );
-int plist_count( plist* l );
+size_t plist_count( plist* l );
 void plist_dbgstats( FILE* stream, plist* list );
 
 

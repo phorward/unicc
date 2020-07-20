@@ -18,14 +18,14 @@ Usage:	LR/LALR/GLR parse table construction and execution.
 typedef struct
 {
 	Production*		prod;			/* Production */
-	int				dot;			/* Dot offset */
+	size_t			dot;			/* Dot offset */
 	parray			lookahead;		/* Lookahead symbols */
 } LRitem;
 
 /* LR-State */
 typedef struct
 {
-	int				idx;			/* State index */
+	size_t			idx;			/* State index */
 
 	plist			kernel;			/* Kernel items */
 	plist			epsilon;		/* Empty items */
@@ -110,7 +110,7 @@ static void lritems_print( plist* items, char* what )
 		return;
 
 	if( what && *what )
-		fprintf( stderr, "%s (%d):\n", what, plist_count( items ) );
+		fprintf( stderr, "%s (%ld):\n", what, plist_count( items ) );
 
 	if( !plist_count( items ) )
 		fprintf( stderr, "\t(empty)\n" );
@@ -246,7 +246,7 @@ static void lrstate_print( LRstate* st )
 {
 	LRcolumn*	col;
 
-	fprintf( stderr, "\n-- State %d --\n", st->idx );
+	fprintf( stderr, "\n-- State %ld --\n", st->idx );
 
 	lritems_print( &st->kernel, "Kernel" );
 	lritems_print( &st->epsilon, "Epsilon" );
@@ -261,7 +261,7 @@ static void lrstate_print( LRstate* st )
 						col->symbol->name,
 							prod_to_str( col->reduce ) );
 		else if( col->shift )
-			fprintf( stderr, " -> Shift on '%s', goto state %d\n",
+			fprintf( stderr, " -> Shift on '%s', goto state %ld\n",
 						col->symbol->name, col->shift->idx );
 		else if( col->reduce )
 			fprintf( stderr, " <- Reduce on '%s' by production '%s'\n",
@@ -283,7 +283,7 @@ static void lrstate_print( LRstate* st )
 						prod_to_str( col->reduce ),
 							col->symbol->name );
 		else if( col->shift )
-			fprintf( stderr, " -> Goto state %d on '%s'\n",
+			fprintf( stderr, " -> Goto state %ld on '%s'\n",
 						col->shift->idx,
 							col->symbol->name );
 		else
@@ -682,7 +682,7 @@ static plist* lr_closure( Grammar* gram, pboolean optimize, pboolean resolve )
 		printed = FALSE;
 		st = (LRstate*)plist_access( e );
 
-		LOG( "State %d", plist_offset( plist_get_by_ptr( states, st ) ) );
+		LOG( "State %ld", plist_offset( plist_get_by_ptr( states, st ) ) );
 
 		/* Reductions */
 		for( part = &st->kernel; part;
