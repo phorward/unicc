@@ -558,7 +558,7 @@ void* parray_first( parray* array );
 void* parray_last( parray* array );
 void* parray_next( parray* array, void* ptr );
 void* parray_prev( parray* array, void* ptr );
-void* parray_swap( parray* array, size_t pos1, size_t pos2 );
+void parray_swap( parray* array, size_t pos1, size_t pos2 );
 size_t parray_count( parray* array );
 void* parray_partof( parray* array, void* ptr );
 size_t parray_offset( parray* array, void* ptr );
@@ -653,7 +653,7 @@ void plist_swap( plist* l, plistel* a, plistel* b );
 plistel* plist_first( plist* l );
 plistel* plist_last( plist* l );
 int plist_size( plist* l );
-int plist_count( plist* l );
+size_t plist_count( plist* l );
 void plist_dbgstats( FILE* stream, plist* list );
 
 
