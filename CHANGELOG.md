@@ -2,9 +2,9 @@
 
 This file is used to document any relevant changes done to UniCC.
 
-## [develop]
+## [v1.7]
 
-This is the current development version.
+Released on Jan 20, 2021
 
 - Improved error reporting on own parser
 - New `#extends`-directive added to extend grammars from others
@@ -124,6 +124,7 @@ Released on: June 29, 2012
 
 
 [develop]: https://github.com/phorward/unicc/compare/1.6.0...develop
+[v1.7]: https://github.com/phorward/unicc/compare/1.6.0...1.7.0
 [v1.6]: https://github.com/phorward/unicc/compare/1.5.0...1.6.0
 [v1.5]: https://github.com/phorward/unicc/compare/1.4.0...1.5.0
 [v1.4]: https://github.com/phorward/unicc/compare/1.3.3...1.4.0

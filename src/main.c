@@ -1,6 +1,6 @@
 /* -MODULE----------------------------------------------------------------------
 UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2020 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2021 by Phorward Software Technologies, Jan Max Meyer
 https://phorward.info ++ unicc<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
@@ -89,7 +89,7 @@ void print_copyright( FILE* stream )
 	fprintf( stream, "UniCC %s\n", print_version( TRUE ) );
     fprintf( stream, "The Universal LALR(1) parser generator.\n\n" );
 
-    fprintf( stream, "Copyright (C) 2006-2020 by "
+    fprintf( stream, "Copyright (C) 2006-2021 by "
 						"Phorward Software Technologies, Jan Max Meyer\n" );
 	fprintf( stream, "All rights reserved. "
 						"See LICENSE for more information.\n" );
