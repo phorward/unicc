@@ -2018,7 +2018,7 @@ fprintf( stderr, "%s: lex: new accepting symbol pcb->sym = %d greedy = %d\n",
 #define UNICC_ON_SHIFT 	0
 		switch( pcb->sym )
 		{
-//#line 233 "src/parse.par"
+#line 233 "src/parse.par"
 				case 41:
 				{
 					
@@ -2378,7 +2378,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 11:
 				{
-					//#line 178 "src/parse.par"
+					#line 178 "src/parse.par"
 
 							if( !( parser->p_template ) )
 								parser->p_template = pstrdup( strbuf );
@@ -2392,37 +2392,37 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 12:
 				{
-					//#line 205 "src/parse.par"
+					#line 205 "src/parse.par"
 	parser->p_mode = MODE_SCANNERLESS; 
 					;
 				}				break;
 					case 13:
 				{
-					//#line 207 "src/parse.par"
+					#line 207 "src/parse.par"
 	parser->p_mode = MODE_SCANNERLESS; 
 					;
 				}				break;
 					case 14:
 				{
-					//#line 209 "src/parse.par"
+					#line 209 "src/parse.par"
 	parser->p_mode = MODE_SCANNERLESS; 
 					;
 				}				break;
 					case 15:
 				{
-					//#line 211 "src/parse.par"
+					#line 211 "src/parse.par"
 	parser->p_mode = MODE_SCANNER; 
 					;
 				}				break;
 					case 16:
 				{
-					//#line 213 "src/parse.par"
+					#line 213 "src/parse.par"
 	parser->p_mode = MODE_SCANNER; 
 					;
 				}				break;
 					case 17:
 				{
-					//#line 215 "src/parse.par"
+					#line 215 "src/parse.par"
 	parser->p_mode = MODE_SCANNER; 
 					;
 				}				break;
@@ -2458,7 +2458,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 24:
 				{
-					//#line 240 "src/parse.par"
+					#line 240 "src/parse.par"
 
 							if( !( ( pcb->tos - 0 )->value.value_1 ) )
 								strbuf_append( '1' );
@@ -2469,13 +2469,13 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 25:
 				{
-					//#line 246 "src/parse.par"
+					#line 246 "src/parse.par"
 	reset_strbuf(); 
 					;
 				}				break;
 					case 26:
 				{
-					//#line 250 "src/parse.par"
+					#line 250 "src/parse.par"
 	LIST* l;
 							SYMBOL* s;
 
@@ -2504,7 +2504,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 27:
 				{
-					//#line 276 "src/parse.par"
+					#line 276 "src/parse.par"
 	LIST* l;
 							SYMBOL* s;
 
@@ -2532,7 +2532,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 28:
 				{
-					//#line 301 "src/parse.par"
+					#line 301 "src/parse.par"
 	LIST* l;
 							SYMBOL* s;
 
@@ -2560,32 +2560,32 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 29:
 				{
-					//#line 326 "src/parse.par"
+					#line 326 "src/parse.par"
 	set_assoc_and_prec( ( ( pcb->tos - 0 )->value.value_2 ), ASSOC_LEFT ); 	
 					;
 				}				break;
 					case 30:
 				{
-					//#line 330 "src/parse.par"
+					#line 330 "src/parse.par"
 	set_assoc_and_prec( ( ( pcb->tos - 0 )->value.value_2 ), ASSOC_RIGHT ); 	
 					;
 				}				break;
 					case 31:
 				{
-					//#line 334 "src/parse.par"
+					#line 334 "src/parse.par"
 	set_assoc_and_prec( ( ( pcb->tos - 0 )->value.value_2 ), ASSOC_NOASSOC ); 
 					;
 				}				break;
 					case 32:
 				{
-					//#line 337 "src/parse.par"
+					#line 337 "src/parse.par"
 	parser->p_prefix = pstrcatstr(
 								parser->p_prefix, strbuf, FALSE );	
 					;
 				}				break;
 					case 33:
 				{
-					//#line 341 "src/parse.par"
+					#line 341 "src/parse.par"
 	if( !( parser->p_def_action ) )
 								parser->p_def_action = pstrdup( strbuf );
 							else
@@ -2598,7 +2598,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 34:
 				{
-					//#line 351 "src/parse.par"
+					#line 351 "src/parse.par"
 	if( !( parser->p_def_action_e ) )
 								parser->p_def_action_e = pstrdup( strbuf );
 							else
@@ -2611,7 +2611,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 35:
 				{
-					//#line 361 "src/parse.par"
+					#line 361 "src/parse.par"
 	if( !( parser->p_def_type ) )
 								parser->p_def_type = create_vtype(
 									parser, (char*)( ( pcb->tos - 0 )->value.value_0 ) );
@@ -2627,7 +2627,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 36:
 				{
-					//#line 374 "src/parse.par"
+					#line 374 "src/parse.par"
 	/* Ouput a warning, if this definition
 								is effectless */
 							if( parser->p_mode != MODE_SCANNERLESS )
@@ -2644,40 +2644,40 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 37:
 				{
-					//#line 388 "src/parse.par"
+					#line 388 "src/parse.par"
 	parser->p_cis_strings = !( ( pcb->tos - 0 )->value.value_1 );	
 					;
 				}				break;
 					case 38:
 				{
-					//#line 391 "src/parse.par"
+					#line 391 "src/parse.par"
 	parser->p_reserve_regex = !( ( pcb->tos - 0 )->value.value_1 );		
 					;
 				}				break;
 					case 39:
 				{
-					//#line 394 "src/parse.par"
+					#line 394 "src/parse.par"
 	parser->p_header = pstrcatstr(
 								parser->p_header, strbuf, FALSE );	
 					;
 				}				break;
 					case 40:
 				{
-					//#line 398 "src/parse.par"
+					#line 398 "src/parse.par"
 	parser->p_footer = pstrcatstr(
 								parser->p_footer, strbuf, FALSE );	
 					;
 				}				break;
 					case 41:
 				{
-					//#line 401 "src/parse.par"
+					#line 401 "src/parse.par"
 	parser->p_pcb = pstrcatstr(
 								parser->p_pcb, strbuf, FALSE );	
 					;
 				}				break;
 					case 42:
 				{
-					//#line 406 "src/parse.par"
+					#line 406 "src/parse.par"
 
 							char*	src;
 							char*	filename = strbuf;
@@ -2712,7 +2712,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 45:
 				{
-					//#line 428 "src/parse.par"
+					#line 428 "src/parse.par"
 
 							set_option( parser->options,
 								( ( pcb->tos - 1 )->value.value_0 ), strbuf, ( ( pcb->tos - 2 )->value.value_5 ) );
@@ -2728,37 +2728,37 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 47:
 				{
-					//#line 438 "src/parse.par"
+					#line 438 "src/parse.par"
 	pcb->ret.value_1 = FALSE; 
 					;
 				}				break;
 					case 48:
 				{
-					//#line 441 "src/parse.par"
+					#line 441 "src/parse.par"
 	pcb->ret.value_1 = FALSE; 	
 					;
 				}				break;
 					case 49:
 				{
-					//#line 442 "src/parse.par"
+					#line 442 "src/parse.par"
 	pcb->ret.value_1 = TRUE; 		
 					;
 				}				break;
 					case 50:
 				{
-					//#line 446 "src/parse.par"
+					#line 446 "src/parse.par"
 	pcb->ret.value_2 = list_push( ( ( pcb->tos - 1 )->value.value_2 ), (void*)( ( pcb->tos - 0 )->value.value_3 ) ); 
 					;
 				}				break;
 					case 51:
 				{
-					//#line 449 "src/parse.par"
+					#line 449 "src/parse.par"
 	pcb->ret.value_2 = list_push( (LIST*)NULL, (void*)( ( pcb->tos - 0 )->value.value_3 ) ); 
 					;
 				}				break;
 					case 52:
 				{
-					//#line 453 "src/parse.par"
+					#line 453 "src/parse.par"
 	pcb->ret.value_3 = get_symbol( parser,
 									strbuf, SYM_NON_TERMINAL, TRUE );
 							pcb->ret.value_3->defined = TRUE;
@@ -2768,19 +2768,19 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 53:
 				{
-					//#line 462 "src/parse.par"
+					#line 462 "src/parse.par"
 	pcb->ret.value_2 = list_push( ( ( pcb->tos - 1 )->value.value_2 ), (void*)( ( pcb->tos - 0 )->value.value_3 ) ); 
 					;
 				}				break;
 					case 54:
 				{
-					//#line 466 "src/parse.par"
+					#line 466 "src/parse.par"
 	pcb->ret.value_2 = list_push( (LIST*)NULL, (void*)( ( pcb->tos - 0 )->value.value_3 ) ); 
 					;
 				}				break;
 					case 55:
 				{
-					//#line 471 "src/parse.par"
+					#line 471 "src/parse.par"
 	pcb->ret.value_2 = list_push( ( ( pcb->tos - 1 )->value.value_2 ),
 									(void*)( ( pcb->tos - 0 )->value.value_3 ) );
 							( ( pcb->tos - 0 )->value.value_3 )->derived_from =
@@ -2790,7 +2790,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 56:
 				{
-					//#line 479 "src/parse.par"
+					#line 479 "src/parse.par"
 	pcb->ret.value_2 = list_push( (LIST*)NULL,
 									(void*)( ( pcb->tos - 0 )->value.value_3 ) );
 
@@ -2800,7 +2800,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 57:
 				{
-					//#line 487 "src/parse.par"
+					#line 487 "src/parse.par"
 	pcb->ret.value_3 = get_symbol( parser,
 									strbuf, SYM_REGEX_TERMINAL, TRUE );
 
@@ -2820,31 +2820,31 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 58:
 				{
-					//#line 504 "src/parse.par"
+					#line 504 "src/parse.par"
  pcb->ret.value_1 = FALSE; 
 					;
 				}				break;
 					case 59:
 				{
-					//#line 505 "src/parse.par"
+					#line 505 "src/parse.par"
  pcb->ret.value_1 = FALSE; 
 					;
 				}				break;
 					case 60:
 				{
-					//#line 506 "src/parse.par"
+					#line 506 "src/parse.par"
  pcb->ret.value_1 = TRUE; 
 					;
 				}				break;
 					case 61:
 				{
-					//#line 507 "src/parse.par"
+					#line 507 "src/parse.par"
  pcb->ret.value_1 = TRUE; 
 					;
 				}				break;
 					case 62:
 				{
-					//#line 515 "src/parse.par"
+					#line 515 "src/parse.par"
 
 							LIST* 	l;
 							LIST*	m;
@@ -2925,7 +2925,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 65:
 				{
-					//#line 585 "src/parse.par"
+					#line 585 "src/parse.par"
 
 							SYMBOL*	primary;
 							SYMBOL* s;
@@ -3015,7 +3015,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 70:
 				{
-					//#line 654 "src/parse.par"
+					#line 654 "src/parse.par"
 
 							greedy = TRUE;
 						
@@ -3023,7 +3023,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 71:
 				{
-					//#line 660 "src/parse.par"
+					#line 660 "src/parse.par"
 
 							greedy = FALSE;
 						
@@ -3031,7 +3031,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 72:
 				{
-					//#line 667 "src/parse.par"
+					#line 667 "src/parse.par"
 
 							set_option( current_sym->options, ( ( pcb->tos - 1 )->value.value_0 ),
 											strbuf, ( ( pcb->tos - 2 )->value.value_5 ) );
@@ -3042,49 +3042,49 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 73:
 				{
-					//#line 676 "src/parse.par"
+					#line 676 "src/parse.par"
 	pcb->ret.value_1 = TRUE; 
 					;
 				}				break;
 					case 74:
 				{
-					//#line 678 "src/parse.par"
+					#line 678 "src/parse.par"
 	pcb->ret.value_1 = FALSE; 
 					;
 				}				break;
 					case 75:
 				{
-					//#line 682 "src/parse.par"
+					#line 682 "src/parse.par"
 	pcb->ret.value_2 = list_push( ( ( pcb->tos - 2 )->value.value_2 ), ( ( pcb->tos - 0 )->value.value_4 ) ); 
 					;
 				}				break;
 					case 76:
 				{
-					//#line 685 "src/parse.par"
+					#line 685 "src/parse.par"
 	pcb->ret.value_2 = list_push( (LIST*)NULL, ( ( pcb->tos - 0 )->value.value_4 ) ); 
 					;
 				}				break;
 					case 77:
 				{
-					//#line 688 "src/parse.par"
+					#line 688 "src/parse.par"
  pcb->ret.value_0 = pstrdup( strbuf ); 
 					;
 				}				break;
 					case 78:
 				{
-					//#line 689 "src/parse.par"
+					#line 689 "src/parse.par"
  pcb->ret.value_0 = pstrdup( strbuf ); 
 					;
 				}				break;
 					case 79:
 				{
-					//#line 690 "src/parse.par"
+					#line 690 "src/parse.par"
  pcb->ret.value_0 = (char*)NULL; 
 					;
 				}				break;
 					case 80:
 				{
-					//#line 696 "src/parse.par"
+					#line 696 "src/parse.par"
 
 							( ( pcb->tos - 3 )->value.value_4 )->line = ( ( pcb->tos - 4 )->value.value_5 );
 
@@ -3129,7 +3129,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 86:
 				{
-					//#line 715 "src/parse.par"
+					#line 715 "src/parse.par"
 	pcb->ret.value_4 = create_production( parser,
 								(SYMBOL*)NULL );
 						
@@ -3137,13 +3137,13 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 87:
 				{
-					//#line 722 "src/parse.par"
+					#line 722 "src/parse.par"
 	current_prod->prec = ( ( pcb->tos - 0 )->value.value_3 )->prec; 
 					;
 				}				break;
 					case 88:
 				{
-					//#line 728 "src/parse.par"
+					#line 728 "src/parse.par"
 	append_to_production( ( ( pcb->tos - 2 )->value.value_4 ), ( ( pcb->tos - 1 )->value.value_3 ),
 								( *strbuf == '\0' ? (char*)NULL :
 											pstrdup( strbuf ) ) );
@@ -3153,7 +3153,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 89:
 				{
-					//#line 736 "src/parse.par"
+					#line 736 "src/parse.par"
 	pcb->ret.value_4 = current_prod =
 								create_production( parser,
 									(SYMBOL*)NULL );
@@ -3166,7 +3166,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 90:
 				{
-					//#line 748 "src/parse.par"
+					#line 748 "src/parse.par"
 
 							switch( ( ( pcb->tos - 0 )->value.value_5 ) )
 							{
@@ -3188,7 +3188,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 91:
 				{
-					//#line 768 "src/parse.par"
+					#line 768 "src/parse.par"
 	pcb->ret.value_3 = get_symbol( parser,
 									P_ERROR_RESYNC, SYM_SYSTEM_TERMINAL,
 										TRUE );
@@ -3197,7 +3197,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 92:
 				{
-					//#line 775 "src/parse.par"
+					#line 775 "src/parse.par"
 	pcb->ret.value_3 = get_symbol( parser,
 									P_END_OF_FILE, SYM_SYSTEM_TERMINAL,
 										TRUE );
@@ -3211,7 +3211,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 94:
 				{
-					//#line 785 "src/parse.par"
+					#line 785 "src/parse.par"
 	pcb->ret.value_3 = get_symbol( parser,
 									strbuf, SYM_NON_TERMINAL, TRUE );
 							pcb->ret.value_3->used = TRUE;
@@ -3223,7 +3223,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 95:
 				{
-					//#line 796 "src/parse.par"
+					#line 796 "src/parse.par"
 
 							char	temp_nonterm[ ONE_LINE + 1 ];
 							PROD*	prod;
@@ -3269,7 +3269,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 96:
 				{
-					//#line 840 "src/parse.par"
+					#line 840 "src/parse.par"
  	pcb->ret.value_4 = current_prod;
 							current_prod = (PROD*)NULL;
 						
@@ -3277,7 +3277,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 97:
 				{
-					//#line 847 "src/parse.par"
+					#line 847 "src/parse.par"
 	pccl*		ccl;
 
 							ccl = pccl_create( -1, -1, strbuf );
@@ -3297,7 +3297,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 98:
 				{
-					//#line 865 "src/parse.par"
+					#line 865 "src/parse.par"
 	pcb->ret.value_3 = get_symbol( parser,
 									strbuf, SYM_REGEX_TERMINAL, TRUE );
 
@@ -3317,7 +3317,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 99:
 				{
-					//#line 883 "src/parse.par"
+					#line 883 "src/parse.par"
 	pcb->ret.value_3 = get_symbol( parser,
 									strbuf, SYM_REGEX_TERMINAL, TRUE );
 
@@ -3332,25 +3332,25 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 100:
 				{
-					//#line 896 "src/parse.par"
+					#line 896 "src/parse.par"
 	pcb->ret.value_5 = (int)'*';	
 					;
 				}				break;
 					case 101:
 				{
-					//#line 899 "src/parse.par"
+					#line 899 "src/parse.par"
 	pcb->ret.value_5 = (int)'+'; 	
 					;
 				}				break;
 					case 102:
 				{
-					//#line 902 "src/parse.par"
+					#line 902 "src/parse.par"
 	pcb->ret.value_5 = (int)'?';	
 					;
 				}				break;
 					case 103:
 				{
-					//#line 905 "src/parse.par"
+					#line 905 "src/parse.par"
 	pcb->ret.value_5 = 0; 		
 					;
 				}				break;
@@ -3366,7 +3366,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 106:
 				{
-					//#line 911 "src/parse.par"
+					#line 911 "src/parse.par"
 	reset_strbuf(); 
 					;
 				}				break;
@@ -3377,7 +3377,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 108:
 				{
-					//#line 920 "src/parse.par"
+					#line 920 "src/parse.par"
 
 							pcb->ret.value_6 = pregex_ptn_create_alt(
 									( ( pcb->tos - 2 )->value.value_6 ), ( ( pcb->tos - 0 )->value.value_6 ), (pregex_ptn*)NULL );
@@ -3391,7 +3391,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 110:
 				{
-					//#line 931 "src/parse.par"
+					#line 931 "src/parse.par"
 
 							pcb->ret.value_6 = pregex_ptn_create_seq(
 									( ( pcb->tos - 1 )->value.value_6 ), ( ( pcb->tos - 0 )->value.value_6 ), (pregex_ptn*)NULL );
@@ -3405,7 +3405,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 112:
 				{
-					//#line 943 "src/parse.par"
+					#line 943 "src/parse.par"
 
 							pcb->ret.value_6 = pregex_ptn_create_kle( ( ( pcb->tos - 1 )->value.value_6 ) );
 						
@@ -3413,7 +3413,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 113:
 				{
-					//#line 949 "src/parse.par"
+					#line 949 "src/parse.par"
 
 							pcb->ret.value_6 = pregex_ptn_create_pos( ( ( pcb->tos - 1 )->value.value_6 ) );
 						
@@ -3421,7 +3421,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 114:
 				{
-					//#line 955 "src/parse.par"
+					#line 955 "src/parse.par"
 
 							pcb->ret.value_6 = pregex_ptn_create_opt( ( ( pcb->tos - 1 )->value.value_6 ) );
 						
@@ -3434,7 +3434,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 116:
 				{
-					//#line 965 "src/parse.par"
+					#line 965 "src/parse.par"
 
 						pccl*		ccl;
 
@@ -3448,7 +3448,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 117:
 				{
-					//#line 977 "src/parse.par"
+					#line 977 "src/parse.par"
 
 						pcb->ret.value_6 = pregex_ptn_create_string( strbuf, 0 );
 					
@@ -3456,7 +3456,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 118:
 				{
-					//#line 983 "src/parse.par"
+					#line 983 "src/parse.par"
 
 						pccl*	ccl;
 						greedy = FALSE;
@@ -3471,7 +3471,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 119:
 				{
-					//#line 996 "src/parse.par"
+					#line 996 "src/parse.par"
 
 						pcb->ret.value_6 = pregex_ptn_create_sub( ( ( pcb->tos - 1 )->value.value_6 ) );
 					
@@ -3504,13 +3504,13 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 125:
 				{
-					//#line 1010 "src/parse.par"
+					#line 1010 "src/parse.par"
 	pcb->ret.value_1 = FALSE; 
 					;
 				}				break;
 					case 126:
 				{
-					//#line 1014 "src/parse.par"
+					#line 1014 "src/parse.par"
 	pcb->ret.value_1 = TRUE; 
 					;
 				}				break;
@@ -3526,19 +3526,19 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 129:
 				{
-					//#line 1023 "src/parse.par"
+					#line 1023 "src/parse.par"
 	reset_strbuf(); 
 					;
 				}				break;
 					case 130:
 				{
-					//#line 1027 "src/parse.par"
+					#line 1027 "src/parse.par"
 	strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) ); 
 					;
 				}				break;
 					case 131:
 				{
-					//#line 1030 "src/parse.par"
+					#line 1030 "src/parse.par"
  	strbuf_append( (char)'\\' );
 						strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) ); 	  
 					;
@@ -3550,25 +3550,25 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 133:
 				{
-					//#line 1038 "src/parse.par"
+					#line 1038 "src/parse.par"
  	strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) ); 
 					;
 				}				break;
 					case 134:
 				{
-					//#line 1039 "src/parse.par"
+					#line 1039 "src/parse.par"
 	reset_strbuf(); 
 					;
 				}				break;
 					case 135:
 				{
-					//#line 1043 "src/parse.par"
+					#line 1043 "src/parse.par"
  	strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) ); 
 					;
 				}				break;
 					case 136:
 				{
-					//#line 1046 "src/parse.par"
+					#line 1046 "src/parse.par"
  	strbuf_append( (char)'\\' );
 						strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) );
 					
@@ -3576,25 +3576,25 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 137:
 				{
-					//#line 1052 "src/parse.par"
+					#line 1052 "src/parse.par"
 	pcb->ret.value_0 = pstrdup( strbuf ); 
 					;
 				}				break;
 					case 138:
 				{
-					//#line 1053 "src/parse.par"
+					#line 1053 "src/parse.par"
 	pcb->ret.value_0 = (char*)NULL; 
 					;
 				}				break;
 					case 139:
 				{
-					//#line 1057 "src/parse.par"
+					#line 1057 "src/parse.par"
  	strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) ); 
 					;
 				}				break;
 					case 140:
 				{
-					//#line 1058 "src/parse.par"
+					#line 1058 "src/parse.par"
  	reset_strbuf(); 
 					;
 				}				break;
@@ -3605,7 +3605,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 142:
 				{
-					//#line 1076 "src/parse.par"
+					#line 1076 "src/parse.par"
  	reset_strbuf();
 						strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) );
 					
@@ -3613,7 +3613,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 143:
 				{
-					//#line 1083 "src/parse.par"
+					#line 1083 "src/parse.par"
 	strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) );  
 					;
 				}				break;
@@ -3634,13 +3634,13 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 147:
 				{
-					//#line 1095 "src/parse.par"
+					#line 1095 "src/parse.par"
 	strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) ); 
 					;
 				}				break;
 					case 148:
 				{
-					//#line 1098 "src/parse.par"
+					#line 1098 "src/parse.par"
  	reset_strbuf();
 						strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) );
 					
@@ -3648,7 +3648,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 149:
 				{
-					//#line 1106 "src/parse.par"
+					#line 1106 "src/parse.par"
  	pcb->ret.value_0 = pstrdup( ( ( pcb->tos - 0 )->value.value_0 ) );
 						reset_strbuf();
 					
@@ -3656,20 +3656,20 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 150:
 				{
-					//#line 1112 "src/parse.par"
+					#line 1112 "src/parse.par"
 	pcb->ret.value_0 = strbuf; 
 					;
 				}				break;
 					case 151:
 				{
-					//#line 1113 "src/parse.par"
+					#line 1113 "src/parse.par"
 	reset_strbuf();
 						pcb->ret.value_0 = (char*)NULL; 
 					;
 				}				break;
 					case 152:
 				{
-					//#line 1118 "src/parse.par"
+					#line 1118 "src/parse.par"
 
 						if( !parser->p_template )
 						{
@@ -3686,7 +3686,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 153:
 				{
-					//#line 1134 "src/parse.par"
+					#line 1134 "src/parse.par"
  last_code_begin = pcb->line; 
 					;
 				}				break;
@@ -3697,19 +3697,19 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 155:
 				{
-					//#line 1138 "src/parse.par"
+					#line 1138 "src/parse.par"
 	reset_strbuf(); 
 					;
 				}				break;
 					case 156:
 				{
-					//#line 1142 "src/parse.par"
+					#line 1142 "src/parse.par"
 	strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) );		
 					;
 				}				break;
 					case 157:
 				{
-					//#line 1145 "src/parse.par"
+					#line 1145 "src/parse.par"
 	reset_strbuf();
 						strbuf_append( ( ( pcb->tos - 0 )->value.value_5 ) );
 					
@@ -3747,7 +3747,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 170:
 				{
-					//#line 1163 "src/parse.par"
+					#line 1163 "src/parse.par"
 
 						pcb->ret.value_5 = ( ( pcb->tos - 0 )->value.value_5 );
 					
@@ -3765,7 +3765,7 @@ int _parse( _pcb* pcb )
 				}				break;
 					case 173:
 				{
-					//#line 1172 "src/parse.par"
+					#line 1172 "src/parse.par"
  pcb->ret.value_5 = pcb->line; 
 					;
 				}				break;
@@ -5487,7 +5487,7 @@ int _parse( _pcb* pcb )
 #define UNICC_ON_SHIFT	1
 			switch( pcb->sym )
 			{
-//#line 233 "src/parse.par"
+#line 233 "src/parse.par"
 				case 41:
 				{
 					

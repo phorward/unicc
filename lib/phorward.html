@@ -34,8 +34,8 @@ table.center{margin-left:auto; margin-right:auto;}
 <header>
 <hgroup>
 <h1>The Phorward C/C++ Library and Toolkit</h1>
-<h2>libphorward 1.0.2</h2>
-<h3>Jul 2020</h3>
+<h2>libphorward 1.0.3</h2>
+<h3>Oct 2020</h3>
 </hgroup>
 </header>
 <article>
@@ -92,7 +92,7 @@ table.center{margin-left:auto; margin-right:auto;}
       </li>
       <li><a href="#toc22">Inserting elements</a>
       </li>
-      <li><a href="#toc23">Accessing and iterating elements</a>
+      <li><a href="#toc23">Accessing and iterating over elements</a>
       </li>
       <li><a href="#toc24">Removing elements</a>
       </li>
@@ -112,7 +112,7 @@ table.center{margin-left:auto; margin-right:auto;}
       </li>
       <li><a href="#toc31">Inserting elements</a>
       </li>
-      <li><a href="#plistel">Accessing and iterating elements</a>
+      <li><a href="#plistel">Accessing and iterating over elements</a>
       </li>
       <li><a href="#toc33">Removing elements</a>
       </li>
@@ -640,7 +640,7 @@ table.center{margin-left:auto; margin-right:auto;}
     </li>
     <li><a href="#plex">plex</a> - Lexical analyzers
     </li>
-    <li><a href="#plist">plist</a> - Linked lists, hash-tables, queues &amp; stacks
+    <li><a href="#plist">plist</a> - Dynamically managed linked lists, hash-tables, queues &amp; stacks
     </li>
     <li><a href="#pregex">pregex</a> - Regular expressions
     </li>
@@ -675,10 +675,10 @@ table.center{margin-left:auto; margin-right:auto;}
 </ul>
 
 <p>
-The cornerstone for this C functions library was already laid in 2006 during some experimenting with several algorithms, data structures and their implementation. It rapidly turned out to become a general purpose library serving as the base toolchain for several, unfortunately mostly unfinished software projects which had their origin at <em>J.M.K S.F. Software Technologies</em>, which was later renamed to <em>Phorward Software Technologies</em>.
+The cornerstone for this C functions library was already laid in 2006 during some experimenting with several algorithms, data structures and their implementation.
 </p>
 <p>
-The library was then released as version 0.16 to the public in 2011, together with the open source parser generator <a href="http://unicc.phorward-software.com/">UniCC</a>. It was initially planned to use the library for other C-based software projects having their origin at Phorward Software Technologies also, but most of them where not continued, abandoned or evolved into other directions.
+The library was officially released in 2001 as version 0.16 to the public, together with the open source parser generator <a href="http://unicc.phorward-software.com/">UniCC</a>. It was initially planned to use the library for other C-based software projects having their origin at Phorward Software Technologies also, but most of them where not continued, abandoned or evolved into other directions.
 </p>
 <p>
 In 2019, the library was finally officially released as version 1.0, and will now be continued in several ways.
@@ -1360,7 +1360,7 @@ fill_usertype( tp );
 
 </section>
 <section id="toc23">
-<h3>Accessing and iterating elements</h3>
+<h3>Accessing and iterating over elements</h3>
 
 <p>
 Direct access to specific elements is done using
@@ -1563,7 +1563,7 @@ Other, useful functions are
 <h3>Overview</h3>
 
 <p>
-Next to the <a href="#parray">parray</a> object, the <a href="#plist">plist</a> object is a powerful C implementation of a double-linked list with some extra features. It is also used for handling homogeneous elements of the same size in a dynamic way, and can be used for many tasks.
+The <a href="#plist">plist</a> object is a powerful C implementation of a double-linked list with some extra features. It is also used for handling homogeneous elements of the same size in a dynamic way, and can be used for many tasks.
 </p>
 <p>
 plist can be seen as a superset of the <a href="#parray">parray</a> object, because it features nearly the same operations but with other underlying data management methods.
@@ -1743,7 +1743,7 @@ fill_usertype( tp );
 
 </section>
 <section id="plistel">
-<h3>Accessing and iterating elements</h3>
+<h3>Accessing and iterating over elements</h3>
 
 <p>
 Elements within a <a href="#plist">plist</a> object are referenced by <a href="#plistel">plistel</a> items. To access the data element behind a <a href="#plistel">plistel</a> item, the function <a href="#fn_plist_access">plist_access()</a> is used, in combination with element retrival functions, like
@@ -1934,13 +1934,16 @@ plist provides these additional functions:
 <h2>Character-classes (pccl)</h2>
 
 <p>
-The <a href="#pccl">pccl</a> object is established on top of the <a href="#plist">plist</a> object and encapsulates easy-to-handle low-level functions for character-class handling.
+The <a href="#pccl">pccl</a> object is established on top of the <a href="#parray">parray</a> object and encapsulates easy-to-handle low-level functions for character-class handling.
 </p>
 <p>
-These functions are heavily used by the library's regular expressions, but may also be helpful for other related projects. <a href="#pccl">pccl</a> can handle character classes, by chaining ranges.
+These functions are heavily used by the library's regular expression facilities, but may also be helpful for other related projects. <a href="#pccl">pccl</a> can handle character classes, by chaining ranges, and optimizing intersections between them.
 </p>
 <p>
-It supports a fully-fledged set theory automatism, including construction of intersections, unions, range removal or appending. <a href="#pccl">pccl</a> objects are designed to work on huge alphabets with low memory consumption. By default, characters are specified as <strong>wchar_t</strong> (wide-character unicode) values.
+pccl supports a fully-fledged set theory automatism, including construction of intersections, unions, range removal or appending. <a href="#pccl">pccl</a> objects are designed to work on huge alphabets with low memory consumption. By default, characters are specified as <strong>wchar_t</strong> (wide-character unicode) values.
+</p>
+<p>
+Primary functions overview:
 </p>
 
 <ul>
@@ -1973,7 +1976,7 @@ ccl = pccl_create( 0, 255, "A-Za-z0-9_-" );
 /* Invert character class */
 pccl_negate( ccl );
 
-/* Remove system chars */
+/* Remove ASCII system chars */
 pccl_delrange( ccl, 0, 31 );
 
 /* Oh, and delete the "z" */
@@ -1982,7 +1985,7 @@ pccl_del( ccl, 'z' );
 /* But add tab again! */
 pccl_add( ccl, '\t' );
 
-/* Enable all from 32 to 126  */
+/* Enable all from ASCII 32 to 126  */
 pccl_addrange( ccl, ' ', '~' );
 
 /* Alternative way: */
@@ -2001,7 +2004,7 @@ pccl_free( ccl );
 </code></pre>
 
 <p>
-Useful, additional functions when working with <a href="#pccl">pccl</a> are:
+Additional functions when working with <a href="#pccl">pccl</a> are:
 </p>
 
 <ul>

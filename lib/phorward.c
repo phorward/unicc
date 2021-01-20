@@ -1,11 +1,11 @@
 /* -MODULE----------------------------------------------------------------------
 Phorward C/C++ Library
-Copyright (C) 2006-2020 by Phorward Software Technologies, Jan Max Meyer
+Copyright (C) 2006-2021 by Phorward Software Technologies, Jan Max Meyer
 https://phorward.info ++ contact<at>phorward<dash>software<dot>com
 All rights reserved. See LICENSE for more information.
 
 File:	phorward.c
-Usage:	Phorward C/C++ library; Merged by standalone.sh on 2020-07-20
+Usage:	Phorward C/C++ library; Merged by standalone.sh on 2021-01-20
 ----------------------------------------------------------------------------- */
 
 #include "phorward.h"
@@ -6525,7 +6525,7 @@ static void pregex_dfa_default_trans( pregex_dfa* dfa )
 			all += cnt;
 		}
 
-		if( all <= PCCL_MAX ) /* fixme... */
+		if( all < PCCL_MAX )
 			st->def_trans = (pregex_dfa_tr*)NULL;
 	}
 

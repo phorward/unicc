@@ -1,7 +1,7 @@
 #!/bin/sh
 #-------------------------------------------------------------------------------
 # Phorward C/C++ Library
-# Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
+# Copyright (C) 2006-2021 by Phorward Software Technologies, Jan Max Meyer
 # https://phorward.info ++ contact<at>phorward<dash>software<dot>com
 # All rights reserved. See LICENSE for more information.
 #
@@ -11,7 +11,7 @@
 #-------------------------------------------------------------------------------
 
 # This is the official place where the version number is provided:
-VERSION="1.0.1"
+VERSION="1.0.3"
 echo "$VERSION"
 
 # ------------------------------------------------------------------------------
