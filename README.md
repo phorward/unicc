@@ -1,14 +1,12 @@
 # UniCC [![Build Status](https://travis-ci.org/phorward/unicc.svg?branch=master)](https://travis-ci.org/phorward/unicc)
 
-**UniCC** is a universal LALR(1) parser generator, targetting C, C++, Python, JavaScript, JSON and XML.
+**unicc** is a universal LALR(1) parser generator, targetting C, C++, Python, JavaScript, JSON and XML.
 
 ## About
 
-UniCC (UNIversal Compiler-Compiler) is a LALR(1) parser generator.
+**unicc** compiles an augmented grammar definition into a program source code that parses the described grammar. Because UniCC is intended to be target-language independent, it can be configured via template definition files to emit parsers in almost any programming language.
 
-It compiles an augmented grammar definition into a program source code that parses the described grammar. Because UniCC is intended to be target-language independent, it can be configured via template definition files to emit parsers in almost any programming language.
-
-UniCC comes with out of the box support for the programming languages **C**, **C++**, **Python** (both 2.x and 3.x) and **JavaScript**. Parsers can also be generated into **JSON** and **XML**.
+UniCC comes with out of the box support for the programming languages **C**, **C++**, **Python** and **JavaScript**. Parsers can also be generated into **JSON** and **XML**.
 
 UniCC can generate both scanner-less and scanner-mode parsers. The more powerful scanner-less parsing is the default, and allows to break the barrier between the grammar and its tokens, so tokens are under full control of the context-free grammar. Scanner-less parsing requires that the provided grammar is internally rewritten according to whitespace and lexeme settings.
 
@@ -102,8 +100,7 @@ UniCC provides the following features and tools:
 
 ## Documentation
 
-The **UniCC User's Manual** is the official standard documentation of the UniCC Parser Generator.
-Download it for free [here](https://www.phorward-software.com/products/unicc/unicc.pdf).
+The [UniCC User's Manual](http://downloads.phorward-software.com/unicc/unicc.pdf) is the official standard documentation of the UniCC Parser Generator.
 
 ## Installation
 
@@ -115,22 +112,13 @@ make
 make install
 ```
 
-Windows users may download the pre-built setup package that can be found on the Phorward download server at https://phorward.info/download/unicc.
+Windows users may download the pre-built setup package that can be found on the Phorward download server at http://downloads.phorward-software.com/unicc/.
 
 ## UniCC v2
 
-Since 2014, I'm working on a version 2 of UniCC. It currently exists in a [separate branch unicc2](https://github.com/phorward/unicc/tree/unicc2) inside this repository, and is a complete rewrite, but with the intention to provide better tools for grammar prototyping and direct AST traversal. Any help on the unicc2 branch is heavily appreciated, and I hope to bring it into a state that is capable to substitute UniCC v1 at some time.
-
-Please feel free to contact me if you have any questions on any of the two UniCC versions.
-
-## Credits
-
-UniCC is developed and maintained by Jan Max Meyer, Phorward Software Technologies.
+Between 2014 and 2020, a version 2 of UniCC was under development, but abandoned for now. This version currently exists in an [orphaned branch unicc2](https://github.com/phorward/unicc/tree/unicc2) inside this repository, and is a complete rewrite, but with the intention to provide better tools for grammar prototyping and direct AST traversal.
 
 ## License
 
-This software is an open source project released under the terms and conditions of the MIT license. See the LICENSE file for more information.
-
-Copyright (C) 2006-2020 by Phorward Software Technologies, Jan Max Meyer.
-
-You may use, modify and distribute this software under the terms and conditions of the MIT license. The full license terms can be obtained from the file LICENSE.
+UniCC is free software under the MIT license.
+Please see the LICENSE file for more details.
