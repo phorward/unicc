@@ -712,7 +712,7 @@ production<PROD*>	:	line_number rhs_opt:rhs code_opt_dup:act
 
 rhs_opt<PROD*>		:	rhs
 
-					|	[*	@@ = create_production( parser,
+					|	[*	@@ = current_prod = create_production( parser,
 								(SYMBOL*)NULL );
 						*]
 					;
