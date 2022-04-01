@@ -692,7 +692,7 @@ ast_node<char*>		:	'=' identifier		[* @@ = pstrdup( strbuf ); *]
 
 production<PROD*>	:	line_number rhs_opt:rhs code_opt_dup:act
 							ast_node
-							prod_directives?
+							prod_directives*
 						[*
 							@rhs->line = @line_number;
 
