@@ -269,7 +269,7 @@ class @@prefixParserControlBlock {
 
 // Parser
 
-class @@prefixParser {
+export default class @@prefixParser {
     static #grammar = {
         "symbols": [
 @@symbols
