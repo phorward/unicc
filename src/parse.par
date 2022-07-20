@@ -868,7 +868,7 @@ terminal<SYMBOL*>	:	ccl
 							@@->used = TRUE;
 							@@->defined = TRUE;
 							@@->keyword = TRUE;
-							@@->emit = pstrdup( strbuf );
+							@@->emit = @kw ? pstrdup( strbuf ) : NULL;
 
 							@@->ptn = pregex_ptn_create_string( strbuf,
 										parser->p_cis_strings ?
@@ -1031,7 +1031,8 @@ ccl_char		:	!'\\\''
 						strbuf_append( @2 ); 	  *]
 				;
 
-kw				:	'\"' kw_str '\"'
+kw<BOOLEAN>		:	'\"' '\"' kw_str '\"' '\"'			[* @@ = TRUE *]
+				|	'\"' kw_str '\"'					[* @@ = FALSE *]
 				;
 
 kw_str			:	kw_str kw_char
