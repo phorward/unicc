@@ -1,17 +1,3 @@
-UNICC_STATIC @@prefix_ast* @@prefix_ast_free( @@prefix_ast* node )
-{
-	if( !node )
-		return (@@prefix_ast*)NULL;
-
-	@@prefix_ast_free( node->child );
-	@@prefix_ast_free( node->next );
-
-	if( node->token )
-		free( node->token );
-
-	free( node );
-	return (@@prefix_ast*)NULL;
-}
 
 UNICC_STATIC @@prefix_ast* @@prefix_ast_create( @@prefix_pcb* pcb, char* emit,
 													UNICC_SCHAR* token )
@@ -50,6 +36,25 @@ UNICC_STATIC @@prefix_ast* @@prefix_ast_create( @@prefix_pcb* pcb, char* emit,
 	return node;
 }
 
+/* Don't report on unused @@prefix_ast_free or @@prefix_ast_print */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
+
+UNICC_STATIC @@prefix_ast* @@prefix_ast_free( @@prefix_ast* node )
+{
+	if( !node )
+		return (@@prefix_ast*)NULL;
+
+	@@prefix_ast_free( node->child );
+	@@prefix_ast_free( node->next );
+
+	if( node->token )
+		free( node->token );
+
+	free( node );
+	return (@@prefix_ast*)NULL;
+}
+
 UNICC_STATIC void @@prefix_ast_print( FILE* stream, @@prefix_ast* node )
 {
 	int 		i;
@@ -80,3 +85,5 @@ UNICC_STATIC void @@prefix_ast_print( FILE* stream, @@prefix_ast* node )
 		node = node->next;
 	}
 }
+
+#pragma GCC diagnostic pop

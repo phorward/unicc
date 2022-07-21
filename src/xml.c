@@ -565,6 +565,7 @@ static short xml_internal_dtd( xml_root_t root, char* s, size_t len )
 				continue;
 			else
 				*s = '\0';	/* null terminate tag name */
+
 			for( i = 0; root->attr[i] && strcmp( n, root->attr[i][0] ); i++ )
 				;
 
@@ -1608,4 +1609,3 @@ XML_T xml_cut( XML_T xml )
 	xml->ordered = xml->sibling = xml->next = NULL;
 	return xml;
 }
-

@@ -58,9 +58,7 @@ void dump_grammar( FILE* stream, PARSER* parser )
 	if( first_progress )
 		fprintf( stream, "\n" );
 
-	fprintf( stream, "\nGRAMMAR\n\n",
-		( parser->p_basename ? parser->p_basename : "" ),
-			( parser->p_basename ? ": " : "" ) );
+	fprintf( stream, "\nGRAMMAR\n\n" );
 
 	plist_for( parser->symbols, e )
 	{
@@ -379,4 +377,3 @@ void dump_production( FILE* stream, PROD* p,
 
 	fprintf( stream, "\n" );
 }
-

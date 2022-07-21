@@ -1538,20 +1538,6 @@ UNICC_STATIC UNICC_SCHAR* _lexem( _pcb* pcb )
 	return pcb->lexem;
 }
 
-UNICC_STATIC _ast* _ast_free( _ast* node )
-{
-	if( !node )
-		return (_ast*)NULL;
-
-	_ast_free( node->child );
-	_ast_free( node->next );
-
-	if( node->token )
-		free( node->token );
-
-	free( node );
-	return (_ast*)NULL;
-}
 
 UNICC_STATIC _ast* _ast_create( _pcb* pcb, char* emit,
 													UNICC_SCHAR* token )
@@ -1590,6 +1576,25 @@ UNICC_STATIC _ast* _ast_create( _pcb* pcb, char* emit,
 	return node;
 }
 
+/* Don't report on unused _ast_free or _ast_print */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-function"
+
+UNICC_STATIC _ast* _ast_free( _ast* node )
+{
+	if( !node )
+		return (_ast*)NULL;
+
+	_ast_free( node->child );
+	_ast_free( node->next );
+
+	if( node->token )
+		free( node->token );
+
+	free( node );
+	return (_ast*)NULL;
+}
+
 UNICC_STATIC void _ast_print( FILE* stream, _ast* node )
 {
 	int 		i;
@@ -1620,6 +1625,8 @@ UNICC_STATIC void _ast_print( FILE* stream, _ast* node )
 		node = node->next;
 	}
 }
+
+#pragma GCC diagnostic pop
 
 UNICC_STATIC int _get_act( _pcb* pcb )
 {
@@ -3130,7 +3137,7 @@ int _parse( _pcb* pcb )
 					case 86:
 				{
 					#line 715 "src/parse.par"
-	pcb->ret.value_4 = create_production( parser,
+	pcb->ret.value_4 = current_prod = create_production( parser,
 								(SYMBOL*)NULL );
 						
 					;
@@ -5326,7 +5333,7 @@ int _parse( _pcb* pcb )
 
 			if( node )
 			{
-				if( lnode = pcb->tos->node )
+				if( ( lnode = pcb->tos->node ) )
 				{
 					while( lnode->next )
 						lnode = lnode->next;
@@ -5593,7 +5600,7 @@ static void parse_error( _pcb* pcb )
 				ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
 					parser->filename, pcb->line,
 					pcb->sym == -1 ?
-						pcb->buf :  _symbols[ pcb->sym ].name,
+						(char*)pcb->buf :  _symbols[ pcb->sym ].name,
 					expect ? expect : "(unknown)" );
 	pfree( expect );
 }
@@ -5626,7 +5633,7 @@ int parse_grammar( PARSER* p, char* filename, char* src )
 
 
 /* Create Main? */
-#if 1495 == 0
+#if 1502 == 0
 	#ifndef UNICC_MAIN
 	#define UNICC_MAIN 	1
 	#endif

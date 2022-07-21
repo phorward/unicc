@@ -1037,9 +1037,7 @@ FALSE: Parser generation failed because of parse errors. */
 void build_xml( PARSER* parser, BOOLEAN finished )
 {
 	XML_T			par;
-
 	XML_T			code;
-	XML_T			attrib;
 
 	FILE* 			out					= stdout;
 	char*			outname				= (char*)NULL;
@@ -1182,4 +1180,3 @@ void build_xml( PARSER* parser, BOOLEAN finished )
 
 	VOIDRET;
 }
-
