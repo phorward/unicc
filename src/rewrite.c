@@ -422,7 +422,7 @@ void fix_precedences( PARSER* parser )
 		if( p->prec > 0 )
 			continue;
 
-		/* First try to find leftmost terminal */
+		/* First try to find rightmost terminal */
 		found = FALSE;
 		for( f = plist_last( p->rhs ); f; f = plist_prev( f ) )
 		{
