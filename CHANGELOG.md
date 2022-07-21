@@ -2,6 +2,12 @@
 
 This file is used to document any relevant changes done to UniCC.
 
+## [main]
+
+Current main branch.
+
+- Target `javascript` updated to more recent JS/ECMAScript6 features
+
 ## [v1.7]
 
 Released on Jan 20, 2021
