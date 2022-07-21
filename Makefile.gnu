@@ -36,7 +36,7 @@ clean: boot_clean
 
 src/proto.h: boot_clean
 	lib/pproto *.c | awk "/int _parse/ { next } { print }" >$@
-	
+
 make_install:
 	cp Makefile.gnu Makefile
 
@@ -201,4 +201,3 @@ test_js: $(TESTPREFIX)js_expr $(TESTPREFIX)js_ast
 
 test: test_c test_cpp test_py test_js
 	@echo "=== $+ succeeded ==="
-
