@@ -96,7 +96,7 @@
 
 			if( node )
 			{
-				if( lnode = pcb->tos->node )
+				if( ( lnode = pcb->tos->node ) )
 				{
 					while( lnode->next )
 						lnode = lnode->next;

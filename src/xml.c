@@ -565,10 +565,11 @@ static short xml_internal_dtd( xml_root_t root, char* s, size_t len )
 				continue;
 			else
 				*s = '\0';	/* null terminate tag name */
+
 			for( i = 0; root->attr[i] && strcmp( n, root->attr[i][0] ); i++ )
 				;
 
-			while( *( n = ++s + strspn(s, XML_WS) ) && *n != '>' )
+			while( *( ++s, n = s + strspn(s, XML_WS) ) && *n != '>' )
 			{
 				if( *( s = n + strcspn(n, XML_WS) ) ) *s = '\0'; /* attr name */
 				else
@@ -1608,4 +1609,3 @@ XML_T xml_cut( XML_T xml )
 	xml->ordered = xml->sibling = xml->next = NULL;
 	return xml;
 }
-
