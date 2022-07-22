@@ -1,6 +1,6 @@
-# UniCC [![Build Status](https://travis-ci.org/phorward/unicc.svg?branch=master)](https://travis-ci.org/phorward/unicc)
+# UniCC [![C/C++ CI](https://github.com/phorward/unicc/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/phorward/unicc/actions/workflows/c-cpp.yml) [![MIT License badge](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-**unicc** is a universal LALR(1) parser generator, targetting C, C++, Python, JavaScript, JSON and XML.
+**unicc** is a universal LALR(1) parser generator with built-in scanner generator, targetting C, C++, Python, JavaScript, JSON and XML.
 
 ## About
 
@@ -15,7 +15,7 @@ UniCC can generate both scanner-less and scanner-mode parsers. The more powerful
 Below is the full definition of a simple, universal grammar example that can be compiled to any of UniCC's target languages.
 This example uses the automatic abstract syntax tree construction syntax to define nodes and leafs of the resulting syntax tree.
 
-```c
+```unicc
 #whitespaces    ' \t';
 
 #left           '+' '-';
@@ -44,7 +44,7 @@ add
 
 Next is a (more complex) version of the four-function arithmetic syntax including their calculation semantics, for integer values. In this example, the scannerless parsing capabilities of UniCC are used to parse the **int** value from its single characters, so the symbol **int** is configured to be handled as a `lexeme`, which influences the behavior how whitespace is handled.
 
-```c
+```unicc
 #!language      C;	// <- target language!
 
 #whitespaces    ' \t';
@@ -112,13 +112,13 @@ make
 make install
 ```
 
-Windows users may download the pre-built setup package that can be found on the Phorward download server at http://downloads.phorward-software.com/unicc/.
+In the past, setup packages for Windows systems where also provided, but these are not maintained anymore since unicc v1.6. You can still find them [here](https://downloads.phorward-software.com/unicc/).
 
 ## UniCC v2
 
-Between 2014 and 2020, a version 2 of UniCC was under development, but abandoned for now. This version currently exists in an [orphaned branch unicc2](https://github.com/phorward/unicc/tree/unicc2) inside this repository, and is a complete rewrite, but with the intention to provide better tools for grammar prototyping and direct AST traversal.
+Between 2014 and 2020, a version 2 of UniCC was under development, but abandoned for now. This version currently exists in the [branch unicc2](https://github.com/phorward/unicc/tree/unicc2) inside of this repository, and is a complete rewrite, but with the intention to provide better tools for grammar prototyping and direct AST traversal.
 
 ## License
 
-UniCC is free software under the MIT license.
+UniCC is free software under the MIT license.<br>
 Please see the LICENSE file for more details.

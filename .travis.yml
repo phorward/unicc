@@ -1,9 +1,0 @@
-language: C
-sudo: enabled
-script: ./.travis.sh
-
-before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq python2.7 python nodejs
-
- 
