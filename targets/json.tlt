@@ -1,6 +1,8 @@
 <?xml version="1.0" standalone="yes"?>
 <generator name="JSON">
 	<code_localization />
+	<true>true</true>
+	<false>false</false>
 
 	<!--
 	****************************************************************************
@@ -133,12 +135,12 @@
 	-->
 
 	<symbols>
-		<col>		{ "symbol": "@@symbol-name", "emit": "@@emit", "is-terminal": @@type, "is-lexem": @@lexem, "is-whitespace": @@whitespace, "is-greedy": @@greedy }</col>
+		<col>			{ "symbol": "@@symbol-name", "emit": "@@emit", "is_terminal": @@type, "is_lexem": @@lexem, "is_whitespace": @@whitespace, "is_greedy": @@greedy }</col>
 		<col_sep>,&#x0A;</col_sep>
 	</symbols>
 
 	<productions>
-		<col>		{ "production": "@@production", "emit": "@@emit", "length": @@length, "left-hand-side": @@lhs }</col>
+		<col>			{ "production": "@@production", "emit": "@@emit", "length": @@length, "left_hand_side": @@lhs }</col>
 		<col_sep>,&#x0A;</col_sep>
 	</productions>
 
@@ -151,16 +153,16 @@
 <file filename="@@basename.json">{
 	"grammar": {
 		"symbols": [
-			@@symbols
+@@symbols
 		],
 		"productions": [
-			@@productions
+@@productions
 		],
 		"goal": @@goal
 	},
-	"lexer": {
-		"select": [ @@dfa-select ],
-		"index": [
+	lexer: {
+		"machine": [ @@dfa-select ],
+		"indexes": [
 @@dfa-index
 		],
 		"chars": [
@@ -174,13 +176,13 @@
 		]
 	},
 	"parser": {
-		"action": [
+		"actions": [
 @@action-table
 		],
-		"goto": [
+		"gotos": [
 @@goto-table
 		],
-		"default-production": [ @@default-productions ]
+		"default_productions": [ @@default-productions ]
 	}
 }
 </file>

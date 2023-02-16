@@ -36,6 +36,15 @@ between the rows/columns, except the last row/column.
 <generator name="C">
 	<!--
 	****************************************************************************
+	Boolean values
+	****************************************************************************
+	Values for booleans.
+	-->
+	<true>1</true>
+	<false>0</false>
+
+	<!--
+	****************************************************************************
 	Escape sequences
 	****************************************************************************
 	These are the escapable sequence definitions for the target language

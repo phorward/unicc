@@ -43,12 +43,6 @@ Usage:	Global declarations, structures and includes
 #define P_REWRITTEN_CCL			"#"
 #define P_REWRITTEN_KW			"~"
 
-/* Regular expression terminals */
-#define P_PREGEX_AUTO_NAME		"regex"
-
-/* Default End-of-Input string */
-#define P_DEF_EOF_SYMBOL		"\\0"
-
 /* Symbol types */
 #define SYM_UNDEFINED			-1
 #define SYM_NON_TERMINAL		0
@@ -440,6 +434,9 @@ struct _generator
 												array */
 	int			sequences_count;			/* Number of elements in the
 												above array */
+
+	char*		truedef;					/* Value for true */
+	char*		falsedef;					/* Value for false */
 
 	XML_T		xml;						/* XML root node */
 };

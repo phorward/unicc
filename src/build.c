@@ -627,6 +627,12 @@ BOOLEAN load_generator( PARSER* parser, GENERATOR* g, char* genfile )
 		return FALSE;
 	}
 
+	if( ! *( g->truedef = (char*)xml_txt( xml_child( g->xml, "true" ) ) ) )
+		g->truedef = "1";
+
+	if( ! *( g->falsedef = (char*)xml_txt( xml_child( g->xml, "false" ) ) ) )
+		g->falsedef = "0";
+
 	GET_XML_DEF( g->xml, g->vstack_def_type, "vstack_def_type" );
 	GET_XML_DEF( g->xml, g->vstack_term_type, "vstack_term_type" );
 
@@ -1182,12 +1188,14 @@ void build_code( PARSER* parser )
 					int_to_str( sym->type ), TRUE,
 				GEN_WILD_PREFIX "datatype",
 					int_to_str( sym->vtype ? sym->vtype->id : 0 ), TRUE,
-				GEN_WILD_PREFIX "lexem",
-					int_to_str( sym->lexem ), TRUE,
-				GEN_WILD_PREFIX "whitespace",
-					int_to_str( sym->whitespace ), TRUE,
-				GEN_WILD_PREFIX "greedy",
-					int_to_str( sym->greedy ), TRUE,
+				GEN_WILD_PREFIX "is-terminal",
+					sym->type > 0 ? gen->truedef : gen->falsedef, TRUE,
+				GEN_WILD_PREFIX "is-lexem",
+					sym->lexem ? gen->truedef : gen->falsedef, FALSE,
+				GEN_WILD_PREFIX "is-whitespace",
+					sym->whitespace ? gen->truedef : gen->falsedef, FALSE,
+				GEN_WILD_PREFIX "is-greedy",
+					sym->greedy ? gen->truedef : gen->falsedef, FALSE,
 
 				(char*)NULL ), TRUE );
 
@@ -1579,4 +1587,3 @@ void build_code( PARSER* parser )
 
 	VOIDRET;
 }
-

@@ -1,5 +1,7 @@
 <?xml version="1.0" standalone="yes"?>
 <generator name="Python">
+	<true>True</true>
+	<false>False</false>
 	<escape-sequence for="\" do="\\" />
 	<escape-sequence for="&#x22;" do="\&#x22;" />
 

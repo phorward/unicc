@@ -2,6 +2,14 @@
 <generator name="C++">
 	<!--
 	****************************************************************************
+	Boolean values
+	****************************************************************************
+	-->
+	<true>true</true>
+	<false>false</false>
+
+	<!--
+	****************************************************************************
 	Escape sequences
 	****************************************************************************
 	-->
@@ -126,7 +134,7 @@
 	-->
 
 	<symbols>
-		<col>			{ /* @@symbol */ "@@symbol-name", "@@emit", @@type, bool(@@lexem), bool(@@whitespace), bool(@@greedy) }</col>
+		<col>			{ /* @@symbol */ "@@symbol-name", "@@emit", @@type, @@lexem, @@whitespace, @@greedy }</col>
 		<col_sep>,&#x0A;</col_sep>
 	</symbols>
 

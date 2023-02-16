@@ -1,6 +1,13 @@
 <?xml version="1.0" standalone="yes"?>
 <generator name="JavaScript">
     <code_localization />
+	<!--
+	****************************************************************************
+	Boolean values
+	****************************************************************************
+	-->
+	<true>true</true>
+	<false>false</false>
 
     <!--
     ****************************************************************************
@@ -308,7 +315,7 @@ export default class @@prefixParser {
             @@default-productions
         ]
     };
-    
+
     // Get character
     static #get_char(pcb) {
         // Get next character from input stream
