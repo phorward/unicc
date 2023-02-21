@@ -1188,13 +1188,13 @@ void build_code( PARSER* parser )
 					int_to_str( sym->type ), TRUE,
 				GEN_WILD_PREFIX "datatype",
 					int_to_str( sym->vtype ? sym->vtype->id : 0 ), TRUE,
-				GEN_WILD_PREFIX "is-terminal",
-					sym->type > 0 ? gen->truedef : gen->falsedef, TRUE,
-				GEN_WILD_PREFIX "is-lexem",
+				GEN_WILD_PREFIX "terminal",
+					sym->type > 0 ? gen->truedef : gen->falsedef, FALSE,
+				GEN_WILD_PREFIX "lexem",
 					sym->lexem ? gen->truedef : gen->falsedef, FALSE,
-				GEN_WILD_PREFIX "is-whitespace",
+				GEN_WILD_PREFIX "whitespace",
 					sym->whitespace ? gen->truedef : gen->falsedef, FALSE,
-				GEN_WILD_PREFIX "is-greedy",
+				GEN_WILD_PREFIX "greedy",
 					sym->greedy ? gen->truedef : gen->falsedef, FALSE,
 
 				(char*)NULL ), TRUE );
