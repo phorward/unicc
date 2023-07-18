@@ -1,100 +1,100 @@
 <?xml version="1.0" standalone="yes"?>
 <generator name="Python">
-	<true>True</true>
-	<false>False</false>
-	<escape-sequence for="\" do="\\" />
-	<escape-sequence for="&#x22;" do="\&#x22;" />
+    <true>True</true>
+    <false>False</false>
+    <escape-sequence for="\" do="\\" />
+    <escape-sequence for="&#x22;" do="\&#x22;" />
 
-	<code_localization />
+    <code_localization />
 
-	<vstack_def_type>any</vstack_def_type>
-	<vstack_term_type>any</vstack_term_type>
-	<vstack_union_att>@@value-type-id</vstack_union_att>
-	<vstack_union_def>@@attribute: None, </vstack_union_def>
-	<vstack_single>value = None</vstack_single>
-	<vstack_union_start>value = {</vstack_union_start>
-	<vstack_union_end>}</vstack_union_end>
+    <vstack_def_type>any</vstack_def_type>
+    <vstack_term_type>any</vstack_term_type>
+    <vstack_union_att>@@value-type-id</vstack_union_att>
+    <vstack_union_def>@@attribute: None, </vstack_union_def>
+    <vstack_single>value = None</vstack_single>
+    <vstack_union_start>value = {</vstack_union_start>
+    <vstack_union_end>}</vstack_union_end>
 
-	<action_start>&#x09;def _reduce_action_@@production-number(self, pcb):&#x0A;&#x09;&#x09;</action_start>
-	<action_end>&#x0A;&#x09;&#x09;return&#x0A;&#x0A;</action_end>
-	<action_single>pcb.stack[-1 - @@offset].value</action_single>
-	<action_union>pcb.stack[-1 - @@offset].value[@@attribute]</action_union>
-	<action_lhs_single>pcb.ret</action_lhs_single>
-	<action_lhs_union>pcb.ret[@@attribute]</action_lhs_union>
+    <action_start>    def _reduce_action_@@production-number(self, pcb):&#x0A;        </action_start>
+    <action_end>&#x0A;        return&#x0A;&#x0A;</action_end>
+    <action_single>pcb.stack[-1 - @@offset].value</action_single>
+    <action_union>pcb.stack[-1 - @@offset].value[@@attribute]</action_union>
+    <action_lhs_single>pcb.ret</action_lhs_single>
+    <action_lhs_union>pcb.ret[@@attribute]</action_lhs_union>
 
-	<action_set_lhs>pcb.lhs = @@sym</action_set_lhs>
+    <action_set_lhs>pcb.lhs = @@sym</action_set_lhs>
 
-	<scan_action_start>&#x09;def _scan_action_@@symbol-number(self, pcb, shift = True):&#x0A;&#x09;&#x09;</scan_action_start>
-	<scan_action_end>&#x0A;&#x09;&#x09;return&#x0A;&#x0A;</scan_action_end>
-	<scan_action_begin_offset>pcb.buf</scan_action_begin_offset>
-	<scan_action_end_offset>pcb.len</scan_action_end_offset>
-	<scan_action_ret_single>pcb.tos.value</scan_action_ret_single>
-	<scan_action_ret_union>pcb.tos.value[@@attribute]</scan_action_ret_union>
-	<scan_action_set_symbol>pcb.sym = @@sym</scan_action_set_symbol>
+    <scan_action_start>    def _scan_action_@@symbol-number(self, pcb, shift = True):&#x0A;        </scan_action_start>
+    <scan_action_end>&#x0A;        return&#x0A;&#x0A;</scan_action_end>
+    <scan_action_begin_offset>pcb.buf</scan_action_begin_offset>
+    <scan_action_end_offset>pcb.len</scan_action_end_offset>
+    <scan_action_ret_single>pcb.tos.value</scan_action_ret_single>
+    <scan_action_ret_union>pcb.tos.value[@@attribute]</scan_action_ret_union>
+    <scan_action_set_symbol>pcb.sym = @@sym</scan_action_set_symbol>
 
-	<defprod>
-		<col>@@production-number</col>
-		<col_sep>, </col_sep>
-	</defprod>
+    <defprod>
+        <col>@@production-number</col>
+        <col_sep>, </col_sep>
+    </defprod>
 
-	<acttab>
-		<row_start>&#x09;&#x09;(</row_start>
-		<row_end>)</row_end>
-		<row_sep>,&#x0A;</row_sep>
-		<col>(@@symbol, @@action, @@index), </col>
-		<col_sep></col_sep>
-	</acttab>
+    <acttab>
+        <row_start>        (</row_start>
+        <row_end>)</row_end>
+        <row_sep>,&#x0A;</row_sep>
+        <col>(@@symbol, @@action, @@index), </col>
+        <col_sep></col_sep>
+    </acttab>
 
-	<gotab>
-		<row_start>&#x09;&#x09;(</row_start>
-		<row_end>)</row_end>
-		<row_sep>,&#x0A;</row_sep>
-		<col>(@@symbol, @@action, @@index), </col>
-		<col_sep></col_sep>
-	</gotab>
+    <gotab>
+        <row_start>        (</row_start>
+        <row_end>)</row_end>
+        <row_sep>,&#x0A;</row_sep>
+        <col>(@@symbol, @@action, @@index), </col>
+        <col_sep></col_sep>
+    </gotab>
 
-	<dfa_select>
-		<col>@@machine</col>
-		<col_sep>, </col_sep>
-	</dfa_select>
+    <dfa_select>
+        <col>@@machine</col>
+        <col_sep>, </col_sep>
+    </dfa_select>
 
-	<dfa_char>
-		<col>(@@from, @@to)</col>
-		<col_sep>, </col_sep>
-	</dfa_char>
+    <dfa_char>
+        <col>(@@from, @@to)</col>
+        <col_sep>, </col_sep>
+    </dfa_char>
 
-	<dfa_trans>
-		<col>@@goto</col>
-		<col_sep>, </col_sep>
-	</dfa_trans>
+    <dfa_trans>
+        <col>@@goto</col>
+        <col_sep>, </col_sep>
+    </dfa_trans>
 
-	<dfa_idx>
-		<row_start>&#x09;&#x09;(</row_start>
-		<row_end>),</row_end>
-		<row_sep>&#x0A;</row_sep>
-		<col>@@index</col>
-		<col_sep>, </col_sep>
-	</dfa_idx>
+    <dfa_idx>
+        <row_start>        (</row_start>
+        <row_end>),</row_end>
+        <row_sep>&#x0A;</row_sep>
+        <col>@@index</col>
+        <col_sep>, </col_sep>
+    </dfa_idx>
 
-	<dfa_accept>
-		<row_start>&#x09;&#x09;(</row_start>
-		<row_end>),</row_end>
-		<row_sep>&#x0A;</row_sep>
-		<col>@@accept</col>
-		<col_sep>, </col_sep>
-	</dfa_accept>
+    <dfa_accept>
+        <row_start>        (</row_start>
+        <row_end>),</row_end>
+        <row_sep>&#x0A;</row_sep>
+        <col>@@accept</col>
+        <col_sep>, </col_sep>
+    </dfa_accept>
 
-	<symbols>
-		<col>&#x09;&#x09;("@@symbol-name", "@@emit", @@type, @@lexem, @@whitespace, @@greedy)</col>
-		<col_sep>,&#x0A;</col_sep>
-	</symbols>
+    <symbols>
+        <col>        ("@@symbol-name", "@@emit", @@type, @@lexem, @@whitespace, @@greedy)</col>
+        <col_sep>,&#x0A;</col_sep>
+    </symbols>
 
-	<productions>
-		<col>&#x09;&#x09;("@@production", "@@emit", @@length, @@lhs)</col>
-		<col_sep>,&#x0A;</col_sep>
-	</productions>
+    <productions>
+        <col>        ("@@production", "@@emit", @@length, @@lhs)</col>
+        <col_sep>,&#x0A;</col_sep>
+    </productions>
 
-	<file filename="@@basename.py">#!/usr/bin/python
+    <file filename="@@basename.py">#!/usr/bin/python
 #-*- coding: utf-8 -*-
 
 # Parser module generated by unicc from @@filename.
@@ -102,443 +102,443 @@
 @@prologue
 
 class @@prefixNode(object):
-	"""
-	This is an AST node.
-	"""
+    """
+    This is an AST node.
+    """
 
-	def __init__(self, emit = None, match = None, children = None):
-		self.emit = emit
-		self.match = match
-		self.children = children or []
+    def __init__(self, emit = None, match = None, children = None):
+        self.emit = emit
+        self.match = match
+        self.children = children or []
 
-	def dump(self, level=0):
-		if self.emit:
-			txt = "%s%s" % (level * " ", self.emit)
-			if self.match and self.match != self.emit:
-				txt += " (%s)" % self.match
+    def dump(self, level=0):
+        if self.emit:
+            txt = "%s%s" % (level * " ", self.emit)
+            if self.match and self.match != self.emit:
+                txt += " (%s)" % self.match
 
-			print(txt)
-			level += 1
+            print(txt)
+            level += 1
 
-		for child in self.children:
-			if child:
-				child.dump(level)
+        for child in self.children:
+            if child:
+                child.dump(level)
 
 
 class @@prefixParseException(Exception):
-	"""
-	Exception to be raised on a parse error.
-	"""
+    """
+    Exception to be raised on a parse error.
+    """
 
-	def __init__(self, row, col, txt = None):
-		if isinstance(txt, list):
-			expecting = txt
-			txt = ("Line %d, column %d: Parse error, expecting %s" %
-					(row, col, ", ".join([("%r" % symbol[0])
-						for symbol in txt])))
-		else:
-			expecting = None
+    def __init__(self, row, col, txt = None):
+        if isinstance(txt, list):
+            expecting = txt
+            txt = ("Line %d, column %d: Parse error, expecting %s" %
+                    (row, col, ", ".join([("%r" % symbol[0])
+                        for symbol in txt])))
+        else:
+            expecting = None
 
-		super(@@prefixParseException, self).__init__(txt)
+        super(@@prefixParseException, self).__init__(txt)
 
-		self.row = row
-		self.col = col
-		self.expecting = expecting
+        self.row = row
+        self.col = col
+        self.expecting = expecting
 
 
 class @@prefixParserToken(object):
-	state = 0
-	line = 0
-	column = 0
+    state = 0
+    line = 0
+    column = 0
 
-	node = None
+    node = None
 
-	@@value-type-definition
+    @@value-type-definition
 
 
 class @@prefixParserControlBlock(object):
-	def __init__(self, input):
+    def __init__(self, input):
 
-		# Stack
-		self.stack = []
-		self.tos = None
+        # Stack
+        self.stack = []
+        self.tos = None
 
-		# Values
-		self.ret = None
+        # Values
+        self.ret = None
 
-		# State
-		self.act = 0
-		self.idx = None
-		self.lhs = None
+        # State
+        self.act = 0
+        self.idx = None
+        self.lhs = None
 
-		# Lookahead
-		self.sym = -1
-		self.old_sym = -1
-		self.len = 0
+        # Lookahead
+        self.sym = -1
+        self.old_sym = -1
+        self.len = 0
 
-		# Lexical analysis
-		self.lexem = None
-		self.next = None
-		self.eof = None
-		self.is_eof = None
+        # Lexical analysis
+        self.lexem = None
+        self.next = None
+        self.eof = None
+        self.is_eof = None
 
-		# Input buffering
-		self.input = input
-		self.buf = ""
+        # Input buffering
+        self.input = input
+        self.buf = ""
 
-		# Error handling
-		self.error_delay = 3
-		self.error_count = 0
+        # Error handling
+        self.error_delay = 3
+        self.error_count = 0
 
-		self.line = 1
-		self.column = 1
+        self.line = 1
+        self.column = 1
 
-		@@pcb
+        @@pcb
 
 
 class @@prefixParser(object):
 
-	# Actions
-	_ERROR = 0
-	_REDUCE = 1
-	_SHIFT = 2
-	_SUCCESS = 4
+    # Actions
+    _ERROR = 0
+    _REDUCE = 1
+    _SHIFT = 2
+    _SUCCESS = 4
 
-	# Parse tables
-	_symbols = (
+    # Parse tables
+    _symbols = (
 @@symbols
-	)
-	_productions = (
+    )
+    _productions = (
 @@productions
-	)
-	_act = (
+    )
+    _act = (
 @@action-table
-	)
-	_go = (
+    )
+    _go = (
 @@goto-table
-	)
+    )
 
-	_def_prod = (@@default-productions)
+    _def_prod = (@@default-productions)
 
-	# Lexical analysis
-	_dfa_select = (@@dfa-select)
-	_dfa_index = (
+    # Lexical analysis
+    _dfa_select = (@@dfa-select)
+    _dfa_index = (
 @@dfa-index
-	)
-	_dfa_chars = (@@dfa-char)
-	_dfa_trans = (@@dfa-trans)
-	_dfa_accept = (
+    )
+    _dfa_chars = (@@dfa-char)
+    _dfa_trans = (@@dfa-trans)
+    _dfa_accept = (
 @@dfa-accept
-	)
+    )
 
-	# Parsing actions
+    # Parsing actions
 @@scan_actions
 @@actions
 
-	# Parsing algorithm
+    # Parsing algorithm
 
-	def _get_act(self, pcb):
-		# Get action table entry
+    def _get_act(self, pcb):
+        # Get action table entry
 
-		# Check action table first
-		for (sym, pcb.act, pcb.idx) in self._act[pcb.tos.state]:
-			if sym == pcb.sym:
-				return True if pcb.act else False #enforced parse error
+        # Check action table first
+        for (sym, pcb.act, pcb.idx) in self._act[pcb.tos.state]:
+            if sym == pcb.sym:
+                return True if pcb.act else False #enforced parse error
 
-		# Otherwise, apply default production
-		pcb.idx = self._def_prod[pcb.tos.state]
-		if pcb.idx &gt; -1:
-			pcb.act = self._REDUCE
-			return True
+        # Otherwise, apply default production
+        pcb.idx = self._def_prod[pcb.tos.state]
+        if pcb.idx &gt; -1:
+            pcb.act = self._REDUCE
+            return True
 
-		return False
+        return False
 
-	def _get_go(self, pcb):
-		# Get goto table entry
+    def _get_go(self, pcb):
+        # Get goto table entry
 
-		for (sym, pcb.act, pcb.idx) in self._go[pcb.tos.state]:
-			if sym == pcb.lhs:
-				return True
+        for (sym, pcb.act, pcb.idx) in self._go[pcb.tos.state]:
+            if sym == pcb.lhs:
+                return True
 
-		return False
+        return False
 
-	def _get_char(self, pcb):
-		# Get next character from input stream
+    def _get_char(self, pcb):
+        # Get next character from input stream
 
-		if callable(pcb.input):
-			return pcb.input()
+        if callable(pcb.input):
+            return pcb.input()
 
-		if pcb.input:
-			ch = pcb.input[0]
-			pcb.input = pcb.input[1:]
-		else:
-			ch = pcb.eof
+        if pcb.input:
+            ch = pcb.input[0]
+            pcb.input = pcb.input[1:]
+        else:
+            ch = pcb.eof
 
-		return ch
+        return ch
 
-	def _get_input(self, pcb, offset):
-		# Performs input buffering
+    def _get_input(self, pcb, offset):
+        # Performs input buffering
 
-		while offset &gt;= len(pcb.buf):
-			if pcb.is_eof:
-				return pcb.eof
+        while offset &gt;= len(pcb.buf):
+            if pcb.is_eof:
+                return pcb.eof
 
-			ch = self._get_char(pcb)
-			if ch == pcb.eof:
-				pcb.is_eof = True
-				return pcb.eof
+            ch = self._get_char(pcb)
+            if ch == pcb.eof:
+                pcb.is_eof = True
+                return pcb.eof
 
-			pcb.buf += ch
+            pcb.buf += ch
 
-		#print("_get_input", pcb.buf, offset, pcb.buf[offset], ord(pcb.buf[offset]))
+        #print("_get_input", pcb.buf, offset, pcb.buf[offset], ord(pcb.buf[offset]))
 
-		return ord(pcb.buf[offset])
+        return ord(pcb.buf[offset])
 
-	def _clear_input(self, pcb):
-		# Purge input from buffer that is not necessary anymore
+    def _clear_input(self, pcb):
+        # Purge input from buffer that is not necessary anymore
 
-		if pcb.buf:
+        if pcb.buf:
 
-			# Perform position counting.
-			for ch in pcb.buf[0: pcb.len]:
-				if ch == '\n':
-					pcb.line += 1
-					pcb.column = 0
-				else:
-					pcb.column += 1
+            # Perform position counting.
+            for ch in pcb.buf[0: pcb.len]:
+                if ch == '\n':
+                    pcb.line += 1
+                    pcb.column = 0
+                else:
+                    pcb.column += 1
 
-			pcb.buf = pcb.buf[pcb.len:]
+            pcb.buf = pcb.buf[pcb.len:]
 
-		pcb.len = 0
-		pcb.sym = -1
+        pcb.len = 0
+        pcb.sym = -1
 
-	def _lex(self, pcb):
-		# Lexical analysis
+    def _lex(self, pcb):
+        # Lexical analysis
 
-		state = length = 0
-		machine = self._dfa_select[pcb.tos.state] if not @@mode else 0
-		next = self._get_input(pcb, length)
+        state = length = 0
+        machine = self._dfa_select[pcb.tos.state] if not @@mode else 0
+        next = self._get_input(pcb, length)
 
-		if next == pcb.eof:
-			pcb.sym = @@eof
-			return
+        if next == pcb.eof:
+            pcb.sym = @@eof
+            return
 
-		while state &gt; -1 and next != pcb.eof:
-			idx = self._dfa_index[machine][state]
-			state = -1
+        while state &gt; -1 and next != pcb.eof:
+            idx = self._dfa_index[machine][state]
+            state = -1
 
-			while self._dfa_chars[idx][0] &gt; -1:
-				if (next &gt;= self._dfa_chars[idx][0]
-					and next &lt;= self._dfa_chars[idx][1]):
+            while self._dfa_chars[idx][0] &gt; -1:
+                if (next &gt;= self._dfa_chars[idx][0]
+                    and next &lt;= self._dfa_chars[idx][1]):
 
-					length += 1
-					state = self._dfa_trans[idx]
+                    length += 1
+                    state = self._dfa_trans[idx]
 
-					if self._dfa_accept[machine][state] &gt; 0:
-						pcb.sym = self._dfa_accept[machine][state] - 1
-						pcb.len = length
+                    if self._dfa_accept[machine][state] &gt; 0:
+                        pcb.sym = self._dfa_accept[machine][state] - 1
+                        pcb.len = length
 
-						# Test! (??)
-						if pcb.sym == @@eof:
-							state = -1
-							break
+                        # Test! (??)
+                        if pcb.sym == @@eof:
+                            state = -1
+                            break
 
-						# Stop if matched symbol should be parsed nongreedy
-						if not self._symbols[pcb.sym][5]:
-							state = -1
-							break
+                        # Stop if matched symbol should be parsed nongreedy
+                        if not self._symbols[pcb.sym][5]:
+                            state = -1
+                            break
 
-					next = self._get_input(pcb, length)
-					break
+                    next = self._get_input(pcb, length)
+                    break
 
-				idx += 1
+                idx += 1
 
-			# TODO: Semantic Terminal Selection?
+            # TODO: Semantic Terminal Selection?
 
-		#print("_lex", pcb.sym, pcb.len)
+        #print("_lex", pcb.sym, pcb.len)
 
-	def _get_sym(self, pcb):
-		# Get lookahead symbol
+    def _get_sym(self, pcb):
+        # Get lookahead symbol
 
-		pcb.sym = -1
-		pcb.len = 0
+        pcb.sym = -1
+        pcb.len = 0
 
-		# insensitive mode
-		if @@mode:
-			while True:
-				self._lex(pcb)
+        # insensitive mode
+        if @@mode:
+            while True:
+                self._lex(pcb)
 
-				# check for whitespace
-				if pcb.sym &gt; -1 and self._symbols[pcb.sym][4]:
-					self._clear_input(pcb)
-					continue
+                # check for whitespace
+                if pcb.sym &gt; -1 and self._symbols[pcb.sym][4]:
+                    self._clear_input(pcb)
+                    continue
 
-				break
+                break
 
-		# sensitive mode
-		else:
-			if self._dfa_select[pcb.tos.state] &gt; -1:
-				self._lex(pcb)
+        # sensitive mode
+        else:
+            if self._dfa_select[pcb.tos.state] &gt; -1:
+                self._lex(pcb)
 
-			# If there is no matching DFA state machine, try to identify the
-			# end-of-file symbol. If this also fails, a parse error will raise.
-			elif self._get_input(pcb, 0) == pcb.eof:
-				pcb.sym = @@eof
+            # If there is no matching DFA state machine, try to identify the
+            # end-of-file symbol. If this also fails, a parse error will raise.
+            elif self._get_input(pcb, 0) == pcb.eof:
+                pcb.sym = @@eof
 
-		return pcb.sym &gt; -1
+        return pcb.sym &gt; -1
 
-	def parse(self, s = None):
-		if s is None:
-			try:
-				s = raw_input(">")
-			except NameError:
-				s = input(">")
+    def parse(self, s = None):
+        if s is None:
+            try:
+                s = raw_input(">")
+            except NameError:
+                s = input(">")
 
-		pcb = @@prefixParserControlBlock(s)
-		pcb.act = self._SHIFT
+        pcb = @@prefixParserControlBlock(s)
+        pcb.act = self._SHIFT
 
-		pcb.tos = @@prefixParserToken()
-		pcb.stack.append(pcb.tos)
+        pcb.tos = @@prefixParserToken()
+        pcb.stack.append(pcb.tos)
 
-		while True:
-			#print("state = %d" % pcb.tos.state)
+        while True:
+            #print("state = %d" % pcb.tos.state)
 
-			# Reduce
-			while pcb.act &amp; self._REDUCE:
+            # Reduce
+            while pcb.act &amp; self._REDUCE:
 
-				# Set default left-hand side
-				pcb.lhs = self._productions[pcb.idx][3]
+                # Set default left-hand side
+                pcb.lhs = self._productions[pcb.idx][3]
 
-				#print("REDUCE", pcb.idx, self._productions[pcb.idx][0])
-				#print("state", pcb.tos.state)
+                #print("REDUCE", pcb.idx, self._productions[pcb.idx][0])
+                #print("state", pcb.tos.state)
 
-				# Call reduce function
-				#print("CALL", "_reduce_action_%d" % pcb.idx)
-				reduce_fn = getattr(self, "_reduce_action_%d" % pcb.idx, None)
-				if reduce_fn:
-					reduce_fn(pcb)
+                # Call reduce function
+                #print("CALL", "_reduce_action_%d" % pcb.idx)
+                reduce_fn = getattr(self, "_reduce_action_%d" % pcb.idx, None)
+                if reduce_fn:
+                    reduce_fn(pcb)
 
-				# Drop right-hand side
-				cnodes = None
-				for _ in range(0, self._productions[pcb.idx][2]):
-					item = pcb.stack.pop()
+                # Drop right-hand side
+                cnodes = None
+                for _ in range(0, self._productions[pcb.idx][2]):
+                    item = pcb.stack.pop()
 
-					if item.node:
-						if cnodes is None:
-							cnodes = []
+                    if item.node:
+                        if cnodes is None:
+                            cnodes = []
 
-						if isinstance(item.node, list):
-							cnodes = item.node + cnodes
-						else:
-							cnodes.insert(0, item.node)
+                        if isinstance(item.node, list):
+                            cnodes = item.node + cnodes
+                        else:
+                            cnodes.insert(0, item.node)
 
-				pcb.tos = pcb.stack[-1]
-				pcb.tos.value = pcb.ret
+                pcb.tos = pcb.stack[-1]
+                pcb.tos.value = pcb.ret
 
-				# Handle AST nodes
-				if self._productions[pcb.idx][1]:
-					#print("%s = %s" % (self._productions[pcb.idx][0], self._productions[pcb.idx][1]))
-					node = @@prefixNode(self._productions[pcb.idx][1],
-											children=cnodes)
+                # Handle AST nodes
+                if self._productions[pcb.idx][1]:
+                    #print("%s = %s" % (self._productions[pcb.idx][0], self._productions[pcb.idx][1]))
+                    node = @@prefixNode(self._productions[pcb.idx][1],
+                                            children=cnodes)
 
-				else:
-					node = None
+                else:
+                    node = None
 
-				# Error enforced by semantics?
-				if pcb.act == self._ERROR:
-					break
+                # Error enforced by semantics?
+                if pcb.act == self._ERROR:
+                    break
 
-				# Goal symbol reduced, and stack is empty?
-				if pcb.lhs == @@goal and len(pcb.stack) == 1:
-					pcb.tos.node = node or cnodes
-					self._clear_input(pcb)
-					pcb.act = self._SUCCESS;
-					break
+                # Goal symbol reduced, and stack is empty?
+                if pcb.lhs == @@goal and len(pcb.stack) == 1:
+                    pcb.tos.node = node or cnodes
+                    self._clear_input(pcb)
+                    pcb.act = self._SUCCESS;
+                    break
 
-				self._get_go(pcb)
+                self._get_go(pcb)
 
-				pcb.tos = @@prefixParserToken()
-				pcb.stack.append(pcb.tos)
+                pcb.tos = @@prefixParserToken()
+                pcb.stack.append(pcb.tos)
 
-				pcb.tos.symbol = self._symbols[pcb.lhs]
-				pcb.tos.state = -1 if pcb.act &amp; self._REDUCE else pcb.idx
-				pcb.tos.value = pcb.ret
-				pcb.tos.node = node or cnodes
-				pcb.tos.line = pcb.line
-				pcb.tos.column = pcb.column
+                pcb.tos.symbol = self._symbols[pcb.lhs]
+                pcb.tos.state = -1 if pcb.act &amp; self._REDUCE else pcb.idx
+                pcb.tos.value = pcb.ret
+                pcb.tos.node = node or cnodes
+                pcb.tos.line = pcb.line
+                pcb.tos.column = pcb.column
 
-			if pcb.act == self._SUCCESS or pcb.act == self._ERROR:
-				break
+            if pcb.act == self._SUCCESS or pcb.act == self._ERROR:
+                break
 
-			# Get next input symbol
-			self._get_sym(pcb)
+            # Get next input symbol
+            self._get_sym(pcb)
 
-			#print("pcb.sym = %d (%s)" % (pcb.sym, self._symbols[pcb.sym][0]))
-			#print("pcb.len = %d" % pcb.len)
+            #print("pcb.sym = %d (%s)" % (pcb.sym, self._symbols[pcb.sym][0]))
+            #print("pcb.len = %d" % pcb.len)
 
-			# Get action table entry
-			if not self._get_act(pcb):
-				# TODO: Error Recovery
-				raise @@prefixParseException(pcb.line, pcb.column,
-					[self._symbols[sym]
-						for (sym, pcb.act, pcb.idx)
-							in self._act[pcb.tos.state]])
+            # Get action table entry
+            if not self._get_act(pcb):
+                # TODO: Error Recovery
+                raise @@prefixParseException(pcb.line, pcb.column,
+                    [self._symbols[sym]
+                        for (sym, pcb.act, pcb.idx)
+                            in self._act[pcb.tos.state]])
 
-			#print("pcb.act = %d" % pcb.act)
+            #print("pcb.act = %d" % pcb.act)
 
-			# Shift
-			if pcb.act &amp; self._SHIFT:
-				#print("SHIFT", pcb.sym, self._symbols[pcb.sym])
+            # Shift
+            if pcb.act &amp; self._SHIFT:
+                #print("SHIFT", pcb.sym, self._symbols[pcb.sym])
 
-				pcb.tos = @@prefixParserToken()
-				pcb.stack.append(pcb.tos)
+                pcb.tos = @@prefixParserToken()
+                pcb.stack.append(pcb.tos)
 
-				# Execute scanner actions, if existing.
-				scan_fn = getattr(self, "_scan_action_%d" % pcb.sym, None)
-				if scan_fn:
-					scan_fn(pcb)
+                # Execute scanner actions, if existing.
+                scan_fn = getattr(self, "_scan_action_%d" % pcb.sym, None)
+                if scan_fn:
+                    scan_fn(pcb)
 
-				pcb.tos.state = -1 if pcb.act &amp; self._REDUCE else pcb.idx
-				pcb.tos.symbol = self._symbols[pcb.sym]
+                pcb.tos.state = -1 if pcb.act &amp; self._REDUCE else pcb.idx
+                pcb.tos.symbol = self._symbols[pcb.sym]
 
-				pcb.tos.line = pcb.line
-				pcb.tos.column = pcb.column
+                pcb.tos.line = pcb.line
+                pcb.tos.column = pcb.column
 
-				if @@top-value is None:
-					@@top-value = pcb.buf[:pcb.len]
+                if @@top-value is None:
+                    @@top-value = pcb.buf[:pcb.len]
 
-				if pcb.tos.symbol[1]:
-					pcb.tos.node = @@prefixNode(pcb.tos.symbol[1], @@top-value)
+                if pcb.tos.symbol[1]:
+                    pcb.tos.node = @@prefixNode(pcb.tos.symbol[1], @@top-value)
 
-				if pcb.sym != @@eof and pcb.sym != @@error:
-					self._clear_input(pcb)
-					pcb.old_sym = -1
+                if pcb.sym != @@eof and pcb.sym != @@error:
+                    self._clear_input(pcb)
+                    pcb.old_sym = -1
 
-		if pcb.ret is None and pcb.tos.node:
-			if isinstance(pcb.tos.node, list):
-				if len(pcb.tos.node) &gt; 1:
-					node = @@prefixNode(children=pcb.tos.node)
-				else:
-					node = pcb.tos.node[0]
-			else:
-				node = pcb.tos.node
-		else:
-			node = None
+        if pcb.ret is None and pcb.tos.node:
+            if isinstance(pcb.tos.node, list):
+                if len(pcb.tos.node) &gt; 1:
+                    node = @@prefixNode(children=pcb.tos.node)
+                else:
+                    node = pcb.tos.node[0]
+            else:
+                node = pcb.tos.node
+        else:
+            node = None
 
-		return pcb.ret or node
+        return pcb.ret or node
 
 @@epilogue
 
 if __name__ == "__main__":
-	import sys
+    import sys
 
-	p = @@prefixParser()
-	ret = p.parse(sys.argv[1] if len(sys.argv) &gt; 1 else None)
+    p = @@prefixParser()
+    ret = p.parse(sys.argv[1] if len(sys.argv) &gt; 1 else None)
 
-	if isinstance(ret, @@prefixNode):
-		ret.dump()
-	else:
-		print(ret)
+    if isinstance(ret, @@prefixNode):
+        ret.dump()
+    else:
+        print(ret)
 
 </file>
 </generator>
