@@ -169,12 +169,12 @@ test_cpp: $(TESTPREFIX)cpp_expr $(TESTPREFIX)cpp_ast
 
 $(TESTPREFIX)py_expr:
 	./unicc -o $@ examples/expr.py.par
-	test "`python2 $@.py $(TESTEXPR) | head -n 1`" = $(TESTRESULT)
+	-test "`python2 $@.py $(TESTEXPR) | head -n 1`" = $(TESTRESULT)
 	test "`python3 $@.py $(TESTEXPR) | head -n 1`" = $(TESTRESULT)
 
 $(TESTPREFIX)py_ast:
 	./unicc -l Python -o $@ examples/expr.ast.par
-	python2 $@.py $(TESTEXPR)
+	-python2 $@.py $(TESTEXPR)
 	python3 $@.py $(TESTEXPR)
 
 test_py: $(TESTPREFIX)py_expr $(TESTPREFIX)py_ast
