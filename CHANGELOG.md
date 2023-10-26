@@ -2,10 +2,12 @@
 
 This file is used to document any relevant changes done to UniCC.
 
-## [main]
+## [v1.8]
 
 Current main branch.
 
+- Improved program module generator to support <true>- and <false>-settings
+- Target `python` updated to spaces instead of tabs and further improvements
 - Target `javascript` updated to more recent JS/ECMAScript6 features
 
 ## [v1.7]
