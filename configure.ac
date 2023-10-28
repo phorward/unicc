@@ -1,19 +1,8 @@
 AC_PREREQ([2.69])
-AC_INIT([UniCC], [1.7.0])
+AC_INIT([UniCC], [1.9.0])
 AC_PREFIX_DEFAULT([/usr])
 AC_CONFIG_SRCDIR([src/main.c])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
-
-#Bootstrap toolchain should be built?
-AC_MSG_CHECKING([whether UniCC bootstrap toolchain is wanted])
-AC_ARG_WITH([bootstrap],
-	[AS_HELP_STRING([--with-bootstrap],
-		[configures to compile UniCC parser bootstrap toolchain])],
-		[with_bootstrap="yes"],
-		[with_bootstrap="no"])
-
-AM_CONDITIONAL([WITH_BOOTSTRAP],[test "$with_bootstrap" = "yes"])
-AC_MSG_RESULT([$with_bootstrap])
 
 # Enable Trace facilities?
 AC_MSG_CHECKING([whether Phorward trace facilities will be integrated])

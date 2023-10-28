@@ -10,7 +10,7 @@ parsing methods and their pitfalls.
 
 In the end, min_lalr1 served as the first bootstrap stage to build UniCC.
 It is not intended to be used in production or the be complete in any kind.
-It just does it's job ;-).
+It just did its job.
 
 ## Building
 
@@ -21,5 +21,3 @@ cc -o min_lalr1 min_lalr1.c
 ```
 
 and that's all.
-
-

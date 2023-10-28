@@ -1,27 +1,7 @@
-/* Grammar definition parser */
+// UniCC's own grammar parser
 
 #!mode			scannerless ;
 #!language		C;
-
-/*
- * IMPORTANT NOTIFICATION ON THIS PARSER
- * -------------------------------------
- * This parser underlies to a special coding convention: Because UniCC is boot-
- * strapped from an older parser that is compiled using min_lalr1 (parse.min),
- * the use of some features is prohibited because they are only featured by the
- * parser defined in this module. The old parser is not tended anymore with new
- * features.
- *
- * So please consider the following rules, to avoid incompatibilities:
- * 1. #option-features are not supported
- * 2. Don't use embedded productions - insert a new nonterminal for this
- * 3. Don't set precedence to productions
- * 4. Don't use long-string identifiers for symbols
- * 5. Don't use the multiple left-hand side feature here
- * 6. Don't use AST notations
- *
- * Some other rules may be inserted here in future versions.
- */
 
 /*
  * Parser configuration
