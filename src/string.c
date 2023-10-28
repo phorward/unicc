@@ -1,13 +1,4 @@
-/* -MODULE----------------------------------------------------------------------
-UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
-https://phorward.info ++ unicc<at>phorward<dash>software<dot>com
-All rights reserved. See LICENSE for more information.
-
-File:	string.c
-Author:	Jan Max Meyer
-Usage:	String-related management functions
------------------------------------------------------------------------------ */
+/* String-related management functions */
 
 #include "unicc.h"
 
@@ -20,12 +11,12 @@ Returns a char*-pointer to allocated string. This must bee freed later on.
 */
 char* int_to_str( int val )
 {
-	char*	ret;
+    char*	ret;
 
-	ret = (char*)pmalloc( 64 * sizeof( char ) );
-	sprintf( ret, "%d", val );
+    ret = (char*)pmalloc( 64 * sizeof( char ) );
+    sprintf( ret, "%d", val );
 
-	return ret;
+    return ret;
 }
 
 /** Returns an allocated string which contains the string-representation of a
@@ -37,12 +28,12 @@ Returns a char*-pointer to allocated string. This must bee freed later on.
 */
 char* long_to_str( long val )
 {
-	char*	ret;
+    char*	ret;
 
-	ret = (char*)pmalloc( 128 * sizeof( char ) );
-	sprintf( ret, "%ld", val );
+    ret = (char*)pmalloc( 128 * sizeof( char ) );
+    sprintf( ret, "%ld", val );
 
-	return ret;
+    return ret;
 }
 
 /** Removes all whitespaces from a string (including inline ones!) and returns
@@ -54,17 +45,16 @@ Returns a pointer to the input string.
 */
 char* str_no_whitespace( char* str )
 {
-	char*	ptr		= str;
-	char*	start	= str;
+    char*	ptr		= str;
+    char*	start	= str;
 
-	while( *str != '\0' )
-		if( *str == ' ' || *str == '\t' )
-			str++;
-		else
-			*ptr++ = *str++;
+    while( *str != '\0' )
+        if( *str == ' ' || *str == '\t' )
+            str++;
+        else
+            *ptr++ = *str++;
 
-	*ptr = '\0';
+    *ptr = '\0';
 
-	return start;
+    return start;
 }
-

@@ -1,6 +1,6 @@
 <div align="center">
     <img src="https://github.com/phorward/unicc/raw/main/unicc.svg" height="196" alt="UniCC Logo" title="UniCC logo">
-    <h1>LALR(1) Parser Generator</h1>
+    <h1>Universal LALR(1) Parser Generator</h1>
     <a href="https://github.com/phorward/unicc/actions/workflows/test.yml">
         <img src="https://github.com/phorward/unicc/actions/workflows/test.yml/badge.svg" alt="Badge displaying the test status" title="Test badge">
     </a>
@@ -8,7 +8,8 @@
         <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="Badge displaying the license" title="License badge">
     </a>
     <br>
-    The universal LALR(1) parser generator with built-in scanner generator, creating parsers in different target programming languages.
+    The universal LALR(1) parser generator with built-in scanner generator,<br>
+    creating parsers in different target programming languages.
 </div>
 
 ## About

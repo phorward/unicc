@@ -1,23 +1,4 @@
-/* -MODULE----------------------------------------------------------------------
-UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
-https://phorward.info ++ unicc<at>phorward<dash>software<dot>com
-All rights reserved. See LICENSE for more information.
-
-File:	list.c
-Author:	Jan Max Meyer
-Usage:	Management functions for simple linked-lists.
------------------------------------------------------------------------------ */
-
-/*
-	March 24, 2014:
-
-	The linked list structure LIST (llist) came from libphorward, but
-	had been replaced there by the much more powerful plist objects.
-
-	UniCC is the only program that still makes use of these older lists,
-	and a refactoring to use plist is too expensive right now.
-*/
+/* Legacy, simple linked-lists. */
 
 #include "unicc.h"
 
@@ -34,27 +15,27 @@ Returns a pointer to the first item of the linked list of elements.
 */
 LIST* list_push( LIST* list, void* ptr )
 {
-	LIST*	elem;
-	LIST*	item;
+    LIST*	elem;
+    LIST*	item;
 
-	if( ( elem = (LIST*)pmalloc( sizeof( LIST ) ) ) )
-	{
-		elem->pptr = ptr;
-		elem->next = (LIST*)NULL;
+    if( ( elem = (LIST*)pmalloc( sizeof( LIST ) ) ) )
+    {
+        elem->pptr = ptr;
+        elem->next = (LIST*)NULL;
 
-		if( !list )
-			list = elem;
-		else
-		{
-			item = list;
-			while( item->next )
-				item = item->next;
+        if( !list )
+            list = elem;
+        else
+        {
+            item = list;
+            while( item->next )
+                item = item->next;
 
-			item->next = elem;
-		}
-	}
+            item->next = elem;
+        }
+    }
 
-	return list;
+    return list;
 }
 
 /** Pops the last element off a linked-list of pointers.
@@ -70,40 +51,40 @@ If the last element is popped, (LIST*)NULL is returned.
 */
 LIST* list_pop( LIST* list, void** ptr )
 {
-	LIST*	item;
-	LIST*	prev	= (LIST*)NULL;
+    LIST*	item;
+    LIST*	prev	= (LIST*)NULL;
 
-	if( !list )
-	{
-		if( ptr )
-			*ptr = (void*)NULL;
+    if( !list )
+    {
+        if( ptr )
+            *ptr = (void*)NULL;
 
-		return (LIST*)NULL;
-	}
-	else
-	{
-		item = list;
-		while( item->next )
-		{
-			prev = item;
-			item = item->next;
-		}
+        return (LIST*)NULL;
+    }
+    else
+    {
+        item = list;
+        while( item->next )
+        {
+            prev = item;
+            item = item->next;
+        }
 
-		if( prev )
-			prev->next = (LIST*)NULL;
+        if( prev )
+            prev->next = (LIST*)NULL;
 
-		if( ptr )
-			*ptr = item->pptr;
+        if( ptr )
+            *ptr = item->pptr;
 
-		if( item == list )
-			list = (LIST*)NULL;
+        if( item == list )
+            list = (LIST*)NULL;
 
-		pfree( item );
+        pfree( item );
 
-		item = (LIST*)NULL;
-	}
+        item = (LIST*)NULL;
+    }
 
-	return list;
+    return list;
 }
 
 /** Removes an item from a linked list. Instead as list_pop(), list_remove() can
@@ -119,29 +100,29 @@ item was removed.
 */
 LIST* list_remove( LIST* list, void* ptr )
 {
-	LIST*	item;
-	LIST*	prev	= (LIST*)NULL;
+    LIST*	item;
+    LIST*	prev	= (LIST*)NULL;
 
-	if( !ptr )
-		return list;
+    if( !ptr )
+        return list;
 
-	for( item = list; item; item = item->next )
-	{
-		if( item->pptr == ptr )
-		{
-			if( !prev )
-				list = item->next;
-			else
-				prev->next = item->next;
+    for( item = list; item; item = item->next )
+    {
+        if( item->pptr == ptr )
+        {
+            if( !prev )
+                list = item->next;
+            else
+                prev->next = item->next;
 
-			pfree( item );
-			break;
-		}
+            pfree( item );
+            break;
+        }
 
-		prev = item;
-	}
+        prev = item;
+    }
 
-	return list;
+    return list;
 }
 
 /** Frees a linked list.
@@ -152,19 +133,19 @@ Returns always (LIST*)NULL.
 */
 LIST* list_free( LIST* list )
 {
-	LIST*	next	= (LIST*)NULL;
-	LIST*	item;
+    LIST*	next	= (LIST*)NULL;
+    LIST*	item;
 
-	item = list;
-	while( item )
-	{
-		next = item->next;
-		pfree( item );
+    item = list;
+    while( item )
+    {
+        next = item->next;
+        pfree( item );
 
-		item = next;
-	}
+        item = next;
+    }
 
-	return (LIST*)NULL;
+    return (LIST*)NULL;
 }
 
 /** Duplicates a list in a 1:1 copy.
@@ -175,13 +156,13 @@ Returns a pointer to the copy if //src//.
 */
 LIST* list_dup( LIST* src )
 {
-	LIST*	item;
-	LIST*	tar		= (LIST*)NULL;
+    LIST*	item;
+    LIST*	tar		= (LIST*)NULL;
 
-	for( item = src; item; item = item->next )
-		tar = list_push( tar, item->pptr );
+    for( item = src; item; item = item->next )
+        tar = list_push( tar, item->pptr );
 
-	return tar;
+    return tar;
 }
 
 /** Counts the elements in a list.
@@ -192,12 +173,12 @@ Returns the number of items contained by the list.
 */
 int list_count( LIST* list )
 {
-	int		count		= 0;
+    int		count		= 0;
 
-	for( ; list; list = list->next )
-		count++;
+    for( ; list; list = list->next )
+        count++;
 
-	return count;
+    return count;
 }
 
 /** Searches for a pointer in a linked list.
@@ -210,21 +191,21 @@ from the lists begin, 0 is the first element.
 */
 int list_find( LIST* list, void* ptr )
 {
-	LIST*	item;
-	int		cnt		= 0;
+    LIST*	item;
+    int		cnt		= 0;
 
-	if( !ptr )
-		return -1;
+    if( !ptr )
+        return -1;
 
-	for( item = list; item; item = item->next )
-	{
-		if( item->pptr == ptr )
-			return cnt;
+    for( item = list; item; item = item->next )
+    {
+        if( item->pptr == ptr )
+            return cnt;
 
-		cnt++;
-	}
+        cnt++;
+    }
 
-	return -1;
+    return -1;
 }
 
 /** Returns the pointer of the desired offset from the linked list.
@@ -238,20 +219,20 @@ not in the list (if //cnt// goes over the end of the list).
 */
 void* list_getptr( LIST* list, int cnt )
 {
-	LIST*	item;
+    LIST*	item;
 
-	if( cnt < 0 )
-		return (void*)NULL;
+    if( cnt < 0 )
+        return (void*)NULL;
 
-	for( item = list; item; item = item->next )
-	{
-		if( cnt == 0 )
-			return item->pptr;
+    for( item = list; item; item = item->next )
+    {
+        if( cnt == 0 )
+            return item->pptr;
 
-		cnt--;
-	}
+        cnt--;
+    }
 
-	return (void*)NULL;
+    return (void*)NULL;
 }
 
 /** Unions two list to a huger new one.
@@ -264,19 +245,18 @@ Returns the extended list //first//, which is the union of //first// and
 */
 LIST* list_union( LIST* first, LIST* second )
 {
-	LIST*	ret;
-	LIST*	current;
+    LIST*	ret;
+    LIST*	current;
 
-	if( first != (LIST*)NULL )
-	{
-		ret = first;
-		for( current = second; current; current = current->next )
-			if( list_find( ret, current->pptr ) == -1 )
-				ret = list_push( ret, current->pptr );
-	}
-	else
-		ret = list_dup( second );
+    if( first != (LIST*)NULL )
+    {
+        ret = first;
+        for( current = second; current; current = current->next )
+            if( list_find( ret, current->pptr ) == -1 )
+                ret = list_push( ret, current->pptr );
+    }
+    else
+        ret = list_dup( second );
 
-	return ret;
+    return ret;
 }
-

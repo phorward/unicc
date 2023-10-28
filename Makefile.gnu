@@ -18,7 +18,6 @@ SOURCES	= 	\
 	src/lex.c \
 	src/list.c \
 	src/build.c \
-	src/buildxml.c \
 	src/main.c \
 	src/xml.c
 
@@ -35,7 +34,7 @@ clean: boot_clean
 	-rm unicc
 
 src/proto.h: boot_clean
-	lib/pproto *.c | awk "/int _parse/ { next } { print }" >$@
+	lib/pproto src/*.c | awk "/int _parse/ { next } { print }" >$@
 
 make_install:
 	cp Makefile.gnu Makefile

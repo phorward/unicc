@@ -1,13 +1,4 @@
-/* -MODULE----------------------------------------------------------------------
-UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
-https://phorward.info ++ unicc<at>phorward<dash>software<dot>com
-All rights reserved. See LICENSE for more information.
-
-File:	virtual.c
-Author:	Jan Max Meyer
-Usage:	Virtual production generation functions
------------------------------------------------------------------------------ */
+/* Virtual production construction functions */
 
 #include "unicc.h"
 
@@ -19,43 +10,43 @@ Usage:	Virtual production generation functions
 Returns a SYMBOL* sointer to the symbol representing the closure nonterminal. */
 SYMBOL* positive_closure( PARSER* parser, SYMBOL* base )
 {
-	char*	deriv_str;
-	PROD*	p;
-	SYMBOL*	s			= (SYMBOL*)NULL;
+    char*	deriv_str;
+    PROD*	p;
+    SYMBOL*	s			= (SYMBOL*)NULL;
 
-	/*
-	30.09.2010	Jan Max Meyer:
-	Inherit defined_at information
-	*/
+    /*
+    30.09.2010	Jan Max Meyer:
+    Inherit defined_at information
+    */
 
-	if( base )
-	{
-		deriv_str = derive_name( base->name, P_POSITIVE_CLOSURE );
+    if( base )
+    {
+        deriv_str = derive_name( base->name, P_POSITIVE_CLOSURE );
 
-		if( !( s = get_symbol( parser, deriv_str,
-						SYM_NON_TERMINAL, FALSE ) ) )
-		{
-			s = get_symbol( parser, deriv_str,
-					SYM_NON_TERMINAL, TRUE );
-			s->generated = TRUE;
-			s->used = TRUE;
-			s->defined = TRUE;
-			s->vtype = base->vtype;
-			s->derived_from = base;
-			s->line = base->line;
+        if( !( s = get_symbol( parser, deriv_str,
+                        SYM_NON_TERMINAL, FALSE ) ) )
+        {
+            s = get_symbol( parser, deriv_str,
+                    SYM_NON_TERMINAL, TRUE );
+            s->generated = TRUE;
+            s->used = TRUE;
+            s->defined = TRUE;
+            s->vtype = base->vtype;
+            s->derived_from = base;
+            s->line = base->line;
 
-			p = create_production( parser, s );
-			append_to_production( p, s, (char*)NULL );
-			append_to_production( p, base, (char*)NULL );
+            p = create_production( parser, s );
+            append_to_production( p, s, (char*)NULL );
+            append_to_production( p, base, (char*)NULL );
 
-			p = create_production( parser, s );
-			append_to_production( p, base, (char*)NULL );
-		}
+            p = create_production( parser, s );
+            append_to_production( p, base, (char*)NULL );
+        }
 
-		pfree( deriv_str );
-	}
+        pfree( deriv_str );
+    }
 
-	return s;
+    return s;
 }
 
 /** Creates a kleene closure for a symbol.
@@ -66,59 +57,59 @@ SYMBOL* positive_closure( PARSER* parser, SYMBOL* base )
 Returns a SYMBOL* Pointer to symbol representing the closure nonterminal. */
 SYMBOL* kleene_closure( PARSER* parser, SYMBOL* base )
 {
-	char*	deriv_str;
-	PROD*	p;
-	SYMBOL*	s			= (SYMBOL*)NULL;
-	SYMBOL*	pos_s		= (SYMBOL*)NULL;
+    char*	deriv_str;
+    PROD*	p;
+    SYMBOL*	s			= (SYMBOL*)NULL;
+    SYMBOL*	pos_s		= (SYMBOL*)NULL;
 
-	/*
-	14.05.2008	Jan Max Meyer
-	Modified rework. Instead of
+    /*
+    14.05.2008	Jan Max Meyer
+    Modified rework. Instead of
 
-		s* -> s* base | ;
+        s* -> s* base | ;
 
-	this will now create
+    this will now create
 
-		s+ -> s+ base | base;
-		s* -> s+ | ;
+        s+ -> s+ base | base;
+        s* -> s+ | ;
 
 
-	30.09.2010	Jan Max Meyer
-	Inherit defined_at information
-	*/
+    30.09.2010	Jan Max Meyer
+    Inherit defined_at information
+    */
 
-	if( base )
-	{
-		pos_s = positive_closure( parser, base );
-		if( !pos_s )
-			return s;
+    if( base )
+    {
+        pos_s = positive_closure( parser, base );
+        if( !pos_s )
+            return s;
 
-		deriv_str = derive_name( base->name, P_KLEENE_CLOSURE );
+        deriv_str = derive_name( base->name, P_KLEENE_CLOSURE );
 
-		if( !( s = get_symbol( parser, deriv_str,
-					SYM_NON_TERMINAL, FALSE ) ) )
-		{
-			s = get_symbol( parser, deriv_str,
-					SYM_NON_TERMINAL, TRUE );
-			s->generated = TRUE;
-			s->used = TRUE;
-			s->defined = TRUE;
-			s->vtype = base->vtype;
-			s->derived_from = base;
-			s->line = base->line;
+        if( !( s = get_symbol( parser, deriv_str,
+                    SYM_NON_TERMINAL, FALSE ) ) )
+        {
+            s = get_symbol( parser, deriv_str,
+                    SYM_NON_TERMINAL, TRUE );
+            s->generated = TRUE;
+            s->used = TRUE;
+            s->defined = TRUE;
+            s->vtype = base->vtype;
+            s->derived_from = base;
+            s->line = base->line;
 
-			p = create_production( parser, s );
-			/*append_to_production( p, s, (char*)NULL );
-			append_to_production( p, base, (char*)NULL );*/
-			append_to_production( p, pos_s, (char*)NULL );
+            p = create_production( parser, s );
+            /*append_to_production( p, s, (char*)NULL );
+            append_to_production( p, base, (char*)NULL );*/
+            append_to_production( p, pos_s, (char*)NULL );
 
-			p = create_production( parser, s );
-		}
+            p = create_production( parser, s );
+        }
 
-		pfree( deriv_str );
-	}
+        pfree( deriv_str );
+    }
 
-	return s;
+    return s;
 }
 
 /** Creates an optional closure for a symbol.
@@ -130,40 +121,39 @@ Returns a SYMBOL* Pointer to symbol representing the closure nonterminal.
 */
 SYMBOL* optional_closure( PARSER* parser, SYMBOL* base )
 {
-	char*	deriv_str;
-	PROD*	p;
-	SYMBOL*	s			= (SYMBOL*)NULL;
+    char*	deriv_str;
+    PROD*	p;
+    SYMBOL*	s			= (SYMBOL*)NULL;
 
-	/*
-	30.09.2010	Jan Max Meyer:
-	Inherit defined_at information
-	*/
+    /*
+    30.09.2010	Jan Max Meyer:
+    Inherit defined_at information
+    */
 
-	if( base )
-	{
-		deriv_str = derive_name( base->name, P_OPTIONAL_CLOSURE );
+    if( base )
+    {
+        deriv_str = derive_name( base->name, P_OPTIONAL_CLOSURE );
 
-		if( !(s = get_symbol( parser, deriv_str,
-					SYM_NON_TERMINAL, FALSE ) ) )
-		{
-			s = get_symbol( parser, deriv_str,
-					SYM_NON_TERMINAL, TRUE );
-			s->generated = TRUE;
-			s->used = TRUE;
-			s->defined = TRUE;
-			s->vtype = base->vtype;
-			s->derived_from = base;
-			s->line = base->line;
+        if( !(s = get_symbol( parser, deriv_str,
+                    SYM_NON_TERMINAL, FALSE ) ) )
+        {
+            s = get_symbol( parser, deriv_str,
+                    SYM_NON_TERMINAL, TRUE );
+            s->generated = TRUE;
+            s->used = TRUE;
+            s->defined = TRUE;
+            s->vtype = base->vtype;
+            s->derived_from = base;
+            s->line = base->line;
 
-			p = create_production( parser, s );
-			append_to_production( p, base, (char*)NULL );
+            p = create_production( parser, s );
+            append_to_production( p, base, (char*)NULL );
 
-			p = create_production( parser, s );
-		}
+            p = create_production( parser, s );
+        }
 
-		pfree( deriv_str );
-	}
+        pfree( deriv_str );
+    }
 
-	return s;
+    return s;
 }
-

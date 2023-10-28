@@ -1,13 +1,4 @@
-/* -MODULE----------------------------------------------------------------------
-UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
-https://phorward.info ++ unicc<at>phorward<dash>software<dot>com
-All rights reserved. See LICENSE for more information.
-
-File:	utils.c
-Author:	Jan Max Meyer
-Usage:	Utility functions
------------------------------------------------------------------------------ */
+/* Utility functions */
 
 #include "unicc.h"
 
@@ -21,33 +12,33 @@ Returns the derived name; New allocated memory, must be freed!
 */
 char* derive_name( char* name, char append_char )
 {
-	char*		ret;
-	size_t		len;
+    char*		ret;
+    size_t		len;
 
-	ret = (char*)pmalloc( ( strlen( name ) + 1 + 1 ) * sizeof( char ) );
-	strcpy( ret, name );
+    ret = (char*)pmalloc( ( strlen( name ) + 1 + 1 ) * sizeof( char ) );
+    strcpy( ret, name );
 
-	len = strlen( ret );
-	ret[ len ] = append_char;
-	ret[ len + 1 ] = '\0';
+    len = strlen( ret );
+    ret[ len ] = append_char;
+    ret[ len + 1 ] = '\0';
 
-	/* Some name styling - this is currently onle for one  case, the whitespace
-	symbol ... other cases should not appear... */
-	switch( append_char )
-	{
-		case P_OPTIONAL_CLOSURE:
-			if( ret[ len - 1 ] == P_POSITIVE_CLOSURE )
-			{
-				ret[ len - 1 ] = P_KLEENE_CLOSURE;
-				ret[ len ] = '\0';
-			}
-			break;
+    /* Some name styling - this is currently onle for one  case, the whitespace
+    symbol ... other cases should not appear... */
+    switch( append_char )
+    {
+        case P_OPTIONAL_CLOSURE:
+            if( ret[ len - 1 ] == P_POSITIVE_CLOSURE )
+            {
+                ret[ len - 1 ] = P_KLEENE_CLOSURE;
+                ret[ len ] = '\0';
+            }
+            break;
 
-		default:
-			break;
-	}
+        default:
+            break;
+    }
 
-	return ret;
+    return ret;
 }
 
 /** Parses a single character, even escaped ones.
@@ -59,149 +50,148 @@ character definition.
 Returns the character value */
 int unescape_char( char* str, char** strfix )
 {
-	char*	ptr = str;
-	int		ch = 0;
-	short	cnt = 0;
-	BOOLEAN	neg = FALSE;
+    char*	ptr = str;
+    int		ch = 0;
+    short	cnt = 0;
+    BOOLEAN	neg = FALSE;
 
-	/*
-	18.07.2009 Jan Max Meyer:
-	Negative escaped characters
-	*/
+    /*
+    18.07.2009 Jan Max Meyer:
+    Negative escaped characters
+    */
 
-	if( *ptr == '\\' )
-	{
-		ptr++;
-		switch( *ptr )
-		{
-			case 'n':
-				ch = '\n';
-				ptr++;
-				break;
-			case 'r':
-				ch = '\r';
-				ptr++;
-				break;
-			case 't':
-				ch = '\t';
-				ptr++;
-				break;
-			case 'v':
-				ch = '\v';
-				ptr++;
-				break;
-			case 'a':
-				ch = '\a';
-				ptr++;
-				break;
-			case 'b':
-				ch = '\b';
-				ptr++;
-				break;
-			case 'f':
-				ch = '\f';
-				ptr++;
-				break;
-			case '\'':
-				ch = '\'';
-				ptr++;
-				break;
-			case '\"':
-				ch = '\"';
-				ptr++;
-				break;
-			case '\\':
-				ch = '\\';
-				ptr++;
-				break;
-			case '\?':
-				ch = '\?';
-				ptr++;
-				break;
-			case 'x':
-				ptr++;
+    if( *ptr == '\\' )
+    {
+        ptr++;
+        switch( *ptr )
+        {
+            case 'n':
+                ch = '\n';
+                ptr++;
+                break;
+            case 'r':
+                ch = '\r';
+                ptr++;
+                break;
+            case 't':
+                ch = '\t';
+                ptr++;
+                break;
+            case 'v':
+                ch = '\v';
+                ptr++;
+                break;
+            case 'a':
+                ch = '\a';
+                ptr++;
+                break;
+            case 'b':
+                ch = '\b';
+                ptr++;
+                break;
+            case 'f':
+                ch = '\f';
+                ptr++;
+                break;
+            case '\'':
+                ch = '\'';
+                ptr++;
+                break;
+            case '\"':
+                ch = '\"';
+                ptr++;
+                break;
+            case '\\':
+                ch = '\\';
+                ptr++;
+                break;
+            case '\?':
+                ch = '\?';
+                ptr++;
+                break;
+            case 'x':
+                ptr++;
 
-				while( ( ( *ptr >= '0' && *ptr <= '9' )
-					|| ( *ptr >= 'A' && *ptr <= 'F' )
-					|| ( *ptr >= 'a' && *ptr <= 'f' ) )
-					&& cnt < 2 )
-				{
-					ch *= 16;
+                while( ( ( *ptr >= '0' && *ptr <= '9' )
+                    || ( *ptr >= 'A' && *ptr <= 'F' )
+                    || ( *ptr >= 'a' && *ptr <= 'f' ) )
+                    && cnt < 2 )
+                {
+                    ch *= 16;
 
-					if( ( *ptr >= 'A' && *ptr <= 'F' )
-							|| ( *ptr >= 'a' && *ptr <= 'f' ) )
-						ch += ( *ptr & 7 ) + 9;
-					else
-						ch += ( *ptr - '0' );
+                    if( ( *ptr >= 'A' && *ptr <= 'F' )
+                            || ( *ptr >= 'a' && *ptr <= 'f' ) )
+                        ch += ( *ptr & 7 ) + 9;
+                    else
+                        ch += ( *ptr - '0' );
 
-					ptr++;
-					cnt++;
-				}
-				/* printf( "ch = %d\n", ch ); */
-				break;
+                    ptr++;
+                    cnt++;
+                }
+                /* printf( "ch = %d\n", ch ); */
+                break;
 
-			default:
-				if( *ptr == '-' )
-				{
-					neg = TRUE;
-					ptr++;
-				}
+            default:
+                if( *ptr == '-' )
+                {
+                    neg = TRUE;
+                    ptr++;
+                }
 
-				while( *ptr >= '0' && *ptr <= '9' )
-				{
-					ch *= 10;
-					ch += ( *ptr - '0' );
-					ptr++;
-				}
+                while( *ptr >= '0' && *ptr <= '9' )
+                {
+                    ch *= 10;
+                    ch += ( *ptr - '0' );
+                    ptr++;
+                }
 
-				if( neg && ch )
-					ch *= -1;
+                if( neg && ch )
+                    ch *= -1;
 
-				/* if( *ptr != '\0' )
-					ptr++; */
-				break;
-		}
-	}
-	else if( *ptr != '\0' )
-	{
-		ch = *ptr;
-		ptr++;
-	}
+                /* if( *ptr != '\0' )
+                    ptr++; */
+                break;
+        }
+    }
+    else if( *ptr != '\0' )
+    {
+        ch = *ptr;
+        ptr++;
+    }
 
-	if( strfix )
-		*strfix = ptr;
+    if( strfix )
+        *strfix = ptr;
 
-	return ch;
+    return ch;
 }
 
 /** Finds out the base symbol for a possibly derived symbol, and returns it. */
 SYMBOL* find_base_symbol( SYMBOL* sym )
 {
-	while( sym->derived_from )
-		sym = sym->derived_from;
+    while( sym->derived_from )
+        sym = sym->derived_from;
 
-	return sym;
+    return sym;
 }
 
 /** Construct a C-identifier from a file-name. */
 char* c_identifier( char* str, BOOLEAN to_upper )
 {
-	char*	p;
+    char*	p;
 
-	if( !( str = pstrdup( str ) ) )
-	 	OUTOFMEM;
+    if( !( str = pstrdup( str ) ) )
+         OUTOFMEM;
 
-	for( p = str; *p; p++ )
-	{
-		if( isalnum( *p ) )
-		{
-			if( to_upper )
-				*p = toupper( *p );
-		}
-		else
-			*p = '_';
-	}
+    for( p = str; *p; p++ )
+    {
+        if( isalnum( *p ) )
+        {
+            if( to_upper )
+                *p = toupper( *p );
+        }
+        else
+            *p = '_';
+    }
 
-	return str;
+    return str;
 }
-

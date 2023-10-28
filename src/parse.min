@@ -1,19 +1,10 @@
 {
-/* -MODULE----------------------------------------------------------------------
-UniCC LALR(1) Parser Generator
-Copyright (C) 2006-2019 by Phorward Software Technologies, Jan Max Meyer
-https://phorward.info ++ unicc<at>phorward<dash>software<dot>com
-All rights reserved. See LICENSE for more information.
-
-File:	parse.min
-Author:	Jan Max Meyer
-Usage:	Grammar definition parser - FOR BOOTSTRAPPING ONLY!!
------------------------------------------------------------------------------ */
+/* Grammar definition parser - FOR BOOTSTRAPPING ONLY!! */
 
 /*
- * IMPORTANT NOTIFICATION ON THIS PARSER
- * -------------------------------------
- * This parser is only used for bootstrapping UniCC, and is not be tended any-
+ * IMPORTANT NOTIFICATION ON THIS FILE
+ * -----------------------------------
+ * This file is only used for bootstrapping UniCC, and is not be tended any-
  * more with new features. Instead, implement new language-oriented features
  * into the final UniCC parser, parse.par. This grammar uses the min_lalr1
  * experimental and testing purpose parser generator to build a first running
@@ -21,7 +12,6 @@ Usage:	Grammar definition parser - FOR BOOTSTRAPPING ONLY!!
  *
  * So please note: Only bugfixing and/or revision is allowed here!
  */
-
 
 /*
  * Includes
@@ -35,21 +25,21 @@ Usage:	Grammar definition parser - FOR BOOTSTRAPPING ONLY!!
 
 union _stack_val
 {
-	char*			str;
-	char			ch;
-	int				num;
-	void*			ptr;
-	BOOLEAN			negative;
+    char*			str;
+    char			ch;
+    int				num;
+    void*			ptr;
+    BOOLEAN			negative;
 
-	/*
-	struct
-	{
-		pregex_nfa_st*	start;
-		pregex_nfa_st*	end;
-	} nfa;
-	*/
+    /*
+    struct
+    {
+        pregex_nfa_st*	start;
+        pregex_nfa_st*	end;
+    } nfa;
+    */
 
-	pregex_ptn*		ptn;
+    pregex_ptn*		ptn;
 };
 
 #define PDEBUG 0
@@ -82,46 +72,46 @@ char*		strbuf	= (char*)NULL;
 /* Append character to current string */
 static void strbuf_append( char ch )
 {
-	int len;
-	len = strbuf ? (int)strlen( strbuf ) : 0;
+    int len;
+    len = strbuf ? (int)strlen( strbuf ) : 0;
 
-	if( !strbuf )
-		strbuf = (char*)pmalloc( ( MALLOC_STEP + 2 ) * sizeof( char ) );
-	else if( len % MALLOC_STEP == 0 )
-		strbuf = (char*)prealloc( (char*)strbuf, ( len + MALLOC_STEP + 2 )
-			* sizeof( char ) );
+    if( !strbuf )
+        strbuf = (char*)pmalloc( ( MALLOC_STEP + 2 ) * sizeof( char ) );
+    else if( len % MALLOC_STEP == 0 )
+        strbuf = (char*)prealloc( (char*)strbuf, ( len + MALLOC_STEP + 2 )
+            * sizeof( char ) );
 
-	strbuf[len] = ch;
-	strbuf[len+1] = '\0';
-	strbuf[len+2] = '\0';
+    strbuf[len] = ch;
+    strbuf[len+1] = '\0';
+    strbuf[len+2] = '\0';
 }
 
 /* Create a new string */
 static void reset_strbuf( void )
 {
-	if( strbuf )
-	{
-		*strbuf = '\0';
-		*(strbuf+1) = '\0';
-	}
+    if( strbuf )
+    {
+        *strbuf = '\0';
+        *(strbuf+1) = '\0';
+    }
 }
 
 
 /* Set precedence and associativiy */
 static void set_assoc_and_prec( LIST* symbols, int assoc )
 {
-	LIST* l;
-	SYMBOL* sym;
+    LIST* l;
+    SYMBOL* sym;
 
-	for( l = symbols; l; l = l->next )
-	{
-		sym = l->pptr;
-		sym->prec = prec_cnt;
-		sym->assoc = assoc;
-	}
+    for( l = symbols; l; l = l->next )
+    {
+        sym = l->pptr;
+        sym->prec = prec_cnt;
+        sym->assoc = assoc;
+    }
 
-	list_free( symbols );
-	prec_cnt++;
+    list_free( symbols );
+    prec_cnt++;
 }
 
 /*
@@ -133,587 +123,586 @@ static void set_assoc_and_prec( LIST* symbols, int assoc )
 $ sym modifier code ccl_string kw type;
 
 grammar_spec:	fixed_directives segments
-				;
+                ;
 
 segments:		segments segment
-				|
-				;
+                |
+                ;
 
 fixed_directives:	fixed_directives "#!" fixed_directive ';'
-				|
-				;
+                |
+                ;
 
 fixed_directive: "mode"					mode_type
-				| "language"			string					{	if( parser->p_template )
-																		pfree( parser->p_template );
-																	parser->p_template = pstrdup( strbuf );
-																}
-				| "language"			identifier				{	if( parser->p_template )
-																		pfree( parser->p_template );
-																	parser->p_template = pstrdup( strbuf );
-																}
-				;
+                | "language"			string					{	if( parser->p_template )
+                                                                        pfree( parser->p_template );
+                                                                    parser->p_template = pstrdup( strbuf );
+                                                                }
+                | "language"			identifier				{	if( parser->p_template )
+                                                                        pfree( parser->p_template );
+                                                                    parser->p_template = pstrdup( strbuf );
+                                                                }
+                ;
 
 mode_type:		"context-sensitive"								{	parser->p_mode = MODE_SCANNERLESS;}	/* deprecate! */
-				| "context-insensitive"							{	parser->p_mode = MODE_SCANNER; }	/* deprecate! */
-				| "sensitive"									{	parser->p_mode = MODE_SCANNERLESS; }/* deprecate! */
-				| "insensitive"									{	parser->p_mode = MODE_SCANNER; }	/* deprecate! */
-				| "scannerless"									{	parser->p_mode = MODE_SCANNERLESS;	}
-				| "scanner"										{	parser->p_mode = MODE_SCANNER; }
-				;
+                | "context-insensitive"							{	parser->p_mode = MODE_SCANNER; }	/* deprecate! */
+                | "sensitive"									{	parser->p_mode = MODE_SCANNERLESS; }/* deprecate! */
+                | "insensitive"									{	parser->p_mode = MODE_SCANNER; }	/* deprecate! */
+                | "scannerless"									{	parser->p_mode = MODE_SCANNERLESS;	}
+                | "scanner"										{	parser->p_mode = MODE_SCANNER; }
+                ;
 
 segment:		code
-				| definition ';'
-				| unfixed_directive ';';
+                | definition ';'
+                | unfixed_directive ';';
 
 unfixed_directive:	'#' directive_parms ;
 
 directive_parms: "whitespaces"		symbol_list					{	LIST* l;
-																	SYMBOL* s;
+                                                                    SYMBOL* s;
 
-																	for( l = #2.ptr; l; l = l->next )
-																	{
-																		s = l->pptr;
+                                                                    for( l = #2.ptr; l; l = l->next )
+                                                                    {
+                                                                        s = l->pptr;
 
-																		/* Do not allow nonterminal definitions here
-																			in conext-free mode */
-																		if( s->type == SYM_NON_TERMINAL &&
-																			parser->p_mode !=
-																				MODE_SCANNERLESS )
-																		{
-																			print_error( parser, ERR_NONTERM_WS_NOT_ALLOWED,
-																				ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
-																						parser->filename, line,
-																							s->name );
-																		}
-																		else
-																			s->whitespace = TRUE;
-																	}
+                                                                        /* Do not allow nonterminal definitions here
+                                                                            in conext-free mode */
+                                                                        if( s->type == SYM_NON_TERMINAL &&
+                                                                            parser->p_mode !=
+                                                                                MODE_SCANNERLESS )
+                                                                        {
+                                                                            print_error( parser, ERR_NONTERM_WS_NOT_ALLOWED,
+                                                                                ERRSTYLE_FATAL | ERRSTYLE_FILEINFO,
+                                                                                        parser->filename, line,
+                                                                                            s->name );
+                                                                        }
+                                                                        else
+                                                                            s->whitespace = TRUE;
+                                                                    }
 
-																	list_free( #2.ptr );
-																}
-				| "lexeme separation" boolean					{	/* Ouput a warning, if this definition
-																		is effectless */
-																	if( parser->p_mode != MODE_SCANNERLESS )
-																	{
-																		print_error( parser, ERR_NO_EFFECT_IN_MODE,
-																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
-																				parser->filename, line,
-																					"lexem separation" );
-																	}
-																	else
-																		parser->p_lexem_sep = !(#2.negative);	}
-				| "lexeme"			symbol_list					{	LIST* l;
-																	SYMBOL* s;
+                                                                    list_free( #2.ptr );
+                                                                }
+                | "lexeme separation" boolean					{	/* Ouput a warning, if this definition
+                                                                        is effectless */
+                                                                    if( parser->p_mode != MODE_SCANNERLESS )
+                                                                    {
+                                                                        print_error( parser, ERR_NO_EFFECT_IN_MODE,
+                                                                            ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
+                                                                                parser->filename, line,
+                                                                                    "lexem separation" );
+                                                                    }
+                                                                    else
+                                                                        parser->p_lexem_sep = !(#2.negative);	}
+                | "lexeme"			symbol_list					{	LIST* l;
+                                                                    SYMBOL* s;
 
 
-																	/* Ouput a warning, if this definition
-																		is effectless */
-																	if( parser->p_mode != MODE_SCANNERLESS )
-																	{
-																		print_error( parser, ERR_NO_EFFECT_IN_MODE,
-																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
-																				parser->filename, line, "lexeme" );
-																	}
-																	else
-																	{
-																		for( l = #2.ptr; l; l = l->next )
-																		{
-																			s = l->pptr;
-																			s->lexem = TRUE;
-																		}
-																	}
+                                                                    /* Ouput a warning, if this definition
+                                                                        is effectless */
+                                                                    if( parser->p_mode != MODE_SCANNERLESS )
+                                                                    {
+                                                                        print_error( parser, ERR_NO_EFFECT_IN_MODE,
+                                                                            ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
+                                                                                parser->filename, line, "lexeme" );
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        for( l = #2.ptr; l; l = l->next )
+                                                                        {
+                                                                            s = l->pptr;
+                                                                            s->lexem = TRUE;
+                                                                        }
+                                                                    }
 
-																	list_free( #2.ptr );
+                                                                    list_free( #2.ptr );
 
-																}
-				| "fixate" 			symbol_list					{	LIST* l;
-																	SYMBOL* s;
+                                                                }
+                | "fixate" 			symbol_list					{	LIST* l;
+                                                                    SYMBOL* s;
 
-																	/* Ouput a warning, if this definition
-																		is effectless */
-																	if( parser->p_mode != MODE_SCANNERLESS )
-																	{
-																		print_error( parser, ERR_NO_EFFECT_IN_MODE,
-																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
-																				parser->filename, line, "fixate" );
-																	}
-																	else
-																	{
-																		for( l = #2.ptr; l; l = l->next )
-																		{
-																			s = l->pptr;
-																			s->fixated = TRUE;
-																		}
-																	}
+                                                                    /* Ouput a warning, if this definition
+                                                                        is effectless */
+                                                                    if( parser->p_mode != MODE_SCANNERLESS )
+                                                                    {
+                                                                        print_error( parser, ERR_NO_EFFECT_IN_MODE,
+                                                                            ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
+                                                                                parser->filename, line, "fixate" );
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        for( l = #2.ptr; l; l = l->next )
+                                                                        {
+                                                                            s = l->pptr;
+                                                                            s->fixated = TRUE;
+                                                                        }
+                                                                    }
 
-																	list_free( #2.ptr );
+                                                                    list_free( #2.ptr );
 
-																}
-				| "left"			symbol_list					{	set_assoc_and_prec( #2.ptr, ASSOC_LEFT ); 	}
-				| "right"			symbol_list					{	set_assoc_and_prec( #2.ptr, ASSOC_RIGHT ); 	}
-				| "nonassoc"		symbol_list					{	set_assoc_and_prec( #2.ptr, ASSOC_NOASSOC ); 	}
-				| "prefix"			string						{	if( !( parser->p_prefix ) )
-																		parser->p_prefix = pstrdup( strbuf );	}
-				| "default action"	code						{	if( !( parser->p_def_action ) )
-																			parser->p_def_action = pstrdup( strbuf );
-																}
-				| "default epsilon action"		code			{	if( !( parser->p_def_action_e ) )
-																			parser->p_def_action_e = pstrdup( strbuf );
-																}
-				| "case insensitive strings"	boolean			{	parser->p_cis_strings = !(#2.negative);	}
-				| "prologue"					code			{	parser->p_header = pstrcatstr(
-																		parser->p_header, strbuf, FALSE );		}
-				| "epilogue"					code			{	parser->p_footer = pstrcatstr(
-																		parser->p_footer, strbuf, FALSE );		}
-				| "pcb"							code			{	parser->p_pcb = pstrcatstr(
-																		parser->p_pcb, strbuf, FALSE );				}
-				;
+                                                                }
+                | "left"			symbol_list					{	set_assoc_and_prec( #2.ptr, ASSOC_LEFT ); 	}
+                | "right"			symbol_list					{	set_assoc_and_prec( #2.ptr, ASSOC_RIGHT ); 	}
+                | "nonassoc"		symbol_list					{	set_assoc_and_prec( #2.ptr, ASSOC_NOASSOC ); 	}
+                | "prefix"			string						{	if( !( parser->p_prefix ) )
+                                                                        parser->p_prefix = pstrdup( strbuf );	}
+                | "default action"	code						{	if( !( parser->p_def_action ) )
+                                                                            parser->p_def_action = pstrdup( strbuf );
+                                                                }
+                | "default epsilon action"		code			{	if( !( parser->p_def_action_e ) )
+                                                                            parser->p_def_action_e = pstrdup( strbuf );
+                                                                }
+                | "case insensitive strings"	boolean			{	parser->p_cis_strings = !(#2.negative);	}
+                | "prologue"					code			{	parser->p_header = pstrcatstr(
+                                                                        parser->p_header, strbuf, FALSE );		}
+                | "epilogue"					code			{	parser->p_footer = pstrcatstr(
+                                                                        parser->p_footer, strbuf, FALSE );		}
+                | "pcb"							code			{	parser->p_pcb = pstrcatstr(
+                                                                        parser->p_pcb, strbuf, FALSE );				}
+                ;
 
 boolean:		"on"											{	##.negative = FALSE; 						}
-				| "off"											{	##.negative = TRUE; 						}
-				|												{	##.negative = FALSE; 						}
-				;
+                | "off"											{	##.negative = TRUE; 						}
+                |												{	##.negative = FALSE; 						}
+                ;
 
 symbol_list:	symbol_list sym									{	##.ptr = list_push( #1.ptr, #2.ptr ); 		}
-				| sym											{	##.ptr = list_push( (LIST*)NULL, #1.ptr );	}
-				;
+                | sym											{	##.ptr = list_push( (LIST*)NULL, #1.ptr );	}
+                ;
 
 definition:		lhs goal_mark type ":" productions				{
-																	LIST* l;
-																	PROD* p;
+                                                                    LIST* l;
+                                                                    PROD* p;
 
-																	if( #2.ch == '$' )
-																	{
-																		if( parser->goal )
-																		{
-																			print_error( parser, ERR_MULTIPLE_GOAL_DEF,
-																				ERRSTYLE_FATAL,
-																					parser->goal->name );
-																		}
-																		else
-																		{
-																			parser->goal = #1.ptr;
-																			parser->goal->used = TRUE;
-																		}
-																	}
+                                                                    if( #2.ch == '$' )
+                                                                    {
+                                                                        if( parser->goal )
+                                                                        {
+                                                                            print_error( parser, ERR_MULTIPLE_GOAL_DEF,
+                                                                                ERRSTYLE_FATAL,
+                                                                                    parser->goal->name );
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            parser->goal = #1.ptr;
+                                                                            parser->goal->used = TRUE;
+                                                                        }
+                                                                    }
 
-																	/* Link productions with this left-hand side */
-																	for( l = #5.ptr; l; l = l->next )
-																	{
-																		p = l->pptr;
+                                                                    /* Link productions with this left-hand side */
+                                                                    for( l = #5.ptr; l; l = l->next )
+                                                                    {
+                                                                        p = l->pptr;
 
-																		plist_push( ((SYMBOL*)(#1.ptr))->productions, p );
-																		p->lhs = #1.ptr;
-																	}
+                                                                        plist_push( ((SYMBOL*)(#1.ptr))->productions, p );
+                                                                        p->lhs = #1.ptr;
+                                                                    }
 
-																	/* Value type */
-																	if( #3.ptr )
-																	{
-																		VTYPE*	vt;
+                                                                    /* Value type */
+                                                                    if( #3.ptr )
+                                                                    {
+                                                                        VTYPE*	vt;
 
-																		vt = create_vtype( parser,
-																				(char*)(#3.ptr) );
-																		((SYMBOL*)(#1.ptr))->vtype = vt;
+                                                                        vt = create_vtype( parser,
+                                                                                (char*)(#3.ptr) );
+                                                                        ((SYMBOL*)(#1.ptr))->vtype = vt;
 
-																		pfree( #3.ptr );
-																	}
-																}
-				| '@' identifier_copy type regex code_opt		{	SYMBOL* s;
-																	s = get_symbol( parser,
-																			#2.str, SYM_REGEX_TERMINAL, TRUE );
+                                                                        pfree( #3.ptr );
+                                                                    }
+                                                                }
+                | '@' identifier_copy type regex code_opt		{	SYMBOL* s;
+                                                                    s = get_symbol( parser,
+                                                                            #2.str, SYM_REGEX_TERMINAL, TRUE );
 
-																	pfree( #2.str );
+                                                                    pfree( #2.str );
 
-																	s->greedy = greedy;
-																	s->ptn = #4.ptn;
-																	greedy = TRUE;
+                                                                    s->greedy = greedy;
+                                                                    s->ptn = #4.ptn;
+                                                                    greedy = TRUE;
 
-																	/* Attach code */
-																	if( strbuf && *strbuf )
-																	{
-																		s->code = strbuf;
-																		strbuf = (char*)NULL;
-																	}
+                                                                    /* Attach code */
+                                                                    if( strbuf && *strbuf )
+                                                                    {
+                                                                        s->code = strbuf;
+                                                                        strbuf = (char*)NULL;
+                                                                    }
 
-																	/* Value type */
-																	if( #3.ptr )
-																	{
-																		VTYPE*	vt;
+                                                                    /* Value type */
+                                                                    if( #3.ptr )
+                                                                    {
+                                                                        VTYPE*	vt;
 
-																		vt = create_vtype( parser,
-																				(char*)(#3.ptr) );
-																		s->vtype = vt;
-																		pfree( #3.ptr );
-																	}
+                                                                        vt = create_vtype( parser,
+                                                                                (char*)(#3.ptr) );
+                                                                        s->vtype = vt;
+                                                                        pfree( #3.ptr );
+                                                                    }
 
-																	/* re_dbg_print_nfa( s->nfa_def,
-																		parser->p_universe ); */
-																}
-				;
+                                                                    /* re_dbg_print_nfa( s->nfa_def,
+                                                                        parser->p_universe ); */
+                                                                }
+                ;
 
 lhs:			identifier										{	SYMBOL* s;
-																	s = get_symbol( parser,
-																			strbuf, SYM_NON_TERMINAL, TRUE );
-																	s->defined = TRUE;
+                                                                    s = get_symbol( parser,
+                                                                            strbuf, SYM_NON_TERMINAL, TRUE );
+                                                                    s->defined = TRUE;
 
-																	##.ptr = s;
-																}
-				;
+                                                                    ##.ptr = s;
+                                                                }
+                ;
 
 goal_mark:		'$'												{	##.ch = '$'; }
-				|												{	##.ch = '\0'; }
-				;
+                |												{	##.ch = '\0'; }
+                ;
 
 productions:	productions '|' rhs code_opt					{	if( *strbuf != '\0' )
-																		((PROD*)(#3.ptr))->code = pstrdup( strbuf );
+                                                                        ((PROD*)(#3.ptr))->code = pstrdup( strbuf );
 
-																	##.ptr = list_push( #1.ptr, #3.ptr );
-																}
-				| rhs code_opt									{	if( *strbuf != '\0' )
-																		((PROD*)(#1.ptr))->code = pstrdup( strbuf );
+                                                                    ##.ptr = list_push( #1.ptr, #3.ptr );
+                                                                }
+                | rhs code_opt									{	if( *strbuf != '\0' )
+                                                                        ((PROD*)(#1.ptr))->code = pstrdup( strbuf );
 
-																	##.ptr = list_push( (LIST*)NULL, #1.ptr );
-																}
-				;
+                                                                    ##.ptr = list_push( (LIST*)NULL, #1.ptr );
+                                                                }
+                ;
 
 rhs:			rhs symbol access_name							{	append_to_production( #1.ptr, #2.ptr,
-																		( *strbuf == '\0' ? (char*)NULL :
-																			pstrdup( strbuf ) ) );
-																	##.ptr = #1.ptr;
-																}
-				|												{	##.ptr = create_production( parser,
-																		(SYMBOL*)NULL ); }
-				;
+                                                                        ( *strbuf == '\0' ? (char*)NULL :
+                                                                            pstrdup( strbuf ) ) );
+                                                                    ##.ptr = #1.ptr;
+                                                                }
+                |												{	##.ptr = create_production( parser,
+                                                                        (SYMBOL*)NULL ); }
+                ;
 
 symbol:			sym modifier 									{
-																	switch( #2.ch )
-																	{
-																		case '*':
-																			##.ptr = kleene_closure( parser,
-																				#1.ptr );
-																			break;
-																		case '+':
-																			##.ptr = positive_closure( parser,
-																				#1.ptr );
-																			break;
-																		case '?':
-																			##.ptr = optional_closure( parser,
-																				#1.ptr );
-																			break;
-																		default:
-																			##.ptr = #1.ptr;
-																			break;
-																	}
-																}
-				|	"&error"									{	SYMBOL* sym;
-																	sym = get_symbol( parser,
-																			P_ERROR_RESYNC, SYM_SYSTEM_TERMINAL,
-																				TRUE );
-																	##.ptr = sym;
-																}
+                                                                    switch( #2.ch )
+                                                                    {
+                                                                        case '*':
+                                                                            ##.ptr = kleene_closure( parser,
+                                                                                #1.ptr );
+                                                                            break;
+                                                                        case '+':
+                                                                            ##.ptr = positive_closure( parser,
+                                                                                #1.ptr );
+                                                                            break;
+                                                                        case '?':
+                                                                            ##.ptr = optional_closure( parser,
+                                                                                #1.ptr );
+                                                                            break;
+                                                                        default:
+                                                                            ##.ptr = #1.ptr;
+                                                                            break;
+                                                                    }
+                                                                }
+                |	"&error"									{	SYMBOL* sym;
+                                                                    sym = get_symbol( parser,
+                                                                            P_ERROR_RESYNC, SYM_SYSTEM_TERMINAL,
+                                                                                TRUE );
+                                                                    ##.ptr = sym;
+                                                                }
 
-				|	"&eof"										{	SYMBOL* sym;
-																	sym = get_symbol( parser,
-																			P_END_OF_FILE, SYM_SYSTEM_TERMINAL,
-																				TRUE );
-																	##.ptr = sym;
-																}
-				;
+                |	"&eof"										{	SYMBOL* sym;
+                                                                    sym = get_symbol( parser,
+                                                                            P_END_OF_FILE, SYM_SYSTEM_TERMINAL,
+                                                                                TRUE );
+                                                                    ##.ptr = sym;
+                                                                }
+                ;
 
 sym:			terminal										{	##.ptr = #1.ptr; 	}
-				| identifier									{	SYMBOL* s;
-																	s = get_symbol( parser,
-																			strbuf, SYM_NON_TERMINAL, TRUE );
-																	s->used = TRUE;
-																	##.ptr = s;
-																}
-				;
+                | identifier									{	SYMBOL* s;
+                                                                    s = get_symbol( parser,
+                                                                            strbuf, SYM_NON_TERMINAL, TRUE );
+                                                                    s->used = TRUE;
+                                                                    ##.ptr = s;
+                                                                }
+                ;
 
 terminal:		ccl												{ 	SYMBOL* s;
-																	pccl*	ccl;
+                                                                    pccl*	ccl;
 
-																	ccl = pccl_create( -1, -1, strbuf );
+                                                                    ccl = pccl_create( -1, -1, strbuf );
 
-																	if( #1.negative )
-																		pccl_negate( ccl );
-
-
-																	s = get_symbol( parser,
-																			(void*)ccl,
-																				SYM_CCL_TERMINAL, TRUE );
-
-																	s->used = TRUE;
-																	s->defined = TRUE;
-																	##.ptr = s;
-																}
-				| kw											{ 	SYMBOL* s;
+                                                                    if( #1.negative )
+                                                                        pccl_negate( ccl );
 
 
-																	s = get_symbol( parser,
-																			strbuf, SYM_REGEX_TERMINAL, TRUE );
+                                                                    s = get_symbol( parser,
+                                                                            (void*)ccl,
+                                                                                SYM_CCL_TERMINAL, TRUE );
 
-																	s->used = TRUE;
-																	s->defined = TRUE;
-																	s->keyword = TRUE;
+                                                                    s->used = TRUE;
+                                                                    s->defined = TRUE;
+                                                                    ##.ptr = s;
+                                                                }
+                | kw											{ 	SYMBOL* s;
 
-																	s->ptn = pregex_ptn_create_string( strbuf,
-																				parser->p_cis_strings ?
-																					PREGEX_COMP_INSENSITIVE :
-																						0 );
 
-																	##.ptr = s;
-																}
-				| '@' identifier								{	SYMBOL* s;
-																	s = get_symbol( parser,
-																			strbuf, SYM_REGEX_TERMINAL, FALSE );
+                                                                    s = get_symbol( parser,
+                                                                            strbuf, SYM_REGEX_TERMINAL, TRUE );
 
-																	s->used = TRUE;
-																	s->defined = TRUE;
+                                                                    s->used = TRUE;
+                                                                    s->defined = TRUE;
+                                                                    s->keyword = TRUE;
 
-																	##.ptr = s;
-																}
-				/*
-				| '~'											{	##.ptr = get_symbol( parser,
-																			"", SYM_ERROR, TRUE );
-																}
-				*/
-				;
+                                                                    s->ptn = pregex_ptn_create_string( strbuf,
+                                                                                parser->p_cis_strings ?
+                                                                                    PREGEX_COMP_INSENSITIVE :
+                                                                                        0 );
+
+                                                                    ##.ptr = s;
+                                                                }
+                | '@' identifier								{	SYMBOL* s;
+                                                                    s = get_symbol( parser,
+                                                                            strbuf, SYM_REGEX_TERMINAL, FALSE );
+
+                                                                    s->used = TRUE;
+                                                                    s->defined = TRUE;
+
+                                                                    ##.ptr = s;
+                                                                }
+                /*
+                | '~'											{	##.ptr = get_symbol( parser,
+                                                                            "", SYM_ERROR, TRUE );
+                                                                }
+                */
+                ;
 
 modifier:		'*'												{	##.ch = '*';	}
-				| '+'											{	##.ch = '+'; 	}
-				| '?'											{	##.ch = '?';	}
-				|												{	##.ch = '\0'; 	}
-				;
+                | '+'											{	##.ch = '+'; 	}
+                | '?'											{	##.ch = '?';	}
+                |												{	##.ch = '\0'; 	}
+                ;
 
 access_name:	':' identifier
-				| ':' string
-				|												{	reset_strbuf(); }
-				;
+                | ':' string
+                |												{	reset_strbuf(); }
+                ;
 
 /* Regular Expression parser and NFA generator */
 regex:			re_alt
-				;
+                ;
 
 re_alt:			re_alt '|' re_expr
 
-					{
-						##.ptn = pregex_ptn_create_alt(
-									#1.ptn, #3.ptn, (pregex_ptn*)NULL );
-					}
+                    {
+                        ##.ptn = pregex_ptn_create_alt(
+                                    #1.ptn, #3.ptn, (pregex_ptn*)NULL );
+                    }
 
-				| re_expr
-				;
+                | re_expr
+                ;
 
 re_expr:		re_expr re_modifier
 
-					{
-						##.ptn = pregex_ptn_create_seq(
-									#1.ptn, #2.ptn, (pregex_ptn*)NULL );
-					}
+                    {
+                        ##.ptn = pregex_ptn_create_seq(
+                                    #1.ptn, #2.ptn, (pregex_ptn*)NULL );
+                    }
 
-				| re_modifier
-				;
+                | re_modifier
+                ;
 
 re_modifier:	re_factor '*'
 
-					{
-						##.ptn = pregex_ptn_create_kle( #1.ptn );
-					}
+                    {
+                        ##.ptn = pregex_ptn_create_kle( #1.ptn );
+                    }
 
-				| re_factor '+'
+                | re_factor '+'
 
-					{
-						##.ptn = pregex_ptn_create_pos( #1.ptn );
-					}
+                    {
+                        ##.ptn = pregex_ptn_create_pos( #1.ptn );
+                    }
 
-				| re_factor '?'
+                | re_factor '?'
 
-					{
-						##.ptn = pregex_ptn_create_opt( #1.ptn );
-					}
+                    {
+                        ##.ptn = pregex_ptn_create_opt( #1.ptn );
+                    }
 
-				| re_factor
-				;
+                | re_factor
+                ;
 
 re_factor:		ccl
 
-					{
-						pccl*		ccl;
+                    {
+                        pccl*		ccl;
 
-						ccl = pccl_create( -1, -1, strbuf );
-						if( #1.negative )
-							pccl_negate( ccl );
+                        ccl = pccl_create( -1, -1, strbuf );
+                        if( #1.negative )
+                            pccl_negate( ccl );
 
-						##.ptn = pregex_ptn_create_char( ccl );
-					}
+                        ##.ptn = pregex_ptn_create_char( ccl );
+                    }
 
-				| kw
+                | kw
 
-					{
-						##.ptn = pregex_ptn_create_string( strbuf, 0 );
-					}
+                    {
+                        ##.ptn = pregex_ptn_create_string( strbuf, 0 );
+                    }
 
-				| '.'
+                | '.'
 
-					{
-						pccl*	ccl;
-						greedy = FALSE;
+                    {
+                        pccl*	ccl;
+                        greedy = FALSE;
 
-						ccl = pccl_create( -1, -1, (char*)NULL );
+                        ccl = pccl_create( -1, -1, (char*)NULL );
 
-						pccl_addrange( ccl, PCCL_MIN, PCCL_MAX );
+                        pccl_addrange( ccl, PCCL_MIN, PCCL_MAX );
 
-						##.ptn = pregex_ptn_create_char( ccl );
-					}
+                        ##.ptn = pregex_ptn_create_char( ccl );
+                    }
 
-				| '(' regex ')'
+                | '(' regex ')'
 
-					{
-						##.ptn = pregex_ptn_create_sub( #2.ptn );
-					}
-				;
+                    {
+                        ##.ptn = pregex_ptn_create_sub( #2.ptn );
+                    }
+                ;
 
 /* General parsing objects */
 string:			ccl_string | kw;
 
 ccl:		ccl_string											{	##.negative = FALSE; }
-			| '!' ccl_string									{	##.negative = TRUE; }
-			;
+            | '!' ccl_string									{	##.negative = TRUE; }
+            ;
 
 ccl_string:	'\'' ccl_str '\''
-			;
+            ;
 
 ccl_str:	ccl_str ccl_char
-			|													{ 	reset_strbuf(); }
-			;
+            |													{ 	reset_strbuf(); }
+            ;
 
 ccl_char:	'^\'\\'												{ strbuf_append( (char)#1.ch ); }
-			| '\\' '^'											{ strbuf_append( (char)'\\' );
-																  strbuf_append( (char)#2.ch ); }
-			;
+            | '\\' '^'											{ strbuf_append( (char)'\\' );
+                                                                  strbuf_append( (char)#2.ch ); }
+            ;
 
 kw:			'\"' kw_str '\"';
 
 kw_str:		kw_str '^\"'										{ 	strbuf_append( (char)#2.ch ); }
-			|													{ 	reset_strbuf(); }
-			;
+            |													{ 	reset_strbuf(); }
+            ;
 
 type:		'<' type_str '>'									{	##.ptr = pstrdup( strbuf );	}
-			|													{	##.ptr = (void*)NULL; }
-			;
+            |													{	##.ptr = (void*)NULL; }
+            ;
 
 type_str:	type_str '^>'										{ 	strbuf_append( (char)#2.ch ); }
-			|													{ 	reset_strbuf(); }
-			;
+            |													{ 	reset_strbuf(); }
+            ;
 
 /*
 escape_sequence:
-			'a'													{ 	##.ch = '\a'; }
-			| 'b'												{ 	##.ch = '\b'; }
-			| 'n'												{ 	##.ch = '\n'; }
-			| 'f'												{ 	##.ch = '\f'; }
-			| 'r'												{ 	##.ch = '\r'; }
-			| 't'												{ 	##.ch = '\t'; }
-			| 'v'												{ 	##.ch = '\v'; }
-			| '\\'												{ 	##.ch = '\\'; }
-			| '?'												{ 	##.ch = '\?'; }
-			| '\''												{ 	##.ch = '\''; }
-			| '\"'												{ 	##.ch = '\"'; }
-			| '0'												{ 	##.ch = '\0'; }
-			;
+            'a'													{ 	##.ch = '\a'; }
+            | 'b'												{ 	##.ch = '\b'; }
+            | 'n'												{ 	##.ch = '\n'; }
+            | 'f'												{ 	##.ch = '\f'; }
+            | 'r'												{ 	##.ch = '\r'; }
+            | 't'												{ 	##.ch = '\t'; }
+            | 'v'												{ 	##.ch = '\v'; }
+            | '\\'												{ 	##.ch = '\\'; }
+            | '?'												{ 	##.ch = '\?'; }
+            | '\''												{ 	##.ch = '\''; }
+            | '\"'												{ 	##.ch = '\"'; }
+            | '0'												{ 	##.ch = '\0'; }
+            ;
 */
 
 identifier_copy:	identifier									{	##.str = strbuf;
-																	strbuf = (char*)NULL;
-																}
-			;
+                                                                    strbuf = (char*)NULL;
+                                                                }
+            ;
 
 identifier:	identifier_start identifier_follow
-			;
+            ;
 
 identifier_start: 'A-Za-z_'										{ 	reset_strbuf();
-																	strbuf_append( #1.ch ); }
-			;
+                                                                    strbuf_append( #1.ch ); }
+            ;
 
 identifier_follow: identifier_follow 'A-Za-z0-9_'				{	strbuf_append( #2.ch ); }
-			|
-			;
+            |
+            ;
 
 integer:	integer '0-9'										{	strbuf_append( #2.ch ); }
-			| '0-9'												{ 	reset_strbuf();
-																	strbuf_append( #1.ch );
-																}
-			;
+            | '0-9'												{ 	reset_strbuf();
+                                                                    strbuf_append( #1.ch );
+                                                                }
+            ;
 
 code_opt:	code
-			|													{	reset_strbuf(); }
-			;
+            |													{	reset_strbuf(); }
+            ;
 
 code:		"[*" inner_code "*]"								{
-																	if( !parser->p_template )
-																	{
-																		print_error( parser,
-																			ERR_NO_TARGET_TPL_SUPPLY,
-																			ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
-																			parser->filename, line );
-																		reset_strbuf();
-																	}
-																}
-			;
+                                                                    if( !parser->p_template )
+                                                                    {
+                                                                        print_error( parser,
+                                                                            ERR_NO_TARGET_TPL_SUPPLY,
+                                                                            ERRSTYLE_WARNING | ERRSTYLE_FILEINFO,
+                                                                            parser->filename, line );
+                                                                        reset_strbuf();
+                                                                    }
+                                                                }
+            ;
 
 inner_code:	inner_code '^'										{	strbuf_append( #2.ch ); }
-			|													{	reset_strbuf(); }
-			;
+            |													{	reset_strbuf(); }
+            ;
 
 whitespace: ' '
-			| '\t'
-			| "/*" comment "*/"
-			| "//" scomment '\n'
-			| '\r'
-			| '\n' { line++; }
-			;
+            | '\t'
+            | "/*" comment "*/"
+            | "//" scomment '\n'
+            | '\r'
+            | '\n' { line++; }
+            ;
 
 comment:	comment '^'
-			|
-			;
+            |
+            ;
 
 scomment:	scomment '^\n'
-			|
-			;
+            |
+            ;
 
 {
 
 int parse_grammar( PARSER* p, char* filename, char* src )
 {
-	char* s,
-		* sp;
-	int err = -1;
+    char* s,
+        * sp;
+    int err = -1;
 
-	line = 1;
-	auto_regex = 0;
-	prec_cnt = 1;
-	directive_level = 0;
+    line = 1;
+    auto_regex = 0;
+    prec_cnt = 1;
+    directive_level = 0;
 
-	if( p && src )
-	{
-		err = 0;
+    if( p && src )
+    {
+        err = 0;
 
-		parser = p;
-		strbuf_append( '\0' );
+        parser = p;
+        strbuf_append( '\0' );
 
-		s = sp = src;
+        s = sp = src;
 
-		#if PDEBUG
-		printf( "<<< %s >>>\n", s );
-		#endif
-		err = parse( s );
+        #if PDEBUG
+        printf( "<<< %s >>>\n", s );
+        #endif
+        err = parse( s );
 
-		pfree( strbuf );
-	}
+        pfree( strbuf );
+    }
 
-	return err + error_count;
+    return err + error_count;
 }
 
 }
-
