@@ -141,8 +141,8 @@ between the rows/columns, except the last row/column.
                                                 be reduced. Can be used in both
                                                 of the following tags.
     -->
-    <action_start>                case @@production-number:&#x0A;                {&#x0A;                    </action_start>
-    <action_end>&#x0A;                    ;&#x0A;                }                break;
+    <action_start>            case @@production-number:&#x0A;                    {&#x0A;                    </action_start>
+    <action_end>    ;&#x0A;                    }&#x0A;                    break;
     </action_end>
 
     <!--
@@ -237,7 +237,7 @@ between the rows/columns, except the last row/column.
     -->
 
     <scan_action_start>                case @@symbol-number:&#x0A;                {&#x0A;                    </scan_action_start>
-    <scan_action_end>&#x0A;                    ;&#x0A;                }                break;
+    <scan_action_end>    ;&#x0A;                }&#x0A;                    break;
     </scan_action_end>
 
     <!--
@@ -313,8 +313,8 @@ between the rows/columns, except the last row/column.
                                                 -1.
     -->
     <defprod>
-        <col>@@production-number</col>
-        <col_sep>, </col_sep>
+        <col>    @@production-number</col>
+        <col_sep>,&#x0A;</col_sep>
     </defprod>
 
     <!-- 2D TABLE
@@ -348,10 +348,10 @@ between the rows/columns, except the last row/column.
                                                 or shift&reduce action.
     -->
     <acttab>
-        <row_start>    { @@number-of-columns</row_start>
-        <row_end> }</row_end>
+        <row_start>    {&#x0A;        @@number-of-columns</row_start>
+        <row_end>&#x0A;    }</row_end>
         <row_sep>,&#x0A;</row_sep>
-        <col>, @@symbol,@@action,@@index </col>
+        <col>,&#x0A;        @@symbol, @@action, @@index</col>
         <col_sep></col_sep>
     </acttab>
 
@@ -384,10 +384,10 @@ between the rows/columns, except the last row/column.
                     @@index					-	The number of the next state.
     -->
     <gotab>
-        <row_start>    { @@number-of-columns</row_start>
-        <row_end> }</row_end>
+        <row_start>    {&#x0A;        @@number-of-columns</row_start>
+        <row_end>&#x0A;    }</row_end>
         <row_sep>,&#x0A;</row_sep>
-        <col>, @@symbol,@@action,@@index </col>
+        <col>,&#x0A;        @@symbol, @@action, @@index</col>
         <col_sep></col_sep>
     </gotab>
 
@@ -420,8 +420,8 @@ between the rows/columns, except the last row/column.
                                                 Index begins at 0.
     -->
     <dfa_select>
-        <col>@@machine</col>
-        <col_sep>, </col_sep>
+        <col>        @@machine</col>
+        <col_sep>,&#x0A;</col_sep>
     </dfa_select>
 
     <!-- 1D TABLE
@@ -436,8 +436,8 @@ between the rows/columns, except the last row/column.
                     @@to					-	Character-code to
     -->
     <dfa_char>
-        <col>@@from, @@to</col>
-        <col_sep>, </col_sep>
+        <col>        @@from, @@to</col>
+        <col_sep>,&#x0A;</col_sep>
     </dfa_char>
 
     <!-- 1D TABLE
@@ -450,8 +450,8 @@ between the rows/columns, except the last row/column.
                     @@goto					-	Next state to go to.
     -->
     <dfa_trans>
-        <col>@@goto</col>
-        <col_sep>, </col_sep>
+        <col>        @@goto</col>
+        <col_sep>,&#x0A; </col_sep>
     </dfa_trans>
 
 
@@ -473,11 +473,11 @@ between the rows/columns, except the last row/column.
                                                 given DFA state machine.
     -->
     <dfa_idx>
-        <row_start>    { </row_start>
-        <row_end> }</row_end>
+        <row_start>    {&#x0A;</row_start>
+        <row_end>&#x0A;    }</row_end>
         <row_sep>,&#x0A;</row_sep>
-        <col>@@index * 2</col>
-        <col_sep>, </col_sep>
+        <col>        @@index * 2</col>
+        <col_sep>,&#x0A;</col_sep>
     </dfa_idx>
 
     <!-- 2D TABLE
@@ -498,11 +498,11 @@ between the rows/columns, except the last row/column.
                                                 given DFA state machine.
     -->
     <dfa_accept>
-        <row_start>    { </row_start>
-        <row_end> }</row_end>
+        <row_start>    {&#x0A;</row_start>
+        <row_end>&#x0A;    }</row_end>
         <row_sep>,&#x0A;</row_sep>
-        <col>@@accept</col>
-        <col_sep>, </col_sep>
+        <col>        @@accept</col>
+        <col_sep>,&#x0A;</col_sep>
     </dfa_accept>
 
     <!--
