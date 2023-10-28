@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: Test
 
 on:
   push:
@@ -8,11 +8,11 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
+    - name: "additional dependencies"
+      run: sudo apt update && sudo apt install -y jq
     - name: make
       run: make -f Makefile.gnu
     - name: make test

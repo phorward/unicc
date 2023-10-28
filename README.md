@@ -1,18 +1,28 @@
-# UniCC [![C/C++ CI](https://github.com/phorward/unicc/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/phorward/unicc/actions/workflows/c-cpp.yml) [![MIT License badge](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
-
-**unicc** is a universal LALR(1) parser generator with built-in scanner generator, targetting C, C++, Python, JavaScript, JSON and XML.
+<div align="center">
+    <img src="https://github.com/phorward/unicc/raw/main/unicc.svg" height="196" alt="UniCC Logo" title="UniCC logo">
+    <h1>LALR(1) Parser Generator</h1>
+    <a href="https://github.com/phorward/unicc/actions/workflows/test.yml">
+        <img src="https://github.com/phorward/unicc/actions/workflows/test.yml/badge.svg" alt="Badge displaying the test status" title="Test badge">
+    </a>
+    <a href="https://github.com/phorward/unicc/LICENSE">
+        <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="Badge displaying the license" title="License badge">
+    </a>
+    <br>
+    The universal LALR(1) parser generator with built-in scanner generator, creating parsers in different target programming languages.
+</div>
 
 ## About
 
-**unicc** compiles an augmented grammar definition into a program source code that parses the described grammar. Because UniCC is intended to be target-language independent, it can be configured via template definition files to emit parsers in almost any programming language.
+**unicc** is a parser generator that compiles an extended grammar definition into program source code that parses the described grammar. Since UniCC is target language independent, it can be configured via template definition files to generate parsers in any programming language.
 
-UniCC comes with out of the box support for the programming languages **C**, **C++**, **Python** and **JavaScript**. Parsers can also be generated into **JSON** and **XML**.
+UniCC natively supports the programming languages **C**, **C++**, **Python** and **JavaScript**. Parse tables can also be generated in **JSON** and **XML**.
 
-UniCC can generate both scanner-less and scanner-mode parsers. The more powerful scanner-less parsing is the default, and allows to break the barrier between the grammar and its tokens, so tokens are under full control of the context-free grammar. Scanner-less parsing requires that the provided grammar is internally rewritten according to whitespace and lexeme settings.
+UniCC can generate both scannerless parsers and parsers with a separate scanner. The more powerful scannerless parsing is the default and allows the barrier between the grammar and its tokens to be broken, leaving the tokens under the full control of the context-free grammar. Scannerless parsing requires that the provided grammar is rewritten internally according to the whitespace and lexeme settings.
 
 ## Examples
 
 Below is the full definition of a simple, universal grammar example that can be compiled to any of UniCC's target languages.
+
 This example uses the automatic abstract syntax tree construction syntax to define nodes and leafs of the resulting syntax tree.
 
 ```unicc
@@ -82,21 +92,31 @@ $ cc -o expr expr.c
 
 This [C](examples/expr.c.par)-example can also be found for [C++](examples/expr.cpp.par), [Python](examples/expr.py.par) and [JavaScript](examples/expr.js.par).
 
-More real-world examples for parsers implemented with UniCC can be found in [xpl](https://github.com/phorward/xpl), [rapidbatch](https://github.com/phorward/rapidbatch) and [ViUR logics](https://github.com/viur-framework/logics).
+More real-world examples for parsers implemented with UniCC can be found in [XPL](https://github.com/phorward/xpl), [RapidBATCH](https://github.com/phorward/rapidbatch) and [Logics](https://github.com/viur-framework/logics).
 
 ## Features
 
 UniCC provides the following features and tools:
 
 - Grammars are expressed in a powerful Backus-Naur-style meta language
-- Generates parsers in C, C++, Python, JavaScript, JSON and XML
-- Scanner-less and scanner-mode parser construction supported
-- Build-in full Unicode processing
-- Grammar prototyping features, virtual productions and anonymous nonterminals
+- Generates standalone (dependency-less) parsers in
+  - C
+  - C++
+  - Python 2 (deprecated)
+  - Python 3
+  - JavaScript (ES2018)
+- Provides facilities to generate parse tables as
+  - JSON
+  - XML (deprecated)
+- Scannerless parser supported by default
+- Full Unicode processing built-in
+- Grammar prototyping features
+  - automatic grammar revision for scannerless parsers
+  - virtual productions
+  - anonymous nonterminals
 - Abstract syntax tree notation features
 - Semantically determined symbols
 - Standard LALR(1) conflict resolution
-- Platform-independent (console-based)
 
 ## Documentation
 
@@ -104,7 +124,7 @@ The [UniCC User's Manual](http://downloads.phorward-software.com/unicc/unicc.pdf
 
 ## Installation
 
-On Linux and OS X, UniCC can be build and installed like any GNU-style program, with
+UniCC can be build and installed like any GNU-style program, with
 
 ```sh
 ./configure
@@ -112,11 +132,11 @@ make
 make install
 ```
 
-In the past, setup packages for Windows systems where also provided, but these are not maintained anymore since unicc v1.6. You can still find them [here](https://downloads.phorward-software.com/unicc/).
+Alternatively, the dev-toolchain can be used, by just calling on any recent Linux system.
 
-## UniCC v2
-
-Between 2014 and 2020, a version 2 of UniCC was under development, but abandoned for now. This version currently exists in the [branch unicc2](https://github.com/phorward/unicc/tree/unicc2) inside of this repository, and is a complete rewrite, but with the intention to provide better tools for grammar prototyping and direct AST traversal.
+```sh
+make -f Makefile.gnu
+```
 
 ## License
 

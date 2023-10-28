@@ -4,11 +4,13 @@ This file is used to document any relevant changes done to UniCC.
 
 ## [v1.8]
 
-Current main branch.
+Released on Oct 28, 2023
 
 - Improved program module generator to support <true>- and <false>-settings
-- Target `python` updated to spaces instead of tabs and further improvements
-- Target `javascript` updated to more recent JS/ECMAScript6 features
+- Updated Test suite
+- Target `python` updated to spaces instead of tabs and further PEP-8 improvements
+- Target `javascript` updated to more recent JS/ECMAScript6 standards
+- Target `json` fixed and updated
 
 ## [v1.7]
 

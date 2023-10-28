@@ -1,4 +1,5 @@
 *.o
+min_lalr1/min_lalr1
 
 src/parse_boot1.c
 src/parse_boot2.c

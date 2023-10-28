@@ -197,7 +197,17 @@ test_js: $(TESTPREFIX)js_expr $(TESTPREFIX)js_ast
 	@echo "--- $@ succeded ---"
 	@rm $(TESTPREFIX)*
 
+# JSON
+
+$(TESTPREFIX)json_ast:
+	./unicc -wtl json examples/expr.ast.par >$@.json
+	jq . $@.json
+
+test_json: $(TESTPREFIX)js_expr $(TESTPREFIX)json_ast
+	@echo "--- $@ succeded ---"
+	@rm $(TESTPREFIX)*
+
 # Test
 
-test: test_c test_cpp test_py test_js
+test: test_c test_cpp test_py test_js test_json
 	@echo "=== $+ succeeded ==="
