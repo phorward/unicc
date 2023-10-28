@@ -50,9 +50,9 @@
 /* Parse error macro */
 #ifndef UNICC_PARSE_ERROR
 #define UNICC_PARSE_ERROR( parser ) \
-	fprintf( stderr, "line %d, column %d: syntax error on symbol %d, token '" \
-		UNICC_SCHAR_FORMAT "'\n", \
-	parser->line, parser->column, parser->sym, parser->get_lexem() )
+    fprintf( stderr, "line %d, column %d: syntax error on symbol %d, token '" \
+        UNICC_SCHAR_FORMAT "'\n", \
+    parser->line, parser->column, parser->sym, parser->get_lexem() )
 #endif
 
 /* Input buffering clean-up */
@@ -73,8 +73,8 @@
 /* Call this when running out of memory during memory allocation */
 #ifndef UNICC_OUTOFMEM
 #define UNICC_OUTOFMEM( parser )	fprintf( stderr, \
-										"Fatal error, ran out of memory\n" ), \
-									exit( 1 )
+                                        "Fatal error, ran out of memory\n" ), \
+                                    exit( 1 )
 #endif
 
 #ifdef UNICC_PARSER

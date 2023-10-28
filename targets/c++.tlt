@@ -1,154 +1,154 @@
 <?xml version="1.0" standalone="yes"?>
 <generator name="C++">
-	<!--
-	****************************************************************************
-	Boolean values
-	****************************************************************************
-	-->
-	<true>true</true>
-	<false>false</false>
+    <!--
+    ****************************************************************************
+    Boolean values
+    ****************************************************************************
+    -->
+    <true>true</true>
+    <false>false</false>
 
-	<!--
-	****************************************************************************
-	Escape sequences
-	****************************************************************************
-	-->
+    <!--
+    ****************************************************************************
+    Escape sequences
+    ****************************************************************************
+    -->
 
-	<!-- Backslash must be double-quoted -->
-	<escape-sequence for="\" do="\\" />
-	<!-- Escape double quotation marks -->
-	<escape-sequence for="&#x22;" do="\&#x22;" />
+    <!-- Backslash must be double-quoted -->
+    <escape-sequence for="\" do="\\" />
+    <!-- Escape double quotation marks -->
+    <escape-sequence for="&#x22;" do="\&#x22;" />
 
-	<!--
-	****************************************************************************
-	Value-stack templates
-	****************************************************************************
-	-->
+    <!--
+    ****************************************************************************
+    Value-stack templates
+    ****************************************************************************
+    -->
 
-	<vstack_def_type>int</vstack_def_type>
-	<vstack_term_type>int</vstack_term_type>
+    <vstack_def_type>int</vstack_def_type>
+    <vstack_term_type>int</vstack_term_type>
 
-	<vstack_single>typedef @@value-type @@prefix_vtype;</vstack_single>
-	<vstack_union_start>union @@prefix_VTYPE&#x0A;{&#x0A;</vstack_union_start>
-	<vstack_union_end>} @@prefix_vtype;&#x0A;&#x0A;</vstack_union_end>
-	<vstack_union_def>&#x09;@@value-type @@attribute;&#x0A;</vstack_union_def>
-	<vstack_union_att>value_@@value-type-id</vstack_union_att>
+    <vstack_single>typedef @@value-type @@prefix_vtype;</vstack_single>
+    <vstack_union_start>union @@prefix_VTYPE&#x0A;{&#x0A;</vstack_union_start>
+    <vstack_union_end>} @@prefix_vtype;&#x0A;&#x0A;</vstack_union_end>
+    <vstack_union_def>    @@value-type @@attribute;&#x0A;</vstack_union_def>
+    <vstack_union_att>value_@@value-type-id</vstack_union_att>
 
-	<!--
-	****************************************************************************
-	Semantic action templates
-	****************************************************************************
-	-->
+    <!--
+    ****************************************************************************
+    Semantic action templates
+    ****************************************************************************
+    -->
 
-	<action_start>&#x09;&#x09;&#x09;&#x09;case @@production-number:&#x0A;&#x09;&#x09;&#x09;&#x09;{&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;</action_start>
-	<action_end>&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;;&#x0A;&#x09;&#x09;&#x09;&#x09;}&#x09;&#x09;&#x09;&#x09;break;
-	</action_end>
+    <action_start>                case @@production-number:&#x0A;                {&#x0A;                    </action_start>
+    <action_end>&#x0A;                    ;&#x0A;                }                break;
+    </action_end>
 
-	<action_single>( ( this->tos - @@offset )->value )</action_single>
+    <action_single>( ( this->tos - @@offset )->value )</action_single>
 
-	<action_union>( ( this->tos - @@offset )->value.@@attribute )</action_union>
-	<action_lhs_single>this->ret</action_lhs_single>
-	<action_lhs_union>this->ret.@@attribute</action_lhs_union>
+    <action_union>( ( this->tos - @@offset )->value.@@attribute )</action_union>
+    <action_lhs_single>this->ret</action_lhs_single>
+    <action_lhs_union>this->ret.@@attribute</action_lhs_union>
 
-	<action_set_lhs>( this->lhs = @@sym )</action_set_lhs>
+    <action_set_lhs>( this->lhs = @@sym )</action_set_lhs>
 
-	<!--
-	****************************************************************************
-	Semantic terminal action templates
-	****************************************************************************
-	-->
+    <!--
+    ****************************************************************************
+    Semantic terminal action templates
+    ****************************************************************************
+    -->
 
-	<scan_action_start>&#x09;&#x09;&#x09;&#x09;case @@symbol-number:&#x0A;&#x09;&#x09;&#x09;&#x09;{&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;</scan_action_start>
-	<scan_action_end>&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;;&#x0A;&#x09;&#x09;&#x09;&#x09;}&#x09;&#x09;&#x09;&#x09;break;
-	</scan_action_end>
+    <scan_action_start>                case @@symbol-number:&#x0A;                {&#x0A;                    </scan_action_start>
+    <scan_action_end>&#x0A;                    ;&#x0A;                }                break;
+    </scan_action_end>
 
-	<scan_action_begin_offset>this->lexem( pcb )</scan_action_begin_offset>
-	<scan_action_end_offset>this->len</scan_action_end_offset>
-	<scan_action_ret_single>this->tos->value</scan_action_ret_single>
-	<scan_action_ret_union>( this->tos->value.@@attribute )</scan_action_ret_union>
+    <scan_action_begin_offset>this->lexem( pcb )</scan_action_begin_offset>
+    <scan_action_end_offset>this->len</scan_action_end_offset>
+    <scan_action_ret_single>this->tos->value</scan_action_ret_single>
+    <scan_action_ret_union>( this->tos->value.@@attribute )</scan_action_ret_union>
 
-	<scan_action_set_symbol>( this->sym = @@sym )</scan_action_set_symbol>
+    <scan_action_set_symbol>( this->sym = @@sym )</scan_action_set_symbol>
 
-	<!--
-	****************************************************************************
-	Parse table templates
-	****************************************************************************
-	-->
+    <!--
+    ****************************************************************************
+    Parse table templates
+    ****************************************************************************
+    -->
 
-	<defprod>
-		<col>@@production-number</col>
-		<col_sep>, </col_sep>
-	</defprod>
+    <defprod>
+        <col>@@production-number</col>
+        <col_sep>, </col_sep>
+    </defprod>
 
-	<acttab>
-		<row_start>			{ @@number-of-columns</row_start>
-		<row_end> }</row_end>
-		<row_sep>,&#x0A;</row_sep>
-		<col>, @@symbol,@@action,@@index </col>
-		<col_sep></col_sep>
-	</acttab>
+    <acttab>
+        <row_start>			{ @@number-of-columns</row_start>
+        <row_end> }</row_end>
+        <row_sep>,&#x0A;</row_sep>
+        <col>, @@symbol,@@action,@@index </col>
+        <col_sep></col_sep>
+    </acttab>
 
-	<gotab>
-		<row_start>			{ @@number-of-columns</row_start>
-		<row_end> }</row_end>
-		<row_sep>,&#x0A;</row_sep>
-		<col>, @@symbol,@@action,@@index </col>
-		<col_sep></col_sep>
-	</gotab>
+    <gotab>
+        <row_start>			{ @@number-of-columns</row_start>
+        <row_end> }</row_end>
+        <row_sep>,&#x0A;</row_sep>
+        <col>, @@symbol,@@action,@@index </col>
+        <col_sep></col_sep>
+    </gotab>
 
-	<dfa_select>
-		<col>@@machine</col>
-		<col_sep>, </col_sep>
-	</dfa_select>
+    <dfa_select>
+        <col>@@machine</col>
+        <col_sep>, </col_sep>
+    </dfa_select>
 
-	<dfa_char>
-		<col>@@from, @@to</col>
-		<col_sep>, </col_sep>
-	</dfa_char>
+    <dfa_char>
+        <col>@@from, @@to</col>
+        <col_sep>, </col_sep>
+    </dfa_char>
 
-	<dfa_trans>
-		<col>@@goto</col>
-		<col_sep>, </col_sep>
-	</dfa_trans>
+    <dfa_trans>
+        <col>@@goto</col>
+        <col_sep>, </col_sep>
+    </dfa_trans>
 
-	<dfa_idx>
-		<row_start>			{ </row_start>
-		<row_end> }</row_end>
-		<row_sep>,&#x0A;</row_sep>
-		<col>@@index * 2</col>
-		<col_sep>, </col_sep>
-	</dfa_idx>
+    <dfa_idx>
+        <row_start>			{ </row_start>
+        <row_end> }</row_end>
+        <row_sep>,&#x0A;</row_sep>
+        <col>@@index * 2</col>
+        <col_sep>, </col_sep>
+    </dfa_idx>
 
-	<dfa_accept>
-		<row_start>			{ </row_start>
-		<row_end> }</row_end>
-		<row_sep>,&#x0A;</row_sep>
-		<col>@@accept</col>
-		<col_sep>, </col_sep>
-	</dfa_accept>
+    <dfa_accept>
+        <row_start>			{ </row_start>
+        <row_end> }</row_end>
+        <row_sep>,&#x0A;</row_sep>
+        <col>@@accept</col>
+        <col_sep>, </col_sep>
+    </dfa_accept>
 
-	<!--
-	****************************************************************************
-	Symbol and production information tables
-	****************************************************************************
-	-->
+    <!--
+    ****************************************************************************
+    Symbol and production information tables
+    ****************************************************************************
+    -->
 
-	<symbols>
-		<col>			{ /* @@symbol */ "@@symbol-name", "@@emit", @@type, bool(@@lexem), bool(@@whitespace), bool(@@greedy) }</col>
-		<col_sep>,&#x0A;</col_sep>
-	</symbols>
+    <symbols>
+        <col>			{ /* @@symbol */ "@@symbol-name", "@@emit", @@type, @@lexem, @@whitespace, @@greedy }</col>
+        <col_sep>,&#x0A;</col_sep>
+    </symbols>
 
-	<productions>
-		<col>			{ /* @@production-number */ "@@production", "@@emit", @@length, @@lhs }</col>
-		<col_sep>,&#x0A;</col_sep>
-	</productions>
+    <productions>
+        <col>			{ /* @@production-number */ "@@production", "@@emit", @@length, @@lhs }</col>
+        <col_sep>,&#x0A;</col_sep>
+    </productions>
 
-	<code_localization>#line @@line "@@filename"
+    <code_localization>#line @@line "@@filename"
 </code_localization>
 
-	<file filename="@@basename.cpp">/*
-	Parser module generated by unicc from @@filename.
-	DO NOT EDIT THIS FILE MANUALLY, IT WILL GO AWAY!
+    <file filename="@@basename.cpp">/*
+    This parser module was generated by unicc from @@filename.
+    DO NOT EDIT THIS FILE MANUALLY, IT WILL GO AWAY!
 */
 
 #if @@prologue_len == 0
@@ -166,958 +166,958 @@
 UNICC_SCHAR* @@prefix_parser::get_lexem( void )
 {
 #if UNICC_WCHAR || !UNICC_UTF8
-	this-&gt;lexem = this-&gt;buf;
+    this-&gt;lexem = this-&gt;buf;
 #else
-	size_t		size;
+    size_t		size;
 
-	size = wcstombs( (char*)NULL, this-&gt;buf, 0 );
+    size = wcstombs( (char*)NULL, this-&gt;buf, 0 );
 
-	free( this-&gt;lexem );
+    free( this-&gt;lexem );
 
-	if( !( this-&gt;lexem = (UNICC_SCHAR*)malloc(
-			( size + 1 ) * sizeof( UNICC_SCHAR ) ) ) )
-	{
-		UNICC_OUTOFMEM( this );
-		return NULL;
-	}
+    if( !( this-&gt;lexem = (UNICC_SCHAR*)malloc(
+            ( size + 1 ) * sizeof( UNICC_SCHAR ) ) ) )
+    {
+        UNICC_OUTOFMEM( this );
+        return NULL;
+    }
 
-	wcstombs( this-&gt;lexem, this-&gt;buf, size + 1 );
+    wcstombs( this-&gt;lexem, this-&gt;buf, size + 1 );
 #endif
 
 #if UNICC_DEBUG	&gt; 2
-	fprintf( stderr, "%s: lexem: this-&gt;lexem = &gt;" UNICC_SCHAR_FORMAT "&lt;\n",
-						UNICC_PARSER, this-&gt;lexem );
+    fprintf( stderr, "%s: lexem: this-&gt;lexem = &gt;" UNICC_SCHAR_FORMAT "&lt;\n",
+                        UNICC_PARSER, this-&gt;lexem );
 #endif
-	return this-&gt;lexem;
+    return this-&gt;lexem;
 }
 
 @@prefix_ast* @@prefix_parser::ast_free( @@prefix_ast* node )
 {
-	if( !node )
-		return NULL;
+    if( !node )
+        return NULL;
 
-	this-&gt;ast_free( node-&gt;child );
-	this-&gt;ast_free( node-&gt;next );
+    this-&gt;ast_free( node-&gt;child );
+    this-&gt;ast_free( node-&gt;next );
 
-	if( node-&gt;token )
-		free( node-&gt;token );
+    if( node-&gt;token )
+        free( node-&gt;token );
 
-	free( node );
-	return NULL;
+    free( node );
+    return NULL;
 }
 
 @@prefix_ast* @@prefix_parser::ast_create( const char* emit, UNICC_SCHAR* token )
 {
-	@@prefix_ast*	node;
+    @@prefix_ast*	node;
 
-	if( !( node = (@@prefix_ast*)malloc( sizeof( @@prefix_ast ) ) ) )
-	{
-		UNICC_OUTOFMEM( this );
-		return node;
-	}
+    if( !( node = (@@prefix_ast*)malloc( sizeof( @@prefix_ast ) ) ) )
+    {
+        UNICC_OUTOFMEM( this );
+        return node;
+    }
 
-	memset( node, 0, sizeof( @@prefix_ast ) );
+    memset( node, 0, sizeof( @@prefix_ast ) );
 
-	node-&gt;emit = emit;
+    node-&gt;emit = emit;
 
-	if( token )
-	{
-		#if !UNICC_WCHAR
-		if( !( node-&gt;token = strdup( token ) ) )
-		{
-			UNICC_OUTOFMEM( this );
-			free( node );
-			return (@@prefix_ast*)NULL;
-		}
-		#else
-		if( !( node-&gt;token = wcsdup( token ) ) )
-		{
-			UNICC_OUTOFMEM( this );
-			free( node );
-			return (@@prefix_ast*)NULL;
-		}
-		#endif
-	}
+    if( token )
+    {
+        #if !UNICC_WCHAR
+        if( !( node-&gt;token = strdup( token ) ) )
+        {
+            UNICC_OUTOFMEM( this );
+            free( node );
+            return (@@prefix_ast*)NULL;
+        }
+        #else
+        if( !( node-&gt;token = wcsdup( token ) ) )
+        {
+            UNICC_OUTOFMEM( this );
+            free( node );
+            return (@@prefix_ast*)NULL;
+        }
+        #endif
+    }
 
-	return node;
+    return node;
 }
 
 void @@prefix_parser::ast_print( FILE* stream, @@prefix_ast* node )
 {
-	int 		i;
-	static int 	rec;
+    int 		i;
+    static int 	rec;
 
-	if( !node )
-		return;
+    if( !node )
+        return;
 
-	if( !stream )
-		stream = stderr;
+    if( !stream )
+        stream = stderr;
 
-	while( node )
-	{
-		for( i = 0; i &lt; rec; i++ )
-			fprintf( stream,  " " );
+    while( node )
+    {
+        for( i = 0; i &lt; rec; i++ )
+            fprintf( stream,  " " );
 
-		fprintf( stream, "%s", node-&gt;emit );
+        fprintf( stream, "%s", node-&gt;emit );
 
-		if( node-&gt;token &amp;&amp; strcmp( node-&gt;emit, node-&gt;token ) != 0 )
-			fprintf( stream, " (%s)", node-&gt;token );
+        if( node-&gt;token &amp;&amp; strcmp( node-&gt;emit, node-&gt;token ) != 0 )
+            fprintf( stream, " (%s)", node-&gt;token );
 
-		fprintf( stream, "\n" );
+        fprintf( stream, "\n" );
 
-		rec++;
-		this-&gt;ast_print( stream, node-&gt;child );
-		rec--;
+        rec++;
+        this-&gt;ast_print( stream, node-&gt;child );
+        rec--;
 
-		node = node-&gt;next;
-	}
+        node = node-&gt;next;
+    }
 }
 
 bool @@prefix_parser::get_act( void )
 {
-	for( int i = 1; i &lt; this-&gt;actions[ this-&gt;tos-&gt;state ][0] * 3; i += 3 )
-	{
-		if( this-&gt;actions[ this-&gt;tos-&gt;state ][i] == this-&gt;sym )
-		{
-			if( ( this-&gt;act = this-&gt;actions[ this-&gt;tos-&gt;state ][i+1] )
-					== UNICC_ERROR )
-				return 0; /* Force parse error! */
+    for( int i = 1; i &lt; this-&gt;actions[ this-&gt;tos-&gt;state ][0] * 3; i += 3 )
+    {
+        if( this-&gt;actions[ this-&gt;tos-&gt;state ][i] == this-&gt;sym )
+        {
+            if( ( this-&gt;act = this-&gt;actions[ this-&gt;tos-&gt;state ][i+1] )
+                    == UNICC_ERROR )
+                return 0; /* Force parse error! */
 
-			this-&gt;idx = this-&gt;actions[ this-&gt;tos-&gt;state ][i+2];
-			return true;
-		}
-	}
+            this-&gt;idx = this-&gt;actions[ this-&gt;tos-&gt;state ][i+2];
+            return true;
+        }
+    }
 
-	/* Default production */
-	if( ( this-&gt;idx = this-&gt;def_prod[ this-&gt;tos-&gt;state ] ) &gt; -1 )
-	{
-		this-&gt;act = 1; /* Reduce */
-		return true;
-	}
+    /* Default production */
+    if( ( this-&gt;idx = this-&gt;def_prod[ this-&gt;tos-&gt;state ] ) &gt; -1 )
+    {
+        this-&gt;act = 1; /* Reduce */
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
 bool @@prefix_parser::get_go( void )
 {
-	for( int i = 1; i &lt; this-&gt;go[ this-&gt;tos-&gt;state ][0] * 3; i += 3 )
-	{
-		if( this-&gt;go[ this-&gt;tos-&gt;state ][i] == this-&gt;lhs )
-		{
-			this-&gt;act = this-&gt;go[ this-&gt;tos-&gt;state ][ i + 1 ];
-			this-&gt;idx = this-&gt;go[ this-&gt;tos-&gt;state ][ i + 2 ];
-			return true;
-		}
-	}
+    for( int i = 1; i &lt; this-&gt;go[ this-&gt;tos-&gt;state ][0] * 3; i += 3 )
+    {
+        if( this-&gt;go[ this-&gt;tos-&gt;state ][i] == this-&gt;lhs )
+        {
+            this-&gt;act = this-&gt;go[ this-&gt;tos-&gt;state ][ i + 1 ];
+            this-&gt;idx = this-&gt;go[ this-&gt;tos-&gt;state ][ i + 2 ];
+            return true;
+        }
+    }
 
-	return false;
+    return false;
 }
 
 bool @@prefix_parser::alloc_stack( void )
 {
-	if( !this-&gt;stacksize )
-	{
-		if( !( this-&gt;tos = this-&gt;stack = (@@prefix_tok*)malloc(
-				UNICC_MALLOCSTEP * sizeof( @@prefix_tok ) ) ) )
-		{
-			UNICC_OUTOFMEM( this );
-			return false;
-		}
+    if( !this-&gt;stacksize )
+    {
+        if( !( this-&gt;tos = this-&gt;stack = (@@prefix_tok*)malloc(
+                UNICC_MALLOCSTEP * sizeof( @@prefix_tok ) ) ) )
+        {
+            UNICC_OUTOFMEM( this );
+            return false;
+        }
 
-		this-&gt;stacksize = UNICC_MALLOCSTEP;
-	}
-	else if( ( this-&gt;tos - this-&gt;stack ) == this-&gt;stacksize )
-	{
-		size_t			size = ( this-&gt;tos - this-&gt;stack );
-		@@prefix_tok*	ptr;
+        this-&gt;stacksize = UNICC_MALLOCSTEP;
+    }
+    else if( ( this-&gt;tos - this-&gt;stack ) == this-&gt;stacksize )
+    {
+        size_t			size = ( this-&gt;tos - this-&gt;stack );
+        @@prefix_tok*	ptr;
 
-		if( !( ptr = (@@prefix_tok*)realloc( this-&gt;stack,
-				( this-&gt;stacksize + UNICC_MALLOCSTEP )
-					* sizeof( @@prefix_tok ) ) ) )
-		{
-			UNICC_OUTOFMEM( this );
+        if( !( ptr = (@@prefix_tok*)realloc( this-&gt;stack,
+                ( this-&gt;stacksize + UNICC_MALLOCSTEP )
+                    * sizeof( @@prefix_tok ) ) ) )
+        {
+            UNICC_OUTOFMEM( this );
 
-			if( this-&gt;stack )
-			{
-				free( this-&gt;stack );
-				this-&gt;tos = this-&gt;stack = NULL;
-				this-&gt;stacksize = 0;
-			}
+            if( this-&gt;stack )
+            {
+                free( this-&gt;stack );
+                this-&gt;tos = this-&gt;stack = NULL;
+                this-&gt;stacksize = 0;
+            }
 
-			return false;
-		}
+            return false;
+        }
 
-		this-&gt;tos = this-&gt;stack = ptr;
-		this-&gt;stacksize += UNICC_MALLOCSTEP;
-		this-&gt;tos += size;
-	}
+        this-&gt;tos = this-&gt;stack = ptr;
+        this-&gt;stacksize += UNICC_MALLOCSTEP;
+        this-&gt;tos += size;
+    }
 
-	return true;
+    return true;
 }
 
 UNICC_CHAR @@prefix_parser::get_input( size_t offset )
 {
 #if UNICC_DEBUG	&gt; 2
-	fprintf( stderr, "%s: get input: this-&gt;buf + offset = %p this-&gt;bufend = %p\n",
-				UNICC_PARSER, this-&gt;buf + offset, this-&gt;bufend );
+    fprintf( stderr, "%s: get input: this-&gt;buf + offset = %p this-&gt;bufend = %p\n",
+                UNICC_PARSER, this-&gt;buf + offset, this-&gt;bufend );
 #endif
 
-	while( this-&gt;buf + offset &gt;= this-&gt;bufend )
-	{
+    while( this-&gt;buf + offset &gt;= this-&gt;bufend )
+    {
 #if UNICC_DEBUG	&gt; 2
-			fprintf( stderr, "%s: get input: requiring more input\n",
-					UNICC_PARSER );
+            fprintf( stderr, "%s: get input: requiring more input\n",
+                    UNICC_PARSER );
 #endif
-		if( !this-&gt;buf )
-		{
-			this-&gt;bufend = this-&gt;buf = (UNICC_CHAR*)malloc(
-				( UNICC_MALLOCSTEP + 1 ) * sizeof( UNICC_CHAR ) );
+        if( !this-&gt;buf )
+        {
+            this-&gt;bufend = this-&gt;buf = (UNICC_CHAR*)malloc(
+                ( UNICC_MALLOCSTEP + 1 ) * sizeof( UNICC_CHAR ) );
 
-			if( !this-&gt;buf )
-			{
-				UNICC_OUTOFMEM( this );
-				return 0;
-			}
+            if( !this-&gt;buf )
+            {
+                UNICC_OUTOFMEM( this );
+                return 0;
+            }
 
-			*this-&gt;buf = 0;
-		}
-		else if( *this-&gt;buf &amp;&amp; !( ( this-&gt;bufend - this-&gt;buf ) %
-					UNICC_MALLOCSTEP ) )
-		{
-			size_t size	= this-&gt;bufend - this-&gt;buf;
-			UNICC_CHAR*	buf;
+            *this-&gt;buf = 0;
+        }
+        else if( *this-&gt;buf &amp;&amp; !( ( this-&gt;bufend - this-&gt;buf ) %
+                    UNICC_MALLOCSTEP ) )
+        {
+            size_t size	= this-&gt;bufend - this-&gt;buf;
+            UNICC_CHAR*	buf;
 
-			if( !( buf = (UNICC_CHAR*)realloc( this-&gt;buf,
-						( size + UNICC_MALLOCSTEP + 1 )
-							* sizeof( UNICC_CHAR ) ) ) )
-			{
-				UNICC_OUTOFMEM( this );
+            if( !( buf = (UNICC_CHAR*)realloc( this-&gt;buf,
+                        ( size + UNICC_MALLOCSTEP + 1 )
+                            * sizeof( UNICC_CHAR ) ) ) )
+            {
+                UNICC_OUTOFMEM( this );
 
-				free( this-&gt;buf );
-				this-&gt;buf = NULL;
+                free( this-&gt;buf );
+                this-&gt;buf = NULL;
 
-				return 0;
-			}
+                return 0;
+            }
 
-			this-&gt;buf = buf;
-			this-&gt;bufend = this-&gt;buf + size;
-		}
+            this-&gt;buf = buf;
+            this-&gt;bufend = this-&gt;buf + size;
+        }
 
-		if( this-&gt;is_eof || ( *( this-&gt;bufend ) = (UNICC_CHAR)UNICC_GETINPUT )
-									== this-&gt;eof )
-		{
+        if( this-&gt;is_eof || ( *( this-&gt;bufend ) = (UNICC_CHAR)UNICC_GETINPUT )
+                                    == this-&gt;eof )
+        {
 #if UNICC_DEBUG	&gt; 2
-			fprintf( stderr, "%s: get input: can't get more input, "
-						"end-of-file reached\n", UNICC_PARSER );
+            fprintf( stderr, "%s: get input: can't get more input, "
+                        "end-of-file reached\n", UNICC_PARSER );
 #endif
-			this-&gt;is_eof = true;
-			return this-&gt;eof;
-		}
+            this-&gt;is_eof = true;
+            return this-&gt;eof;
+        }
 #if UNICC_DEBUG	&gt; 2
-		fprintf( stderr, "%s: get input: read char &gt;%c&lt; %d\n",
-					UNICC_PARSER, (char)*( this-&gt;bufend ), *( this-&gt;bufend ) );
+        fprintf( stderr, "%s: get input: read char &gt;%c&lt; %d\n",
+                    UNICC_PARSER, (char)*( this-&gt;bufend ), *( this-&gt;bufend ) );
 #endif
-
-#if UNICC_DEBUG	&gt; 2
-		fprintf( stderr, "%s: get input: reading character &gt;%c&lt; %d\n",
-					UNICC_PARSER, (char)*( this-&gt;bufend ), *( this-&gt;bufend ) );
-#endif
-
-		*( ++this-&gt;bufend ) = 0;
-	}
 
 #if UNICC_DEBUG	&gt; 2
-	{
-		UNICC_CHAR*		chptr;
-
-		fprintf( stderr, "%s: get input: offset = %d\n",
-					UNICC_PARSER, offset );
-		fprintf( stderr, "%s: get input: buf = &gt;" UNICC_CHAR_FORMAT "&lt;\n",
-					UNICC_PARSER, this-&gt;buf );
-		fprintf( stderr, "%s: get input: returning %d\n",
-					UNICC_PARSER, *( this-&gt;buf + offset ) );
-	}
+        fprintf( stderr, "%s: get input: reading character &gt;%c&lt; %d\n",
+                    UNICC_PARSER, (char)*( this-&gt;bufend ), *( this-&gt;bufend ) );
 #endif
 
-	return this-&gt;buf[ offset ];
+        *( ++this-&gt;bufend ) = 0;
+    }
+
+#if UNICC_DEBUG	&gt; 2
+    {
+        UNICC_CHAR*		chptr;
+
+        fprintf( stderr, "%s: get input: offset = %d\n",
+                    UNICC_PARSER, offset );
+        fprintf( stderr, "%s: get input: buf = &gt;" UNICC_CHAR_FORMAT "&lt;\n",
+                    UNICC_PARSER, this-&gt;buf );
+        fprintf( stderr, "%s: get input: returning %d\n",
+                    UNICC_PARSER, *( this-&gt;buf + offset ) );
+    }
+#endif
+
+    return this-&gt;buf[ offset ];
 }
 
 void @@prefix_parser::clear_input( void )
 {
-	if( this-&gt;buf )
-	{
-		if( this-&gt;len )
-		{
-			/* Update counters for line and column */
-			for( int i = 0; i &lt; this-&gt;len; i++ )
-			{
-				if( (char)this-&gt;buf[i] == '\n' )
-				{
-					this-&gt;line++;
-					this-&gt;column = 1;
-				}
-				else
-					this-&gt;column++;
-			}
+    if( this-&gt;buf )
+    {
+        if( this-&gt;len )
+        {
+            /* Update counters for line and column */
+            for( int i = 0; i &lt; this-&gt;len; i++ )
+            {
+                if( (char)this-&gt;buf[i] == '\n' )
+                {
+                    this-&gt;line++;
+                    this-&gt;column = 1;
+                }
+                else
+                    this-&gt;column++;
+            }
 
 #if UNICC_DEBUG &gt; 2
-	fprintf( stderr, "%s: clear input: "
-		"Clearing %d characters (%d bytes)\n",
-			UNICC_PARSER, this-&gt;len, this-&gt;len * sizeof( UNICC_CHAR ) );
-	fprintf( stderr, "%s: clear input: buf = &gt;" UNICC_CHAR_FORMAT "&lt;\n",
-			UNICC_PARSER, this-&gt;buf, sizeof( UNICC_CHAR ) );
-	fprintf( stderr, "%s: clear input: this-&gt;bufend &gt;" UNICC_CHAR_FORMAT "&lt;\n",
-			UNICC_PARSER, this-&gt;bufend );
+    fprintf( stderr, "%s: clear input: "
+        "Clearing %d characters (%d bytes)\n",
+            UNICC_PARSER, this-&gt;len, this-&gt;len * sizeof( UNICC_CHAR ) );
+    fprintf( stderr, "%s: clear input: buf = &gt;" UNICC_CHAR_FORMAT "&lt;\n",
+            UNICC_PARSER, this-&gt;buf, sizeof( UNICC_CHAR ) );
+    fprintf( stderr, "%s: clear input: this-&gt;bufend &gt;" UNICC_CHAR_FORMAT "&lt;\n",
+            UNICC_PARSER, this-&gt;bufend );
 #endif
 
-			memmove( this-&gt;buf, this-&gt;buf + this-&gt;len,
-						( ( this-&gt;bufend - ( this-&gt;buf + this-&gt;len ) ) + 1 + 1 )
-							* sizeof( UNICC_CHAR ) );
-			this-&gt;bufend = this-&gt;buf + ( this-&gt;bufend - ( this-&gt;buf + this-&gt;len ) );
+            memmove( this-&gt;buf, this-&gt;buf + this-&gt;len,
+                        ( ( this-&gt;bufend - ( this-&gt;buf + this-&gt;len ) ) + 1 + 1 )
+                            * sizeof( UNICC_CHAR ) );
+            this-&gt;bufend = this-&gt;buf + ( this-&gt;bufend - ( this-&gt;buf + this-&gt;len ) );
 
 #if UNICC_DEBUG	&gt; 2
-	fprintf( stderr, "%s: clear input: now buf = &gt;" UNICC_CHAR_FORMAT "&lt;\n",
-				UNICC_PARSER, this-&gt;buf, sizeof( UNICC_CHAR ) );
-	fprintf( stderr, "%s: clear input: now bufend = &gt;" UNICC_CHAR_FORMAT "&lt;\n",
-				UNICC_PARSER, this-&gt;bufend, sizeof( UNICC_CHAR ) );
+    fprintf( stderr, "%s: clear input: now buf = &gt;" UNICC_CHAR_FORMAT "&lt;\n",
+                UNICC_PARSER, this-&gt;buf, sizeof( UNICC_CHAR ) );
+    fprintf( stderr, "%s: clear input: now bufend = &gt;" UNICC_CHAR_FORMAT "&lt;\n",
+                UNICC_PARSER, this-&gt;bufend, sizeof( UNICC_CHAR ) );
 #endif
-		}
-		else
-		{
-			this-&gt;bufend = this-&gt;buf;
-			*( this-&gt;buf ) = 0;
-		}
-	}
+        }
+        else
+        {
+            this-&gt;bufend = this-&gt;buf;
+            *( this-&gt;buf ) = 0;
+        }
+    }
 
-	this-&gt;len = 0;
-	this-&gt;sym = -1;
+    this-&gt;len = 0;
+    this-&gt;sym = -1;
 #if UNICC_DEBUG	&gt; 2
-	fprintf( stderr, "%s: clear input: symbol cleared\n", UNICC_PARSER );
+    fprintf( stderr, "%s: clear input: symbol cleared\n", UNICC_PARSER );
 #endif
 }
 
 #if @@number-of-dfa-machines
 void @@prefix_parser::lex( void )
 {
-	int 		state	= 0;
-	size_t		len		= 0;
-	int			chr;
-	UNICC_CHAR	next;
+    int 		state	= 0;
+    size_t		len		= 0;
+    int			chr;
+    UNICC_CHAR	next;
 #if !@@mode
-	int			machine	= this-&gt;dfa_select[ this-&gt;tos-&gt;state ];
+    int			machine	= this-&gt;dfa_select[ this-&gt;tos-&gt;state ];
 #else
-	int			machine	= 0;
+    int			machine	= 0;
 #endif
 
-	next = this-&gt;get_input( len );
+    next = this-&gt;get_input( len );
 #if UNICC_DEBUG	&gt; 1
 fprintf( stderr, "%s: lex: next = %d\n", UNICC_PARSER, next );
 #endif
 
-	if( next == this-&gt;eof )
-	{
-		this-&gt;sym = @@eof;
-		return;
-	}
+    if( next == this-&gt;eof )
+    {
+        this-&gt;sym = @@eof;
+        return;
+    }
 
-	do
-	{
+    do
+    {
 #if UNICC_DEBUG	&gt; 1
 fprintf( stderr, "%s: lex: next = %d\n", UNICC_PARSER, next );
 #endif
 
-		chr = this-&gt;dfa_idx[ machine ][ state ];
+        chr = this-&gt;dfa_idx[ machine ][ state ];
 #if UNICC_DEBUG	&gt; 1
 fprintf( stderr, "%s: lex: chr = %d\n", UNICC_PARSER, chr );
 #endif
 
-		state = -1;
+        state = -1;
 #if UNICC_DEBUG	&gt; 1
 fprintf( stderr, "%s: lex: FIRST next = %d this-&gt;dfa_chars[ chr ] = %d, "
-			"this-&gt;dfa_chars[ chr+1 ] = %d\n", UNICC_PARSER, next,
-				this-&gt;dfa_chars[ chr ], this-&gt;dfa_chars[ chr + 1 ] );
+            "this-&gt;dfa_chars[ chr+1 ] = %d\n", UNICC_PARSER, next,
+                this-&gt;dfa_chars[ chr ], this-&gt;dfa_chars[ chr + 1 ] );
 #endif
-		while( this-&gt;dfa_chars[ chr ] &gt; -1 )
-		{
+        while( this-&gt;dfa_chars[ chr ] &gt; -1 )
+        {
 #if UNICC_DEBUG	&gt; 1
 fprintf( stderr, "%s: lex: next = %d this-&gt;dfa_chars[ chr ] = %d, "
-		"this-&gt;dfa_chars[ chr+1 ] = %d\n", UNICC_PARSER, next,
-			this-&gt;dfa_chars[ chr ], this-&gt;dfa_chars[ chr + 1 ] );
+        "this-&gt;dfa_chars[ chr+1 ] = %d\n", UNICC_PARSER, next,
+            this-&gt;dfa_chars[ chr ], this-&gt;dfa_chars[ chr + 1 ] );
 #endif
-			if( next &gt;= this-&gt;dfa_chars[ chr ] &amp;&amp;
-				next &lt;= this-&gt;dfa_chars[ chr+1 ] )
-			{
-				state = *( this-&gt;dfa_trans + ( chr / 2 ) );
+            if( next &gt;= this-&gt;dfa_chars[ chr ] &amp;&amp;
+                next &lt;= this-&gt;dfa_chars[ chr+1 ] )
+            {
+                state = *( this-&gt;dfa_trans + ( chr / 2 ) );
 #if UNICC_DEBUG	&gt; 1
 fprintf( stderr, "%s: lex: state = %d\n", UNICC_PARSER, state );
 #endif
-				if( this-&gt;dfa_accept[ machine ][ state ] &gt; 0 )
-				{
-					this-&gt;len = len + 1;
-					this-&gt;sym = this-&gt;dfa_accept[ machine ][ state ] - 1;
+                if( this-&gt;dfa_accept[ machine ][ state ] &gt; 0 )
+                {
+                    this-&gt;len = len + 1;
+                    this-&gt;sym = this-&gt;dfa_accept[ machine ][ state ] - 1;
 
 #if UNICC_DEBUG	&gt; 1
 fprintf( stderr, "%s: lex: new accepting symbol this-&gt;sym = %d greedy = %d\n",
-			UNICC_PARSER, this-&gt;sym, this-&gt;symbols[ this-&gt;sym ].greedy );
+            UNICC_PARSER, this-&gt;sym, this-&gt;symbols[ this-&gt;sym ].greedy );
 #endif
-					if( this-&gt;sym == @@eof )
-					{
-						state = -1; /* test! */
-						break;
-					}
+                    if( this-&gt;sym == @@eof )
+                    {
+                        state = -1; /* test! */
+                        break;
+                    }
 
-					/* Stop if matched symbol should be parsed nongreedy */
-					if( !this-&gt;symbols[ this-&gt;sym ].greedy )
-					{
-						state = -1;
-						break;
-					}
-				}
+                    /* Stop if matched symbol should be parsed nongreedy */
+                    if( !this-&gt;symbols[ this-&gt;sym ].greedy )
+                    {
+                        state = -1;
+                        break;
+                    }
+                }
 
-				next = this-&gt;get_input( ++len );
-				break;
-			}
+                next = this-&gt;get_input( ++len );
+                break;
+            }
 
-			chr += 2;
-		}
-	}
-	while( state &gt; -1 &amp;&amp; next != this-&gt;eof );
+            chr += 2;
+        }
+    }
+    while( state &gt; -1 &amp;&amp; next != this-&gt;eof );
 
-	if( this-&gt;sym &gt; -1 )
-	{
+    if( this-&gt;sym &gt; -1 )
+    {
 #if UNICC_SEMANTIC_TERM_SEL
-		/*
-			Execute scanner actions, if existing, but with
-			UNICC_ON_SHIFT = 0, so that no memory allocation
-			should be performed. This actions should only be
-			handled if there are semantic-code dependent
-			terminal symbol selections.
+        /*
+            Execute scanner actions, if existing, but with
+            UNICC_ON_SHIFT = 0, so that no memory allocation
+            should be performed. This actions should only be
+            handled if there are semantic-code dependent
+            terminal symbol selections.
 
-			tos is incremented here, if the semantic code
-			stores data for the symbol. It won't get lost
-			in case of a shift.
-		*/
-		this-&gt;alloc_stack();
-		this-&gt;tos++;
+            tos is incremented here, if the semantic code
+            stores data for the symbol. It won't get lost
+            in case of a shift.
+        */
+        this-&gt;alloc_stack();
+        this-&gt;tos++;
 
-		next = this-&gt;buf[ this-&gt;len ];
-		this-&gt;buf[ this-&gt;len ] = 0;
+        next = this-&gt;buf[ this-&gt;len ];
+        this-&gt;buf[ this-&gt;len ] = 0;
 
 #define UNICC_ON_SHIFT 	0
-		switch( this-&gt;sym )
-		{
+        switch( this-&gt;sym )
+        {
 @@scan_actions
 
-			default:
-				break;
-		}
+            default:
+                break;
+        }
 #undef UNICC_ON_SHIFT
 
-		this-&gt;buf[ this-&gt;len ] = next;
+        this-&gt;buf[ this-&gt;len ] = next;
 
-		this-&gt;tos--;
+        this-&gt;tos--;
 #endif /* UNICC_SEMANTIC_TERM_SEL */
-	}
+    }
 
 #if UNICC_DEBUG	&gt; 1
 fprintf( stderr, "%s: lex: function exits, this-&gt;sym = %d, this-&gt;len = %d\n",
-			UNICC_PARSER, this-&gt;sym, this-&gt;len );
+            UNICC_PARSER, this-&gt;sym, this-&gt;len );
 #endif
 }
 #endif
 
 bool @@prefix_parser::get_sym( void )
 {
-	this-&gt;sym = -1;
-	this-&gt;len = 0;
+    this-&gt;sym = -1;
+    this-&gt;len = 0;
 
 #if @@mode
-	do
-	{
+    do
+    {
 #endif
 #if !@@mode
 
 #if UNICC_DEBUG &gt; 2
-		fprintf( stderr, "%s: get sym: state = %d dfa_select = %d\n",
-					UNICC_PARSER, this-&gt;tos-&gt;state,
-						@@prefix_dfa_select[ this-&gt;tos-&gt;state ] );
+        fprintf( stderr, "%s: get sym: state = %d dfa_select = %d\n",
+                    UNICC_PARSER, this-&gt;tos-&gt;state,
+                        @@prefix_dfa_select[ this-&gt;tos-&gt;state ] );
 #endif
 
-		if( this-&gt;dfa_select[ this-&gt;tos-&gt;state ] &gt; -1 )
-			this-&gt;lex();
-		/*
-		 * If there is no DFA state machine,
-		 * try to identify the end-of-file symbol.
-		 * If this also fails, a parse error will
-		 * raise.
-		 */
-		else if( this-&gt;get_input( 0 ) == this-&gt;eof )
-			this-&gt;sym = @@eof;
+        if( this-&gt;dfa_select[ this-&gt;tos-&gt;state ] &gt; -1 )
+            this-&gt;lex();
+        /*
+         * If there is no DFA state machine,
+         * try to identify the end-of-file symbol.
+         * If this also fails, a parse error will
+         * raise.
+         */
+        else if( this-&gt;get_input( 0 ) == this-&gt;eof )
+            this-&gt;sym = @@eof;
 #else
-		this-&gt;lex();
+        this-&gt;lex();
 #endif /* !@@mode */
 
 #if @@mode
 
-		if( this-&gt;sym &gt; -1 &amp;&amp; this-&gt;symbols[ this-&gt;sym ].whitespace )
-		{
-			UNICC_CLEARIN( this );
-			continue;
-		}
+        if( this-&gt;sym &gt; -1 &amp;&amp; this-&gt;symbols[ this-&gt;sym ].whitespace )
+        {
+            UNICC_CLEARIN( this );
+            continue;
+        }
 
-		break;
-	}
-	while( 1 );
+        break;
+    }
+    while( 1 );
 #endif /* @@mode */
 
-	return this-&gt;sym &gt; -1;
+    return this-&gt;sym &gt; -1;
 }
 
 #if UNICC_STACKDEBUG
 void @@prefix_parser::dbg_stack( FILE* out, @@prefix_tok* stack, @@prefix_tok* tos )
 {
-	fprintf( out, "%s: Stack Dump: ", UNICC_PARSER );
+    fprintf( out, "%s: Stack Dump: ", UNICC_PARSER );
 
-	for( ; stack &lt;= tos; stack++ )
-	{
-		fprintf( out, "%d%s%s%s ", stack-&gt;state,
-			stack-&gt;symbol ? " (" : "",
-			stack-&gt;symbol ? stack-&gt;symbol-&gt;name : "",
-			stack-&gt;symbol ? ")" : "" );
-	}
+    for( ; stack &lt;= tos; stack++ )
+    {
+        fprintf( out, "%d%s%s%s ", stack-&gt;state,
+            stack-&gt;symbol ? " (" : "",
+            stack-&gt;symbol ? stack-&gt;symbol-&gt;name : "",
+            stack-&gt;symbol ? ")" : "" );
+    }
 
-	fprintf( out, "\n" );
+    fprintf( out, "\n" );
 }
 #endif /* UNICC_STACKDEBUG */
 
 bool @@prefix_parser::handle_error( FILE* @@prefix_dbg )
 {
-	if( !this-&gt;error_delay )
-	{
+    if( !this-&gt;error_delay )
+    {
 #if UNICC_DEBUG
-		fprintf( @@prefix_dbg, "%s: !!!PARSE ERROR!!!\n"
-				"%s: error recovery: current token %d (%s)\n",
-					UNICC_PARSER, UNICC_PARSER, this-&gt;sym,
-						( ( this-&gt;sym &gt;= 0 ) ?
-							this-&gt;symbols[ this-&gt;sym ].name :
-								"(null)" ) );
+        fprintf( @@prefix_dbg, "%s: !!!PARSE ERROR!!!\n"
+                "%s: error recovery: current token %d (%s)\n",
+                    UNICC_PARSER, UNICC_PARSER, this-&gt;sym,
+                        ( ( this-&gt;sym &gt;= 0 ) ?
+                            this-&gt;symbols[ this-&gt;sym ].name :
+                                "(null)" ) );
 
-		fprintf( @@prefix_dbg,
-				"%s: error recovery: expecting ", UNICC_PARSER );
+        fprintf( @@prefix_dbg,
+                "%s: error recovery: expecting ", UNICC_PARSER );
 
-		for( int i = 1; i &lt; this-&gt;actions[ this-&gt;tos-&gt;state ][0] * 3; i += 3 )
-		{
-			fprintf( @@prefix_dbg, "%d (%s)%s",
-				this-&gt;actions[ this-&gt;tos-&gt;state ][i],
-				this-&gt;symbols[ this-&gt;actions[ this-&gt;tos-&gt;state ][i] ].name,
-				( i == this-&gt;actions[ this-&gt;tos-&gt;state ][0] * 3 - 3 ) ?
-						"\n" : ", " );
-		}
+        for( int i = 1; i &lt; this-&gt;actions[ this-&gt;tos-&gt;state ][0] * 3; i += 3 )
+        {
+            fprintf( @@prefix_dbg, "%d (%s)%s",
+                this-&gt;actions[ this-&gt;tos-&gt;state ][i],
+                this-&gt;symbols[ this-&gt;actions[ this-&gt;tos-&gt;state ][i] ].name,
+                ( i == this-&gt;actions[ this-&gt;tos-&gt;state ][0] * 3 - 3 ) ?
+                        "\n" : ", " );
+        }
 
-		fprintf( @@prefix_dbg, "\n%s: error recovery: error_delay is %d, %s\n",
-					UNICC_PARSER, this-&gt;error_delay,
-					( this-&gt;error_delay ? "error recovery runs silently" :
-						"error is reported before its recover!" ) );
+        fprintf( @@prefix_dbg, "\n%s: error recovery: error_delay is %d, %s\n",
+                    UNICC_PARSER, this-&gt;error_delay,
+                    ( this-&gt;error_delay ? "error recovery runs silently" :
+                        "error is reported before its recover!" ) );
 #endif
-	}
+    }
 
 #if @@error &lt; 0
-	/* No error token defined? Then exit here... */
+    /* No error token defined? Then exit here... */
 
 #if UNICC_DEBUG
-	fprintf( @@prefix_dbg,
-		"%s: error recovery: No error resync token used by grammar, "
-			"exiting parser.\n", UNICC_PARSER );
+    fprintf( @@prefix_dbg,
+        "%s: error recovery: No error resync token used by grammar, "
+            "exiting parser.\n", UNICC_PARSER );
 #endif
 
-	UNICC_PARSE_ERROR( this );
-	this-&gt;error_count++;
+    UNICC_PARSE_ERROR( this );
+    this-&gt;error_count++;
 
-	return 1;
+    return 1;
 #else
 
 #if UNICC_DEBUG
-	fprintf( @@prefix_dbg, "%s: error recovery: "
-		"trying to recover...\n", UNICC_PARSER );
+    fprintf( @@prefix_dbg, "%s: error recovery: "
+        "trying to recover...\n", UNICC_PARSER );
 #if UNICC_STACKDEBUG
-	@@prefix_dbg_stack( @@prefix_dbg, this-&gt;stack, this-&gt;tos );
+    @@prefix_dbg_stack( @@prefix_dbg, this-&gt;stack, this-&gt;tos );
 #endif
 #endif
 
-	/* Remember previous symbol, or discard it */
-	if( this-&gt;error_delay != UNICC_ERROR_DELAY )
-		this-&gt;old_sym = this-&gt;sym;
-	else
-	{
-		this-&gt;old_sym = -1;
-		this-&gt;len = 1;
-		UNICC_CLEARIN( this );
-	}
+    /* Remember previous symbol, or discard it */
+    if( this-&gt;error_delay != UNICC_ERROR_DELAY )
+        this-&gt;old_sym = this-&gt;sym;
+    else
+    {
+        this-&gt;old_sym = -1;
+        this-&gt;len = 1;
+        UNICC_CLEARIN( this );
+    }
 
-	/* Try to shift on error resync */
-	this-&gt;sym = @@error;
+    /* Try to shift on error resync */
+    this-&gt;sym = @@error;
 
-	while( this-&gt;tos &gt;= this-&gt;stack )
-	{
+    while( this-&gt;tos &gt;= this-&gt;stack )
+    {
 #if UNICC_DEBUG
-		fprintf( @@prefix_dbg, "%s: error recovery: in state %d, trying "
-				"to shift error resync token...\n",
-					UNICC_PARSER, this-&gt;tos-&gt;state );
+        fprintf( @@prefix_dbg, "%s: error recovery: in state %d, trying "
+                "to shift error resync token...\n",
+                    UNICC_PARSER, this-&gt;tos-&gt;state );
 #if UNICC_STACKDEBUG
-		this-&gt;dbg_stack( @@prefix_dbg, this-&gt;stack, this-&gt;tos );
+        this-&gt;dbg_stack( @@prefix_dbg, this-&gt;stack, this-&gt;tos );
 #endif
 #endif
-		if( @@prefix_get_act( this ) )
-		{
-			/* Shift */
-			if( this-&gt;act &amp; UNICC_SHIFT )
-			{
+        if( @@prefix_get_act( this ) )
+        {
+            /* Shift */
+            if( this-&gt;act &amp; UNICC_SHIFT )
+            {
 #if UNICC_DEBUG
-				fprintf( @@prefix_dbg, "%s: error recovery: "
-							"error resync shifted\n", UNICC_PARSER );
+                fprintf( @@prefix_dbg, "%s: error recovery: "
+                            "error resync shifted\n", UNICC_PARSER );
 #endif
-				break;
-			}
-		}
-
-#if UNICC_DEBUG
-		fprintf( @@prefix_dbg, "%s: error recovery: failed, "
-					"discarding token '%s'\n", UNICC_PARSER,
-						this-&gt;tos-&gt;symbol ?
-							this-&gt;tos-&gt;symbol-&gt;name : "NULL" );
-#endif
-
-		/* Discard one token from stack */
-		/* TODO: Discarded token memory (semantic action) */
-		this-&gt;tos--;
-	}
-
-	if( this-&gt;tos &lt;= this-&gt;stack )
-	{
-#if UNICC_DEBUG
-	fprintf( @@prefix_dbg, "%s: error recovery: "
-				"Can't recover this issue, stack is empty.\n",
-					UNICC_PARSER );
-#endif
-		UNICC_PARSE_ERROR( this );
-		this-&gt;error_count++;
-
-		return true;
-	}
+                break;
+            }
+        }
 
 #if UNICC_DEBUG
-	fprintf( @@prefix_dbg, "%s: error recovery: "
-				"trying to continue with modified parser state\n",
-					UNICC_PARSER );
+        fprintf( @@prefix_dbg, "%s: error recovery: failed, "
+                    "discarding token '%s'\n", UNICC_PARSER,
+                        this-&gt;tos-&gt;symbol ?
+                            this-&gt;tos-&gt;symbol-&gt;name : "NULL" );
 #endif
 
-	this-&gt;error_delay = UNICC_ERROR_DELAY + 1;
+        /* Discard one token from stack */
+        /* TODO: Discarded token memory (semantic action) */
+        this-&gt;tos--;
+    }
 
-	return false;
+    if( this-&gt;tos &lt;= this-&gt;stack )
+    {
+#if UNICC_DEBUG
+    fprintf( @@prefix_dbg, "%s: error recovery: "
+                "Can't recover this issue, stack is empty.\n",
+                    UNICC_PARSER );
+#endif
+        UNICC_PARSE_ERROR( this );
+        this-&gt;error_count++;
+
+        return true;
+    }
+
+#if UNICC_DEBUG
+    fprintf( @@prefix_dbg, "%s: error recovery: "
+                "trying to continue with modified parser state\n",
+                    UNICC_PARSER );
+#endif
+
+    this-&gt;error_delay = UNICC_ERROR_DELAY + 1;
+
+    return false;
 
 #endif /* @@error &gt;= 0 */
 }
 
 @@goal-type @@prefix_parser::parse( void )
 {
-	@@goal-type			ret;
-	@@prefix_ast*		node;
-	@@prefix_ast*		lnode;
+    @@goal-type			ret;
+    @@prefix_ast*		node;
+    @@prefix_ast*		lnode;
 
 #if UNICC_DEBUG
-	@@prefix_vtype*		vptr;
-	FILE* 				@@prefix_dbg = stderr;
+    @@prefix_vtype*		vptr;
+    FILE* 				@@prefix_dbg = stderr;
 #endif
 
-	// Initialize parser
-	this-&gt;stacksize = 0;
-	if( !this-&gt;alloc_stack() )
-		return (@@goal-type)NULL;
+    // Initialize parser
+    this-&gt;stacksize = 0;
+    if( !this-&gt;alloc_stack() )
+        return (@@goal-type)NULL;
 
-	memset( this-&gt;tos, 0, sizeof( @@prefix_tok ) );
+    memset( this-&gt;tos, 0, sizeof( @@prefix_tok ) );
 
-	this-&gt;act = UNICC_SHIFT;
-	this-&gt;is_eof = false;
-	this-&gt;sym = this-&gt;old_sym = -1;
-	this-&gt;line = this-&gt;column = 1;
+    this-&gt;act = UNICC_SHIFT;
+    this-&gt;is_eof = false;
+    this-&gt;sym = this-&gt;old_sym = -1;
+    this-&gt;line = this-&gt;column = 1;
 
-	memset( &amp;this-&gt;test, 0, sizeof( @@prefix_vtype ) );
+    memset( &amp;this-&gt;test, 0, sizeof( @@prefix_vtype ) );
 
-	// Begin of main parser loop
-	while( true )
-	{
-		// Reduce
-		while( this-&gt;act &amp; UNICC_REDUCE )
-		{
+    // Begin of main parser loop
+    while( true )
+    {
+        // Reduce
+        while( this-&gt;act &amp; UNICC_REDUCE )
+        {
 #if UNICC_DEBUG
-			fprintf( @@prefix_dbg, "%s: &lt;&lt; "
-					"reducing by production %d (%s)\n",
-						UNICC_PARSER, this-&gt;idx,
-							this-&gt;productions[ this-&gt;idx ].definition );
+            fprintf( @@prefix_dbg, "%s: &lt;&lt; "
+                    "reducing by production %d (%s)\n",
+                        UNICC_PARSER, this-&gt;idx,
+                            this-&gt;productions[ this-&gt;idx ].definition );
 #endif
-			// Set default left-hand side
-			this-&gt;lhs = this-&gt;productions[ this-&gt;idx ].lhs;
+            // Set default left-hand side
+            this-&gt;lhs = this-&gt;productions[ this-&gt;idx ].lhs;
 
-			// Run reduction code
-			memset( &amp;( this-&gt;ret ), 0, sizeof( @@prefix_vtype ) );
+            // Run reduction code
+            memset( &amp;( this-&gt;ret ), 0, sizeof( @@prefix_vtype ) );
 
-			switch( this-&gt;idx )
-			{
+            switch( this-&gt;idx )
+            {
 @@actions
-			}
+            }
 
-			// Drop right-hand side, collect AST nodes
-			node = NULL;
+            // Drop right-hand side, collect AST nodes
+            node = NULL;
 
-			for( int i = 0; i &lt; this-&gt;productions[ this-&gt;idx ].length; i++ )
-			{
-				if( this-&gt;tos-&gt;node )
-				{
-					if( node )
-					{
-						while( node-&gt;prev )
-							node = node-&gt;prev;
+            for( int i = 0; i &lt; this-&gt;productions[ this-&gt;idx ].length; i++ )
+            {
+                if( this-&gt;tos-&gt;node )
+                {
+                    if( node )
+                    {
+                        while( node-&gt;prev )
+                            node = node-&gt;prev;
 
-						node-&gt;prev = this-&gt;tos-&gt;node;
-						this-&gt;tos-&gt;node-&gt;next = node;
-					}
+                        node-&gt;prev = this-&gt;tos-&gt;node;
+                        this-&gt;tos-&gt;node-&gt;next = node;
+                    }
 
-					node = this-&gt;tos-&gt;node;
-					this-&gt;tos-&gt;node = NULL;
-				}
+                    node = this-&gt;tos-&gt;node;
+                    this-&gt;tos-&gt;node = NULL;
+                }
 
-				this-&gt;tos--;
-			}
+                this-&gt;tos--;
+            }
 
-			// Chain collected AST nodes
-			if( node )
-			{
-				if( lnode = this-&gt;tos-&gt;node )
-				{
-					while( lnode-&gt;next )
-						lnode = lnode-&gt;next;
+            // Chain collected AST nodes
+            if( node )
+            {
+                if( lnode = this-&gt;tos-&gt;node )
+                {
+                    while( lnode-&gt;next )
+                        lnode = lnode-&gt;next;
 
-					lnode-&gt;next = node;
-					node-&gt;prev = lnode;
-				}
-				else
-					this-&gt;tos-&gt;node = node;
-			}
+                    lnode-&gt;next = node;
+                    node-&gt;prev = lnode;
+                }
+                else
+                    this-&gt;tos-&gt;node = node;
+            }
 
-			// Generate AST node?
-			if( *this-&gt;productions[ this-&gt;idx ].emit )
-			{
-				if( ( node = this-&gt;ast_create(
-								this-&gt;productions[ this-&gt;idx ].emit, NULL ) ) )
-				{
-					node-&gt;child = this-&gt;tos-&gt;node;
-					this-&gt;tos-&gt;node = node;
-				}
-			}
+            // Generate AST node?
+            if( *this-&gt;productions[ this-&gt;idx ].emit )
+            {
+                if( ( node = this-&gt;ast_create(
+                                this-&gt;productions[ this-&gt;idx ].emit, NULL ) ) )
+                {
+                    node-&gt;child = this-&gt;tos-&gt;node;
+                    this-&gt;tos-&gt;node = node;
+                }
+            }
 
-			// Enforced error in semantic actions?
-			if( this-&gt;act == UNICC_ERROR )
-				break;
+            // Enforced error in semantic actions?
+            if( this-&gt;act == UNICC_ERROR )
+                break;
 
-			// Goal symbol reduced, and stack is empty?
-			if( this-&gt;lhs == @@goal &amp;&amp; this-&gt;tos == this-&gt;stack )
-			{
-				memcpy( &amp;( this-&gt;tos-&gt;value ), &amp;( this-&gt;ret ),
-							sizeof( @@prefix_vtype ) );
-				this-&gt;ast = this-&gt;tos-&gt;node;
+            // Goal symbol reduced, and stack is empty?
+            if( this-&gt;lhs == @@goal &amp;&amp; this-&gt;tos == this-&gt;stack )
+            {
+                memcpy( &amp;( this-&gt;tos-&gt;value ), &amp;( this-&gt;ret ),
+                            sizeof( @@prefix_vtype ) );
+                this-&gt;ast = this-&gt;tos-&gt;node;
 
-				UNICC_CLEARIN( this );
+                UNICC_CLEARIN( this );
 
-				this-&gt;act = UNICC_SUCCESS;
+                this-&gt;act = UNICC_SUCCESS;
 
-				#if UNICC_DEBUG
-				fprintf( stderr, "%s: goal symbol reduced, exiting parser\n",
-						UNICC_PARSER );
-				#endif
-				break;
-			}
+                #if UNICC_DEBUG
+                fprintf( stderr, "%s: goal symbol reduced, exiting parser\n",
+                        UNICC_PARSER );
+                #endif
+                break;
+            }
 
-			#if UNICC_DEBUG
-			fprintf( @@prefix_dbg, "%s: after reduction, "
-						"shifting nonterminal %d (%s)\n",
-							UNICC_PARSER, this-&gt;lhs,
-								this-&gt;symbols[ this-&gt;lhs ].name );
-			#endif
+            #if UNICC_DEBUG
+            fprintf( @@prefix_dbg, "%s: after reduction, "
+                        "shifting nonterminal %d (%s)\n",
+                            UNICC_PARSER, this-&gt;lhs,
+                                this-&gt;symbols[ this-&gt;lhs ].name );
+            #endif
 
-			this-&gt;get_go();
+            this-&gt;get_go();
 
-			this-&gt;tos++;
-			this-&gt;tos-&gt;node = NULL;
+            this-&gt;tos++;
+            this-&gt;tos-&gt;node = NULL;
 
-			memcpy( &amp;( this-&gt;tos-&gt;value ), &amp;( this-&gt;ret ),
-						sizeof( @@prefix_vtype ) );
-			this-&gt;tos-&gt;symbol = &amp;( this-&gt;symbols[ this-&gt;lhs ] );
-			this-&gt;tos-&gt;state = ( this-&gt;act &amp; UNICC_REDUCE ) ? -1 : this-&gt;idx;
-			this-&gt;tos-&gt;line = this-&gt;line;
-			this-&gt;tos-&gt;column = this-&gt;column;
-		}
+            memcpy( &amp;( this-&gt;tos-&gt;value ), &amp;( this-&gt;ret ),
+                        sizeof( @@prefix_vtype ) );
+            this-&gt;tos-&gt;symbol = &amp;( this-&gt;symbols[ this-&gt;lhs ] );
+            this-&gt;tos-&gt;state = ( this-&gt;act &amp; UNICC_REDUCE ) ? -1 : this-&gt;idx;
+            this-&gt;tos-&gt;line = this-&gt;line;
+            this-&gt;tos-&gt;column = this-&gt;column;
+        }
 
-		if( this-&gt;act == UNICC_SUCCESS || this-&gt;act == UNICC_ERROR )
-			break;
+        if( this-&gt;act == UNICC_SUCCESS || this-&gt;act == UNICC_ERROR )
+            break;
 
-		/* If in error recovery, replace old-symbol */
-		if( this-&gt;error_delay == UNICC_ERROR_DELAY
-				&amp;&amp; ( this-&gt;sym = this-&gt;old_sym ) &lt; 0 )
-		{
-			/* If symbol is invalid, try to find new token */
-			#if UNICC_DEBUG
-			fprintf( @@prefix_dbg, "%s: error recovery: "
-				"old token invalid, requesting new token\n",
-						UNICC_PARSER );
-			#endif
+        /* If in error recovery, replace old-symbol */
+        if( this-&gt;error_delay == UNICC_ERROR_DELAY
+                &amp;&amp; ( this-&gt;sym = this-&gt;old_sym ) &lt; 0 )
+        {
+            /* If symbol is invalid, try to find new token */
+            #if UNICC_DEBUG
+            fprintf( @@prefix_dbg, "%s: error recovery: "
+                "old token invalid, requesting new token\n",
+                        UNICC_PARSER );
+            #endif
 
-			while( !this-&gt;get_sym() )
-			{
-				/* Skip one character */
-				this-&gt;len = 1;
+            while( !this-&gt;get_sym() )
+            {
+                /* Skip one character */
+                this-&gt;len = 1;
 
-				UNICC_CLEARIN( this );
-			}
+                UNICC_CLEARIN( this );
+            }
 
-			#if UNICC_DEBUG
-			fprintf( @@prefix_dbg, "%s: error recovery: "
-				"new token %d (%s)\n", UNICC_PARSER, this-&gt;sym,
-					this-&gt;symbols[ this-&gt;sym ].name );
-			#endif
-		}
-		else
-			this-&gt;get_sym();
+            #if UNICC_DEBUG
+            fprintf( @@prefix_dbg, "%s: error recovery: "
+                "new token %d (%s)\n", UNICC_PARSER, this-&gt;sym,
+                    this-&gt;symbols[ this-&gt;sym ].name );
+            #endif
+        }
+        else
+            this-&gt;get_sym();
 
 #if UNICC_DEBUG
-		fprintf( @@prefix_dbg, "%s: current token %d (%s)\n",
-					UNICC_PARSER, this-&gt;sym,
-						( this-&gt;sym &lt; 0 ) ? "(null)" :
-							this-&gt;symbols[ this-&gt;sym ].name );
+        fprintf( @@prefix_dbg, "%s: current token %d (%s)\n",
+                    UNICC_PARSER, this-&gt;sym,
+                        ( this-&gt;sym &lt; 0 ) ? "(null)" :
+                            this-&gt;symbols[ this-&gt;sym ].name );
 #endif
 
-		/* Get action table entry */
-		if( !this-&gt;get_act() )
-		{
-			/* Error state, try to recover */
-			if( this-&gt;handle_error(
+        /* Get action table entry */
+        if( !this-&gt;get_act() )
+        {
+            /* Error state, try to recover */
+            if( this-&gt;handle_error(
 #if UNICC_DEBUG
-					@@prefix_dbg
+                    @@prefix_dbg
 #else
-					NULL
+                    NULL
 #endif
-					) )
-				break;
-		}
+                    ) )
+                break;
+        }
 
 #if UNICC_DEBUG
-		fprintf( @@prefix_dbg,
-			"%s: sym = %d (%s) [len = %d] tos-&gt;state = %d act = %s idx = %d\n",
-				UNICC_PARSER, this-&gt;sym,
-					( ( this-&gt;sym &gt;= 0 ) ?
-						this-&gt;symbols[ this-&gt;sym ].name :
-							"(invalid symbol id)" ),
-					this-&gt;len, this-&gt;tos-&gt;state,
-						( ( this-&gt;act == UNICC_SHIFT &amp; UNICC_REDUCE ) ?
-								"shift/reduce" :
-							( this-&gt;act &amp; UNICC_SHIFT ) ?
-									"shift" : "reduce" ), this-&gt;idx );
+        fprintf( @@prefix_dbg,
+            "%s: sym = %d (%s) [len = %d] tos-&gt;state = %d act = %s idx = %d\n",
+                UNICC_PARSER, this-&gt;sym,
+                    ( ( this-&gt;sym &gt;= 0 ) ?
+                        this-&gt;symbols[ this-&gt;sym ].name :
+                            "(invalid symbol id)" ),
+                    this-&gt;len, this-&gt;tos-&gt;state,
+                        ( ( this-&gt;act == UNICC_SHIFT &amp; UNICC_REDUCE ) ?
+                                "shift/reduce" :
+                            ( this-&gt;act &amp; UNICC_SHIFT ) ?
+                                    "shift" : "reduce" ), this-&gt;idx );
 #if UNICC_STACKDEBUG
-		this-&gt;dbg_stack( @@prefix_dbg, this-&gt;stack, this-&gt;tos );
+        this-&gt;dbg_stack( @@prefix_dbg, this-&gt;stack, this-&gt;tos );
 #endif
 #endif
 
-		/* Shift */
-		if( this-&gt;act &amp; UNICC_SHIFT )
-		{
-			this-&gt;next = this-&gt;buf[ this-&gt;len ];
-			this-&gt;buf[ this-&gt;len ] = '\0';
+        /* Shift */
+        if( this-&gt;act &amp; UNICC_SHIFT )
+        {
+            this-&gt;next = this-&gt;buf[ this-&gt;len ];
+            this-&gt;buf[ this-&gt;len ] = '\0';
 
 #if UNICC_DEBUG
-			fprintf( @@prefix_dbg, "%s: &gt;&gt; shifting terminal %d (%s)\n",
-			UNICC_PARSER, this-&gt;sym, this-&gt;symbols[ this-&gt;sym ].name );
+            fprintf( @@prefix_dbg, "%s: &gt;&gt; shifting terminal %d (%s)\n",
+            UNICC_PARSER, this-&gt;sym, this-&gt;symbols[ this-&gt;sym ].name );
 #endif
 
-			if( !this-&gt;alloc_stack() )
-				return (@@goal-type)NULL;
+            if( !this-&gt;alloc_stack() )
+                return (@@goal-type)NULL;
 
-			this-&gt;tos++;
-			this-&gt;tos-&gt;node = NULL;
+            this-&gt;tos++;
+            this-&gt;tos-&gt;node = NULL;
 
-			/*
-				Execute scanner actions, if existing.
-				Here, UNICC_ON_SHIFT is set to 1, so that shifting-
-				related operations will be performed.
-			*/
+            /*
+                Execute scanner actions, if existing.
+                Here, UNICC_ON_SHIFT is set to 1, so that shifting-
+                related operations will be performed.
+            */
 #define UNICC_ON_SHIFT	1
-			switch( this-&gt;sym )
-			{
+            switch( this-&gt;sym )
+            {
 @@scan_actions
 
-				default:
-					@@top-value = this-&gt;get_input( 0 );
-					break;
-			}
+                default:
+                    @@top-value = this-&gt;get_input( 0 );
+                    break;
+            }
 #undef UNICC_ON_SHIFT
 
-			this-&gt;tos-&gt;state = ( this-&gt;act &amp; UNICC_REDUCE ) ? -1 : this-&gt;idx;
-			this-&gt;tos-&gt;symbol = &amp;( this-&gt;symbols[ this-&gt;sym ] );
-			this-&gt;tos-&gt;line = this-&gt;line;
-			this-&gt;tos-&gt;column = this-&gt;column;
+            this-&gt;tos-&gt;state = ( this-&gt;act &amp; UNICC_REDUCE ) ? -1 : this-&gt;idx;
+            this-&gt;tos-&gt;symbol = &amp;( this-&gt;symbols[ this-&gt;sym ] );
+            this-&gt;tos-&gt;line = this-&gt;line;
+            this-&gt;tos-&gt;column = this-&gt;column;
 
-			if( *this-&gt;tos-&gt;symbol-&gt;emit )
-				this-&gt;tos-&gt;node = this-&gt;ast_create(
-									this-&gt;tos-&gt;symbol-&gt;emit,
-										this-&gt;get_lexem() );
-			else
-				this-&gt;tos-&gt;node = NULL;
+            if( *this-&gt;tos-&gt;symbol-&gt;emit )
+                this-&gt;tos-&gt;node = this-&gt;ast_create(
+                                    this-&gt;tos-&gt;symbol-&gt;emit,
+                                        this-&gt;get_lexem() );
+            else
+                this-&gt;tos-&gt;node = NULL;
 
-			this-&gt;buf[ this-&gt;len ] = this-&gt;next;
+            this-&gt;buf[ this-&gt;len ] = this-&gt;next;
 
-			/* Perform the shift on input */
-			if( this-&gt;sym != @@eof &amp;&amp; this-&gt;sym != @@error )
-			{
-				UNICC_CLEARIN( this );
-				this-&gt;old_sym = -1;
-			}
+            /* Perform the shift on input */
+            if( this-&gt;sym != @@eof &amp;&amp; this-&gt;sym != @@error )
+            {
+                UNICC_CLEARIN( this );
+                this-&gt;old_sym = -1;
+            }
 
-			if( this-&gt;error_delay )
-				this-&gt;error_delay--;
-		}
-	}
+            if( this-&gt;error_delay )
+                this-&gt;error_delay--;
+        }
+    }
 
-	#if UNICC_DEBUG
-	fprintf( @@prefix_dbg, "%s: parse completed with %d errors\n",
-		UNICC_PARSER, this-&gt;error_count );
-	#endif
+    #if UNICC_DEBUG
+    fprintf( @@prefix_dbg, "%s: parse completed with %d errors\n",
+        UNICC_PARSER, this-&gt;error_count );
+    #endif
 
-	// Save return value
-	ret = @@goal-value;
+    // Save return value
+    ret = @@goal-value;
 
-	// Clean up parser control block
-	UNICC_CLEARIN( this );
+    // Clean up parser control block
+    UNICC_CLEARIN( this );
 
-	free( this-&gt;stack );
-	this-&gt;stack = NULL;
+    free( this-&gt;stack );
+    this-&gt;stack = NULL;
 
 #if UNICC_UTF8
-	free( this-&gt;lexem );
-	this-&gt;lexem = NULL;
+    free( this-&gt;lexem );
+    this-&gt;lexem = NULL;
 #endif
 
-	return ret;
+    return ret;
 }
 
 @@epilogue
 
 /* Create Main? */
 #if @@epilogue_len == 0
-	#ifndef UNICC_MAIN
-	#define UNICC_MAIN 	1
-	#endif
+    #ifndef UNICC_MAIN
+    #define UNICC_MAIN 	1
+    #endif
 #else
-	#ifndef UNICC_MAIN
-	#define UNICC_MAIN 	0
-	#endif
+    #ifndef UNICC_MAIN
+    #define UNICC_MAIN 	0
+    #endif
 #endif
 
 #if UNICC_MAIN
@@ -1129,86 +1129,86 @@ int main( int argc, char** argv )
 #define UNICCMAIN_SYNTAXTREE	8
 #define UNICCMAIN_AUGSYNTAXTREE	16
 
-	char*				opt;
-	int					flags	= 0;
-	@@prefix_parser*	parser = new @@prefix_parser;
+    char*				opt;
+    int					flags	= 0;
+    @@prefix_parser*	parser = new @@prefix_parser;
 
 #ifdef LC_ALL
-	setlocale( LC_ALL, "" );
+    setlocale( LC_ALL, "" );
 #endif
 
-	/* Get command-line options */
-	for( int i = 1; i &lt; argc; i++ )
-	{
-		if( *(argv[i]) == '-' )
-		{
-			opt = argv[i] + 1;
+    /* Get command-line options */
+    for( int i = 1; i &lt; argc; i++ )
+    {
+        if( *(argv[i]) == '-' )
+        {
+            opt = argv[i] + 1;
 
-			/* Long option coming? */
-			if( *opt == '-' )
-			{
-				opt++;
+            /* Long option coming? */
+            if( *opt == '-' )
+            {
+                opt++;
 
-				if( !strcmp( opt, "silent" ) )
-					flags |= UNICCMAIN_SILENT;
-				else if( !strcmp( opt, "endless" ) )
-					flags |= UNICCMAIN_ENDLESS;
-				else if( !strcmp( opt, "line-mode" ) )
-					flags |= UNICCMAIN_LINEMODE;
-				else
-				{
-					fprintf( stderr, "Unknown option '--%s'\n", argv[i] );
-					return 1;
-				}
-			}
+                if( !strcmp( opt, "silent" ) )
+                    flags |= UNICCMAIN_SILENT;
+                else if( !strcmp( opt, "endless" ) )
+                    flags |= UNICCMAIN_ENDLESS;
+                else if( !strcmp( opt, "line-mode" ) )
+                    flags |= UNICCMAIN_LINEMODE;
+                else
+                {
+                    fprintf( stderr, "Unknown option '--%s'\n", argv[i] );
+                    return 1;
+                }
+            }
 
-			for( ; *opt; opt++ )
-			{
-				if( *opt == 's' )
-					flags |= UNICCMAIN_SILENT;
-				else if( *opt == 'e' )
-					flags |= UNICCMAIN_ENDLESS;
-				else if( *opt == 'l' )
-					flags |= UNICCMAIN_LINEMODE;
-				else
-				{
-					fprintf( stderr, "Unknown option '-%c'\n", *opt );
-					return 1;
-				}
-			}
-		}
-	}
+            for( ; *opt; opt++ )
+            {
+                if( *opt == 's' )
+                    flags |= UNICCMAIN_SILENT;
+                else if( *opt == 'e' )
+                    flags |= UNICCMAIN_ENDLESS;
+                else if( *opt == 'l' )
+                    flags |= UNICCMAIN_LINEMODE;
+                else
+                {
+                    fprintf( stderr, "Unknown option '-%c'\n", *opt );
+                    return 1;
+                }
+            }
+        }
+    }
 
-	if( flags &amp; UNICCMAIN_LINEMODE )
-		parser-&gt;eof = '\n';
-	else
-		parser-&gt;eof = EOF;
+    if( flags &amp; UNICCMAIN_LINEMODE )
+        parser-&gt;eof = '\n';
+    else
+        parser-&gt;eof = EOF;
 
-	/* Parser invocation loop */
-	do
-	{
-		if( !( flags &amp; UNICCMAIN_SILENT ) )
-			printf( "\nok\n" );
+    /* Parser invocation loop */
+    do
+    {
+        if( !( flags &amp; UNICCMAIN_SILENT ) )
+            printf( "\nok\n" );
 
-		parser-&gt;parse();
+        parser-&gt;parse();
 
-		/* Print AST */
-		if( parser-&gt;ast )
-		{
-			parser-&gt;ast_print( stderr, parser-&gt;ast );
-			parser-&gt;ast = parser-&gt;ast_free( parser-&gt;ast );
-		}
-	}
-	while( flags &amp; UNICCMAIN_ENDLESS );
+        /* Print AST */
+        if( parser-&gt;ast )
+        {
+            parser-&gt;ast_print( stderr, parser-&gt;ast );
+            parser-&gt;ast = parser-&gt;ast_free( parser-&gt;ast );
+        }
+    }
+    while( flags &amp; UNICCMAIN_ENDLESS );
 
-	return 0;
+    return 0;
 }
 #endif
 
 </file>
 <file filename="@@basename.h">/*
-	Parser header generated by unicc from @@filename.
-	DO NOT EDIT THIS FILE MANUALLY, IT WILL GO AWAY!
+    Parser header generated by unicc from @@filename.
+    DO NOT EDIT THIS FILE MANUALLY, IT WILL GO AWAY!
 */
 
 #ifndef @@CBASENAME_H
@@ -1266,9 +1266,9 @@ int main( int argc, char** argv )
 /* Parse error macro */
 #ifndef UNICC_PARSE_ERROR
 #define UNICC_PARSE_ERROR( parser ) \
-	fprintf( stderr, "line %d, column %d: syntax error on symbol %d, token '" \
-		UNICC_SCHAR_FORMAT "'\n", \
-	parser-&gt;line, parser-&gt;column, parser-&gt;sym, parser-&gt;get_lexem() )
+    fprintf( stderr, "line %d, column %d: syntax error on symbol %d, token '" \
+        UNICC_SCHAR_FORMAT "'\n", \
+    parser-&gt;line, parser-&gt;column, parser-&gt;sym, parser-&gt;get_lexem() )
 #endif
 
 /* Input buffering clean-up */
@@ -1289,8 +1289,8 @@ int main( int argc, char** argv )
 /* Call this when running out of memory during memory allocation */
 #ifndef UNICC_OUTOFMEM
 #define UNICC_OUTOFMEM( parser )	fprintf( stderr, \
-										"Fatal error, ran out of memory\n" ), \
-									exit( 1 )
+                                        "Fatal error, ran out of memory\n" ), \
+                                    exit( 1 )
 #endif
 
 #ifdef UNICC_PARSER
@@ -1330,218 +1330,216 @@ int main( int argc, char** argv )
 /* Typedef for symbol information table */
 typedef struct
 {
-	const char*	name;
-	const char*	emit;
-	short		type;
-	bool		lexem;
-	bool		whitespace;
-	bool		greedy;
+    const char*	name;
+    const char*	emit;
+    short		type;
+    bool		lexem;
+    bool		whitespace;
+    bool		greedy;
 } @@prefix_syminfo;
 
 /* Typedef for production information table */
 typedef struct
 {
-	const char*	definition;
-	const char*	emit;
-	int			length;
-	int			lhs;
+    const char*	definition;
+    const char*	emit;
+    int			length;
+    int			lhs;
 } @@prefix_prodinfo;
-
 
 /* Abstract Syntax Tree */
 typedef struct @@prefix_AST @@prefix_ast;
 
 struct @@prefix_AST
 {
-	const char*		emit;
-	UNICC_SCHAR*	token;
+    const char*		emit;
+    UNICC_SCHAR*	token;
 
-	@@prefix_ast*	parent;
-	@@prefix_ast*	child;
-	@@prefix_ast*	prev;
-	@@prefix_ast*	next;
+    @@prefix_ast*	parent;
+    @@prefix_ast*	child;
+    @@prefix_ast*	prev;
+    @@prefix_ast*	next;
 };
 
 /* Stack Token */
 typedef struct
 {
-	@@prefix_vtype		value;
-	@@prefix_ast*		node;
+    @@prefix_vtype		value;
+    @@prefix_ast*		node;
 
-	const
-	@@prefix_syminfo*	symbol;
+    const
+    @@prefix_syminfo*	symbol;
 
-	int					state;
+    int					state;
 
-	size_t				line;
-	size_t				column;
+    size_t				line;
+    size_t				column;
 } @@prefix_tok;
-
 
 // Parser class
 class @@prefix_parser
 {
-	private:
-		// --- Tables ---
+    private:
+        // --- Tables ---
 
-		// Action Table
-		const int actions[ @@number-of-states ][ @@deepest-action-row * 3 + 1 ] =
-		{
+        // Action Table
+        const int actions[ @@number-of-states ][ @@deepest-action-row * 3 + 1 ] =
+        {
 @@action-table
-		};
+        };
 
-		// GoTo Table
-		const int go[ @@number-of-states ][ @@deepest-goto-row * 3 + 1 ] =
-		{
+        // GoTo Table
+        const int go[ @@number-of-states ][ @@deepest-goto-row * 3 + 1 ] =
+        {
 @@goto-table
-		};
+        };
 
-		// Default productions per state
-		const int def_prod[ @@number-of-states ] =
-		{
-			@@default-productions
-		};
+        // Default productions per state
+        const int def_prod[ @@number-of-states ] =
+        {
+            @@default-productions
+        };
 
-		#if !@@mode
-		// DFA selection table
-		const int dfa_select[ @@number-of-states ] =
-		{
-			@@dfa-select
-		};
-		#endif
+        #if !@@mode
+        // DFA selection table
+        const int dfa_select[ @@number-of-states ] =
+        {
+            @@dfa-select
+        };
+        #endif
 
-		#if @@number-of-dfa-machines
-		// DFA index table
-		const int dfa_idx[ @@number-of-dfa-machines ][ @@deepest-dfa-index-row ] =
-		{
+        #if @@number-of-dfa-machines
+        // DFA index table
+        const int dfa_idx[ @@number-of-dfa-machines ][ @@deepest-dfa-index-row ] =
+        {
 @@dfa-index
-		};
+        };
 
-		// DFA transition chars
-		const int dfa_chars[ @@size-of-dfa-characters * 2 ] =
-		{
-			@@dfa-char
-		};
+        // DFA transition chars
+        const int dfa_chars[ @@size-of-dfa-characters * 2 ] =
+        {
+            @@dfa-char
+        };
 
-		// DFA transitions
-		const int dfa_trans[ @@size-of-dfa-characters ] =
-		{
-			@@dfa-trans
-		};
+        // DFA transitions
+        const int dfa_trans[ @@size-of-dfa-characters ] =
+        {
+            @@dfa-trans
+        };
 
-		// DFA acception states
-		const int dfa_accept[ @@number-of-dfa-machines ][ @@deepest-dfa-accept-row ] =
-		{
+        // DFA acception states
+        const int dfa_accept[ @@number-of-dfa-machines ][ @@deepest-dfa-accept-row ] =
+        {
 @@dfa-accept
-		};
+        };
 
-		#endif
+        #endif
 
-		// Symbol information table
-		const @@prefix_syminfo symbols[ @@number-of-symbols ] =
-		{
+        // Symbol information table
+        const @@prefix_syminfo symbols[ @@number-of-symbols ] =
+        {
 @@symbols
-		};
+        };
 
-		// Production information table
-		const @@prefix_prodinfo productions[ @@number-of-productions ] =
-		{
+        // Production information table
+        const @@prefix_prodinfo productions[ @@number-of-productions ] =
+        {
 @@productions
-		};
+        };
 
-		// --- Runtime ---
+        // --- Runtime ---
 
-		// Stack
-		@@prefix_tok*	stack;
-		@@prefix_tok*	tos;
+        // Stack
+        @@prefix_tok*	stack;
+        @@prefix_tok*	tos;
 
-		// Stack size
-		size_t			stacksize;
+        // Stack size
+        size_t			stacksize;
 
-		// Values
-		@@prefix_vtype	ret;
-		@@prefix_vtype	test;
+        // Values
+        @@prefix_vtype	ret;
+        @@prefix_vtype	test;
 
-		// State
-		int				act;
-		int				idx;
-		int				lhs;
+        // State
+        int				act;
+        int				idx;
+        int				lhs;
 
-		// Lookahead
-		int				sym;
-		int				old_sym;
-		size_t			len;
+        // Lookahead
+        int				sym;
+        int				old_sym;
+        size_t			len;
 
-		// Input buffering
-		UNICC_SCHAR*	lexem;
-		UNICC_CHAR*		buf;
-		UNICC_CHAR*		bufend;
-		UNICC_CHAR*		bufsize;
+        // Input buffering
+        UNICC_SCHAR*	lexem;
+        UNICC_CHAR*		buf;
+        UNICC_CHAR*		bufend;
+        UNICC_CHAR*		bufsize;
 
-		// Lexical analysis
-		UNICC_CHAR		next;
-		bool			is_eof;
+        // Lexical analysis
+        UNICC_CHAR		next;
+        bool			is_eof;
 
-		// Error handling
-		int				error_delay;
-		int				error_count;
+        // Error handling
+        int				error_delay;
+        int				error_count;
 
-		size_t			line;
-		size_t			column;
+        size_t			line;
+        size_t			column;
 
-		// User-defined components
-		@@pcb
+        // User-defined components
+        @@pcb
 
-		// Functions
+        // Functions
 
-		//fn.clearin.cpp
-		void clear_input(void);
+        //fn.clearin.cpp
+        void clear_input(void);
 
-		//fn.debug.cpp
-		#if UNICC_STACKDEBUG
-		void dbg_stack( FILE* out, @@prefix_tok* stack, @@prefix_tok* tos )
-		#endif
+        //fn.debug.cpp
+        #if UNICC_STACKDEBUG
+        void dbg_stack( FILE* out, @@prefix_tok* stack, @@prefix_tok* tos )
+        #endif
 
-		//fn.getact.cpp
-		bool get_act( void );
+        //fn.getact.cpp
+        bool get_act( void );
 
-		//fn.getgo.cpp
-		bool get_go( void );
+        //fn.getgo.cpp
+        bool get_go( void );
 
-		//fn.getinput.cpp
-		UNICC_CHAR get_input( size_t offset );
+        //fn.getinput.cpp
+        UNICC_CHAR get_input( size_t offset );
 
-		//fn.getsym.cpp
-		bool get_sym( void );
+        //fn.getsym.cpp
+        bool get_sym( void );
 
-		//fn.handleerr.cpp
-		bool handle_error( FILE* @@prefix_dbg );
+        //fn.handleerr.cpp
+        bool handle_error( FILE* @@prefix_dbg );
 
-		//fn.lex.cpp
-		#if @@number-of-dfa-machines
-		void lex( void );
-		#endif
+        //fn.lex.cpp
+        #if @@number-of-dfa-machines
+        void lex( void );
+        #endif
 
-		//fn.stack.cpp
-		bool alloc_stack( void );
+        //fn.stack.cpp
+        bool alloc_stack( void );
 
-		//fn.unicode.cpp
-		UNICC_SCHAR* get_lexem( void );
+        //fn.unicode.cpp
+        UNICC_SCHAR* get_lexem( void );
 
-	public:
-		// EOF behavior
-		UNICC_CHAR			eof;
+    public:
+        // EOF behavior
+        UNICC_CHAR			eof;
 
-		// Abstract syntax tree
-		@@prefix_ast*		ast;
+        // Abstract syntax tree
+        @@prefix_ast*		ast;
 
-		//fn.parse.cpp
-		@@goal-type parse( void );
+        //fn.parse.cpp
+        @@goal-type parse( void );
 
-		//fn.ast.cpp
-		@@prefix_ast* ast_free( @@prefix_ast* node );
-		@@prefix_ast* ast_create( const char* emit, UNICC_SCHAR* token );
-		void ast_print( FILE* stream, @@prefix_ast* node );
+        //fn.ast.cpp
+        @@prefix_ast* ast_free( @@prefix_ast* node );
+        @@prefix_ast* ast_create( const char* emit, UNICC_SCHAR* token );
+        void ast_print( FILE* stream, @@prefix_ast* node );
 };
 
 #endif /* @@CBASENAME_H */

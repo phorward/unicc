@@ -1,154 +1,154 @@
 <?xml version="1.0" standalone="yes"?>
 <generator name="C++">
-	<!--
-	****************************************************************************
-	Boolean values
-	****************************************************************************
-	-->
-	<true>true</true>
-	<false>false</false>
+    <!--
+    ****************************************************************************
+    Boolean values
+    ****************************************************************************
+    -->
+    <true>true</true>
+    <false>false</false>
 
-	<!--
-	****************************************************************************
-	Escape sequences
-	****************************************************************************
-	-->
+    <!--
+    ****************************************************************************
+    Escape sequences
+    ****************************************************************************
+    -->
 
-	<!-- Backslash must be double-quoted -->
-	<escape-sequence for="\" do="\\" />
-	<!-- Escape double quotation marks -->
-	<escape-sequence for="&#x22;" do="\&#x22;" />
+    <!-- Backslash must be double-quoted -->
+    <escape-sequence for="\" do="\\" />
+    <!-- Escape double quotation marks -->
+    <escape-sequence for="&#x22;" do="\&#x22;" />
 
-	<!--
-	****************************************************************************
-	Value-stack templates
-	****************************************************************************
-	-->
+    <!--
+    ****************************************************************************
+    Value-stack templates
+    ****************************************************************************
+    -->
 
-	<vstack_def_type>int</vstack_def_type>
-	<vstack_term_type>int</vstack_term_type>
+    <vstack_def_type>int</vstack_def_type>
+    <vstack_term_type>int</vstack_term_type>
 
-	<vstack_single>typedef @@value-type @@prefix_vtype;</vstack_single>
-	<vstack_union_start>union @@prefix_VTYPE&#x0A;{&#x0A;</vstack_union_start>
-	<vstack_union_end>} @@prefix_vtype;&#x0A;&#x0A;</vstack_union_end>
-	<vstack_union_def>&#x09;@@value-type @@attribute;&#x0A;</vstack_union_def>
-	<vstack_union_att>value_@@value-type-id</vstack_union_att>
+    <vstack_single>typedef @@value-type @@prefix_vtype;</vstack_single>
+    <vstack_union_start>union @@prefix_VTYPE&#x0A;{&#x0A;</vstack_union_start>
+    <vstack_union_end>} @@prefix_vtype;&#x0A;&#x0A;</vstack_union_end>
+    <vstack_union_def>    @@value-type @@attribute;&#x0A;</vstack_union_def>
+    <vstack_union_att>value_@@value-type-id</vstack_union_att>
 
-	<!--
-	****************************************************************************
-	Semantic action templates
-	****************************************************************************
-	-->
+    <!--
+    ****************************************************************************
+    Semantic action templates
+    ****************************************************************************
+    -->
 
-	<action_start>&#x09;&#x09;&#x09;&#x09;case @@production-number:&#x0A;&#x09;&#x09;&#x09;&#x09;{&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;</action_start>
-	<action_end>&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;;&#x0A;&#x09;&#x09;&#x09;&#x09;}&#x09;&#x09;&#x09;&#x09;break;
-	</action_end>
+    <action_start>                case @@production-number:&#x0A;                {&#x0A;                    </action_start>
+    <action_end>&#x0A;                    ;&#x0A;                }                break;
+    </action_end>
 
-	<action_single>( ( this->tos - @@offset )->value )</action_single>
+    <action_single>( ( this->tos - @@offset )->value )</action_single>
 
-	<action_union>( ( this->tos - @@offset )->value.@@attribute )</action_union>
-	<action_lhs_single>this->ret</action_lhs_single>
-	<action_lhs_union>this->ret.@@attribute</action_lhs_union>
+    <action_union>( ( this->tos - @@offset )->value.@@attribute )</action_union>
+    <action_lhs_single>this->ret</action_lhs_single>
+    <action_lhs_union>this->ret.@@attribute</action_lhs_union>
 
-	<action_set_lhs>( this->lhs = @@sym )</action_set_lhs>
+    <action_set_lhs>( this->lhs = @@sym )</action_set_lhs>
 
-	<!--
-	****************************************************************************
-	Semantic terminal action templates
-	****************************************************************************
-	-->
+    <!--
+    ****************************************************************************
+    Semantic terminal action templates
+    ****************************************************************************
+    -->
 
-	<scan_action_start>&#x09;&#x09;&#x09;&#x09;case @@symbol-number:&#x0A;&#x09;&#x09;&#x09;&#x09;{&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;</scan_action_start>
-	<scan_action_end>&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;;&#x0A;&#x09;&#x09;&#x09;&#x09;}&#x09;&#x09;&#x09;&#x09;break;
-	</scan_action_end>
+    <scan_action_start>                case @@symbol-number:&#x0A;                {&#x0A;                    </scan_action_start>
+    <scan_action_end>&#x0A;                    ;&#x0A;                }                break;
+    </scan_action_end>
 
-	<scan_action_begin_offset>this->lexem( pcb )</scan_action_begin_offset>
-	<scan_action_end_offset>this->len</scan_action_end_offset>
-	<scan_action_ret_single>this->tos->value</scan_action_ret_single>
-	<scan_action_ret_union>( this->tos->value.@@attribute )</scan_action_ret_union>
+    <scan_action_begin_offset>this->lexem( pcb )</scan_action_begin_offset>
+    <scan_action_end_offset>this->len</scan_action_end_offset>
+    <scan_action_ret_single>this->tos->value</scan_action_ret_single>
+    <scan_action_ret_union>( this->tos->value.@@attribute )</scan_action_ret_union>
 
-	<scan_action_set_symbol>( this->sym = @@sym )</scan_action_set_symbol>
+    <scan_action_set_symbol>( this->sym = @@sym )</scan_action_set_symbol>
 
-	<!--
-	****************************************************************************
-	Parse table templates
-	****************************************************************************
-	-->
+    <!--
+    ****************************************************************************
+    Parse table templates
+    ****************************************************************************
+    -->
 
-	<defprod>
-		<col>@@production-number</col>
-		<col_sep>, </col_sep>
-	</defprod>
+    <defprod>
+        <col>@@production-number</col>
+        <col_sep>, </col_sep>
+    </defprod>
 
-	<acttab>
-		<row_start>			{ @@number-of-columns</row_start>
-		<row_end> }</row_end>
-		<row_sep>,&#x0A;</row_sep>
-		<col>, @@symbol,@@action,@@index </col>
-		<col_sep></col_sep>
-	</acttab>
+    <acttab>
+        <row_start>			{ @@number-of-columns</row_start>
+        <row_end> }</row_end>
+        <row_sep>,&#x0A;</row_sep>
+        <col>, @@symbol,@@action,@@index </col>
+        <col_sep></col_sep>
+    </acttab>
 
-	<gotab>
-		<row_start>			{ @@number-of-columns</row_start>
-		<row_end> }</row_end>
-		<row_sep>,&#x0A;</row_sep>
-		<col>, @@symbol,@@action,@@index </col>
-		<col_sep></col_sep>
-	</gotab>
+    <gotab>
+        <row_start>			{ @@number-of-columns</row_start>
+        <row_end> }</row_end>
+        <row_sep>,&#x0A;</row_sep>
+        <col>, @@symbol,@@action,@@index </col>
+        <col_sep></col_sep>
+    </gotab>
 
-	<dfa_select>
-		<col>@@machine</col>
-		<col_sep>, </col_sep>
-	</dfa_select>
+    <dfa_select>
+        <col>@@machine</col>
+        <col_sep>, </col_sep>
+    </dfa_select>
 
-	<dfa_char>
-		<col>@@from, @@to</col>
-		<col_sep>, </col_sep>
-	</dfa_char>
+    <dfa_char>
+        <col>@@from, @@to</col>
+        <col_sep>, </col_sep>
+    </dfa_char>
 
-	<dfa_trans>
-		<col>@@goto</col>
-		<col_sep>, </col_sep>
-	</dfa_trans>
+    <dfa_trans>
+        <col>@@goto</col>
+        <col_sep>, </col_sep>
+    </dfa_trans>
 
-	<dfa_idx>
-		<row_start>			{ </row_start>
-		<row_end> }</row_end>
-		<row_sep>,&#x0A;</row_sep>
-		<col>@@index * 2</col>
-		<col_sep>, </col_sep>
-	</dfa_idx>
+    <dfa_idx>
+        <row_start>			{ </row_start>
+        <row_end> }</row_end>
+        <row_sep>,&#x0A;</row_sep>
+        <col>@@index * 2</col>
+        <col_sep>, </col_sep>
+    </dfa_idx>
 
-	<dfa_accept>
-		<row_start>			{ </row_start>
-		<row_end> }</row_end>
-		<row_sep>,&#x0A;</row_sep>
-		<col>@@accept</col>
-		<col_sep>, </col_sep>
-	</dfa_accept>
+    <dfa_accept>
+        <row_start>			{ </row_start>
+        <row_end> }</row_end>
+        <row_sep>,&#x0A;</row_sep>
+        <col>@@accept</col>
+        <col_sep>, </col_sep>
+    </dfa_accept>
 
-	<!--
-	****************************************************************************
-	Symbol and production information tables
-	****************************************************************************
-	-->
+    <!--
+    ****************************************************************************
+    Symbol and production information tables
+    ****************************************************************************
+    -->
 
-	<symbols>
-		<col>			{ /* @@symbol */ "@@symbol-name", "@@emit", @@type, @@lexem, @@whitespace, @@greedy }</col>
-		<col_sep>,&#x0A;</col_sep>
-	</symbols>
+    <symbols>
+        <col>			{ /* @@symbol */ "@@symbol-name", "@@emit", @@type, @@lexem, @@whitespace, @@greedy }</col>
+        <col_sep>,&#x0A;</col_sep>
+    </symbols>
 
-	<productions>
-		<col>			{ /* @@production-number */ "@@production", "@@emit", @@length, @@lhs }</col>
-		<col_sep>,&#x0A;</col_sep>
-	</productions>
+    <productions>
+        <col>			{ /* @@production-number */ "@@production", "@@emit", @@length, @@lhs }</col>
+        <col_sep>,&#x0A;</col_sep>
+    </productions>
 
-	<code_localization>#line @@line "@@filename"
+    <code_localization>#line @@line "@@filename"
 </code_localization>
 
-	<file filename="@@basename.cpp">/*
-	Parser module generated by unicc from @@filename.
-	DO NOT EDIT THIS FILE MANUALLY, IT WILL GO AWAY!
+    <file filename="@@basename.cpp">/*
+    This parser module was generated by unicc from @@filename.
+    DO NOT EDIT THIS FILE MANUALLY, IT WILL GO AWAY!
 */
 
 #if @@prologue_len == 0
@@ -191,8 +191,8 @@
 
 </file>
 <file filename="@@basename.h">/*
-	Parser header generated by unicc from @@filename.
-	DO NOT EDIT THIS FILE MANUALLY, IT WILL GO AWAY!
+    Parser header generated by unicc from @@filename.
+    DO NOT EDIT THIS FILE MANUALLY, IT WILL GO AWAY!
 */
 
 #ifndef @@CBASENAME_H

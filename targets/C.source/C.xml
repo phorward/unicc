@@ -34,711 +34,711 @@ between the rows/columns, except the last row/column.
 -->
 
 <generator name="C">
-	<!--
-	****************************************************************************
-	Boolean values
-	****************************************************************************
-	Values for booleans.
-	-->
-	<true>1</true>
-	<false>0</false>
-
-	<!--
-	****************************************************************************
-	Escape sequences
-	****************************************************************************
-	These are the escapable sequence definitions for the target language
-	which should be replaced when terminal-/nonterminal (especially generated
-	ones) names are generated into the target file, e.g. in the <symbols>-tag.
-	-->
-
-	<!-- Backslash must be double-quoted -->
-	<escape-sequence for="\" do="\\" />
-	<!-- Escape double quotation marks -->
-	<escape-sequence for="&#x22;" do="\&#x22;" />
-
-	<!--
-	****************************************************************************
-	Value-stack templates
-	****************************************************************************
-	-->
-
-	<!-- Default (return) value type for nonterminals -->
-	<vstack_def_type>int</vstack_def_type>
-	<!-- Default value type for character-class terminals -->
-	<vstack_term_type>int</vstack_term_type>
-
-	<!--
-	Code to be generated for the value stack datatype-definition
-	when only one datatype is used within the whole grammar (or if
-	always the default-type is used).
-
-	Placeholders:	@@value-type			- 	Expands to the type-declaration
-												of the only used value type.
-	-->
-	<vstack_single>typedef @@value-type @@prefix_vtype;</vstack_single>
-
-	<!--
-	Begin and end of code to be generated for the value stack
-	datatype-definition when multiple datatypes are used within the
-	whole grammar.  Note that you can define here even struct-like
-	code or array-like structure if your target language supports
-	only those.
-
-	Placeholders:	@@number-of-value-types	-	Expands to the maximum number
-												of value types possible here.
-												Can be used in both of the
-												following tags.
-	-->
-	<vstack_union_start>typedef union @@prefix_VTYPE&#x0A;{&#x0A;</vstack_union_start>
-	<vstack_union_end>} @@prefix_vtype;&#x0A;&#x0A;</vstack_union_end>
-
-	<!--
-	This tag defines a data type definition within the union.
-	As @@attribute, the content of the <vstack_union_att>-tag is expanded,
-	which then contains a consecutive number of the datatype.
-	This block is repeated for every value type within the union/whatever ;)
-
-	Placeholders:	@@value-type			- 	Expands to the type-declaration
-												of the current data type as
-												specified within the grammar.
-					@@attribute				-	As @@attribute, the content
-												of the <vstack_union_att>-tag
-												is expanded, which then
-												contains a consecutive number
-												of the datatype.
-					@@value-type-id			-	The value type ID, which begins
-												at 0. This can be the index of
-												an array!
-	-->
-	<vstack_union_def>&#x09;@@value-type @@attribute;&#x0A;</vstack_union_def>
-
-	<!--
-	This tag defines is used in several code-generation parts, both when
-	the value stack union is defined and when reduction code for productions
-	is produced.
-
-	Placeholders:	@@value-type-id			-	The value type ID, which
-												begins at 0.
-												This can be the index of
-												an array!
-	-->
-	<vstack_union_att>value_@@value-type-id</vstack_union_att>
-
-	<!--
-	****************************************************************************
-	Semantic action templates
-	****************************************************************************
-	-->
-
-	<!--
-	Begin and end of code to be generated for each reduction code action of a
-	production. This code is embedded to a switch-structure below, every block
-	is a "case" within this switch. <action_start> is generated BEFORE and
-	<action_end> BEHIND each reduction code.
-
-	Placeholders:	@@production-number		-	The number of the production to
-												be reduced. Can be used in both
-												of the following tags.
-	-->
-	<action_start>&#x09;&#x09;&#x09;&#x09;case @@production-number:&#x0A;&#x09;&#x09;&#x09;&#x09;{&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;</action_start>
-	<action_end>&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;;&#x0A;&#x09;&#x09;&#x09;&#x09;}&#x09;&#x09;&#x09;&#x09;break;
-	</action_end>
-
-	<!--
-	Single value access when only one datatype is used in the whole grammar.
-
-	Placeholders:	@@offset				-	The number of the right-hand
-												side symbol to be accessed.
-												This is the number specified in
-												the production reduction code
-												as number or even by the
-												right-hand side element's
-												identifier. The offset is
-												inserted here by UniCC's
-												code generator.
-	-->
-	<action_single>( ( pcb->tos - @@offset )->value )</action_single>
-
-	<!--
-	Multiple value access, in case of different datatypes used within the
-	grammar.
-
-	Placeholders:	@@offset				-	The number of the right-hand
-												side symbol to be accessed.
-												This is the number specified in
-												the production reduction code
-												as number or even by the
-												right-hand side element's
-												identifier. The offset is
-												inserted here by UniCC's
-												code generator.
-					@@attribute				-	As @@attribute, the content of
-												the <vstack_union_att>-tag is
-												expanded, which then contains
-												a consecutive number of the
-												datatype.
-	-->
-	<action_union>( ( pcb->tos - @@offset )->value.@@attribute )</action_union>
-
-	<!--
-	Single value left-hand side assignment variable when only one datatype
-	is used in the whole grammar.
-
-	Placeholders:	none
-	-->
-	<action_lhs_single>pcb->ret</action_lhs_single>
-
-	<!--
-	Multiple value left-hand side assignment variable when different
-	datatypes are used within the whole grammar.
-
-	Placeholders:	@@attribute				-	As @@attribute, the content of
-												the <vstack_union_att>-tag is
-												expanded, which then contains
-												a consecutive number of the
-												datatype.
-	-->
-	<action_lhs_union>pcb->ret.@@attribute</action_lhs_union>
-
-	<!--
-	This template will be triggered when a semantic action selects a
-	left-hand side. By default, the primary left-hand side will be replaced
-	by the production after reduction. This can be changed by using the
-	@$<name>-placeholders in semantic actions.
-
-	Only defined left-hand sides for the production can be associated.
-
-	Placeholders:	@@sym					-	Will be replaced by the
-												symbol-id of the specified
-												left-hand side symbol.
-	-->
-	<action_set_lhs>( pcb->lhs = @@sym )</action_set_lhs>
-
-	<!--
-	****************************************************************************
-	Semantic terminal action templates
-	****************************************************************************
-	-->
-
-	<!--
-	Begin and end of code to be generated for each match of a regular
-	expression token. This code is embedded to a switch-structure below,
-	every block is a "case" within this switch. <scan_action_start> is
-	generated BEFORE and <scan_action_end> BEHIND each reduction code.
-
-	The code here is only produced when the matched regex-terminal contains
-	individual code segments.
-
-	Placeholders:	@@symbol-number			-	The id of the terminal the
-												lexical analyzer action belongs
-												to. Can be used in both of the
-												following tags.
-	-->
-
-	<scan_action_start>&#x09;&#x09;&#x09;&#x09;case @@symbol-number:&#x0A;&#x09;&#x09;&#x09;&#x09;{&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;</scan_action_start>
-	<scan_action_end>&#x0A;&#x09;&#x09;&#x09;&#x09;&#x09;;&#x0A;&#x09;&#x09;&#x09;&#x09;}&#x09;&#x09;&#x09;&#x09;break;
-	</scan_action_end>
-
-	<!--
-	The content of the tags <scan_action_begin_offset> and
-	<scan_action_end_offset> are inserted in regex-terminal semantic code
-	blocks for the placeholders @> and @< to get the start-address and
-	length of the matched string. Normally, these are variable names.
-
-	Placeholders:	none
-	-->
-	<scan_action_begin_offset>@@prefix_lexem( pcb )</scan_action_begin_offset>
-	<scan_action_end_offset>pcb->len</scan_action_end_offset>
-
-	<!--
-	When @@ is used in regex-terminal semantic code blocks, a variable that
-	receives the semantic value of the token to be pushed to the value stack
-	must be given. For single value assignments,this is done here.
-	This value is only used when the grammar uses only one datatype.
-
-	Placeholders:		none
-	-->
-	<scan_action_ret_single>pcb->tos->value</scan_action_ret_single>
-
-	<!--
-	Same play for multiple value assignments in regex-terminal semantic action blocks.
-
-	Placeholders:	@@attribute				-	As @@attribute, the content of
-												the <vstack_union_att>-tag is
-												expanded, which then contains
-												a consecutive number of the
-												datatype.
-	-->
-	<scan_action_ret_union>( pcb->tos->value.@@attribute )</scan_action_ret_union>
-
-	<!--
-	This template is used when there is a semantic action-based
-	regular expression terminal decision. This is equivalent to the
-	selection of left-hand side in semantic production actions above.
-
-	Placeholders:	@@sym				-		The symbol-id of the requested
-												terminal symbol will be inserted
-												here.
-	-->
-	<scan_action_set_symbol>( pcb->sym = @@sym )</scan_action_set_symbol>
-
-	<!--
-	****************************************************************************
-	Parse table templates
-	****************************************************************************
-	-->
-
-	<!-- 1D TABLE
-	The <defprod>-tag defines an one-dimensional array for the id's of
-	the default productions that should be reduced when no other action
-	is selected. UniCC choses the default production by the most common
-	reduction that comes up. All reductions which belong to that production
-	are removed from the action table, so that the default table is chosen.
-	The following Placeholders can only be used in the <col>-tag below
-	<defprod>.
-
-	Placeholders:	@@state-number			-	The id-number of the state
-												where the default production
-												belongs to.
-					@@production-number		-	The production id number
-												indexing the production.
-												This can be automatically
-												solved via the array index
-												itself. The production
-												numbers begins at 0.
-												If there is no adequate
-												default-production, the
-												production-number will be
-												-1.
-	-->
-	<defprod>
-		<col>@@production-number</col>
-		<col_sep>, </col_sep>
-	</defprod>
-
-	<!-- 2D TABLE
-	The <acttab>-tag expands to the parser action table. The action table
-	describes the parser actions for every state and lookahead-symbol
-	combination (resp. state-terminal combination).
-
-	Placeholders:	@@number-of-columns		-	Total number of columns
-												for every entry. Can only
-												be used in <row_start> and
-												<row_end>.
-					@@row					-	The row index, beginning
-												at 0. Can only be used in
-												<row_start> and <row_end>.
-					@@column				-	The column index, beginning
-												at 0. Can only be used in
-												<col>.
-					@@symbol				-	Lookahead-symbol ID for
-												each entry column, can only
-												be used in <col>.
-					@@action				-	The action for each entry
-												column, can only be used in
-												<col>. This expands to
-												1 for reduce,
-												2 for shift and
-												3 for shift&reduce.
-					@@index					-	The number of the next state
-												in case of a shift, or the
-												number of the reduction
-												action in case of a reduce
-												or shift&reduce action.
-	-->
-	<acttab>
-		<row_start>&#x09;{ @@number-of-columns</row_start>
-		<row_end> }</row_end>
-		<row_sep>,&#x0A;</row_sep>
-		<col>, @@symbol,@@action,@@index </col>
-		<col_sep></col_sep>
-	</acttab>
-
-	<!-- 2D TABLE
-	The <gotab>-tag expands to the parser goto table. The goto table
-	describes the parser actions to be performed on a state and
-	nonterminal-symbol combination right after a reduction.
-
-	Placeholders:	@@number-of-columns		-	Total number of columns
-												for every entry. Can only
-												be used in <row_start> and
-												<row_end>.
-					@@row					-	The row index, beginning
-												at 0. Can only be used in
-												<row_start> and <row_end>.
-					@@column				-	The column index, beginning
-												at 0. Can only be used in
-												<col>.
-					@@symbol				-	Nonterminal-symbol ID for
-												each entry column, can only
-												be used in <col>.
-					@@action				-	The action for each entry
-												column, can only be used in
-												<col>. This expands to
-												2 for shift and
-												3 for shift&reduce.
-
-												A reduce-only will never be
-												the case.
-					@@index					-	The number of the next state.
-	-->
-	<gotab>
-		<row_start>&#x09;{ @@number-of-columns</row_start>
-		<row_end> }</row_end>
-		<row_sep>,&#x0A;</row_sep>
-		<col>, @@symbol,@@action,@@index </col>
-		<col_sep></col_sep>
-	</gotab>
-
-
-	<!--
-	****************************************************************************
-	Lexical analyzer table templates
-	****************************************************************************
-	UniCC constructs one single lexical analyzer in insensitive mode, and
-	several lexical analyzers in sensitive mode, that must be selected for every
-	LALR-state.
-
-	Several states may use the same lexical analyzer, so there is a table to
-	select the lexical analyzer from, relating to every LALR-state.
-	A lexical analyzer is a deterministic finite-state machine (DFA) that is
-	pre-calculated by UniCC and used to identify tokens from the input,
-	according to context-valid possibilities (sensitive mode) or globally
-	(insensitive mode).
-	-->
-
-	<!-- 1D TABLE
-	The <dfa_select>-tag expands to a table that hold the index of the lexical
-	analyzer for every LALR-state.
-
-	Placeholders:	@@column				-	The column index, beginning
-												at 0. Can only be used in
-												<col>.
-					@@machine				-	Expand to the index of the state
-												machine for the LALR-state.
-												Index begins at 0.
-	-->
-	<dfa_select>
-		<col>@@machine</col>
-		<col_sep>, </col_sep>
-	</dfa_select>
-
-	<!-- 1D TABLE
-	The <dfa_char>-tag expands to a table that hold all the characters for all
-	states, where a character-range with @@from = -1 and @@to = -1 defines the
-	end of a state character range definition.
-
-	Placeholders:	@@column				-	The column index, beginning
-												at 0. Can only be used in
-												<col>.
-					@@from					-	Character-code from
-					@@to					-	Character-code to
-	-->
-	<dfa_char>
-		<col>@@from, @@to</col>
-		<col_sep>, </col_sep>
-	</dfa_char>
-
-	<!-- 1D TABLE
-	The <dfa_trans>-tag expands to a table that hold all the transitions
-	to the next DFA state if a character range from <dfa_char> matches.
-
-	Placeholders:	@@column				-	The column index, beginning
-												at 0. Can only be used in
-												<col>.
-					@@goto					-	Next state to go to.
-	-->
-	<dfa_trans>
-		<col>@@goto</col>
-		<col_sep>, </col_sep>
-	</dfa_trans>
-
-
-	<!-- 2D TABLE
-	The <dfa_idx>-tag expands to a table that hold for every lexical analyzer
-	DFA a table with the offsets of the character-ranges in table <dfa_char>.
-
-	Placeholders:	@@row					-	The row index, beginning
-												at 0. Can only be used in
-												<row_start> and <row_end>.
-					@@column				-	The column index, beginning
-												at 0. Can only be used in
-												<col>.
-					@@index					-	Beginning offset of the state,
-												must be multiplied by 2 to
-												get the correct index in most
-												cases.
-					@@number-of-columns		-	Number of DFA states for the
-												given DFA state machine.
-	-->
-	<dfa_idx>
-		<row_start>&#x09;{ </row_start>
-		<row_end> }</row_end>
-		<row_sep>,&#x0A;</row_sep>
-		<col>@@index * 2</col>
-		<col_sep>, </col_sep>
-	</dfa_idx>
-
-	<!-- 2D TABLE
-	The <dfa_accept>-tag expands to a table that hold accepting symbol
-	identifier tables for every DFA state.
-
-	Placeholders:	@@row					-	The row index, beginning
-												at 0. Can only be used in
-												<row_start> and <row_end>.
-					@@column				-	The column index, beginning
-												at 0. Can only be used in
-												<col>.
-					@@accept				-	Accepting ID of the terminal
-												symbol that is probably
-												matched until this state by
-												the lexical analyzer.
-					@@number-of-columns		-	Number of DFA states for the
-												given DFA state machine.
-	-->
-	<dfa_accept>
-		<row_start>&#x09;{ </row_start>
-		<row_end> }</row_end>
-		<row_sep>,&#x0A;</row_sep>
-		<col>@@accept</col>
-		<col_sep>, </col_sep>
-	</dfa_accept>
-
-	<!--
-	****************************************************************************
-	Symbol and production information tables
-	****************************************************************************
-	-->
-
-	<!-- 1D TABLE
-	The <symbol>-tag expands to a symbol information table that has an
-	entry for each grammar symbol (intermixed terminal and nonterminal),
-	which may contain its definition string or name, its type, its data-type
-	index and several symbol-related flags. The table is not required for
-	the parsing, but used for debug/trace and extended possibilites, e.g.
-	automatically generated syntax trees.
-
-	Placeholders:	@@column				-	The column index, beginning
-												at 0. Can only be used in
-												<col>.
-					@@greedy				- 	1, if the symbol is a regular
-												expression terminal and should
-												be parsed greedy, 0 if not.
-					@@lexem					-	1, if the symbol is configured
-												as a lexem, 0 if not.
-					@@symbol				-	The ID of the symbol.
-					@@symbol-name			-	The symbol string of the symbol,
-												which is escaped by the escape
-												sequences defined on top.
-					@@type					-	The symbol type:
-												0) Nonterminal
-												1) Character-class terminal
-												2) Regex-class terminal
-												3) String-class terminal
-					@@whitespace			-	1, if the symbol is configured
-												as whitespace symbol, 0 if not.
-	-->
-	<symbols>
-		<col>	{ /* @@symbol */ "@@symbol-name", "@@emit", @@type, @@lexem, @@whitespace, @@greedy }</col>
-		<col_sep>,&#x0A;</col_sep>
-	</symbols>
-
-	<!-- 1D TABLE
-	The <production>-tag expands to a production information table that has an
-	entry for every production, which may contain its definition string, length
-	and default left-hand side. This table is not required for the parsing, but
-	used for debug/trace and extended possibilites, e.g. automatically
-	generated syntax trees.
-
-	Placeholders:	@@column				-	The column index, beginning
-												at 0. Can only be used in
-												<col>.
-					@@production-number		-	The ID of the production.
-					@@production			-	The production string,
-												which is escaped by the escape
-												sequences defined on top.
-					@@length				-	The length of the production
-												(symbols on the right-hand
-												side)
-					@@lhs					-	Default left-hand side.
-												Multiple left-hand sides are
-												not covered here.
-	-->
-	<productions>
-		<col>	{ /* @@production-number */ "@@production", "@@emit", @@length, @@lhs }</col>
-		<col_sep>,&#x0A;</col_sep>
-	</productions>
-
-	<!--
-	The <code_localization>-tag is printed before every line of semantic
-	code, and equipped with some information about the source. Programming
-	languages like C support a way to let the compiler report other locations
-	in generated files, like it is the case with UniCC.
-
-	Placeholders:	@@line					-	The first line number where the
-												semantic code was parsed at.
-					@@filename				-	The filename, where the semantoc
-												code has been parsed from (this
-												is the name of the parser
-												definition file)
-	-->
-	<code_localization>#line @@line "@@filename"
+    <!--
+    ****************************************************************************
+    Boolean values
+    ****************************************************************************
+    Values for booleans.
+    -->
+    <true>1</true>
+    <false>0</false>
+
+    <!--
+    ****************************************************************************
+    Escape sequences
+    ****************************************************************************
+    These are the escapable sequence definitions for the target language
+    which should be replaced when terminal-/nonterminal (especially generated
+    ones) names are generated into the target file, e.g. in the <symbols>-tag.
+    -->
+
+    <!-- Backslash must be double-quoted -->
+    <escape-sequence for="\" do="\\" />
+    <!-- Escape double quotation marks -->
+    <escape-sequence for="&#x22;" do="\&#x22;" />
+
+    <!--
+    ****************************************************************************
+    Value-stack templates
+    ****************************************************************************
+    -->
+
+    <!-- Default (return) value type for nonterminals -->
+    <vstack_def_type>int</vstack_def_type>
+    <!-- Default value type for character-class terminals -->
+    <vstack_term_type>int</vstack_term_type>
+
+    <!--
+    Code to be generated for the value stack datatype-definition
+    when only one datatype is used within the whole grammar (or if
+    always the default-type is used).
+
+    Placeholders:	@@value-type			- 	Expands to the type-declaration
+                                                of the only used value type.
+    -->
+    <vstack_single>typedef @@value-type @@prefix_vtype;</vstack_single>
+
+    <!--
+    Begin and end of code to be generated for the value stack
+    datatype-definition when multiple datatypes are used within the
+    whole grammar.  Note that you can define here even struct-like
+    code or array-like structure if your target language supports
+    only those.
+
+    Placeholders:	@@number-of-value-types	-	Expands to the maximum number
+                                                of value types possible here.
+                                                Can be used in both of the
+                                                following tags.
+    -->
+    <vstack_union_start>typedef union @@prefix_VTYPE&#x0A;{&#x0A;</vstack_union_start>
+    <vstack_union_end>} @@prefix_vtype;&#x0A;&#x0A;</vstack_union_end>
+
+    <!--
+    This tag defines a data type definition within the union.
+    As @@attribute, the content of the <vstack_union_att>-tag is expanded,
+    which then contains a consecutive number of the datatype.
+    This block is repeated for every value type within the union/whatever ;)
+
+    Placeholders:	@@value-type			- 	Expands to the type-declaration
+                                                of the current data type as
+                                                specified within the grammar.
+                    @@attribute				-	As @@attribute, the content
+                                                of the <vstack_union_att>-tag
+                                                is expanded, which then
+                                                contains a consecutive number
+                                                of the datatype.
+                    @@value-type-id			-	The value type ID, which begins
+                                                at 0. This can be the index of
+                                                an array!
+    -->
+    <vstack_union_def>    @@value-type @@attribute;&#x0A;</vstack_union_def>
+
+    <!--
+    This tag defines is used in several code-generation parts, both when
+    the value stack union is defined and when reduction code for productions
+    is produced.
+
+    Placeholders:	@@value-type-id			-	The value type ID, which
+                                                begins at 0.
+                                                This can be the index of
+                                                an array!
+    -->
+    <vstack_union_att>value_@@value-type-id</vstack_union_att>
+
+    <!--
+    ****************************************************************************
+    Semantic action templates
+    ****************************************************************************
+    -->
+
+    <!--
+    Begin and end of code to be generated for each reduction code action of a
+    production. This code is embedded to a switch-structure below, every block
+    is a "case" within this switch. <action_start> is generated BEFORE and
+    <action_end> BEHIND each reduction code.
+
+    Placeholders:	@@production-number		-	The number of the production to
+                                                be reduced. Can be used in both
+                                                of the following tags.
+    -->
+    <action_start>                case @@production-number:&#x0A;                {&#x0A;                    </action_start>
+    <action_end>&#x0A;                    ;&#x0A;                }                break;
+    </action_end>
+
+    <!--
+    Single value access when only one datatype is used in the whole grammar.
+
+    Placeholders:	@@offset				-	The number of the right-hand
+                                                side symbol to be accessed.
+                                                This is the number specified in
+                                                the production reduction code
+                                                as number or even by the
+                                                right-hand side element's
+                                                identifier. The offset is
+                                                inserted here by UniCC's
+                                                code generator.
+    -->
+    <action_single>( ( pcb->tos - @@offset )->value )</action_single>
+
+    <!--
+    Multiple value access, in case of different datatypes used within the
+    grammar.
+
+    Placeholders:	@@offset				-	The number of the right-hand
+                                                side symbol to be accessed.
+                                                This is the number specified in
+                                                the production reduction code
+                                                as number or even by the
+                                                right-hand side element's
+                                                identifier. The offset is
+                                                inserted here by UniCC's
+                                                code generator.
+                    @@attribute				-	As @@attribute, the content of
+                                                the <vstack_union_att>-tag is
+                                                expanded, which then contains
+                                                a consecutive number of the
+                                                datatype.
+    -->
+    <action_union>( ( pcb->tos - @@offset )->value.@@attribute )</action_union>
+
+    <!--
+    Single value left-hand side assignment variable when only one datatype
+    is used in the whole grammar.
+
+    Placeholders:	none
+    -->
+    <action_lhs_single>pcb->ret</action_lhs_single>
+
+    <!--
+    Multiple value left-hand side assignment variable when different
+    datatypes are used within the whole grammar.
+
+    Placeholders:	@@attribute				-	As @@attribute, the content of
+                                                the <vstack_union_att>-tag is
+                                                expanded, which then contains
+                                                a consecutive number of the
+                                                datatype.
+    -->
+    <action_lhs_union>pcb->ret.@@attribute</action_lhs_union>
+
+    <!--
+    This template will be triggered when a semantic action selects a
+    left-hand side. By default, the primary left-hand side will be replaced
+    by the production after reduction. This can be changed by using the
+    @$<name>-placeholders in semantic actions.
+
+    Only defined left-hand sides for the production can be associated.
+
+    Placeholders:	@@sym					-	Will be replaced by the
+                                                symbol-id of the specified
+                                                left-hand side symbol.
+    -->
+    <action_set_lhs>( pcb->lhs = @@sym )</action_set_lhs>
+
+    <!--
+    ****************************************************************************
+    Semantic terminal action templates
+    ****************************************************************************
+    -->
+
+    <!--
+    Begin and end of code to be generated for each match of a regular
+    expression token. This code is embedded to a switch-structure below,
+    every block is a "case" within this switch. <scan_action_start> is
+    generated BEFORE and <scan_action_end> BEHIND each reduction code.
+
+    The code here is only produced when the matched regex-terminal contains
+    individual code segments.
+
+    Placeholders:	@@symbol-number			-	The id of the terminal the
+                                                lexical analyzer action belongs
+                                                to. Can be used in both of the
+                                                following tags.
+    -->
+
+    <scan_action_start>                case @@symbol-number:&#x0A;                {&#x0A;                    </scan_action_start>
+    <scan_action_end>&#x0A;                    ;&#x0A;                }                break;
+    </scan_action_end>
+
+    <!--
+    The content of the tags <scan_action_begin_offset> and
+    <scan_action_end_offset> are inserted in regex-terminal semantic code
+    blocks for the placeholders @> and @< to get the start-address and
+    length of the matched string. Normally, these are variable names.
+
+    Placeholders:	none
+    -->
+    <scan_action_begin_offset>@@prefix_lexem( pcb )</scan_action_begin_offset>
+    <scan_action_end_offset>pcb->len</scan_action_end_offset>
+
+    <!--
+    When @@ is used in regex-terminal semantic code blocks, a variable that
+    receives the semantic value of the token to be pushed to the value stack
+    must be given. For single value assignments,this is done here.
+    This value is only used when the grammar uses only one datatype.
+
+    Placeholders:		none
+    -->
+    <scan_action_ret_single>pcb->tos->value</scan_action_ret_single>
+
+    <!--
+    Same play for multiple value assignments in regex-terminal semantic action blocks.
+
+    Placeholders:	@@attribute				-	As @@attribute, the content of
+                                                the <vstack_union_att>-tag is
+                                                expanded, which then contains
+                                                a consecutive number of the
+                                                datatype.
+    -->
+    <scan_action_ret_union>( pcb->tos->value.@@attribute )</scan_action_ret_union>
+
+    <!--
+    This template is used when there is a semantic action-based
+    regular expression terminal decision. This is equivalent to the
+    selection of left-hand side in semantic production actions above.
+
+    Placeholders:	@@sym				-		The symbol-id of the requested
+                                                terminal symbol will be inserted
+                                                here.
+    -->
+    <scan_action_set_symbol>( pcb->sym = @@sym )</scan_action_set_symbol>
+
+    <!--
+    ****************************************************************************
+    Parse table templates
+    ****************************************************************************
+    -->
+
+    <!-- 1D TABLE
+    The <defprod>-tag defines an one-dimensional array for the id's of
+    the default productions that should be reduced when no other action
+    is selected. UniCC choses the default production by the most common
+    reduction that comes up. All reductions which belong to that production
+    are removed from the action table, so that the default table is chosen.
+    The following Placeholders can only be used in the <col>-tag below
+    <defprod>.
+
+    Placeholders:	@@state-number			-	The id-number of the state
+                                                where the default production
+                                                belongs to.
+                    @@production-number		-	The production id number
+                                                indexing the production.
+                                                This can be automatically
+                                                solved via the array index
+                                                itself. The production
+                                                numbers begins at 0.
+                                                If there is no adequate
+                                                default-production, the
+                                                production-number will be
+                                                -1.
+    -->
+    <defprod>
+        <col>@@production-number</col>
+        <col_sep>, </col_sep>
+    </defprod>
+
+    <!-- 2D TABLE
+    The <acttab>-tag expands to the parser action table. The action table
+    describes the parser actions for every state and lookahead-symbol
+    combination (resp. state-terminal combination).
+
+    Placeholders:	@@number-of-columns		-	Total number of columns
+                                                for every entry. Can only
+                                                be used in <row_start> and
+                                                <row_end>.
+                    @@row					-	The row index, beginning
+                                                at 0. Can only be used in
+                                                <row_start> and <row_end>.
+                    @@column				-	The column index, beginning
+                                                at 0. Can only be used in
+                                                <col>.
+                    @@symbol				-	Lookahead-symbol ID for
+                                                each entry column, can only
+                                                be used in <col>.
+                    @@action				-	The action for each entry
+                                                column, can only be used in
+                                                <col>. This expands to
+                                                1 for reduce,
+                                                2 for shift and
+                                                3 for shift&reduce.
+                    @@index					-	The number of the next state
+                                                in case of a shift, or the
+                                                number of the reduction
+                                                action in case of a reduce
+                                                or shift&reduce action.
+    -->
+    <acttab>
+        <row_start>    { @@number-of-columns</row_start>
+        <row_end> }</row_end>
+        <row_sep>,&#x0A;</row_sep>
+        <col>, @@symbol,@@action,@@index </col>
+        <col_sep></col_sep>
+    </acttab>
+
+    <!-- 2D TABLE
+    The <gotab>-tag expands to the parser goto table. The goto table
+    describes the parser actions to be performed on a state and
+    nonterminal-symbol combination right after a reduction.
+
+    Placeholders:	@@number-of-columns		-	Total number of columns
+                                                for every entry. Can only
+                                                be used in <row_start> and
+                                                <row_end>.
+                    @@row					-	The row index, beginning
+                                                at 0. Can only be used in
+                                                <row_start> and <row_end>.
+                    @@column				-	The column index, beginning
+                                                at 0. Can only be used in
+                                                <col>.
+                    @@symbol				-	Nonterminal-symbol ID for
+                                                each entry column, can only
+                                                be used in <col>.
+                    @@action				-	The action for each entry
+                                                column, can only be used in
+                                                <col>. This expands to
+                                                2 for shift and
+                                                3 for shift&reduce.
+
+                                                A reduce-only will never be
+                                                the case.
+                    @@index					-	The number of the next state.
+    -->
+    <gotab>
+        <row_start>    { @@number-of-columns</row_start>
+        <row_end> }</row_end>
+        <row_sep>,&#x0A;</row_sep>
+        <col>, @@symbol,@@action,@@index </col>
+        <col_sep></col_sep>
+    </gotab>
+
+
+    <!--
+    ****************************************************************************
+    Lexical analyzer table templates
+    ****************************************************************************
+    UniCC constructs one single lexical analyzer in insensitive mode, and
+    several lexical analyzers in sensitive mode, that must be selected for every
+    LALR-state.
+
+    Several states may use the same lexical analyzer, so there is a table to
+    select the lexical analyzer from, relating to every LALR-state.
+    A lexical analyzer is a deterministic finite-state machine (DFA) that is
+    pre-calculated by UniCC and used to identify tokens from the input,
+    according to context-valid possibilities (sensitive mode) or globally
+    (insensitive mode).
+    -->
+
+    <!-- 1D TABLE
+    The <dfa_select>-tag expands to a table that hold the index of the lexical
+    analyzer for every LALR-state.
+
+    Placeholders:	@@column				-	The column index, beginning
+                                                at 0. Can only be used in
+                                                <col>.
+                    @@machine				-	Expand to the index of the state
+                                                machine for the LALR-state.
+                                                Index begins at 0.
+    -->
+    <dfa_select>
+        <col>@@machine</col>
+        <col_sep>, </col_sep>
+    </dfa_select>
+
+    <!-- 1D TABLE
+    The <dfa_char>-tag expands to a table that hold all the characters for all
+    states, where a character-range with @@from = -1 and @@to = -1 defines the
+    end of a state character range definition.
+
+    Placeholders:	@@column				-	The column index, beginning
+                                                at 0. Can only be used in
+                                                <col>.
+                    @@from					-	Character-code from
+                    @@to					-	Character-code to
+    -->
+    <dfa_char>
+        <col>@@from, @@to</col>
+        <col_sep>, </col_sep>
+    </dfa_char>
+
+    <!-- 1D TABLE
+    The <dfa_trans>-tag expands to a table that hold all the transitions
+    to the next DFA state if a character range from <dfa_char> matches.
+
+    Placeholders:	@@column				-	The column index, beginning
+                                                at 0. Can only be used in
+                                                <col>.
+                    @@goto					-	Next state to go to.
+    -->
+    <dfa_trans>
+        <col>@@goto</col>
+        <col_sep>, </col_sep>
+    </dfa_trans>
+
+
+    <!-- 2D TABLE
+    The <dfa_idx>-tag expands to a table that hold for every lexical analyzer
+    DFA a table with the offsets of the character-ranges in table <dfa_char>.
+
+    Placeholders:	@@row					-	The row index, beginning
+                                                at 0. Can only be used in
+                                                <row_start> and <row_end>.
+                    @@column				-	The column index, beginning
+                                                at 0. Can only be used in
+                                                <col>.
+                    @@index					-	Beginning offset of the state,
+                                                must be multiplied by 2 to
+                                                get the correct index in most
+                                                cases.
+                    @@number-of-columns		-	Number of DFA states for the
+                                                given DFA state machine.
+    -->
+    <dfa_idx>
+        <row_start>    { </row_start>
+        <row_end> }</row_end>
+        <row_sep>,&#x0A;</row_sep>
+        <col>@@index * 2</col>
+        <col_sep>, </col_sep>
+    </dfa_idx>
+
+    <!-- 2D TABLE
+    The <dfa_accept>-tag expands to a table that hold accepting symbol
+    identifier tables for every DFA state.
+
+    Placeholders:	@@row					-	The row index, beginning
+                                                at 0. Can only be used in
+                                                <row_start> and <row_end>.
+                    @@column				-	The column index, beginning
+                                                at 0. Can only be used in
+                                                <col>.
+                    @@accept				-	Accepting ID of the terminal
+                                                symbol that is probably
+                                                matched until this state by
+                                                the lexical analyzer.
+                    @@number-of-columns		-	Number of DFA states for the
+                                                given DFA state machine.
+    -->
+    <dfa_accept>
+        <row_start>    { </row_start>
+        <row_end> }</row_end>
+        <row_sep>,&#x0A;</row_sep>
+        <col>@@accept</col>
+        <col_sep>, </col_sep>
+    </dfa_accept>
+
+    <!--
+    ****************************************************************************
+    Symbol and production information tables
+    ****************************************************************************
+    -->
+
+    <!-- 1D TABLE
+    The <symbol>-tag expands to a symbol information table that has an
+    entry for each grammar symbol (intermixed terminal and nonterminal),
+    which may contain its definition string or name, its type, its data-type
+    index and several symbol-related flags. The table is not required for
+    the parsing, but used for debug/trace and extended possibilites, e.g.
+    automatically generated syntax trees.
+
+    Placeholders:	@@column				-	The column index, beginning
+                                                at 0. Can only be used in
+                                                <col>.
+                    @@greedy				- 	1, if the symbol is a regular
+                                                expression terminal and should
+                                                be parsed greedy, 0 if not.
+                    @@lexem					-	1, if the symbol is configured
+                                                as a lexem, 0 if not.
+                    @@symbol				-	The ID of the symbol.
+                    @@symbol-name			-	The symbol string of the symbol,
+                                                which is escaped by the escape
+                                                sequences defined on top.
+                    @@type					-	The symbol type:
+                                                0) Nonterminal
+                                                1) Character-class terminal
+                                                2) Regex-class terminal
+                                                3) String-class terminal
+                    @@whitespace			-	1, if the symbol is configured
+                                                as whitespace symbol, 0 if not.
+    -->
+    <symbols>
+        <col>	{ /* @@symbol */ "@@symbol-name", "@@emit", @@type, @@lexem, @@whitespace, @@greedy }</col>
+        <col_sep>,&#x0A;</col_sep>
+    </symbols>
+
+    <!-- 1D TABLE
+    The <production>-tag expands to a production information table that has an
+    entry for every production, which may contain its definition string, length
+    and default left-hand side. This table is not required for the parsing, but
+    used for debug/trace and extended possibilites, e.g. automatically
+    generated syntax trees.
+
+    Placeholders:	@@column				-	The column index, beginning
+                                                at 0. Can only be used in
+                                                <col>.
+                    @@production-number		-	The ID of the production.
+                    @@production			-	The production string,
+                                                which is escaped by the escape
+                                                sequences defined on top.
+                    @@length				-	The length of the production
+                                                (symbols on the right-hand
+                                                side)
+                    @@lhs					-	Default left-hand side.
+                                                Multiple left-hand sides are
+                                                not covered here.
+    -->
+    <productions>
+        <col>	{ /* @@production-number */ "@@production", "@@emit", @@length, @@lhs }</col>
+        <col_sep>,&#x0A;</col_sep>
+    </productions>
+
+    <!--
+    The <code_localization>-tag is printed before every line of semantic
+    code, and equipped with some information about the source. Programming
+    languages like C support a way to let the compiler report other locations
+    in generated files, like it is the case with UniCC.
+
+    Placeholders:	@@line					-	The first line number where the
+                                                semantic code was parsed at.
+                    @@filename				-	The filename, where the semantoc
+                                                code has been parsed from (this
+                                                is the name of the parser
+                                                definition file)
+    -->
+    <code_localization>#line @@line "@@filename"
 </code_localization>
 
 
-	<!--
-	Now, the output files are described. It can be one file or multiple, all
-	allow the insertion of the same placeholers.
+    <!--
+    Now, the output files are described. It can be one file or multiple, all
+    allow the insertion of the same placeholers.
 
-	Placeholders:	@@actions				-	Inserts the parser action code
-												that is constructed from the
-												program code attached to
-												productions in combination with
-												the tags
-												<action_start> and <action_end>
-					@@action-table			-	Inserts the expanded action
-												table that is generated from the
-												<acttab> tags.
-					@@basename				-	The basename of the target file.
-					@@Cbasename				-	The basename of the target file,
-												as C-identifier. For example,
-												"test.1" becomes "test_1".
-					@@CBASENAME				-	The basename of the target file,
-												as C-identifier, in upper case
-												order. For example,
-												"test.1" becomes "TEST_1".
-					@@character-universe		-	Upper limit of the character
-												universe. Lowest limit is
-												always 0.
-					@@copyright_len			-	The length of the content of
-												the #copyright parser directive.
-					@@copyright				-	Content of the #copyright
-												parser directive.
-					@@deepest-action-row		-	Number of elements in the
-												deepest row of the expanded
-												array of the <acttab>-tag.
-												This should be used for array
-												memory allocation.
-					@@deepest-dfa-accept-row-	Number of elements in the
-												deepest row of the expanded
-												array of the <dfa_accept>-tag.
-												This is used for array memory
-												allocation.
-					@@deepest-dfa-index-row	-	Number of elements in the
-												deepest row of the expanded
-												array of the <dfa_idx>-tag.
-												This is used for array memory
-												allocation.
-					@@deepest-goto-row		-	Number of elements in the
-												deepest row of the expanded
-												array of the <gotab>-tag.
-												This should be used for array
-												memory allocation.
-					@@default-productions	-	Expands to the array of
-												default productions from the
-												<defprod>-tag.
-					@@description_len		-	The length of the content of
-												the #description parser
-												directive.
-					@@description			-	Content of the #description
-												parser directive.
-					@@dfa-accept			-	Expands to the array of
-												DFA accepting states from the
-												<dfa_accept>-tag.
-					@@dfa-char				-	Expands to the array of DFA
-												state characters from the
-												<dfa_char>-tag.
-					@@dfa-index				-	Expands to the array of
-												DFA state indexes from the
-												<dfa_idx>-tag.
-					@@dfa-select				-	Expands to the array of
-												DFA machine selection from the
-												<dfa_select>-tag.
-					@@dfa-trans				-	Expands to the array of
-												DFA transitions from the
-												<dfa_trans>-tag.
-					@@eof					-	The symbol ID of the end-of-file
-												terminal symbol. This is -1
-												if not defined.
-					@@epilogue_len			-	The length of the content of
-												the #epilogue parser
-												directive.
-					@@epilogue				-	Content of the #epilogue
-												parser directive.
-					@@error					-	The symbol ID of the error
-												resynchrinoization terminal
-												This is -1 if not defined.
-					@@filename_len			-	The length of the parser source
-												filename.
-					@@filename				-	The filename of the parser
-												source file.
-					@@goal					-	The symbol ID of the goal
-												symbol (always a nonterminal).
-					@@goal-production		-	The production ID of the
-												goal production.
-					@@goto-table			-	Inserts the expanded goto table
-												that is generated from the
-												<gotab> tags.
-					@@max-symbol-name-length-	Maxiumum size of the longest
-												symbol name that was generated
-												in the <symbols>-tag.
-					@@mode					-	The parser construction mode;
-												0 for senstivie mode,
-												1 for insensitive mode
+    Placeholders:	@@actions				-	Inserts the parser action code
+                                                that is constructed from the
+                                                program code attached to
+                                                productions in combination with
+                                                the tags
+                                                <action_start> and <action_end>
+                    @@action-table			-	Inserts the expanded action
+                                                table that is generated from the
+                                                <acttab> tags.
+                    @@basename				-	The basename of the target file.
+                    @@Cbasename				-	The basename of the target file,
+                                                as C-identifier. For example,
+                                                "test.1" becomes "test_1".
+                    @@CBASENAME				-	The basename of the target file,
+                                                as C-identifier, in upper case
+                                                order. For example,
+                                                "test.1" becomes "TEST_1".
+                    @@character-universe		-	Upper limit of the character
+                                                universe. Lowest limit is
+                                                always 0.
+                    @@copyright_len			-	The length of the content of
+                                                the #copyright parser directive.
+                    @@copyright				-	Content of the #copyright
+                                                parser directive.
+                    @@deepest-action-row		-	Number of elements in the
+                                                deepest row of the expanded
+                                                array of the <acttab>-tag.
+                                                This should be used for array
+                                                memory allocation.
+                    @@deepest-dfa-accept-row-	Number of elements in the
+                                                deepest row of the expanded
+                                                array of the <dfa_accept>-tag.
+                                                This is used for array memory
+                                                allocation.
+                    @@deepest-dfa-index-row	-	Number of elements in the
+                                                deepest row of the expanded
+                                                array of the <dfa_idx>-tag.
+                                                This is used for array memory
+                                                allocation.
+                    @@deepest-goto-row		-	Number of elements in the
+                                                deepest row of the expanded
+                                                array of the <gotab>-tag.
+                                                This should be used for array
+                                                memory allocation.
+                    @@default-productions	-	Expands to the array of
+                                                default productions from the
+                                                <defprod>-tag.
+                    @@description_len		-	The length of the content of
+                                                the #description parser
+                                                directive.
+                    @@description			-	Content of the #description
+                                                parser directive.
+                    @@dfa-accept			-	Expands to the array of
+                                                DFA accepting states from the
+                                                <dfa_accept>-tag.
+                    @@dfa-char				-	Expands to the array of DFA
+                                                state characters from the
+                                                <dfa_char>-tag.
+                    @@dfa-index				-	Expands to the array of
+                                                DFA state indexes from the
+                                                <dfa_idx>-tag.
+                    @@dfa-select				-	Expands to the array of
+                                                DFA machine selection from the
+                                                <dfa_select>-tag.
+                    @@dfa-trans				-	Expands to the array of
+                                                DFA transitions from the
+                                                <dfa_trans>-tag.
+                    @@eof					-	The symbol ID of the end-of-file
+                                                terminal symbol. This is -1
+                                                if not defined.
+                    @@epilogue_len			-	The length of the content of
+                                                the #epilogue parser
+                                                directive.
+                    @@epilogue				-	Content of the #epilogue
+                                                parser directive.
+                    @@error					-	The symbol ID of the error
+                                                resynchrinoization terminal
+                                                This is -1 if not defined.
+                    @@filename_len			-	The length of the parser source
+                                                filename.
+                    @@filename				-	The filename of the parser
+                                                source file.
+                    @@goal					-	The symbol ID of the goal
+                                                symbol (always a nonterminal).
+                    @@goal-production		-	The production ID of the
+                                                goal production.
+                    @@goto-table			-	Inserts the expanded goto table
+                                                that is generated from the
+                                                <gotab> tags.
+                    @@max-symbol-name-length-	Maxiumum size of the longest
+                                                symbol name that was generated
+                                                in the <symbols>-tag.
+                    @@mode					-	The parser construction mode;
+                                                0 for senstivie mode,
+                                                1 for insensitive mode
 
-					@@name_len				-	The length of the content of
-												the #parser parser
-												directive.
-					@@name					-	Content of the #parser
-												parser directive.
-					@@number-of-dfa-machines-	Total number of DFA state
-												machines. This is always 1
-												in insentivie parsers.
-					@@number-of-productions	-	The number of productions.
-					@@number-of-states		-	The number of LALR(1) states.
-					@@number-of-symbols		-	The number of symbols.
-					@@pcb_len				-	The length of the content of
-												the #pcb parser directive.
-					@@pcb					-	Content of the #pcb
-												parser directive.
-					@@productions			-	Expands to the productions
-												string array produced by
-												the <productions>-tag.
-					@@prologue_len			-	The length of the content of
-												the #prologue parser
-												directive.
-					@@prologue				-	Content of the #prologue
-												parser directive.
-					@@scan_actions			-	Expands to the semantic
-												scanner actions that may
-												be processed when a token
-												has been correctly matched.
-					@@size-of-dfa-characters-	The size of the array
-												expaned by <dfa_char>.
-					@@symbols				-	Expands to the symbol
-												string array produced by
-												the <symbols>-tag.
-					@@top-value				-	Expands to the variable
-												pointing to the top of
-												the value-stack.
-					@@value-type-definition	-	Expands to the value type
-												definitions.
-					@@version_len			-	The length of the content of
-												the #version parser
-												directive.
-					@@version				-	Content of the #version
-												parser directive.
+                    @@name_len				-	The length of the content of
+                                                the #parser parser
+                                                directive.
+                    @@name					-	Content of the #parser
+                                                parser directive.
+                    @@number-of-dfa-machines-	Total number of DFA state
+                                                machines. This is always 1
+                                                in insentivie parsers.
+                    @@number-of-productions	-	The number of productions.
+                    @@number-of-states		-	The number of LALR(1) states.
+                    @@number-of-symbols		-	The number of symbols.
+                    @@pcb_len				-	The length of the content of
+                                                the #pcb parser directive.
+                    @@pcb					-	Content of the #pcb
+                                                parser directive.
+                    @@productions			-	Expands to the productions
+                                                string array produced by
+                                                the <productions>-tag.
+                    @@prologue_len			-	The length of the content of
+                                                the #prologue parser
+                                                directive.
+                    @@prologue				-	Content of the #prologue
+                                                parser directive.
+                    @@scan_actions			-	Expands to the semantic
+                                                scanner actions that may
+                                                be processed when a token
+                                                has been correctly matched.
+                    @@size-of-dfa-characters-	The size of the array
+                                                expaned by <dfa_char>.
+                    @@symbols				-	Expands to the symbol
+                                                string array produced by
+                                                the <symbols>-tag.
+                    @@top-value				-	Expands to the variable
+                                                pointing to the top of
+                                                the value-stack.
+                    @@value-type-definition	-	Expands to the value type
+                                                definitions.
+                    @@version_len			-	The length of the content of
+                                                the #version parser
+                                                directive.
+                    @@version				-	Content of the #version
+                                                parser directive.
 
-	The expansion macros @@basename, @@Cbasename, @@CBASENAME, @@filename,
-	@@filename_len and @@prefix can be used everywhere in all tags. They are
-	replaced as last. They can also be used in semantic actions defined in the
-	parser's semantic actions. It is also possible to use the above macros in
-	the filename-attribute of the file-tag, to generate adequate filenames.
-	-->
-	<file filename="@@basename.c">/*
-	Parser module generated by unicc from @@filename.
-	DO NOT EDIT THIS FILE MANUALLY, IT WILL GO AWAY!
+    The expansion macros @@basename, @@Cbasename, @@CBASENAME, @@filename,
+    @@filename_len and @@prefix can be used everywhere in all tags. They are
+    replaced as last. They can also be used in semantic actions defined in the
+    parser's semantic actions. It is also possible to use the above macros in
+    the filename-attribute of the file-tag, to generate adequate filenames.
+    -->
+    <file filename="@@basename.c">/*
+    This parser module was generated by unicc from @@filename.
+    DO NOT EDIT THIS FILE MANUALLY, IT WILL GO AWAY!
 */
 
 #if @@prologue_len == 0
@@ -785,8 +785,8 @@ between the rows/columns, except the last row/column.
 
 </file>
 <file filename="@@basename.h">/*
-	Parser header generated by unicc from @@filename.
-	DO NOT EDIT THIS FILE MANUALLY, IT WILL GO AWAY!
+    Parser header generated by unicc from @@filename.
+    DO NOT EDIT THIS FILE MANUALLY, IT WILL GO AWAY!
 */
 
 #ifndef @@CBASENAME_H

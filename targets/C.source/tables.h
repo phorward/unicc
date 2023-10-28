@@ -13,14 +13,14 @@ UNICC_STATIC int @@prefix_go[ @@number-of-states ][ @@deepest-goto-row * 3 + 1 ]
 /* Default productions per state */
 UNICC_STATIC int @@prefix_def_prod[ @@number-of-states ] =
 {
-	@@default-productions
+    @@default-productions
 };
 
 #if !@@mode
 /* DFA selection table */
 UNICC_STATIC int @@prefix_dfa_select[ @@number-of-states ] =
 {
-	@@dfa-select
+    @@dfa-select
 };
 #endif
 
@@ -34,13 +34,13 @@ UNICC_STATIC int @@prefix_dfa_idx[ @@number-of-dfa-machines ][ @@deepest-dfa-ind
 /* DFA transition chars */
 UNICC_STATIC int @@prefix_dfa_chars[ @@size-of-dfa-characters * 2 ] =
 {
-	@@dfa-char
+    @@dfa-char
 };
 
 /* DFA transitions */
 UNICC_STATIC int @@prefix_dfa_trans[ @@size-of-dfa-characters ] =
 {
-	@@dfa-trans
+    @@dfa-trans
 };
 
 /* DFA acception states */

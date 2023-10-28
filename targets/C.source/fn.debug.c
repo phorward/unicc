@@ -1,17 +1,17 @@
 #if UNICC_STACKDEBUG
 UNICC_STATIC void @@prefix_dbg_stack( FILE* out,
-	@@prefix_tok* stack, @@prefix_tok* tos )
+    @@prefix_tok* stack, @@prefix_tok* tos )
 {
-	fprintf( out, "%s: Stack Dump: ", UNICC_PARSER );
+    fprintf( out, "%s: Stack Dump: ", UNICC_PARSER );
 
-	for( ; stack <= tos; stack++ )
-	{
-		fprintf( out, "%d%s%s%s ", stack->state,
-			stack->symbol ? " (" : "",
-			stack->symbol ? stack->symbol->name : "",
-			stack->symbol ? ")" : "" );
-	}
-	
-	fprintf( out, "\n" );
+    for( ; stack <= tos; stack++ )
+    {
+        fprintf( out, "%d%s%s%s ", stack->state,
+            stack->symbol ? " (" : "",
+            stack->symbol ? stack->symbol->name : "",
+            stack->symbol ? ")" : "" );
+    }
+
+    fprintf( out, "\n" );
 }
 #endif /* UNICC_STACKDEBUG */

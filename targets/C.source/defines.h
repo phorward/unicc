@@ -55,9 +55,9 @@
 /* Parse error macro */
 #ifndef UNICC_PARSE_ERROR
 #define UNICC_PARSE_ERROR( pcb ) \
-	fprintf( stderr, "line %d, column %d: syntax error on symbol %d, token '" \
-		UNICC_SCHAR_FORMAT "'\n", \
-	( pcb )->line, ( pcb )->column, pcb->sym, @@prefix_lexem( pcb ) )
+    fprintf( stderr, "line %d, column %d: syntax error on symbol %d, token '" \
+        UNICC_SCHAR_FORMAT "'\n", \
+    ( pcb )->line, ( pcb )->column, pcb->sym, @@prefix_lexem( pcb ) )
 #endif
 
 /* Input buffering clean-up */
@@ -78,8 +78,8 @@
 /* Call this when running out of memory during memory allocation */
 #ifndef UNICC_OUTOFMEM
 #define UNICC_OUTOFMEM( pcb )	fprintf( stderr, \
-									"Fatal error, ran out of memory\n" ), \
-								exit( 1 )
+                                    "Fatal error, ran out of memory\n" ), \
+                                exit( 1 )
 #endif
 
 /* Static switch */

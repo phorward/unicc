@@ -21,37 +21,37 @@ static int trailbyte_utf8[ 256 ] =
 
 UNICC_STATIC UNICC_CHAR @@prefix_utf8_getchar( int (*getfn)() )
 {
-	UNICC_CHAR	ch	= 0;
-	int 		nb;
-	int			c;
-	
-	if( !getfn )
-		getfn = getchar;
+    UNICC_CHAR	ch	= 0;
+    int 		nb;
+    int			c;
 
-	switch( ( nb = trailbyte_utf8[ ( c = (*getfn)() ) ] ) )
-	{
+    if( !getfn )
+        getfn = getchar;
+
+    switch( ( nb = trailbyte_utf8[ ( c = (*getfn)() ) ] ) )
+    {
         case 3:
-			ch += c;
-			ch <<= 6;
-			c = (*getfn)();
+            ch += c;
+            ch <<= 6;
+            c = (*getfn)();
         case 2:
-			ch += c;
-			ch <<= 6;
-			c = (*getfn)();
+            ch += c;
+            ch <<= 6;
+            c = (*getfn)();
         case 1:
-			ch += c;
-			ch <<= 6;
-			c = (*getfn)();
+            ch += c;
+            ch <<= 6;
+            c = (*getfn)();
         case 0:
-			ch += c;
-			break;
-	}
-	
-	ch -= offsets_utf8[ nb ];
+            ch += c;
+            break;
+    }
+
+    ch -= offsets_utf8[ nb ];
 #if UNICC_DEBUG	> 3
-	fprintf( stderr, "%s: getchar: %d\n", UNICC_PARSER, ch );
+    fprintf( stderr, "%s: getchar: %d\n", UNICC_PARSER, ch );
 #endif
-	return ch;
+    return ch;
 }
 #define UNICC_GETINPUT		@@prefix_utf8_getchar( getchar )
 
