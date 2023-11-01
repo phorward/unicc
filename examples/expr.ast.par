@@ -1,7 +1,7 @@
-#whitespaces    ' \t';
+%whitespaces    ' \t';
 
-#left           '+' '-';
-#left           '*' '/';
+%left           '+' '-';
+%left           '*' '/';
 
 @int            '0-9'+           = int;
 

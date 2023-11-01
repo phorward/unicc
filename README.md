@@ -16,9 +16,9 @@
 
 **unicc** is a parser generator that compiles an extended grammar definition into program source code that parses the described grammar. Since UniCC is target language independent, it can be configured via template definition files to generate parsers in any programming language.
 
-UniCC natively supports the programming languages **C**, **C++**, **Python** and **JavaScript**. Parse tables can also be generated in **JSON** and **XML**.
+UniCC natively supports the programming languages **C**, **C++**, **Python** and **JavaScript**. Parse tables can also be generated to **JSON**. Parsers for other programming languages can be easily adapted.
 
-UniCC can generate both scannerless parsers and parsers with a separate scanner. The more powerful scannerless parsing is the default and allows the barrier between the grammar and its tokens to be broken, leaving the tokens under the full control of the context-free grammar. Scannerless parsing requires that the provided grammar is rewritten internally according to the whitespace and lexeme settings.
+UniCC is capable to generate both scannerless parsers and parsers with a separate scanner. The more powerful scannerless parsing is the default and allows the barrier between the grammar and its tokens to be broken, leaving the tokens under the full control of the context-free grammar. Scannerless parsing requires that the provided grammar is rewritten internally according to the whitespace and lexeme settings.
 
 ## Examples
 
@@ -27,10 +27,10 @@ Below is the full definition of a simple, universal grammar example that can be 
 This example uses the automatic abstract syntax tree construction syntax to define nodes and leafs of the resulting syntax tree.
 
 ```unicc
-#whitespaces    ' \t';
+%whitespaces    ' \t';
 
-#left           '+' '-';
-#left           '*' '/';
+%left           '+' '-';
+%left           '*' '/';
 
 @int            '0-9'+           = int;
 
@@ -53,17 +53,17 @@ add
  int (1337)
 ```
 
-Next is a (more complex) version of the four-function arithmetic syntax including their calculation semantics, for integer values. In this example, the scannerless parsing capabilities of UniCC are used to parse the **int** value from its single characters, so the symbol **int** is configured to be handled as a `lexeme`, which influences the behavior how whitespace is handled.
+Next is a (more complex) version of the four-function arithmetic syntax including their calculation semantics, for integer values. In this example, the scannerless parsing capabilities of UniCC are used to parse the **int** value from its single characters, so the symbol **int** is configured to be handled as a `lexeme`, which influences the behavior of how whitespace is handled.
 
 ```unicc
-#!language      C;	// <- target language!
+%!language      C;	// <- target language!
 
-#whitespaces    ' \t';
-#lexeme         int;
-#default action [* @@ = @1 *];
+%whitespaces    ' \t';
+%lexeme         int;
+%default action [* @@ = @1 *];
 
-#left           '+' '-';
-#left           '*' '/';
+%left           '+' '-';
+%left           '*' '/';
 
 calc$           : expr                 [* printf( "= %d\n", @expr ) *]
                 ;
@@ -81,12 +81,16 @@ int             : '0-9'                [* @@ = @1 - '0' *]
                 ;
 ```
 
-To build and run this example, run the following commands
+To build this example, run the following commands
 
-```
+```bash
 $ unicc expr.par
 $ cc -o expr expr.c
-./expr -sl
+```
+
+Afterwards, you can run the expression parser like this
+```bash
+$ ./expr -sl
 42 * 23 + 1337
 = 2303
 ```
@@ -103,12 +107,9 @@ UniCC provides the following features and tools:
 - Generates standalone (dependency-less) parsers in
   - C
   - C++
-  - Python 2 (deprecated)
-  - Python 3
+  - Python (>= 2.7, tested until 3.11)
   - JavaScript (ES2018)
-- Provides facilities to generate parse tables as
-  - JSON
-  - XML (deprecated)
+- Provides facilities to generate parse tables into JSON
 - Scannerless parser supported by default
 - Full Unicode processing built-in
 - Grammar prototyping features
@@ -127,16 +128,16 @@ The [UniCC User's Manual](http://downloads.phorward-software.com/unicc/unicc.pdf
 
 UniCC can be build and installed like any GNU-style program, with
 
-```sh
-./configure
-make
-make install
+```bash
+$ . /configure
+$ make
+$ make install
 ```
 
 Alternatively, the dev-toolchain can be used, by just calling on any recent Linux system.
 
-```sh
-make -f Makefile.gnu
+```bash
+$ make -f Makefile.gnu
 ```
 
 ## License

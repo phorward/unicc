@@ -1,5 +1,5 @@
-#whitespaces   ' \t';
-#lexeme        integer title;
+%whitespaces   ' \t';
+%lexeme        integer title;
 
 appointment$   : date title
                | title date

@@ -1,13 +1,13 @@
 //Some grammar-related directives
-#whitespaces                ' \t';
-#lexeme                     integer;
-#default action             [* @@ = @1; *];
-#case insensitive strings   on;
+%whitespaces                ' \t';
+%lexeme                     integer;
+%default action             [* @@ = @1; *];
+%case insensitive strings   on;
 
-#left                       '+' '-';
-#left                       '*' '/';
+%left                       '+' '-';
+%left                       '*' '/';
 
-#prologue
+%prologue
 [*
 #include <stdlib.h>
 #include <stdio.h>

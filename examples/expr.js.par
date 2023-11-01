@@ -1,11 +1,11 @@
-#!language     javascript;
+%!language     javascript;
 
-#whitespaces    ' \t';
-#lexeme         int;
-#default action	[* @@ = @1 *];
+%whitespaces    ' \t';
+%lexeme         int;
+%default action	[* @@ = @1 *];
 
-#left           '+' '-';
-#left           '*' '/';
+%left           '+' '-';
+%left           '*' '/';
 
 calc$           : expr                 [* console.log("= %d", @expr);
                                             @@ = @expr;

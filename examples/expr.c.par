@@ -1,11 +1,11 @@
-#!language      C;
+%!language      C;
 
-#whitespaces    ' \t';
-#lexeme         int;
-#default action [* @@ = @1 *];
+%whitespaces    ' \t';
+%lexeme         int;
+%default action [* @@ = @1 *];
 
-#left           '+' '-';
-#left           '*' '/';
+%left           '+' '-';
+%left           '*' '/';
 
 calc$           : expr                 [* printf( "= %d\n", @expr ) *]
                 ;

@@ -1,10 +1,10 @@
 //Meta information
-#prefix             "xpl";
+%prefix             "xpl";
 
 //Precedence and associativity
-#left               "=";
+%left               "=";
 
-#left               "=="
+%left               "=="
                     "!="
                     "<="
                     ">="
@@ -12,11 +12,11 @@
                     '<'
                     ;
 
-#left               '+'
+%left               '+'
                     '-'
                     ;
 
-#left               '*'
+%left               '*'
                     '/'
                     ;
 
@@ -39,11 +39,11 @@ real                :       real_integer '.' real_fraction
 real_integer        :       real_integer '0-9'
                     |       '0-9'
                     ;
-                    
+
 real_fraction       :       real_fraction '0-9'
                     |       '0-9'
                     ;
-                    
+
 //Whitespace grammar construct
 #whitespaces        whitespace
                     ;

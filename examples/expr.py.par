@@ -1,11 +1,11 @@
-#!language      Python;
+%!language      Python;
 
-#whitespaces    ' \t';
-#lexeme         int;
-#default action	[*@@ = @1*];
+%whitespaces    ' \t';
+%lexeme         int;
+%default action	[*@@ = @1*];
 
-#left           '+' '-';
-#left           '*' '/';
+%left           '+' '-';
+%left           '*' '/';
 
 calc$           : expr                 [*print("= %d" % @expr)*]
                 ;

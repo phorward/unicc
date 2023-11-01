@@ -33,6 +33,9 @@ clean:
 src/proto.h:
 	lib/pproto src/*.c | awk "/int _parse/ { next } { print }" >$@
 
+src/parse.c src/parse.h: src/parse.par
+	unicc -o src/parse src/parse.par
+
 make_install:
 	cp Makefile.gnu Makefile
 

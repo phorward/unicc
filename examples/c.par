@@ -8,11 +8,11 @@
 	Rewritten for UniCC by Jan Max Meyer, 2011
 */
 
-#!mode scannerless ;
-#!language	"C" ;
+%!mode scannerless ;
+%!language	"C" ;
 
 // Parser Configuration
-#whitespaces 			@white ;
+%whitespaces 			@white ;
 
 @white					' \t\v\r\n\f'+
 						| "/*" .* "*/"
@@ -221,7 +221,7 @@ type_specifier
 	| enum_specifier
 	| TYPE_NAME
 	;
-	
+
 
 
 struct_or_union_specifier
@@ -444,6 +444,6 @@ function_definition
 IDENTIFIER
 TYPE_NAME
 	: 	@IDENTIFIER ;
-	
+
 	/* 	Decision has to be done semantically if
 		IDENTIFIER or TYPE_NAME is the case. */
