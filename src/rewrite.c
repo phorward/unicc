@@ -509,14 +509,23 @@ void inherit_vtypes( PARSER* parser )
 {
     SYMBOL*		sym;
     plistel*	e;
+    pboolean    changes;
 
-    plist_for( parser->symbols, e )
+    do
     {
-        sym = (SYMBOL*)plist_access( e );
+        changes = FALSE;
+        plist_for( parser->symbols, e )
+        {
+            sym = (SYMBOL*)plist_access( e );
 
-        if( !sym->vtype && sym->derived_from )
-            sym->vtype = sym->derived_from->vtype;
+            if( !sym->vtype && sym->derived_from && sym->derived_from->vtype )
+            {
+                sym->vtype = sym->derived_from->vtype;
+                changes = TRUE;
+            }
+        }
     }
+    while( changes );
 }
 
 /** Sets up a single goal symbol, if necessary. */

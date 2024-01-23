@@ -285,6 +285,7 @@ int main( int argc, char** argv )
                 if( parser->p_mode == MODE_SCANNERLESS )
                     rewrite_grammar( parser );
 
+                inherit_vtypes( parser );
                 unique_charsets( parser );
                 symbol_orders( parser );
                 charsets_to_ptn( parser );

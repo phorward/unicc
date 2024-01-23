@@ -137,6 +137,7 @@ $ make install
 Alternatively, the dev-toolchain can be used, by just calling on any recent Linux system.
 
 ```bash
+$ touch src/parse.?  # you have to do this only once
 $ make -f Makefile.gnu
 ```
 

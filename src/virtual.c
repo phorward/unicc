@@ -31,7 +31,6 @@ SYMBOL* positive_closure( PARSER* parser, SYMBOL* base )
             s->generated = TRUE;
             s->used = TRUE;
             s->defined = TRUE;
-            s->vtype = base->vtype;
             s->derived_from = base;
             s->line = base->line;
 
@@ -94,7 +93,6 @@ SYMBOL* kleene_closure( PARSER* parser, SYMBOL* base )
             s->generated = TRUE;
             s->used = TRUE;
             s->defined = TRUE;
-            s->vtype = base->vtype;
             s->derived_from = base;
             s->line = base->line;
 
@@ -142,7 +140,6 @@ SYMBOL* optional_closure( PARSER* parser, SYMBOL* base )
             s->generated = TRUE;
             s->used = TRUE;
             s->defined = TRUE;
-            s->vtype = base->vtype;
             s->derived_from = base;
             s->line = base->line;
 
