@@ -16568,48 +16568,48 @@ UNICC_STATIC int _alloc_stack( _pcb* pcb )
 #if UNICC_UTF8
 UNICC_STATIC UNICC_CHAR _get_char( _pcb* pcb )
 {
-    unsigned char byte[ 4 ];
+    unsigned char first = UNICC_GETCHAR( pcb );
 
-    // Read the first byte
-    byte[0] = UNICC_GETCHAR( pcb );
-
-    if ((byte[0] & 0x80) == 0)
+    if ((first & 0x80) == 0)
     {
         // Single-byte ASCII character
-        return byte[0];
+        return first;
     }
-    else if ((byte[0] & 0xE0) == 0xC0)
+    else if ((first & 0xE0) == 0xC0)
     {
         // Two-byte sequence (110xxxxx 10xxxxxx)
-        byte[1] = UNICC_GETCHAR( pcb );
-        return (
-            (byte[0] & 0x1F) << 6)
-            | (byte[1] & 0x3F
-        );
+        unsigned char second = UNICC_GETCHAR( pcb );
+        return ((first & 0x1F) << 6) | (second & 0x3F);
     }
-    else if ((byte[0] & 0xF0) == 0xE0)
+    else if ((first & 0xF0) == 0xE0)
     {
         // Three-byte sequence (1110xxxx 10xxxxxx 10xxxxxx)
-        byte[1] = UNICC_GETCHAR( pcb );
-        byte[2] = UNICC_GETCHAR( pcb );
-        return (
-            (byte[0] & 0x0F) << 12)
-            | ((byte[1] & 0x3F) << 6)
-            | (byte[3] & 0x3F
-        );
+        unsigned char bytes[2];
+
+        bytes[0] = UNICC_GETCHAR( pcb );
+        bytes[1] = UNICC_GETCHAR( pcb );
+
+        return
+            ((first & 0x0F) << 12)
+            | ((bytes[0] & 0x3F) << 6)
+            | (bytes[1] & 0x3F)
+        ;
     }
-    else if ((byte[0] & 0xF8) == 0xF0)
+    else if ((first & 0xF8) == 0xF0)
     {
         // Four-byte sequence (11110xxx 10xxxxxx 10xxxxxx 10xxxxxx)
-        byte[1] = UNICC_GETCHAR( pcb );
-        byte[2] = UNICC_GETCHAR( pcb );
-        byte[3] = UNICC_GETCHAR( pcb );
-        return (
-            (byte[0] & 0x07) << 18)
-            | ((byte[1] & 0x3F) << 12)
-            | ((byte[2] & 0x3F) << 6)
-            | (byte[3] & 0x3F
-        );
+        unsigned char bytes[3];
+
+        bytes[0] = UNICC_GETCHAR( pcb );
+        bytes[1] = UNICC_GETCHAR( pcb );
+        bytes[2] = UNICC_GETCHAR( pcb );
+
+        return
+            ((first & 0x07) << 18)
+            | ((bytes[0] & 0x3F) << 12)
+            | ((bytes[1] & 0x3F) << 6)
+            | (bytes[2] & 0x3F)
+        ;
     }
 
     return -1; // Invalid UTF-8 sequence
