@@ -1,3 +1,56 @@
+#if UNICC_UTF8
+UNICC_STATIC UNICC_CHAR _get_char( _pcb* pcb )
+{
+    unsigned char byte[ 4 ];
+
+    // Read the first byte
+    byte[0] = UNICC_GETCHAR( pcb );
+
+    if ((byte[0] & 0x80) == 0)
+    {
+        // Single-byte ASCII character
+        return byte[0];
+    }
+    else if ((byte[0] & 0xE0) == 0xC0)
+    {
+        // Two-byte sequence (110xxxxx 10xxxxxx)
+        byte[1] = UNICC_GETCHAR( pcb );
+        return (
+            (byte[0] & 0x1F) << 6)
+            | (byte[1] & 0x3F
+        );
+    }
+    else if ((byte[0] & 0xF0) == 0xE0)
+    {
+        // Three-byte sequence (1110xxxx 10xxxxxx 10xxxxxx)
+        byte[1] = UNICC_GETCHAR( pcb );
+        byte[2] = UNICC_GETCHAR( pcb );
+        return (
+            (byte[0] & 0x0F) << 12)
+            | ((byte[1] & 0x3F) << 6)
+            | (byte[3] & 0x3F
+        );
+    }
+    else if ((byte[0] & 0xF8) == 0xF0)
+    {
+        // Four-byte sequence (11110xxx 10xxxxxx 10xxxxxx 10xxxxxx)
+        byte[1] = UNICC_GETCHAR( pcb );
+        byte[2] = UNICC_GETCHAR( pcb );
+        byte[3] = UNICC_GETCHAR( pcb );
+        return (
+            (byte[0] & 0x07) << 18)
+            | ((byte[1] & 0x3F) << 12)
+            | ((byte[2] & 0x3F) << 6)
+            | (byte[3] & 0x3F
+        );
+    }
+
+    return -1; // Invalid UTF-8 sequence
+}
+#else
+#define @@prefix_get_char( pcb )  UNICC_GETCHAR( pcb )
+#endif
+
 UNICC_STATIC UNICC_CHAR @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offset )
 {
 #if UNICC_DEBUG	> 2
@@ -44,7 +97,7 @@ UNICC_STATIC UNICC_CHAR @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offs
             pcb->bufend = pcb->buf + size;
         }
 
-        if( pcb->is_eof || ( *( pcb->bufend ) = (UNICC_CHAR)UNICC_GETINPUT )
+        if( pcb->is_eof || ( *( pcb->bufend ) = @@prefix_get_char( pcb ) )
                                     == pcb->eof )
         {
 #if UNICC_DEBUG	> 2

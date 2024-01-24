@@ -37,8 +37,9 @@ struct @@prefix_rhs_item
 #define MALLOC_STEP 255
 #endif
 
-#define UNICC_GETINPUT \
+#define UNICC_GETCHAR( pcb ) \
     *pcb->src ? *(pcb->src++) : *pcb->src
+
 #define UNICC_PARSE_ERROR( pcb ) \
     parse_error( pcb )
 
