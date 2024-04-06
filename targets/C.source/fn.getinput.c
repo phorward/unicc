@@ -3,9 +3,9 @@ UNICC_STATIC UNICC_CHAR _get_char( _pcb* pcb )
 {
     unsigned char first = UNICC_GETCHAR( pcb );
 
-    if ((first & 0x80) == 0)
+    if ((first & 0x80) == 0 || first >= 0x80)
     {
-        // Single-byte ASCII character
+        // Single-byte ASCII character (probably ISO-8859-1)
         return first;
     }
     else if ((first & 0xE0) == 0xC0)
