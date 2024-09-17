@@ -86,7 +86,7 @@
 #
 @@prologue
 
-class @@prefixNode:
+class @@prefixNode(object):
     """
     This is an AST node.
 
@@ -135,7 +135,7 @@ class @@prefixParseException(Exception):
         self.expecting = expecting
 
 
-class _@@prefixToken:
+class _@@prefixToken(object):
     """
     Only used internally;
     Represents a token on the stack.
@@ -147,7 +147,7 @@ class _@@prefixToken:
     @@value-type-definition
 
 
-class _@@prefixControlBlock:
+class _@@prefixControlBlock(object):
     """
     Only used internally;
     Represents the current parser state, and allows to
@@ -191,7 +191,7 @@ class _@@prefixControlBlock:
         self.column = 1
         @@pcb
 
-class @@prefixParser:
+class @@prefixParser(object):
     """
     Implements a LALR-Parser for @@name.
     Call @@prefixParser.parse() to start parsing a given string.
