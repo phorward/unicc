@@ -139,12 +139,12 @@ fixed_directive     : "mode" mode_type
                     ;
 
 mode_type           : "scannerless"
-                        [* parser->p_mode = MODE_SCANNERLESS; *]
+                        [* parser->p_mode = MODE_SCANNERLESS *]
                     | "scanner"
-                        [* parser->p_mode = MODE_SCANNER; *]
+                        [* parser->p_mode = MODE_SCANNER *]
                     ;
 
-segment             : code
+segment             : code  [* /* Do nothing...  parser->p_footer? */ *]
                     | definition ';'
                     | unfixed_directive ';'
                     ;
@@ -894,12 +894,8 @@ ccl<pccl*>      :   ccl_string
 
 /* ------------------------------------- TODO: Must be re-designed... --- */
 ccl_string<char*>
-                :   '\'' ccl_str '\''
-                    [* @@ = ustrndup( "ccl_string", pcb->capture, pcb->src - pcb->capture - 2 ) *]
-                ;
-
-ccl_str         :   ccl_str ccl_char
-                |   [* pcb->capture = pcb->src - 2; *]
+                :   '\'' ([* pcb->capture = pcb->src; *]) ccl_char* '\''
+                    [* @@ = ustrndup( "ccl_string", pcb->capture, pcb->src - pcb->capture - 1 ) *]
                 ;
 
 ccl_char        :   !'\\\''
@@ -974,7 +970,7 @@ code<char*>     :   "[*" line_number inner_code_opt "*]"
                                         pcb->filename, @line_number );
                         }
 
-                        @@ = ustrndup( "code", pcb->capture, pcb->src - pcb->capture - 2 - 1 )
+                        @@ = ustrndup( "code", pcb->capture, pcb->src - pcb->capture - 2 - 2 - 1 )
                     *]
                 ;
 
