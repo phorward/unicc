@@ -9,7 +9,6 @@ SOURCE		=	\
 				fn.clearin.c \
 				fn.debug.c \
 				fn.getact.c \
-				fn.getchar.c \
 				fn.getgo.c \
 				fn.getinput.c \
 				fn.getsym.c \
@@ -36,4 +35,3 @@ $(C_XML): $(SOURCE) $(C_XML_SRC) $(MKPARSER)
 
 clean:
 	-$(RM) $(C_XML)
-

@@ -765,7 +765,9 @@ between the rows/columns, except the last row/column.
 
 %%%include fn.stack.c
 
-%%%include fn.getchar.c
+#ifndef UNICC_GETCHAR
+#define UNICC_GETCHAR( pcb )  getchar()
+#endif
 
 %%%include fn.getinput.c
 

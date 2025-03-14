@@ -1019,67 +1019,61 @@ UNICC_STATIC int @@prefix_alloc_stack( @@prefix_pcb* pcb )
     return 0;
 }
 
-#ifndef UNICC_GETINPUT
+#ifndef UNICC_GETCHAR
+#define UNICC_GETCHAR( pcb )  getchar()
+#endif
 
 #if UNICC_UTF8
-static int offsets_utf8[ 6 ] =
+UNICC_STATIC UNICC_CHAR _get_char( _pcb* pcb )
 {
-    0x00000000UL, 0x00003080UL, 0x000E2080UL,
-    0x03C82080UL, 0xFA082080UL, 0x82082080UL
-};
+    unsigned char first = UNICC_GETCHAR( pcb );
 
-static int trailbyte_utf8[ 256 ] =
-{
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-    2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5
-};
-
-UNICC_STATIC UNICC_CHAR @@prefix_utf8_getchar( int (*getfn)() )
-{
-    UNICC_CHAR	ch	= 0;
-    int 		nb;
-    int			c;
-
-    if( !getfn )
-        getfn = getchar;
-
-    switch( ( nb = trailbyte_utf8[ ( c = (*getfn)() ) ] ) )
+    if ((first &amp; 0x80) == 0 || first &gt;= 0x80)
     {
-        case 3:
-            ch += c;
-            ch &lt;&lt;= 6;
-            c = (*getfn)();
-        case 2:
-            ch += c;
-            ch &lt;&lt;= 6;
-            c = (*getfn)();
-        case 1:
-            ch += c;
-            ch &lt;&lt;= 6;
-            c = (*getfn)();
-        case 0:
-            ch += c;
-            break;
+        // Single-byte ASCII character (probably ISO-8859-1)
+        return first;
+    }
+    else if ((first &amp; 0xE0) == 0xC0)
+    {
+        // Two-byte sequence (110xxxxx 10xxxxxx)
+        unsigned char second = UNICC_GETCHAR( pcb );
+        return ((first &amp; 0x1F) &lt;&lt; 6) | (second &amp; 0x3F);
+    }
+    else if ((first &amp; 0xF0) == 0xE0)
+    {
+        // Three-byte sequence (1110xxxx 10xxxxxx 10xxxxxx)
+        unsigned char bytes[2];
+
+        bytes[0] = UNICC_GETCHAR( pcb );
+        bytes[1] = UNICC_GETCHAR( pcb );
+
+        return
+            ((first &amp; 0x0F) &lt;&lt; 12)
+            | ((bytes[0] &amp; 0x3F) &lt;&lt; 6)
+            | (bytes[1] &amp; 0x3F)
+        ;
+    }
+    else if ((first &amp; 0xF8) == 0xF0)
+    {
+        // Four-byte sequence (11110xxx 10xxxxxx 10xxxxxx 10xxxxxx)
+        unsigned char bytes[3];
+
+        bytes[0] = UNICC_GETCHAR( pcb );
+        bytes[1] = UNICC_GETCHAR( pcb );
+        bytes[2] = UNICC_GETCHAR( pcb );
+
+        return
+            ((first &amp; 0x07) &lt;&lt; 18)
+            | ((bytes[0] &amp; 0x3F) &lt;&lt; 12)
+            | ((bytes[1] &amp; 0x3F) &lt;&lt; 6)
+            | (bytes[2] &amp; 0x3F)
+        ;
     }
 
-    ch -= offsets_utf8[ nb ];
-#if UNICC_DEBUG	&gt; 3
-    fprintf( stderr, "%s: getchar: %d\n", UNICC_PARSER, ch );
-#endif
-    return ch;
+    return -1; // Invalid UTF-8 sequence
 }
-#define UNICC_GETINPUT		@@prefix_utf8_getchar( getchar )
-
 #else
-#define UNICC_GETINPUT		getchar()
-#endif
-
+#define @@prefix_get_char( pcb )  UNICC_GETCHAR( pcb )
 #endif
 
 UNICC_STATIC UNICC_CHAR @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offset )
@@ -1128,7 +1122,7 @@ UNICC_STATIC UNICC_CHAR @@prefix_get_input( @@prefix_pcb* pcb, unsigned int offs
             pcb-&gt;bufend = pcb-&gt;buf + size;
         }
 
-        if( pcb-&gt;is_eof || ( *( pcb-&gt;bufend ) = (UNICC_CHAR)UNICC_GETINPUT )
+        if( pcb-&gt;is_eof || ( *( pcb-&gt;bufend ) = @@prefix_get_char( pcb ) )
                                     == pcb-&gt;eof )
         {
 #if UNICC_DEBUG	&gt; 2
